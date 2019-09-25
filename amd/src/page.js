@@ -12,8 +12,10 @@ define([
     'jquery', 
     'jqueryui', 
     M.cfg.wwwroot + '/mod/page/amd/src/Longtext.js', 
-    M.cfg.wwwroot + '/mod/page/amd/src/Utils.js'],
-    function ($, jqueryui, Longtext, Utils) {
+    M.cfg.wwwroot + '/mod/page/amd/src/Utils.js',
+    M.cfg.wwwroot + '/mod/page/amd/src/Logging.js'
+],
+    function ($, jqueryui, Longtext, Utils, Log) {
 
 
         require.config({
@@ -59,29 +61,16 @@ define([
                 document.getElementsByTagName("head")[0].appendChild(link);
             }
 
-            $('#accordion').tab();
-
             require([
                 'vue259',
-                //'MathJax',
                 'd3'
             ], function (vue, d3) {
-                    
-                    //console.log(typeof ActiveMenuLink)
-                    //new ActiveMenuLink(".navbar", options);
-                    
                 const utils = new Utils(d3);
-                new Longtext(vue, d3, Utils, html_content);
-
-                    /*window.MathJax = {
-                        startup: {
-                            ready: function(){
-                                console.log('MathJax is loaded, but not yet initialized');
-                                MathJax.startup.defaultReady();
-                                console.log('MathJax is initialized, and the initial typeset is queued');
-                            }
-                        }
-                    };*/
+                const log = new Log(utils, {
+                    context: 'longpage',
+                    outputType: 0
+                });
+                new Longtext(vue, d3, utils, log, html_content);
             });
         }
 

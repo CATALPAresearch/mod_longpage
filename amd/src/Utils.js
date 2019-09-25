@@ -1,3 +1,4 @@
+/* eslint-disable valid-jsdoc */
 /**
  * Javascript utils for the Moodle videodatabase
  *
@@ -10,7 +11,7 @@
  */
 define(['jquery', 'core/ajax'], function ($, ajax) {
 
-    const Utils = function (d3) {
+    var Utils = function (d3) {
         this.d3 = d3;
 
         /**
@@ -22,23 +23,23 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
         this.get_ws = function (ws, params, cb, external) {
             external = external === undefined ? false : external;
             ajax.call([{
-                methodname: external ? ws : 'format_ladtopics_' + ws,
-                args: { courseid: 3 },
+                methodname: external ? ws : 'mod_page' + ws,
+                args: params,
                 done: function (msg) {
                     if (msg.hasOwnProperty('exception')) {
-                        $('#alert')
-                            .html('Die Prozedur ' + ws + ' konnte nicht als Webservice geladen werden.<br>')
-                            .append(JSON.stringify(msg));
+                        console.error('Die Prozedur ' + ws + ' konnte nicht als Webservice geladen werden.<br>')
+                        console.error(JSON.stringify(msg));
                     } else {
                         cb(msg);
                     }
                 },
                 fail: function (e) {
-                    console.log(params);
-                    console.error(ws, e);
+                    console.log(params, ws);
+                    console.error(e);
                 }
             }]);
         };
+
 
         this.germanFormatters = d3.timeFormatDefaultLocale({
             "decimal": ",",
@@ -63,13 +64,6 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
             if (date.getDay()) return d3.timeFormat("%a %e.%m.")(date); // Mo 8.02.
             if (date.getMonth()) return d3.timeFormat("%B")(date); //7.12. 
             return d3.getDate("%Y");
-
-            /*   , function (d) { return d.; }],
-                [ function (d) { return d.getDay() && d.getDate() !== 1; }], 
-                ["%e.%m.", function (d) { return d.getDate() != 1; }], // 
-                [, function (d) { return d.; }],
-                [, function () { return true; }]
-                */
         };
 
         this.numberToWord = function (num, postfix) {
@@ -90,6 +84,13 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
                 default: return num + ' ' + postfix;
             }
         };
+
+        this.mergeObjects = function (obj1, obj2) {
+            var obj3 = {};
+            for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+            for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
+            return obj3;
+        }
     };
     return Utils;
 });

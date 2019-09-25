@@ -34,10 +34,21 @@ html{
 }
 
 
-.longpage-nav #tocList ul li a, .longpage-nav #search-results ul li a{
+
+.longpage-nav #tocList ul li a{
   font-size:0.8em;
   padding-top:0;
   padding-bottom:6px;
+}
+
+.longpage-nav ul#search-results{
+  display:inline-block;
+}
+
+.longpage-nav ul#search-results li {
+  padding-bottom: 10px;
+  font-size: 0.8em;
+  display:inline-block;
 }
 
 .longpage-nav #tocList ul li div ul {

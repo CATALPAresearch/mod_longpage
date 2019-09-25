@@ -83,8 +83,8 @@ if (!isset($options['printheading']) || !empty($options['printheading'])) {
         <button id="search-full-text" class="btn btn-outline-success my-2 my-sm-0" type="button">Suchen</button>
     </form>
     <div class="collapse" id="search-results-panel">
-        <div class="card card-body col-md-12 longpage-nav">
-            <ul id="search-results"></ul>
+        <div class="card card-body col-xs-12 col-md-12 col-xl-4 col-lg-6">
+            <ul id="search-results" class=""></ul>
         </div>
     </div>
     <div class="collapse" id="table-of-content">
