@@ -8,6 +8,7 @@ The plugin ist based on the page module which is delivered with every moodle.
 - generates a table of content frome the HTML strcture (headings)
 - enables a full-text search by using *lunr*
 - tracks scrolling events using the (InteractionObserver)[https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API]
+- measure reading time for a page
 
 # Installation
 * clone the repository and rename the folder to 'page'.
