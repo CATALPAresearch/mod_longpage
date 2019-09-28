@@ -131,7 +131,7 @@ html{
     line-height: 1.25em;
     width: 100%;
     margin: 30px 0px 30px 0px;
-    padding: 0;
+    padding: 0 0 0 10px;
     font-weight: bold;
   }
 
@@ -141,6 +141,7 @@ html{
   line-height: 1.51em;
   margin: 20px 0px 20px 0px;
   font-weight: bold;
+  padding: 0 0 0 10px;
 }
 
 .longpage-container h4 {
@@ -148,6 +149,7 @@ html{
   line-height: 1.41em;
   margin: 10px 0px 10px 0px;
   font-weight: bold;
+  padding: 0 0 0 10px;
 }
 
 .longpage-container h5 {
@@ -155,6 +157,7 @@ html{
   line-height: 1.41em;
   margin: 10px 0px 10px 0px;
   font-weight: bold;
+  padding: 0 0 0 10px;
 }
 
 .longpage-container .longpage-image-block {
@@ -171,7 +174,7 @@ html{
   font-weight:bold;
   margin-top:0;
   margin-bottom:1em;
-  line-height: 1em;
+  line-height: 1.4em;
   padding: 4px 6px;
 }
 
@@ -201,6 +204,16 @@ html{
   border-bottom: 1px solid #004C97;
   margin: 2em 0em;
   padding:1em;
+}
+
+.longpage-reading-time-estimation{
+  font-size:0.8em;
+  margin-left:0;
+  padding-left:10px;
+  padding-top:-20px;
+  color:#333333;
+  font-weight:  normal;
+
 }
 
 .longpage pre > code {
@@ -242,7 +255,7 @@ pre code {
 }
 
 
-.longpage-italic{
+.longpage-italic {
   font-style: italic;
 }
 
