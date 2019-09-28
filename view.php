@@ -77,7 +77,7 @@ if (!isset($options['printheading']) || !empty($options['printheading'])) {
     echo '
 <nav class="page-navbar navbar navbar-light bg-light justify-content-between fixed-top-nav">
     <a class="navbar-brand">'. format_string($page->name) .'</a>
-    <a class="btn btn-link longpage-nav-btn" data-toggle="collapse" role="button" href="#table-of-content">Inhalt</a>
+    <a class="btn btn-link longpage-toc-toggle longpage-nav-btn" data-toggle="collapse" role="button" href="#table-of-content">Inhalt</a>
     <form id="longpage-search-form" class="form-inline">
         <input id="search-string" class="form-control mr-sm-2" type="search" placeholder="Suche" aria-label="Search">
         <button id="search-full-text" class="btn btn-outline-success my-2 my-sm-0" type="button">Suchen</button>
@@ -131,7 +131,7 @@ $transaction->allow_commit();
 
 
 //$PAGE->requires->js_amd_inline("require(['mod_page/page']);");
-$PAGE->requires->js_call_amd('mod_page/page', 'init', array(json_encode($el)));
+$PAGE->requires->js_call_amd('mod_page/page', 'init', array($cm->id));
 //$PAGE->requires->js('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js',true);
 
 $strlastmodified = get_string("lastmodified");

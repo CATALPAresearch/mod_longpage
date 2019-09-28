@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die;
 
 $capabilities = array(
     'mod/page:view' => array(
-        'captype' => 'read',
+        'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'guest' => CAP_ALLOW,

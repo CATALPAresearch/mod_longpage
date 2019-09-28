@@ -216,4 +216,62 @@ class mod_page_external extends external_api {
             )
         );
     }
+
+    /**
+     * Takes video player log data form the client
+     */
+    public static function log_parameters() {
+        return new external_function_parameters(
+            array(
+                'data' => 
+                    new external_single_structure(
+                        array(
+                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'utc' => new external_value(PARAM_INT, '...utc time', VALUE_OPTIONAL),
+                            'action' => new external_value(PARAM_TEXT, '..action', VALUE_OPTIONAL),
+                            'entry' => new external_value(PARAM_RAW, 'log data', VALUE_OPTIONAL)
+                        )
+                )
+            )
+        );
+    }
+    public static function log_returns() {
+        return new external_single_structure(
+                array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
+        );
+    }
+    public static function log($data) {
+        global $CFG, $DB, $USER;
+        
+        $r = new stdClass();
+        $r->name='mod_page';
+        $r->component='mod_page';
+        $r->eventname='\mod_page\event\course_module_' . $data['action'];
+        $r->action=$data['action'];
+        $r->target='course_module';
+        $r->objecttable='page';
+        $r->objectid=0;
+        $r->crud='r';
+        $r->edulevel=2;
+        $r->contextid=120;
+        $r->contextlevel=70;
+        $r->contextinstanceid=86;
+        $r->userid=$USER->id; 
+        $r->courseid=(int)$data['courseid'];
+        //$r->relateduserid=NULL;
+        $r->anonymous=0;
+        $r->other=$data[entry];	 
+        $r->timecreated=$data['utc'];
+        $r->origin='web';	 
+        $r->ip=$_SERVER['REMOTE_ADDR'];
+        //$r->realuserid=NULL;
+        
+        $transaction = $DB->start_delegated_transaction();
+        $res = $DB->insert_records("logstore_standard_log", array($r)); // $CFG->prefix .
+        $transaction->allow_commit();
+        
+        return array('response'=> json_encode($r));
+    } 
+    public static function log_is_allowed_from_ajax() { return true; }
+    
 }

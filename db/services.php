@@ -28,6 +28,16 @@ defined('MOODLE_INTERNAL') || die;
 
 $functions = array(
 
+      'mod_page_log' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'log',
+        'description'   => 'Writes logdata to database',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+        'ajax'        => true 
+    ),
+
     'mod_page_view_page' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'view_page',
