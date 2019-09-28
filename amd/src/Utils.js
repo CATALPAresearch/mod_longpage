@@ -23,7 +23,7 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
         this.get_ws = function (ws, params, cb, external) {
             external = external === undefined ? false : external;
             ajax.call([{
-                methodname: external ? ws : 'mod_page' + ws,
+                methodname: external ? ws : 'mod_page_' + ws,
                 args: params,
                 done: function (msg) {
                     if (msg.hasOwnProperty('exception')) {

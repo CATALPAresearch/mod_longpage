@@ -43,8 +43,8 @@ define([
         });
 
 
-        function start(html_content) {
-
+        function start(courseid) {
+            
             // add style sheets        
             const css = [
                 //"/moodle/mod/page/css/bootstrap3.min.css", // moodle runs with bootstrap 2.3
@@ -65,19 +65,19 @@ define([
                 'vue259',
                 'd3'
             ], function (vue, d3) {
-                const utils = new Utils(d3);
-                const log = new Log(utils, {
-                    context: 'longpage',
-                    outputType: 0
+                    const utils = new Utils(d3); 
+                const log = new Log(utils, courseid, {
+                    context: 'mod_page',
+                    outputType: 1
                 });
-                new Longtext(vue, d3, utils, log, html_content);
+                new Longtext(vue, d3, utils, log);
             });
         }
 
         return {
-            init: function (html_content) {
+            init: function (courseid) {
                 try {
-                    start(html_content);
+                    start(courseid);
                 } catch (e) {
                     console.error(e);
                 }

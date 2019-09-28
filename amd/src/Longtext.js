@@ -20,7 +20,7 @@ define([
      * @param dc (Object) Dimensional Javascript Charting Library
      * @param utils (Object) Custome util class
      */
-    var Longtext = function (Vue, d3, utils, log, html_content) {
+    var Longtext = function (Vue, d3, utils, log) {
 
         require.config({
             enforceDefine: false,
@@ -55,16 +55,32 @@ define([
 
                 this.setupSearch();
 
-                /**
-                 * citation popover
-                 * footnote popover
-                 * search term
-                 * click search result
-                 * open toc
-                 * click toc item
-                 * click assignment-link
-                 * click cross-ref link
-                 */
+                this.estimateReadingTime();
+
+                // log interactions
+                $('.longpage-citation').click(function () {
+                    log.add('citation_view', { citation: $(this).data('content') });
+                });
+                $('.longpage-footnote').click(function () {
+                    log.add('footnote_view', { title: $(this).find('button').data('original-title'), text: $(this).find('button').data('content') });
+                });
+                $('.longpage-crossref').click(function () {
+                    log.add('crossref_follow', { source: $(this).text(), target: $(this).attr('href'), parent: $(this).parent().attr('id') });
+                });
+                $('.longpage-assignment-link').click(function () {
+                    log.add('assignment_open', { target: $(this).attr('href') });
+                });
+                var toggle = false;
+                $('.longpage-toc-toggle').click(function () {
+                    toggle = !toggle;
+                    log.add('toc_toggle', { open: toggle });
+                });
+                $('.nav-link-h4').click(function () {
+                    log.add('toc_entry_open', { level: 'h4', target: $(this).attr('href') });
+                });
+                $('.nav-link-h3').click(function () {
+                    console.log('toc_entry_open', { level: 'h3', target: $(this).attr('href') });
+                });
 
             },
             mounted: function () {
@@ -86,6 +102,20 @@ define([
                 }
             },
             methods: {
+                estimateReadingTime: function () {
+                    // 200 word per Minute https://de.wikipedia.org/wiki/Lesegeschwindigkeit
+                    //add 12 seconds for each inline image. Boom, read time.
+                    var readingSpeedPerLanguage = { de: { cpm: 250, variance: 50 } };
+
+                    var estimateTime = function (text, language, numImg) {
+                        var length = text.match(/([\s]+)/g).length; console.log(length)
+                        var readingSpeed = readingSpeedPerLanguage[language];
+                        var readingTimeSlow = Math.ceil(length / (readingSpeed.cpm - readingSpeed.variance) + numImg * 0.3);
+                        var readingTimeFast = Math.ceil(length / (readingSpeed.cpm + readingSpeed.variance) + numImg * 0.3);
+                        return readingTimeFast + '-' + readingTimeSlow + ' Minuten';
+                    };
+                    $('.longpage-container h2').after($('<span class="longpage-reading-time-estimation"></span>').text('' + estimateTime($('.longpage-container').text(), 'de', $('.longpage-container').find('img').length) + ''));
+                },
                 generateTableOfContent: function () {
                     // Generates a table of content from a HTML DOM
                     var prevH2Item = $();
@@ -116,7 +146,7 @@ define([
                             indexH3++;
                         } else if ($(this).is("h4")) {
                             $(this).attr('id', "h4item-" + indexH4);
-                            li = "<li class='nav-item'><a class='nav-link' href='#h4item-" + indexH4 + "'>" + $(this).text() + "</a></li>";
+                            li = "<li class='nav-item'><a class='nav-link nav-link-h4' href='#h4item-" + indexH4 + "'>" + $(this).text() + "</a></li>";
                             prevH2List.append(li);
                             indexH4++;
                         }
@@ -177,7 +207,6 @@ define([
                                         scrollWidth: scrollWidth,
                                         containerHeight: containerHeight,
                                         containerWidth: containerWidth
-
                                     };
                                     log.add('scroll', logentry);
                                 }
@@ -237,19 +266,24 @@ define([
                             e.preventDefault();
                         });
                         var doFulltextSearch = function (e) {
-                            if ($('#search-string').val() !== '') {
-                                var res = index.search(String($('#search-string').val()), {
+                            var term = $('#search-string').val();
+                            if (term !== '') {
+                                var res = index.search(String(term), {
                                     fields: {
                                         title: { boost: 2 },
                                         body: { boost: 1 }
                                     }
                                 }); // console.log(res);
+                                log.add('searchterm', { searchterm: term, results: res.kength });
                                 $('#search-results').empty();
                                 for (var i = 0; i < res.length; i++) {
                                     var li = $('<li></li>');
                                     $('<a></a>')
                                         .text(res[i].doc.title === '' ? res[i].doc.body.substr(0, 20) : res[i].doc.title)
                                         .attr('href', '#' + res[i].doc.link)
+                                        .click(function () {
+                                            log.add('searchresultselected', { searchterm: term, results: res.kength, selected: res[i].doc.link, title: res[i].doc.title });
+                                        })
                                         .appendTo(li)
                                         ;
                                     $('<div></div>')

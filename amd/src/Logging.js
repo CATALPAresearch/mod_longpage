@@ -8,10 +8,11 @@
  */
 
 
-define(['jquery'], function ($) {
+define(['jquery', 'core/ajax'], function($, ajax) {
 
-    var Log = function (utils, options) {
+    var Log = function (utils, courseid, options) {
         this.utils = utils;
+        this.courseid = courseid;
         this.name = 'log';
         this.options = utils.mergeObjects({
             outputType: 0, // -1: no logging, 0: console.log(), 1: server log, 
@@ -23,11 +24,10 @@ define(['jquery'], function ($) {
 
         this.ip = '';
 
-
         /**
          * Adds a message to the log by constructing a log entry
          */
-        this.add = function (action, msg) {
+        this.add = function(action, msg) {
             if (typeof msg === 'string') {
                 console.log('warning: uncaptured log entry: ' + msg);
                 return;
@@ -54,25 +54,26 @@ define(['jquery'], function ($) {
                     engine: navigator.product,
                     browser: navigator.appCodeName,
                     browserVersion: navigator.appVersion,
-                    userAgent: navigator.userAgent.replace(/,/gm, ';')
+                    userAgent: navigator.userAgent.replace(/,/gm, ';'),
+                    screenHeight: screen.height, // document.body.clientHeight
+                    screenWidth: screen.width // document.body.clientWidth
+                    // retina
                 }
             };
             this.output(logEntry);
         };
 
-
         /**
          * Validates the msg against illegal characters etc.
          */
-        this.validate = function (msg) {
+        this.validate = function(msg) {
             return msg;
         };
-
 
         /**
          * Returs structured time information
          */
-        this.getLogTime = function () {
+        this.getLogTime = function() {
             var date = new Date();
             var s = date.getSeconds();
             var mi = date.getMinutes();
@@ -88,12 +89,10 @@ define(['jquery'], function ($) {
             };
         };
 
-
-
         /**
          * Interface for handling the output of the generated log entry
          */
-        this.output = function (logEntry) {
+        this.output = function(logEntry) {
             switch (this.options.outputType) {
                 case 0:
                     console.log(logEntry);
@@ -102,7 +101,7 @@ define(['jquery'], function ($) {
                     this.sendLog(logEntry);
                     break;
                 default:
-                // Do nothing
+                    // Do nothing
             }
         };
 
@@ -110,18 +109,25 @@ define(['jquery'], function ($) {
          * Makes an AJAX call to send the log data set to the server
          */
         this.sendLog = function (entry) {
-            utils.get_ws('log', {
-                'courseid': parseInt(course.id, 10)
-            }, function (e) {
-                try {
-                    console.log('stored log');
-                } catch (e) {
-                    console.error(e);
+            ajax.call([{
+                methodname: 'mod_page_log',
+                args: {
+                    data: {
+                        courseid: this.courseid,
+                        action: entry.action,
+                        utc: Math.ceil(entry.utc / 1000),
+                        entry: JSON.stringify(entry)
+                    }
+                },
+                done: function (msg) {
+                    //console.log('ok', msg);
+                },
+                fail: function (e) {
+                    //console.error('fail',e);
                 }
-            });
+            }]);
         };
-
-    }
+    };
 
     return Log;
 
