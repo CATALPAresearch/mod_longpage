@@ -7,7 +7,7 @@ The plugin ist based on the page module which is delivered with every moodle.
 # Features
 - generates a table of content frome the HTML strcture (headings)
 - enables a full-text search by using *lunr*
-- tracks scrolling events and saves them in the database
+- tracks scrolling events using the (InteractionObserver)[https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API]
 
 # Installation
 * clone the repository and rename the folder to 'page'.
@@ -17,13 +17,20 @@ The plugin ist based on the page module which is delivered with every moodle.
 
 # Dependencies
 * vue.js
-* elasticlunr
+* elasticlunr http://elasticlunr.com/docs/index.html, https://github.com/weixsong/lunr-languages
 * d3.js
 
 # Roadmap
 - measure reading time for sections and subsections
-- enabled text highlighting
+- determine readability
+- hightlight current section in the table of content, http://localhost/active-menu-link/example/index.html#first
+- enabled text highlighting: 
+ - https://github.com/s010s/vue-text-selection
+ - http://annotatorjs.org/
 - enable social media support, e.g. send with WhatsApp
 - visualize paragraphs that have been read already
 - make font-size, line-height, contrast configurable
 - adaptively present recomonadations for related courses by considering past enrolments and semantic textual similarity
+
+# Alternatives
+- Search: https://fusejs.io/
