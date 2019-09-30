@@ -90,7 +90,7 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
             for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
             for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
             return obj3;
-        }
+        };
     };
     return Utils;
 });

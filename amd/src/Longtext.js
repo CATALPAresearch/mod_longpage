@@ -3,10 +3,7 @@
  * 
  * Logging
  * - consider pollyfills for scrolling: https://github.com/w3c/IntersectionObserver/tree/master/polyfill
- * - add Logging class
- * 
- * 
- * 
+ *
  */
 
 define([
@@ -29,12 +26,7 @@ define([
                 "elasticlunr": ["elasticlunr.min"],
                 "lunrde": ["lunr.de"],
                 "stemmer": ["lunr.stemmer.support"]
-            }/*,
-            shim: {
-                'vue259': {
-                    exports: 'Vue'
-                }
-            }*/
+            }
         });
 
         var app = new Vue({
@@ -56,6 +48,24 @@ define([
                 this.setupSearch();
 
                 this.estimateReadingTime();
+
+                //
+                if (
+                    "IntersectionObserver" in window &&
+                    "IntersectionObserverEntry" in window &&
+                    "intersectionRatio" in window.IntersectionObserverEntry.prototype
+                ) {
+                    var observerxx = new IntersectionObserver(entries => {
+                        if (entries[0].boundingClientRect.y < 0) {
+                            document.getElementById('longpage-navbar').classList.add("header-not-at-top");
+                            document.getElementById('table-of-content').classList.add("header-not-at-top");
+                        } else {
+                            document.getElementById('longpage-navbar').classList.remove("header-not-at-top");
+                            document.getElementById('table-of-content').classList.remove("header-not-at-top");
+                        }
+                    });
+                    observerxx.observe(document.querySelector("#top-of-site-pixel-anchor"));
+                }
 
                 // log interactions
                 $('.longpage-citation').click(function () {
@@ -108,7 +118,7 @@ define([
                     var readingSpeedPerLanguage = { de: { cpm: 250, variance: 50 } };
 
                     var estimateTime = function (text, language, numImg) {
-                        var length = text.match(/([\s]+)/g).length; console.log(length)
+                        var length = text.match(/([\s]+)/g).length; 
                         var readingSpeed = readingSpeedPerLanguage[language];
                         var readingTimeSlow = Math.ceil(length / (readingSpeed.cpm - readingSpeed.variance) + numImg * 0.3);
                         var readingTimeFast = Math.ceil(length / (readingSpeed.cpm + readingSpeed.variance) + numImg * 0.3);
@@ -132,8 +142,8 @@ define([
                             prevH2Item = $(li);
                             $('.nav-link-h3').click(function (e) {
                                 var target = $(this).attr('href');
-                                var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop || window.pageYOffset;
-                                var elPos = document.getElementById(target.replace('#', '')).scrollTop; // not working
+                                //var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop || window.pageYOffset;
+                                //var elPos = document.getElementById(target.replace('#', '')).scrollTop; // not working
                                 window.location.href = window.location.href.split('#')[0] + target;
                             });
                             var wrap = $('<div></div>')
@@ -187,7 +197,7 @@ define([
 
                             for (var entry of entries) {
                                 // feature detection
-                                if (typeof entry.isVisible === 'undefined') {
+                                if (typeof entry.isVisible === 'undefined'){
                                     // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
                                     entry.isVisible = true;
                                 }
@@ -212,7 +222,8 @@ define([
                                 }
                             }
 
-                        };
+                        }
+
                         var options = {
                             root: null,
                             rootMargin: "0px",
@@ -220,6 +231,7 @@ define([
                             trackVisibility: true,
                             delay: 100
                         };
+
                         var observer = new IntersectionObserver(handleScrolling, options);
                         var pCounter = 0;
                         $('p, ul, pre, div.longpage-image-block, div.longpage-assignment, h2, h3').each(function (i, val) {

@@ -13,7 +13,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
     var Log = function (utils, courseid, options) {
         this.utils = utils;
         this.courseid = courseid;
-        this.name = 'log';
+        this.name = 'log_page';
         this.options = utils.mergeObjects({
             outputType: 0, // -1: no logging, 0: console.log(), 1: server log, 
             prefix: '',
@@ -35,11 +35,11 @@ define(['jquery', 'core/ajax'], function($, ajax) {
             var time = this.getLogTime();
             var logEntry = {
                 utc: time.utc,
-                date: time.date,
-                time: time.time,
+                //date: time.date,
+                //time: time.time,
                 location: {
-                    protocol: window.location.protocol,
-                    port: window.location.port,
+                    //protocol: window.location.protocol,
+                    //port: window.location.port,
                     host: window.location.host,
                     pathname: window.location.pathname,
                     hash: window.location.hash,
