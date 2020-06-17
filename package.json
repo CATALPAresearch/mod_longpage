@@ -1,0 +1,34 @@
+{
+    "name": "longpage",
+    "version": "1.0.0",
+    "description": "Moodle activity plagung for reading long text",
+    "main": "amd/src/page.js",
+    "directories": {
+        "lib": "lib",
+        "test": "tests"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "crossfilter": "^1.3.12",
+        "d3.js": "0.0.2-security",
+        "dc": "^3.0.12"
+    },
+    "eslintConfig": {
+        "env": {
+            "browser": true,
+            "es6": true
+        }
+    },
+    "devDependencies": {
+        "grunt-contrib-cssmin": "^3.0.0",
+        "grunt-contrib-jshint": "^2.1.0",
+        "grunt-contrib-uglify": "^4.0.1",
+        "grunt-terser": "^1.0.0",
+        "grunt-ts": "^6.0.0-beta.22",
+        "typescript": "^3.9.3"
+    }
+}

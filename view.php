@@ -55,7 +55,7 @@ require_capability('mod/page:view', $context);
 page_view($page, $course, $cm, $context);
 
 $PAGE->set_url('/mod/page/view.php', array('id' => $cm->id));
-$PAGE->requires->css( '/mod/page/css/page.css', true );
+$PAGE->requires->css( '/mod/page/styles.css', true );
 
 $options = empty($page->displayoptions) ? array() : unserialize($page->displayoptions);
 
@@ -80,7 +80,7 @@ if (!isset($options['printheading']) || !empty($options['printheading'])) {
         <a class="navbar-brand">'. format_string($page->name) .'</a>
         <a class="btn btn-link longpage-toc-toggle longpage-nav-btn" data-toggle="collapse" role="button" href="#table-of-content">Inhaltsverzeichnis</a>
     </span>
-    <form id="longpage-search-form" class="form-inline">
+    <form hidden id="longpage-search-form" class="form-inline">
         <input id="search-string" class="form-control mr-sm-2" type="search" placeholder="Suche" aria-label="Search">
         <button id="search-full-text" class="btn btn-outline-success my-2 my-sm-0" type="button">Suchen</button>
     </form>

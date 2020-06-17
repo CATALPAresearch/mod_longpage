@@ -175,8 +175,8 @@ html{
 }
 
 .longpage-container > p {
-  margin: 10px 0px 20px 0px;
-  padding: 10px;
+  margin: 0px 0px 10px 0px;
+  padding: 0 10px;
   line-height: 1.6em;
   font-size: 1em;
 }
@@ -212,11 +212,27 @@ html{
   line-height: 1.41em;
   margin: 10px 0px 10px 0px;
   font-weight: bold;
-  padding: 0 0 0 10px;
+  padding: 0 0 0 0px;
 }
 
-.longpage-container .longpage-image-block {
+.longpage-container .longpage-image-block,
+.longpage-container .longpage-table-block {
   margin: 1em 0;
+}
+
+.longpage-container .longpage-image-block table {
+ margin: 1em 0;
+ border-bottom: solid 1px #333;
+}
+
+.longpage-container .longpage-image-block table tr:nth-child(1) {
+ border-top:solid 1px #333;
+ border-bottom:solid 1px #333;
+}
+
+.longpage-container .longpage-image-block table tr td {
+  vertical-align: top;
+  padding: 4px 8px 4px 0;
 }
 
 .longpage-container .longpage-image-block img{
@@ -224,7 +240,8 @@ html{
   align-content: center;
 }
 
-.longpage-container .longpage-image-caption {
+.longpage-container .longpage-image-caption,
+.longpage-container .longpage-table-caption {
   font-size: 0.9em;
   font-weight:bold;
   margin-top:0;
@@ -271,7 +288,7 @@ html{
 
 }
 
-.longpage pre > code {
+.longpage pre {
   display: block;
   padding: 1rem;
   word-wrap: normal;
@@ -279,30 +296,22 @@ html{
   
 }
 
-div.longpage-center pre code,
-div.longpage-center pre code > *,
-div.longpage-center pre code *,
-div.longpage-center pre code p, 
-div.longpage-center > pre > code,
-div.longpage-center > pre > code p {
+div.longpage-center pre,
+pre{
   text-align: left !important;
   font-family: monospace, monospace;
-  background-color: #ccc !important;
+  background-color: #ddd !important;
   text-align: left;
-}
-.longpage pre {
   overflow: auto;
-}
-
-pre code p {
-  padding: 0;
-  margin:0;
-}
-
-pre code {
   padding: 4px 6px;
-  background-color: #ccc !important;
-  text-align: left !important;
+  margin: 10px 0 10px 0;
+}
+
+code {
+  font-family: monospace, monospace;
+  background-color: #ddd; 
+  padding:2px 4px;
+  color:#222222; 
 }
 
 .nobr {
@@ -314,8 +323,12 @@ pre code {
   font-style: italic;
 }
 
-.longpage-bold{
+.longpage-bold {
   font-weight: bold;
+}
+
+.longpage-inline{
+  display:inline;
 }
 
 
@@ -391,6 +404,33 @@ pre code {
 .header-not-at-top{
   background-color: #28a745;
 }
+
+
+.longpage-tabbing {
+  display:inline-block;
+  white-space:pre-line;
+  background-color: #ddd;
+  padding: 6px 10px;
+  font-size:0.9em;
+  margin-left:4px;
+  margin-right:4px;
+}
+
+.longpage-minipage {
+  padding:10px 0;
+}
+
+.longpage-indent {
+    font-size:0.9em;
+    margin-left:20px;
+    white-space: pre-line;
+    margin-bottom: 10px;
+}
+
+.longpage-monospace {
+  font-family: monospace;
+}
+
 
 
 /* Medium devices (tablets, 768px and up) */
@@ -520,6 +560,9 @@ pre code {
     height: 100px;
   }
 }
+
+
+
 
 
 
