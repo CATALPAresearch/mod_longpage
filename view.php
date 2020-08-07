@@ -74,26 +74,8 @@ echo $OUTPUT->header();
 
 if (!isset($options['printheading']) || !empty($options['printheading'])) {
     //echo $OUTPUT->heading(format_string($page->name), 2);
-    echo '
-<nav id="longpage-navbar" class="page-navbar navbar navbar-light bg-light">
-    <span class="title-toc">
-        <a class="navbar-brand">'. format_string($page->name) .'</a>
-        <a class="btn btn-link longpage-toc-toggle longpage-nav-btn" data-toggle="collapse" role="button" href="#table-of-content">Inhaltsverzeichnis</a>
-    </span>
-    <form hidden id="longpage-search-form" class="form-inline">
-        <input id="search-string" class="form-control mr-sm-2" type="search" placeholder="Suche" aria-label="Search">
-        <button id="search-full-text" class="btn btn-outline-success my-2 my-sm-0" type="button">Suchen</button>
-    </form>
-    <div class="collapse" id="search-results-panel">
-        <div class="card card-body col-xs-12 col-md-12 col-xl-4 col-lg-6">
-            <ul id="search-results" class=""></ul>
-        </div>
-    </div>
-</nav>
-<div class="collapse" id="table-of-content">
-    <ul id="tocList" class="nav-pills"></ul>
-</div>
-';
+    echo '<longpage-container></longpage-container>';
+    // '. format_string($page->name) .'
 }
 
 /*
@@ -123,10 +105,10 @@ echo '<div id="top-of-site-pixel-anchor"></div>';
 
 
 //$PAGE->requires->js_amd_inline("require(['mod_page/page']);");
-$PAGE->requires->js_call_amd('mod_page/page', 'init', array($cm->id));
+$PAGE->requires->js_call_amd('mod_page/page', 'init', array($cm->id, format_string($page->name)));
 //$PAGE->requires->js('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js',true);
 
 $strlastmodified = get_string("lastmodified");
-//echo "<div class=\"col-12\" lang=\"de\"><div class=\"last-modified modified\">$strlastmodified: ".userdate($page->timemodified)."</div></div>";
+echo "<div class=\"col-12\" lang=\"de\"><div class=\"last-modified modified\">$strlastmodified: ".userdate($page->timemodified)."</div></div>";
 
 echo $OUTPUT->footer();

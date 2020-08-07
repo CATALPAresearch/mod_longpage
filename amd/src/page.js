@@ -3,8 +3,8 @@
  *
  * @module     mod/longpage
  * @package    mod_longpage
- * @class      LADTopics
- * @copyright  2019 Niels Seidel, niels.seidel@fernuni-hagen.de
+ * @class      longpage
+ * @copyright  2020 Niels Seidel <niels.seidel@fernuni-hagen.de>
  * @license    MIT
  * @since      3.1
  */
@@ -16,12 +16,11 @@ define([
     M.cfg.wwwroot + '/mod/page/amd/src/Logging.js'
 ],
     function ($, ui, Longtext, Utils, Log) {
-        // enable footnotes
+        
         $('.longpage-footnote button').popover({
             html: true,
             trigger: 'focus',
             content: function () {
-                console.log($(this).attr('id'))
                 var content = $(this).attr("data-popover-content");
                 return $(content).children(".popover-body").html();
             }
@@ -42,7 +41,7 @@ define([
         });
 
 
-        var start = function (courseid) {
+        var start = function (courseid, pagename) {
             require([
                 'vue259',
                 'd3'
@@ -52,19 +51,18 @@ define([
                     context: 'mod_page',
                     outputType: 1
                 });
-                new Longtext(vue, d3, utils, log);
+                new Longtext(vue, d3, utils, log, pagename);
             });
         };
 
         return {
-            init: function (courseid) {
-                console.log(33)
+            init: function (courseid, pagename) {
                 try {
-                    start(courseid);
+                    start(courseid, pagename);
                 } catch (e) {
                     console.error(e);
                 }
 
             }
         };
-    }); 
+    });

@@ -17,7 +17,7 @@ define([
      * @param dc (Object) Dimensional Javascript Charting Library
      * @param utils (Object) Custome util class
      */
-    var Longtext = function (Vue, d3, utils, log) {
+    var Longtext = function (Vue, d3, utils, log, pagename) {
 
         require.config({
             enforceDefine: false,
@@ -33,14 +33,21 @@ define([
             el: '#nav-app',
             data: function () {
                 return {
+                    pagename: '',
                     message: '',
                     search: '',
+                    searchResults: '',
                     filter_assessment: true,
                     filter_text: true,
-                    content: []
+                    content: [],
+                    // search
+                    index: {},
+                    searchTerm: '',
+                    showSearchResults: false
                 };
             },
             created: function () {
+                this.pagename = pagename;
                 this.generateTableOfContent();
 
                 this.enableScrollLogging();
@@ -49,7 +56,6 @@ define([
 
                 this.estimateReadingTime();
 
-                //
                 if (
                     "IntersectionObserver" in window &&
                     "IntersectionObserverEntry" in window &&
@@ -95,8 +101,6 @@ define([
                 });
 
             },
-            mounted: function () {
-            },
             computed: {
                 filteredContent: function () {
                     var _this = this;
@@ -126,7 +130,34 @@ define([
                         var readingTimeFast = Math.ceil(length / (readingSpeed.cpm + readingSpeed.variance) + numImg * 0.3);
                         return readingTimeFast + '-' + readingTimeSlow + ' Minuten';
                     };
-                    $('.longpage-container h2').after($('<span class="longpage-reading-time-estimation"></span>').text('' + estimateTime($('.longpage-container').text(), 'de', $('.longpage-container').find('img').length) + ''));
+                    /*                    $('.longpage-container h2')
+                                            .after($('<span class="longpage-reading-time-estimation"></span>')
+                                                .text('Geschätzte Lesezeit ' + estimateTime($('.longpage-container').text(), 'de', $('.longpage-container').find('img').length) + ''));
+                    */
+
+
+                    $("h2").each(function (i, val) {
+                        $(this).nextUntil("h2").addBack().wrapAll('<span id="con-' + i + '" class="boxContainer-h2"></span>');
+                    });
+                    $(".boxContainer-h2").each(function (i, val) {
+                        $(this).css('border', 'solid blue 1px')
+                        $(this).find('h2').first()
+                            .after($('<span class="longpage-reading-time-estimation"></span>')
+                                .text('Geschätzte Lesezeit ' + estimateTime($(val).text(), 'de', $(val).find('img').length) + ''));
+                    });
+
+
+                    $("h3").each(function (i, val) {
+                        $(this).nextUntil("h3").addBack().wrapAll('<span id="con-' + i + '" class="boxContainer-h3"></span>');
+                    });
+
+                    $(".boxContainer-h3").each(function (i, val) {
+                        $(this).css('border', 'solid green 1px')
+                        $(this).find('h3').first()
+                            .after($('<span class="longpage-reading-time-estimation"></span>')
+                                .text('Geschätzte Lesezeit ' + estimateTime($(val).text(), 'de', $(val).find('img').length) + ''));
+                    });
+
                 },
                 generateTableOfContent: function () {
                     // Generates a table of content from a HTML DOM
@@ -223,7 +254,6 @@ define([
                                     log.add('scroll', logentry);
                                 }
                             }
-
                         }
 
                         var options = {
@@ -246,6 +276,7 @@ define([
                     };
                 },
                 setupSearch: function () {
+                    let _this = this;
                     require([
                         'jquery',
                         'elasticlunr',
@@ -255,75 +286,97 @@ define([
                         var customized_stop_words = ['an', 'der', 'die', 'das']; // add German stop words
                         elasticlunr.addStopWords(customized_stop_words);
 
-                        var index = elasticlunr();
+                        _this.index = elasticlunr();
                         //index.use(de);
-                        index.addField('title');
-                        index.addField('body');
-                        index.setRef('id');
+                        _this.index.addField('title');
+                        _this.index.addField('body');
+                        _this.index.setRef('id');
                         // collect index
                         $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
-                            index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
+                            _this.index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
                         });
 
                         $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
                             if ($(this).is("h2") || $(this).is("h3") || $(this).is("h4")) {
-                                index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
+                                _this.index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
                             } else {
                                 if ($(val).attr('id') === '' || $(val).attr('id') === undefined) {
                                     $(val).attr('id', Math.ceil(Math.random() * 1000));
                                 }
-                                index.addDoc({ id: i, title: '', body: $(val).text(), link: $(val).attr('id') });
-                            }
-                        });
-
-                        $("#longpage-search-form").submit(function (e) {
-                            e.preventDefault();
-                        });
-                        var doFulltextSearch = function (e) {
-                            var term = $('#search-string').val();
-                            if (term !== '') {
-                                var res = index.search(String(term), {
-                                    fields: {
-                                        title: { boost: 2 },
-                                        body: { boost: 1 }
-                                    }
-                                }); // console.log(res);
-                                log.add('searchterm', { searchterm: term, results: res.kength });
-                                $('#search-results').empty();
-                                for (var i = 0; i < res.length; i++) {
-                                    var li = $('<li></li>');
-                                    $('<a></a>')
-                                        .text(res[i].doc.title === '' ? res[i].doc.body.substr(0, 20) : res[i].doc.title)
-                                        .attr('href', '#' + res[i].doc.link)
-                                        .click(function () {
-                                            log.add('searchresultselected', { searchterm: term, results: res.kength, selected: res[i].doc.link, title: res[i].doc.title });
-                                        })
-                                        .appendTo(li)
-                                        ;
-                                    $('<div></div>')
-                                        .text(res[i].doc.body.substr(0, 20))
-                                        .appendTo(li)
-                                        ;
-                                    li.appendTo('#search-results');
-                                }
-                                $('#search-results-panel').collapse('show');
-                            }
-                        };
-                        $('#search-full-text').click(function (e) {
-                            doFulltextSearch(e);
-                        });
-                        $('#search-string').on('keypress', function (e) {
-                            if (e.which === 13) {
-                                doFulltextSearch(e);
+                                _this.index.addDoc({ id: i, title: '', body: $(val).text(), link: $(val).attr('id') });
                             }
                         });
                     });
                 },
+
+                doFulltextSearch: function (e) {
+                    let _this = this;
+                    this.showSearchResults = true;
+                    if (this.searchTerm !== '') {
+                        this.searchResults = this.index.search(String(this.searchTerm), {
+                            fields: {
+                                title: { boost: 2 },
+                                body: { boost: 1 }
+                            }
+                        });
+                        this.searchResults = this.searchResults.map(function(res){
+                            let pos = res.doc.body.indexOf(_this.searchTerm);
+                            res.doc.short = pos > 0 ? '... ' + res.doc.body.substr(pos - 20 > 0 ? pos - 20 : 0, 40) : '';
+                            console.log(pos, _this.searchTerm, res.doc.short)
+                            return res;
+                        })
+                        log.add('searchterm', { searchterm: this.searchTerm, results: this.searchResults.length });
+                    }
+                },
+
+                hideSearchResults: function(){
+                    this.showSearchResults = false;
+                },
+
                 decode: function (str) {
                     let out = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
                     return out;
                 }
-            }
+            },
+            el: 'longpage-container',
+            template: `
+                <div>
+                    <nav id="longpage-navbar" class="page-navbar navbar navbar-light bg-light py-2 mx-0 pl-1 pr-2">
+                        <div class="row w-100 px-0 mx-0">
+                            <span class="title-toc col-8">
+                                <a class="navbar-brand">{{ pagename }}</a>
+                                <a class="btn btn-link longpage-toc-toggle longpage-nav-btn" data-toggle="collapse" role="button" href="#table-of-content">Inhaltsverzeichnis</a>
+                            </span>
+                            <form class="form-inline col-4 mb-1 px-0 mx-0">
+                                <input v-model="searchTerm" id="search-string" class="form-control mr-sm-2 d-inline w-50 d-flex ml-auto" type="search" placeholder="Suche" aria-label="Search">
+                                <button @click="doFulltextSearch" id="search-full-text" class="btn btn-outline-success d-inline mr-0" type="button">Suchen</button>
+                            </form>
+                        </div>
+                        <div v-if="showSearchResults" class="row w-100 px-0 mx-0" id="search-results-panel">
+                            <div class="col-9"></div>
+                            <div class="col-3 p-2 bg-light" style="max-height:70vh; overflow:auto">
+                                <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideSearchResults">
+                                    <span aria-hidden="true">&times;</span>
+                                </button><br>
+                                <ul id="search-results" class="list-unstyled">
+                                    <li class="mb-2" v-for="res in searchResults">
+                                        <a 
+                                            class="underline"
+                                            style="word-wrap: break-word;"
+                                            :href="'#'+res.doc.link">{{ res.doc.body.title }} {{ res.doc.short }}</a>
+                                        <!--
+                                        log.add('searchresultselected', { searchterm: term, results: res.kength, selected: res[i].doc.link, title: res[i].doc.title });
+                                        -->
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                    <div class="collapse" id="table-of-content">
+                        <ul id="tocList" class="nav-pills"></ul>
+                    </div>
+                </div>
+            `
         });
 
 
