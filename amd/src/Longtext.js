@@ -8,8 +8,8 @@
 
 define([
     'jquery',
-    'core/ajax'
-], function ($, ajax) {
+   M.cfg.wwwroot + '/mod/page/amd/src/ReadingTime.js',
+], function ($, ReadingTime) {
 
     /**
      * Plot a timeline
@@ -34,17 +34,23 @@ define([
             data: function () {
                 return {
                     pagename: '',
-                    message: '',
-                    search: '',
-                    searchResults: '',
+                    //
                     filter_assessment: true,
                     filter_text: true,
                     content: [],
+                    // toc
+                    
                     // search
                     index: {},
+                    search: '',
+                    searchResults: '',
                     searchTerm: '',
                     showSearchResults: false
+
                 };
+            },
+            components: { 
+                'ReadingTime': ReadingTime
             },
             created: function () {
                 this.pagename = pagename;
@@ -54,7 +60,6 @@ define([
 
                 this.setupSearch();
 
-                this.estimateReadingTime();
 
                 if (
                     "IntersectionObserver" in window &&
@@ -118,48 +123,10 @@ define([
                 }
             },
             methods: {
-                estimateReadingTime: function () {
-                    // 200 word per Minute https://de.wikipedia.org/wiki/Lesegeschwindigkeit
-                    //add 12 seconds for each inline image. Boom, read time.
-                    var readingSpeedPerLanguage = { de: { cpm: 250, variance: 50 } };
 
-                    var estimateTime = function (text, language, numImg) {
-                        var length = text.match(/([\s]+)/g).length;
-                        var readingSpeed = readingSpeedPerLanguage[language];
-                        var readingTimeSlow = Math.ceil(length / (readingSpeed.cpm - readingSpeed.variance) + numImg * 0.3);
-                        var readingTimeFast = Math.ceil(length / (readingSpeed.cpm + readingSpeed.variance) + numImg * 0.3);
-                        return readingTimeFast + '-' + readingTimeSlow + ' Minuten';
-                    };
-                    /*                    $('.longpage-container h2')
-                                            .after($('<span class="longpage-reading-time-estimation"></span>')
-                                                .text('Geschätzte Lesezeit ' + estimateTime($('.longpage-container').text(), 'de', $('.longpage-container').find('img').length) + ''));
-                    */
-
-
-                    $("h2").each(function (i, val) {
-                        $(this).nextUntil("h2").addBack().wrapAll('<span id="con-' + i + '" class="boxContainer-h2"></span>');
-                    });
-                    $(".boxContainer-h2").each(function (i, val) {
-                        $(this).css('border', 'solid blue 1px')
-                        $(this).find('h2').first()
-                            .after($('<span class="longpage-reading-time-estimation"></span>')
-                                .text('Geschätzte Lesezeit ' + estimateTime($(val).text(), 'de', $(val).find('img').length) + ''));
-                    });
-
-
-                    $("h3").each(function (i, val) {
-                        $(this).nextUntil("h3").addBack().wrapAll('<span id="con-' + i + '" class="boxContainer-h3"></span>');
-                    });
-
-                    $(".boxContainer-h3").each(function (i, val) {
-                        $(this).css('border', 'solid green 1px')
-                        $(this).find('h3').first()
-                            .after($('<span class="longpage-reading-time-estimation"></span>')
-                                .text('Geschätzte Lesezeit ' + estimateTime($(val).text(), 'de', $(val).find('img').length) + ''));
-                    });
-
-                },
-                generateTableOfContent: function () {
+                /* TOC*/
+               
+                generateTableOfContent: function () { 
                     // Generates a table of content from a HTML DOM
                     var prevH2Item = $();
                     var prevH2List = $();
@@ -184,7 +151,7 @@ define([
                                 .addClass('collapse')
                                 .append(prevH2List)
                                 ;
-                            prevH2Item.append(wrap);
+                            prevH2Item.append(wrap); 
                             prevH2Item.appendTo("#tocList");
                             indexH3++;
                         } else if ($(this).is("h4")) {
@@ -195,6 +162,8 @@ define([
                         }
                     });
                 },
+
+
                 enableScrollLogging: function () {
 
                     if (
@@ -275,6 +244,9 @@ define([
                         });
                     };
                 },
+
+
+
                 setupSearch: function () {
                     let _this = this;
                     require([
@@ -372,9 +344,10 @@ define([
                             </div>
                         </div>
                     </nav>
-                    <div class="collapse" id="table-of-content">
+                    <div class="collapse" id="table-of-content">Hello
                         <ul id="tocList" class="nav-pills"></ul>
                     </div>
+                    <ReadingTime></ReadingTime>
                 </div>
             `
         });
@@ -384,11 +357,3 @@ define([
 
     return Longtext;
 });
-
-
-
-
-
-
-
-
