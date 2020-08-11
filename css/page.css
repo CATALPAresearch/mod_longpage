@@ -9,6 +9,7 @@ html {
 }
 
 #longpage-navbar {
+  height: auto;
   color: #333333;
   background-color: #ccc;
   position: relative;
@@ -44,31 +45,19 @@ html {
   left: 0;
 }
 
-.longpage-nav #search-resultsxxxx {
-  overflow-x: none;
-  overflow-y: auto;
-  text-align: left;
-  max-height: 80vh;
-  padding-left: 0px;
-  margin-top: 0px;
-}
-
 #table-of-content {
   position: relative;
   width: 80%;
   margin: 10px auto 0 auto;
   align-content: space-around;
-  padding-right: 0;
-  padding-left: 4px !important;
 }
 
 #table-of-content.header-not-at-top {
   position: fixed;
   top: 105px;
-  left: 15px;
+  left: 0px;
   background-color: #fff;
   color: #004C97;
-  width: 17%;
   max-height: 80vh;
   z-index: 1001;
 }
@@ -113,8 +102,6 @@ html {
   padding-top: 0;
   padding-bottom: 6px;
   font-size: 0.8em;
-  padding-left: 4px;
-  max-width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;
   line-height: 1em;
@@ -165,10 +152,12 @@ html {
   font-size: 18px;
   max-width: 40em;
   /*text-align: justify;*/
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   hyphens: auto;
 }
 
-.longpage-container > p {
+.longpage-container>p {
   margin: 0px 0px 10px 0px;
   padding: 0 10px;
   line-height: 1.6em;
@@ -179,17 +168,17 @@ html {
   font-size: 1.6em;
   line-height: 1.25em;
   width: 100%;
-  margin: 30px 0px 30px 0px;
-  padding: 0 0 0 10px;
+  margin: 30px 0px 20px 0px;
+  padding: 0px;
   font-weight: bold;
 }
 
 .longpage-container h3 {
   font-size: 1.2em;
   line-height: 1.51em;
-  margin: 20px 0px 20px 0px;
+  margin: 20px 0px 15px 0px;
   font-weight: bold;
-  padding: 0 0 0 10px;
+  padding: 0 0 0 0px;
 }
 
 .longpage-container h4 {
@@ -197,7 +186,7 @@ html {
   line-height: 1.41em;
   margin: 10px 0px 10px 0px;
   font-weight: bold;
-  padding: 0 0 0 10px;
+  padding: 0 0 0 0px;
 }
 
 .longpage-container h5 {
@@ -241,12 +230,13 @@ html {
   padding: 4px 6px;
 }
 
-.longpage-container ul li {
-  padding-left: 0.3em;
+.longpage-container ul, .longpage-container ol {
+  margin: 1em 0em 2em 0.2em;
+  padding-left: 1.2em;
 }
 
-.longpage-container ul {
-  margin: 1em 0em 2em 0.2em;
+.longpage-container ul li, .longpage-container ol li {
+  padding-left: 0.3em;
 }
 
 .longpage-center {
@@ -258,7 +248,12 @@ html {
   border-top: 1px solid #004C97;
   border-bottom: 1px solid #004C97;
   margin: 2em 0em;
-  padding: 1em;
+  padding: .2em 1em .8em 1em;
+}
+
+.longpage-assignment-link {
+  color: #004C97 !important;
+  margin-top: 10px;
 }
 
 .longpage-solution {
@@ -271,11 +266,7 @@ html {
 
 .longpage-reading-time-estimation {
   font-size: 0.8em;
-  margin-left: 0;
-  padding-left: 10px;
-  padding-top: -20px;
   color: #333333;
-  font-weight: normal;
 }
 
 .longpage pre {
@@ -470,15 +461,15 @@ code {
   }
   #table-of-content.header-not-at-top {
     position: fixed;
-    top: 35px;
+    top: 50px;
     left: 0px;
     background-color: #fff;
     color: #004C97;
-    width: 20%;
     max-height: 80vh;
+    width: 100% !important;
     z-index: 1001;
   }
-  ul#tocList {
+  ul#toclist {
     margin: 0 0 10px 15px;
   }
   #table-of-content ul li div ul {
@@ -495,30 +486,45 @@ code {
   h1, .h1 {
     font-size: 1.3rem;
   }
-  #table-of-content {
-    display: none;
-  }
-  .page-navbar {
-    display: none;
-  }
-  .navbar {
-    height: 100px;
-  }
+  #table-of-content {}
 }
 
-/* Extra small devices (portrait phones, less than 576px) */
+/* XS Extra small devices (portrait phones, less than 576px) */
 
 @media (max-width: 575.98px) {
+  #page-navbar .breadcrumb {
+    display: none;
+  }
+  .longpage-container {
+    font-size: 14px;
+  }
+  #longpage-navbar {
+    height: auto;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    z-index: 1031;
+  }
+  #longpage-navbar.header-not-at-top {
+    top: 50px;
+  }
   h1, .h1 {
     font-size: 1.3rem;
   }
   #table-of-content {
-    display: none;
+    display: inline;
   }
-  .page-navbar {
-    display: none;
+  #region-main-box.col-12 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border: none;
   }
-  .navbar {
-    height: 100px;
+  #region-main-box .card, header .card {
+    border: none;
+  }
+  .longpage-assignment-link {
+    color: #004C97 !important;
+    margin-top: 10px;
   }
 }

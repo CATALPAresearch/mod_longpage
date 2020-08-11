@@ -39,7 +39,8 @@ define([
                     filter_text: true,
                     content: [],
                     // toc
-                    
+                    showTOC: false,
+
                     // search
                     index: {},
                     search: '',
@@ -52,7 +53,7 @@ define([
             components: { 
                 'ReadingTime': ReadingTime
             },
-            created: function () {
+            mounted: function () {
                 this.pagename = pagename;
                 this.generateTableOfContent();
 
@@ -124,35 +125,44 @@ define([
             },
             methods: {
 
-                /* TOC*/
-               
+                /* TOC */
                 generateTableOfContent: function () { 
                     // Generates a table of content from a HTML DOM
                     var prevH2Item = $();
                     var prevH2List = $();
                     var li = $();
-                    var anchor = '';
                     var indexH3 = 0;
                     var indexH4 = 0;
                     $(".longpage-container h3, .longpage-container h4").each(function () {
                         if ($(this).is("h3")) {
                             $(this).attr('id', "xh3item-" + indexH3);
-                            li = "<li class='nav-item'><a class='nav-link nav-link-h3' data-toggle='collapse' data-parent='#tocList' data-target='#h3item-" + indexH3 + "' href='#xh3item-" + indexH3 + "'>" + $(this).text() + "</a></li>";
+                            li = "<li class='nav-item'><a class='nav-link nav-link-h3' data-parent='#toclist' data-toggle='collapse' data-target='#h3item-" + indexH3 + "' href='#xh3item-" + indexH3 + "'>" + $(this).text() + "</a></li>";
                             prevH2List = $('<ul></ul>').addClass('nav flex-column ml-3');
                             prevH2Item = $(li);
                             $('.nav-link-h3').click(function (e) {
                                 var target = $(this).attr('href');
-                                //var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop || window.pageYOffset;
-                                //var elPos = document.getElementById(target.replace('#', '')).scrollTop; // not working
                                 window.location.href = window.location.href.split('#')[0] + target;
+                                var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop || window.pageYOffset;
+                                //var elPos = document.getElementById(target.replace('#', '')).scrollTop; // not working
+                                window.scroll({
+                                    top: scrollPos - 30,
+                                    left: 0,
+                                    behavior: 'smooth'
+                                });
+                                console.log(scrollPos, target, window.scrollY)
+                                
                             });
                             var wrap = $('<div></div>')
                                 .attr('id', 'h3item-' + indexH3)
                                 .addClass('collapse')
                                 .append(prevH2List)
                                 ;
-                            prevH2Item.append(wrap); 
-                            prevH2Item.appendTo("#tocList");
+                            prevH2Item.append(wrap);
+                            if (!window["toclist"]) {
+                                console.log('Could not find toclist');
+                            }else{
+                                prevH2Item.appendTo("#toclist");
+                            }
                             indexH3++;
                         } else if ($(this).is("h4")) {
                             $(this).attr('id', "h4item-" + indexH4);
@@ -162,6 +172,15 @@ define([
                         }
                     });
                 },
+            
+                displayTOC: function(){
+                    this.showTOC = true;
+                    this.generateTableOfContent();
+                },
+                hideTOC: function () {
+                    this.showTOC = false;
+                },
+
 
 
                 enableScrollLogging: function () {
@@ -190,10 +209,10 @@ define([
                         var handleScrolling = function (entries) {
                             //console.log(entries[0].boundingClientRect.y, entries[0].target);
                             if (entries[0].boundingClientRect.y < topPadding) {
-                                document.getElementById('tocList').classList.add("scrollDown");//header-not-at-top
+                                //document.getElementById('table-of-content').classList.add("scrollDown");//header-not-at-top
                                 //console.log('smaller 0', entries[0].target);
                             } else {
-                                document.getElementById('tocList').classList.remove("scrollDown");
+                                //document.getElementById('table-of-content').classList.remove("scrollDown");
                                 //console.log('greater 0', entries[0].target);
                             }
 
@@ -264,11 +283,11 @@ define([
                         _this.index.addField('body');
                         _this.index.setRef('id');
                         // collect index
-                        $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
+                            $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
                             _this.index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
                         });
 
-                        $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
+                            $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
                             if ($(this).is("h2") || $(this).is("h3") || $(this).is("h4")) {
                                 _this.index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
                             } else {
@@ -302,6 +321,11 @@ define([
                     e.preventDefault();
                 },
 
+                searchResultClick: function(doc){
+                    this.hideSearchResults();
+                    log.add('searchresultselected', { searchterm: this.term, results: this.searchResults.length, selected: doc.link, title: doc.title });
+                },
+
                 hideSearchResults: function(){
                     this.showSearchResults = false;
                 },
@@ -313,20 +337,25 @@ define([
             },
             template: `
                 <div>
-                    <nav id="longpage-navbar" class="page-navbar navbar navbar-light bg-light py-2 mx-0 pl-1 pr-2">
+                    <nav id="longpage-navbar" class="navbar-expand navbar-light bg-light py-2 mx-0 pl-1 pr-2">
                         <div class="row w-100 px-0 mx-0">
-                            <span class="title-toc col-8">
+                            <span class="title-toc col-4 col-sm-4 col-xs-12">
                                 <a class="navbar-brand">{{ pagename }}</a>
-                                <a class="btn btn-link longpage-toc-toggle longpage-nav-btn" data-toggle="collapse" role="button" href="#table-of-content">Inhaltsverzeichnis</a>
                             </span>
-                            <div class="form-inline col-4 mb-1 px-0 mx-0">
+                            <div class="col-4 col-sm-4 col-xs-4">
+                                <button @click="displayTOC" class="btn btn-link longpage-toc-toggle longpage-nav-btn" type="button" title="Inhaltsverzeichnis">
+                                    <i class="fa fa-list d-xs-inline d-lg-none"></i>
+                                    <span class="d-none d-lg-inline" style="text-transform: capitalize;">Inhaltsverzeichnis</span>
+                                </button>
+                            </div>
+                            <div class="form-inline col-4 col-sm-4 col-xs-8 mb-1 px-0 mx-0">
                                 <input v-model="searchTerm" v-on:keyup.enter="doFulltextSearch" id="search-string" class="form-control form-control-sm mr-sm-2 d-inline w-50 d-flex ml-auto" type="search" placeholder="Suchen" aria-label="Search">
                                 <button @click="doFulltextSearch" id="search-full-text" class="btn btn-light btn-sm d-inline mr-0" type="button"><i class="fa fa-search"></i></button>
                             </div>
                         </div>
-                        <div v-if="showSearchResults" class="row w-100 px-0 mx-0" id="search-results-panel" style="z-index:3000;">
-                            <div class="col-9"></div>
-                            <div class="col-3 p-3 bg-light" style="max-height:80vh; overflow:auto">
+                        <div v-if="showSearchResults" class="row w-100 px-0 mx-0" style="z-index:3000;">
+                            <div class="col-9 d-inline d-xs-none"></div>
+                            <div class="col-3 col-xs-12 p-3 bg-light" style="max-height:80vh; overflow:auto">
                                 <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideSearchResults">
                                     <span aria-hidden="true">&times;</span>
                                 </button><br>
@@ -336,17 +365,23 @@ define([
                                         <a 
                                             class="underline"
                                             style="word-wrap: break-word; color: #004C97 !important;"
-                                            :href="'#'+res.doc.link">{{ res.doc.short }}</a>
-                                        <!--
-                                        log.add('searchresultselected', { searchterm: term, results: res.kength, selected: res[i].doc.link, title: res[i].doc.title });
-                                        -->
+                                            :href="'#'+res.doc.link"
+                                            @click="searchResultClick(res.doc)"
+                                            >
+                                            {{ res.doc.short }}
+                                            </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </nav>
-                    <div class="collapse" id="table-of-content">Hello
-                        <ul id="tocList" class="nav-pills"></ul>
+                    <div v-if="showTOC" class="row px-0 m-0" id="table-of-content" style="z-index:3000;">
+                        <div class="bg-light col-4 col-lg-4 col-xs-12 p-3 m-0" style="max-height:80vh; overflow:auto">
+                            <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTOC">
+                                <span aria-hidden="true">&times;</span>
+                            </button><br>
+                            <ul id="toclist" class="nav-pills"></ul>
+                        </div>
                     </div>
                     <ReadingTime></ReadingTime>
                 </div>

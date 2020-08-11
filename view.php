@@ -77,15 +77,16 @@ if (!isset($options['printheading']) || !empty($options['printheading'])) {
 }
 
 
-echo '<div class="rowx">';
+echo '<div class="rowx w-100">';
 $content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_page', 'content', $page->revision);
 $formatoptions = new stdClass;
 $formatoptions->noclean = true;
 //$formatoptions->overflowdiv = true;
 $formatoptions->context = $context;
 $content = format_text($content, $page->contentformat, $formatoptions);
+
 // output content
-echo '<div class="col-12" lang="de">';
+echo '<div class="w-100" lang="de">';
 echo $OUTPUT->box($content, "generalbox center clearfix");
 echo '</div>';
 echo '</div>'; // end row
