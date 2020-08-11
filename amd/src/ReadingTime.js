@@ -97,7 +97,7 @@ define([
                             .addClass('longpage-reading-time-estimation')
                             .text(this.estimateTime(out, numberOfImages));
                         fromm.after(output);
-                        console.log('h3', numerOfHeadings, out.length, numberOfImages)
+                        //console.log('h3', numerOfHeadings, out.length, numberOfImages)
                         $('.dummy-heading-3').remove();
                     }
                 },
