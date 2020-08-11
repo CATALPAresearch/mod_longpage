@@ -40,7 +40,7 @@ define([
             methods:{
                 calcH2: function(){
                     let output = $('<span></span>')
-                        .addClass('longpage-reading-time-estimation')
+                        .addClass('longpage-reading-time-estimation mx-0 my-1 p-0')
                         .text('Geschätzte Lesezeit ' + this.fastSum+' - '+this.slowSum + ' Minuten');
                     $(this.parantSelector + ' h2').after(output);
                     
@@ -65,7 +65,7 @@ define([
                             $(this).removeClass('tmp-marked')
                         });
                         let output = $('<span></span>')
-                            .addClass('longpage-reading-time-estimation')
+                            .addClass('longpage-reading-time-estimation mx-0 my-1 p-0')
                             .text(this.estimateTime(out, numberOfImages));
                         fromm.after(output);
                         console.log('h2',numerOfHeadings, out.length, numberOfImages)
@@ -94,7 +94,7 @@ define([
                             $(this).removeClass('tmp-marked-h3')
                         });
                         let output = $('<div></div>')
-                            .addClass('longpage-reading-time-estimation')
+                            .addClass('longpage-reading-time-estimation mx-0 my-3 p-0')
                             .text(this.estimateTime(out, numberOfImages));
                         fromm.after(output);
                         //console.log('h3', numerOfHeadings, out.length, numberOfImages)
