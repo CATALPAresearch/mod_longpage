@@ -30,7 +30,7 @@ define([
         });
 
         var app = new Vue({
-            el: '#nav-app',
+            el: 'longpage-container',
             data: function () {
                 return {
                     pagename: '',
@@ -293,12 +293,13 @@ define([
                         });
                         this.searchResults = this.searchResults.map(function(res){
                             let pos = res.doc.body.indexOf(_this.searchTerm);
-                            res.doc.short = pos > 0 ? '... ' + res.doc.body.substr(pos - 20 > 0 ? pos - 20 : 0, 40) : '';
-                            console.log(pos, _this.searchTerm, res.doc.short)
+                            res.doc.short = pos > 0 ? '... ' + res.doc.body.substr(pos - 20 > 0 ? pos - 20 : 0, 40) : _this.searchTerm;
+                            //console.log(pos, _this.searchTerm, res.doc.short)
                             return res;
                         })
                         log.add('searchterm', { searchterm: this.searchTerm, results: this.searchResults.length });
                     }
+                    e.preventDefault();
                 },
 
                 hideSearchResults: function(){
@@ -310,7 +311,6 @@ define([
                     return out;
                 }
             },
-            el: 'longpage-container',
             template: `
                 <div>
                     <nav id="longpage-navbar" class="page-navbar navbar navbar-light bg-light py-2 mx-0 pl-1 pr-2">
@@ -319,23 +319,24 @@ define([
                                 <a class="navbar-brand">{{ pagename }}</a>
                                 <a class="btn btn-link longpage-toc-toggle longpage-nav-btn" data-toggle="collapse" role="button" href="#table-of-content">Inhaltsverzeichnis</a>
                             </span>
-                            <form class="form-inline col-4 mb-1 px-0 mx-0">
-                                <input v-model="searchTerm" id="search-string" class="form-control mr-sm-2 d-inline w-50 d-flex ml-auto" type="search" placeholder="Suche" aria-label="Search">
-                                <button @click="doFulltextSearch" id="search-full-text" class="btn btn-outline-success d-inline mr-0" type="button">Suchen</button>
-                            </form>
+                            <div class="form-inline col-4 mb-1 px-0 mx-0">
+                                <input v-model="searchTerm" v-on:keyup.enter="doFulltextSearch" id="search-string" class="form-control form-control-sm mr-sm-2 d-inline w-50 d-flex ml-auto" type="search" placeholder="Suchen" aria-label="Search">
+                                <button @click="doFulltextSearch" id="search-full-text" class="btn btn-light btn-sm d-inline mr-0" type="button"><i class="fa fa-search"></i></button>
+                            </div>
                         </div>
-                        <div v-if="showSearchResults" class="row w-100 px-0 mx-0" id="search-results-panel">
+                        <div v-if="showSearchResults" class="row w-100 px-0 mx-0" id="search-results-panel" style="z-index:3000;">
                             <div class="col-9"></div>
-                            <div class="col-3 p-2 bg-light" style="max-height:70vh; overflow:auto">
+                            <div class="col-3 p-3 bg-light" style="max-height:80vh; overflow:auto">
                                 <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideSearchResults">
                                     <span aria-hidden="true">&times;</span>
                                 </button><br>
+                                <div class="mb-2">{{ searchResults.length }} Suchtreffer für '{{ searchTerm }}':</div>
                                 <ul id="search-results" class="list-unstyled">
-                                    <li class="mb-2" v-for="res in searchResults">
+                                    <li class="mb-2" v-for="res in searchResults" v-if="res.doc.short.length > 0">
                                         <a 
                                             class="underline"
-                                            style="word-wrap: break-word;"
-                                            :href="'#'+res.doc.link">{{ res.doc.body.title }} {{ res.doc.short }}</a>
+                                            style="word-wrap: break-word; color: #004C97 !important;"
+                                            :href="'#'+res.doc.link">{{ res.doc.short }}</a>
                                         <!--
                                         log.add('searchresultselected', { searchterm: term, results: res.kength, selected: res[i].doc.link, title: res[i].doc.title });
                                         -->

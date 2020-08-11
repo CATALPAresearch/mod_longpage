@@ -73,22 +73,11 @@ echo $OUTPUT->header();
 
 
 if (!isset($options['printheading']) || !empty($options['printheading'])) {
-    //echo $OUTPUT->heading(format_string($page->name), 2);
     echo '<longpage-container></longpage-container>';
-    // '. format_string($page->name) .'
 }
 
-/*
-if (!empty($options['printintro'])) {
-    if (trim(strip_tags($page->intro))) {
-        echo $OUTPUT->box_start('mod_introbox', 'pageintro');
-        echo format_module_intro('page', $page, $cm->id);
-        echo $OUTPUT->box_end();
-    }
-}
-*/
 
-echo '<ul id="nav-app"></ul><div class="row">';
+echo '<div class="rowx">';
 $content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_page', 'content', $page->revision);
 $formatoptions = new stdClass;
 $formatoptions->noclean = true;
@@ -102,11 +91,7 @@ echo '</div>';
 echo '</div>'; // end row
 
 echo '<div id="top-of-site-pixel-anchor"></div>';
-
-
-//$PAGE->requires->js_amd_inline("require(['mod_page/page']);");
 $PAGE->requires->js_call_amd('mod_page/page', 'init', array($cm->id, format_string($page->name)));
-//$PAGE->requires->js('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js',true);
 
 $strlastmodified = get_string("lastmodified");
 echo "<div class=\"col-12\" lang=\"de\"><div class=\"last-modified modified\">$strlastmodified: ".userdate($page->timemodified)."</div></div>";
