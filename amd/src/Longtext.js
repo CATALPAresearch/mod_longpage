@@ -55,12 +55,10 @@ define([
             },
             mounted: function () {
                 this.pagename = pagename;
-                this.generateTableOfContent();
-
+                
                 this.enableScrollLogging();
 
                 this.setupSearch();
-
 
                 if (
                     "IntersectionObserver" in window &&
@@ -128,17 +126,17 @@ define([
                 /* TOC */
                 generateTableOfContent: function () { 
                     // Generates a table of content from a HTML DOM
-                    var prevH2Item = $();
-                    var prevH2List = $();
-                    var li = $();
+                    var prevH2Item = {};
+                    var prevH2List = {};
+                    var li = {};
                     var indexH3 = 0;
                     var indexH4 = 0;
-                    $(".longpage-container h3, .longpage-container h4").each(function () {
-                        if ($(this).is("h3")) {
+                    $(".longpage-container h3, .longpage-container h4").each(function () { console.log(22)
+                        if ($(this).is("h3")) { // .tagName === 'H3'
                             $(this).attr('id', "xh3item-" + indexH3);
                             li = "<li class='nav-item'><a class='nav-link nav-link-h3' data-parent='#toclist' data-toggle='collapse' data-target='#h3item-" + indexH3 + "' href='#xh3item-" + indexH3 + "'>" + $(this).text() + "</a></li>";
                             prevH2List = $('<ul></ul>').addClass('nav flex-column ml-3');
-                            prevH2Item = $(li);
+                            prevH2Item = $(li); // var doc = new DOMParser().parseFromString(xmlString, "text/html");
                             $('.nav-link-h3').click(function (e) {
                                 var target = $(this).attr('href');
                                 window.location.href = window.location.href.split('#')[0] + target;
@@ -158,10 +156,10 @@ define([
                                 .append(prevH2List)
                                 ;
                             prevH2Item.append(wrap);
-                            if (!window["toclist"]) {
-                                console.log('Could not find toclist');
-                            }else{
+                            if (window["toclist"]) {
                                 prevH2Item.appendTo("#toclist");
+                            }else{
+                                console.log('Could not find toclist');
                             }
                             indexH3++;
                         } else if ($(this).is("h4")) {
@@ -175,7 +173,11 @@ define([
             
                 displayTOC: function(){
                     this.showTOC = true;
-                    this.generateTableOfContent();
+                    //await window['toclist'];
+                    let _this = this;
+                    Vue.nextTick(function () {
+                        _this.generateTableOfContent();
+                    });
                 },
                 hideTOC: function () {
                     this.showTOC = false;
