@@ -112,6 +112,7 @@ define([
                     this.fastSum += readingTimeFast;
                     return 'Geschätzte Lesezeit ' + readingTimeFast + '-' + readingTimeSlow + ' Minuten';
                 }
-            }
+            },
+            template: `<div>hello</div>`
         });
 });

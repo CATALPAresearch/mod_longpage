@@ -314,6 +314,7 @@ code {
   padding-top: 63px;
 }
 
+/*
 .block {
   height: 1000px;
   display: flex;
@@ -322,6 +323,7 @@ code {
   font-size: 3rem;
   color: #ffffff;
 }
+*/
 
 #first {
   background-color: #dc3545;

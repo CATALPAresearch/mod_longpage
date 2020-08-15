@@ -68,10 +68,10 @@ define([
                     var observerxx = new IntersectionObserver(entries => {
                         if (entries[0].boundingClientRect.y < 0) {
                             document.getElementById('longpage-navbar').classList.add("header-not-at-top");
-                            document.getElementById('table-of-content').classList.add("header-not-at-top");
+                            //document.getElementById('table-of-content').classList.add("header-not-at-top");
                         } else {
                             document.getElementById('longpage-navbar').classList.remove("header-not-at-top");
-                            document.getElementById('table-of-content').classList.remove("header-not-at-top");
+                            //document.getElementById('table-of-content').classList.remove("header-not-at-top");
                         }
                     });
                     observerxx.observe(document.querySelector("#top-of-site-pixel-anchor"));
