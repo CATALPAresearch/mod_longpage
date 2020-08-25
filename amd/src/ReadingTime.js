@@ -8,7 +8,7 @@
 
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js'
+    M.cfg.wwwroot + '/mod/page/lib/build/vue.min.js'
 ], function ($, Vue) {
 
     return Vue.component('ReadingTime',
