@@ -55,7 +55,7 @@ module.exports = function (grunt) { // jshint ignore:line
         ts: {
             amd: {
                 //tsconfig: moodleroot + '/format/ladtopics/amd/src/tsconfig.json',
-                src: ["amd/src/*.ts", "!node_modules/**"]
+                src: ["./amd/src/*.ts", "!node_modules/**"]
             }
         },
         jshint: {
@@ -70,7 +70,7 @@ module.exports = function (grunt) { // jshint ignore:line
                 files: [{
                     expand: true,
                     src: ['*.js', '!*.min.js'],
-                    dest: 'lib/build',
+                    dest: './lib/build',
                     cwd: './lib/src',
                     rename: function (dst, src) {
                         return dst + '/' + src.replace('.js', '.min.js');
@@ -84,7 +84,7 @@ module.exports = function (grunt) { // jshint ignore:line
                 files: [{
                     expand: true,
                     src: ['*.js', '!*.min.js'],
-                    dest: 'amd/build',
+                    dest: './amd/build',
                     cwd: './amd/src',
                     rename: function (dst, src) {
                         return dst + '/' + src.replace('.js', '.min.js');
