@@ -9,10 +9,10 @@
  * @license    MIT
  * @since      3.1
  */
-define(['jquery', 'core/ajax'], function ($, ajax) {
+define(['core/ajax'], function (ajax) {
 
-    var Utils = function (d3) {
-        this.d3 = d3;
+    var Utils = function () {
+        //this.d3 = d3;
 
         /**
          * Obtains data from a moodle webservice
@@ -40,32 +40,32 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
             }]);
         };
 
-
-        this.germanFormatters = d3.timeFormatDefaultLocale({
-            "decimal": ",",
-            "thousands": ".",
-            "grouping": [3],
-            "currency": ["€", ""],
-            "dateTime": "%a %b %e %X %Y",
-            "date": "%d.%m.%Y",
-            "time": "%H:%M:%S",
-            "periods": ["AM", "PM"],
-            "days": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
-            "shortDays": ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
-            "months": ["Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
-            "shortMonths": ["Jän", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
-        });
-
-        this.customTimeFormat = function (date) {//this.germanFormatters.timeFormat.multi([
-            if (date.getMinutes()) return d3.timeFormat("%I:%M")(date);
-            if (date.getMilliseconds()) return d3.timeFormat(".%L")(date);
-            if (date.getSeconds()) return d3.timeFormat(":%S")(date);
-            if (date.getHours()) return d3.timeFormat("%Hh")(date);
-            if (date.getDay()) return d3.timeFormat("%a %e.%m.")(date); // Mo 8.02.
-            if (date.getMonth()) return d3.timeFormat("%B")(date); //7.12. 
-            return d3.getDate("%Y");
-        };
-
+        /*
+                this.germanFormatters = d3.timeFormatDefaultLocale({
+                    "decimal": ",",
+                    "thousands": ".",
+                    "grouping": [3],
+                    "currency": ["€", ""],
+                    "dateTime": "%a %b %e %X %Y",
+                    "date": "%d.%m.%Y",
+                    "time": "%H:%M:%S",
+                    "periods": ["AM", "PM"],
+                    "days": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+                    "shortDays": ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+                    "months": ["Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+                    "shortMonths": ["Jän", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
+                });
+        
+                this.customTimeFormat = function (date) {//this.germanFormatters.timeFormat.multi([
+                    if (date.getMinutes()) return d3.timeFormat("%I:%M")(date);
+                    if (date.getMilliseconds()) return d3.timeFormat(".%L")(date);
+                    if (date.getSeconds()) return d3.timeFormat(":%S")(date);
+                    if (date.getHours()) return d3.timeFormat("%Hh")(date);
+                    if (date.getDay()) return d3.timeFormat("%a %e.%m.")(date); // Mo 8.02.
+                    if (date.getMonth()) return d3.timeFormat("%B")(date); //7.12. 
+                    return d3.getDate("%Y");
+                };
+        */
         this.numberToWord = function (num, postfix) {
             postfix = postfix === undefined ? '' : postfix;
             switch (num) {

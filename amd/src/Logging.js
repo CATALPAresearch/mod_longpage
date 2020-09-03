@@ -8,7 +8,7 @@
  */
 
 
-define(['jquery', 'core/ajax'], function($, ajax) {
+define(['core/ajax'], function(ajax) {
 
     var Log = function (utils, courseid, options) {
         this.utils = utils;

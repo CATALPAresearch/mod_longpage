@@ -5,11 +5,8 @@ define([
 
     /**
      * Plot a timeline
-     * @param d3 (Object) Data Driven Documents
-     * @param dc (Object) Dimensional Javascript Charting Library
-     * @param utils (Object) Custome util class
      */
-    let AdaptiveRecommondations = function (Vue, d3, utils, html_content) {
+    let AdaptiveRecommondations = function (Vue, utils, html_content) {
 
         // adaptive course recomondations
         var getRelatedUnits = function (text, selector) {

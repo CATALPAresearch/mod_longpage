@@ -33,8 +33,8 @@ define([
             enforceDefine: false,
             baseUrl: M.cfg.wwwroot + "/mod/page/lib/",
             paths: {
-                "vue259": ["https://cdn.jsdelivr.net/npm/vue@2.5.9/dist/vue", "vue"],
-                "d3": ["build/d3.v4.min"]
+                "vue259": ["https://cdn.jsdelivr.net/npm/vue@2.5.9/dist/vue", "vue"]//,
+                //"d3": ["build/d3.v4.min"]
             },
             shim: {
                 'vue259': {
@@ -46,15 +46,15 @@ define([
 
         var start = function (courseid, pagename) {
             require([
-                'vue259',
-                'd3'
-            ], function (vue, d3) {
-                var utils = new Utils(d3);
+                'vue259'//,
+                //'d3'
+            ], function (vue) {
+                var utils = new Utils();
                 var log = new Log(utils, courseid, {
                     context: 'mod_page',
                     outputType: 1
                 });
-                new Longtext(vue, d3, utils, log, pagename);
+                new Longtext(vue, utils, log, pagename);
             });
         };
 
