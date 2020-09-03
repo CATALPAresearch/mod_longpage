@@ -27,7 +27,6 @@ define([
                         },
                         slowSum:0,
                         fastSum:0,
-
                 }
             },
 
