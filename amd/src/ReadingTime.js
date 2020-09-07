@@ -112,6 +112,6 @@ define([
                     return 'Geschätzte Lesezeit ' + readingTimeFast + '-' + readingTimeSlow + ' Minuten';
                 }
             },
-            template: `<div>hello</div>`
+            template: `<div></div>`
         });
 });
