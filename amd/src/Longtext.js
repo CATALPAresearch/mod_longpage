@@ -8,28 +8,23 @@
 
 define([
     'jquery',
-   M.cfg.wwwroot + '/mod/page/amd/src/ReadingTime.js',
+    M.cfg.wwwroot + '/mod/page/amd/src/ReadingTime.js',
 ], function ($, ReadingTime) {
-
     /**
      * Plot a timeline
-     * @param d3 (Object) Data Driven Documents
-     * @param dc (Object) Dimensional Javascript Charting Library
-     * @param utils (Object) Custome util class
      */
-    var Longtext = function (Vue, d3, utils, log, pagename) {
-
+    var Longtext = function (Vue, utils, log, pagename) {
+        
         require.config({
             enforceDefine: false,
-            baseUrl: M.cfg.wwwroot + "/mod/page/lib/",
             paths: {
-                "elasticlunr": ["elasticlunr.min"],
-                "lunrde": ["lunr.de"],
-                "stemmer": ["lunr.stemmer.support"]
+                "elasticlunr": [M.cfg.wwwroot + "/mod/page/lib/build/elasticlunr.min"],
+                "lunrde": [M.cfg.wwwroot + "/mod/page/lib/build/lunr.de.min"],
+                "stemmer": [M.cfg.wwwroot + "/mod/page/lib/build/lunr.stemmer.support.min"]
             }
         });
 
-        var app = new Vue({
+        new Vue({
             el: 'longpage-container',
             data: function () {
                 return {
@@ -50,12 +45,12 @@ define([
 
                 };
             },
-            components: { 
+            components: {
                 'ReadingTime': ReadingTime
             },
             mounted: function () {
                 this.pagename = pagename;
-                
+
                 this.enableScrollLogging();
 
                 this.setupSearch();
@@ -124,14 +119,14 @@ define([
             methods: {
 
                 /* TOC */
-                generateTableOfContent: function () { 
+                generateTableOfContent: function () {
                     // Generates a table of content from a HTML DOM
                     var prevH2Item = {};
                     var prevH2List = {};
                     var li = {};
                     var indexH3 = 0;
                     var indexH4 = 0;
-                    $(".longpage-container h3, .longpage-container h4").each(function () { console.log(22)
+                    $(".longpage-container h3, .longpage-container h4").each(function () {
                         if ($(this).is("h3")) { // .tagName === 'H3'
                             $(this).attr('id', "xh3item-" + indexH3);
                             li = "<li class='nav-item'><a class='nav-link nav-link-h3' data-parent='#toclist' data-toggle='collapse' data-target='#h3item-" + indexH3 + "' href='#xh3item-" + indexH3 + "'>" + $(this).text() + "</a></li>";
@@ -148,7 +143,7 @@ define([
                                     behavior: 'smooth'
                                 });
                                 console.log(scrollPos, target, window.scrollY)
-                                
+
                             });
                             var wrap = $('<div></div>')
                                 .attr('id', 'h3item-' + indexH3)
@@ -158,7 +153,7 @@ define([
                             prevH2Item.append(wrap);
                             if (window["toclist"]) {
                                 prevH2Item.appendTo("#toclist");
-                            }else{
+                            } else {
                                 console.log('Could not find toclist');
                             }
                             indexH3++;
@@ -170,8 +165,8 @@ define([
                         }
                     });
                 },
-            
-                displayTOC: function(){
+
+                displayTOC: function () {
                     this.showTOC = true;
                     //await window['toclist'];
                     let _this = this;
@@ -190,14 +185,15 @@ define([
                     if (
                         "IntersectionObserver" in window &&
                         "IntersectionObserverEntry" in window &&
-                        "intersectionRatio" in window.IntersectionObserverEntry.prototype
+                        "intersectionRatio" in window.IntersectionObserverEntry.prototype &&
+                        document.querySelector('.longpage-container')
                     ) {
                         var measuredElement = document.querySelector('.longpage-container');
                         var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
                         var scrollWidth = document.documentElement.scrollWidth - window.innerWidth;
                         var yPadding, xPadding;
-                        if (getComputedStyle) {
-                            var computedStyle = getComputedStyle(measuredElement);
+                        if (window.getComputedStyle && measuredElement) {
+                            var computedStyle = window.getComputedStyle(measuredElement);
                             yPadding = parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
                             xPadding = parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
                         }
@@ -268,14 +264,15 @@ define([
 
 
 
-                setupSearch: function () {
+                setupSearch: function () { 
                     let _this = this;
                     require([
-                        'jquery',
+                        //'jquery',
                         'elasticlunr',
                         'lunrde',
                         'stemmer'
-                    ], function ($, elasticlunr, de, stemmer) {
+                    ], function (elasticlunr, de, stemmer) {
+                            
                         var customized_stop_words = ['an', 'der', 'die', 'das']; // add German stop words
                         elasticlunr.addStopWords(customized_stop_words);
 
@@ -283,13 +280,13 @@ define([
                         //index.use(de);
                         _this.index.addField('title');
                         _this.index.addField('body');
-                        _this.index.setRef('id');
+                        _this.index.setRef('id'); 
                         // collect index
-                            $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
+                        $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
                             _this.index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
                         });
 
-                            $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
+                        $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
                             if ($(this).is("h2") || $(this).is("h3") || $(this).is("h4")) {
                                 _this.index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
                             } else {
@@ -312,7 +309,7 @@ define([
                                 body: { boost: 1 }
                             }
                         });
-                        this.searchResults = this.searchResults.map(function(res){
+                        this.searchResults = this.searchResults.map(function (res) {
                             let pos = res.doc.body.indexOf(_this.searchTerm);
                             res.doc.short = pos > 0 ? '... ' + res.doc.body.substr(pos - 20 > 0 ? pos - 20 : 0, 40) : _this.searchTerm;
                             //console.log(pos, _this.searchTerm, res.doc.short)
@@ -323,12 +320,12 @@ define([
                     e.preventDefault();
                 },
 
-                searchResultClick: function(doc){
+                searchResultClick: function (doc) {
                     this.hideSearchResults();
                     log.add('searchresultselected', { searchterm: this.term, results: this.searchResults.length, selected: doc.link, title: doc.title });
                 },
 
-                hideSearchResults: function(){
+                hideSearchResults: function () {
                     this.showSearchResults = false;
                 },
 

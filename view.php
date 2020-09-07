@@ -86,7 +86,7 @@ $formatoptions->context = $context;
 $content = format_text($content, $page->contentformat, $formatoptions);
 
 // output content
-echo '<div class="w-100" lang="de">';
+echo '<div class="w-100 longpage-container" lang="de">';
 echo $OUTPUT->box($content, "generalbox center clearfix");
 echo '</div>';
 echo '</div>'; // end row

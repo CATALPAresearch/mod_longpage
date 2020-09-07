@@ -10,28 +10,31 @@
  */
 define([
     'jquery',
-    'jqueryui',
+    //'jqueryui',
+    'theme_boost/popover',
     M.cfg.wwwroot + '/mod/page/amd/src/Longtext.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Utils.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Logging.js'
 ],
-    function ($, ui, Longtext, Utils, Log) {
-        
-        $('.longpage-footnote button').popover({
-            html: true,
-            trigger: 'focus',
-            content: function () {
-                var content = $(this).attr("data-popover-content");
-                return $(content).children(".popover-body").html();
-            }
+    function ($, Popover, Longtext, Utils, Log) {
+        $(function () {
+            $('.longpage-footnote button').popover({
+                html: true,
+                trigger: 'focus',
+                content: function () {
+                    var content = $(this).attr("data-popover-content");
+                    return $(content).children(".popover-body").html();
+                }
+            });
         });
+
 
         require.config({
             enforceDefine: false,
             baseUrl: M.cfg.wwwroot + "/mod/page/lib/",
             paths: {
-                "vue259": ["https://cdn.jsdelivr.net/npm/vue@2.5.9/dist/vue", "vue"],
-                "d3": ["d3.v4.min"]
+                "vue259": ["https://cdn.jsdelivr.net/npm/vue@2.5.9/dist/vue", "vue"]//,
+                //"d3": ["build/d3.v4.min"]
             },
             shim: {
                 'vue259': {
@@ -43,15 +46,15 @@ define([
 
         var start = function (courseid, pagename) {
             require([
-                'vue259',
-                'd3'
-            ], function (vue, d3) {
-                var utils = new Utils(d3);
+                'vue259'//,
+                //'d3'
+            ], function (vue) {
+                var utils = new Utils();
                 var log = new Log(utils, courseid, {
                     context: 'mod_page',
                     outputType: 1
                 });
-                new Longtext(vue, d3, utils, log, pagename);
+                new Longtext(vue, utils, log, pagename);
             });
         };
 
