@@ -10,12 +10,11 @@ define([
     'jquery',
     M.cfg.wwwroot + '/mod/page/amd/src/ReadingTime.js',
 ], function ($, ReadingTime) {
-
     /**
      * Plot a timeline
      */
     var Longtext = function (Vue, utils, log, pagename) {
-
+        
         require.config({
             enforceDefine: false,
             paths: {
@@ -128,7 +127,6 @@ define([
                     var indexH3 = 0;
                     var indexH4 = 0;
                     $(".longpage-container h3, .longpage-container h4").each(function () {
-                        console.log(22)
                         if ($(this).is("h3")) { // .tagName === 'H3'
                             $(this).attr('id', "xh3item-" + indexH3);
                             li = "<li class='nav-item'><a class='nav-link nav-link-h3' data-parent='#toclist' data-toggle='collapse' data-target='#h3item-" + indexH3 + "' href='#xh3item-" + indexH3 + "'>" + $(this).text() + "</a></li>";
@@ -266,14 +264,15 @@ define([
 
 
 
-                setupSearch: function () {
+                setupSearch: function () { 
                     let _this = this;
                     require([
-                        'jquery',
+                        //'jquery',
                         'elasticlunr',
                         'lunrde',
                         'stemmer'
-                    ], function ($, elasticlunr, de, stemmer) {
+                    ], function (elasticlunr, de, stemmer) {
+                            
                         var customized_stop_words = ['an', 'der', 'die', 'das']; // add German stop words
                         elasticlunr.addStopWords(customized_stop_words);
 
@@ -281,7 +280,7 @@ define([
                         //index.use(de);
                         _this.index.addField('title');
                         _this.index.addField('body');
-                        _this.index.setRef('id');
+                        _this.index.setRef('id'); 
                         // collect index
                         $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
                             _this.index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
