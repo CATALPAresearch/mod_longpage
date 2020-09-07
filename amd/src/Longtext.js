@@ -14,7 +14,7 @@ define([
      * Plot a timeline
      */
     var Longtext = function (Vue, utils, log, pagename) {
-        
+
         require.config({
             enforceDefine: false,
             paths: {
@@ -29,6 +29,7 @@ define([
             data: function () {
                 return {
                     pagename: '',
+                    tabContentVisible: false,
                     //
                     filter_assessment: true,
                     filter_text: true,
@@ -52,6 +53,8 @@ define([
                 this.pagename = pagename;
 
                 this.enableScrollLogging();
+
+                this.generateTableOfContent();
 
                 this.setupSearch();
 
@@ -118,6 +121,13 @@ define([
             },
             methods: {
 
+                showTabContent() {
+                    this.tabContentVisible = true;
+                },
+                hideTabContent() {
+                    this.tabContentVisible = false;
+                },
+
                 /* TOC */
                 generateTableOfContent: function () {
                     // Generates a table of content from a HTML DOM
@@ -165,20 +175,6 @@ define([
                         }
                     });
                 },
-
-                displayTOC: function () {
-                    this.showTOC = true;
-                    //await window['toclist'];
-                    let _this = this;
-                    Vue.nextTick(function () {
-                        _this.generateTableOfContent();
-                    });
-                },
-                hideTOC: function () {
-                    this.showTOC = false;
-                },
-
-
 
                 enableScrollLogging: function () {
 
@@ -264,7 +260,7 @@ define([
 
 
 
-                setupSearch: function () { 
+                setupSearch: function () {
                     let _this = this;
                     require([
                         //'jquery',
@@ -272,7 +268,7 @@ define([
                         'lunrde',
                         'stemmer'
                     ], function (elasticlunr, de, stemmer) {
-                            
+
                         var customized_stop_words = ['an', 'der', 'die', 'das']; // add German stop words
                         elasticlunr.addStopWords(customized_stop_words);
 
@@ -280,7 +276,7 @@ define([
                         //index.use(de);
                         _this.index.addField('title');
                         _this.index.addField('body');
-                        _this.index.setRef('id'); 
+                        _this.index.setRef('id');
                         // collect index
                         $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function (i, val) {
                             _this.index.addDoc({ id: i, title: $(val).text(), body: '', link: $(val).attr('id') });
@@ -342,46 +338,109 @@ define([
                                 <a class="navbar-brand">{{ pagename }}</a>
                             </span>
                             <div class="col-4 col-sm-4 col-xs-4">
-                                <button @click="displayTOC" class="btn btn-link longpage-toc-toggle longpage-nav-btn" type="button" title="Inhaltsverzeichnis">
-                                    <i class="fa fa-list d-xs-inline d-lg-none"></i>
-                                    <span class="d-none d-lg-inline" style="text-transform: capitalize;">Inhaltsverzeichnis</span>
-                                </button>
-                            </div>
-                            <div class="form-inline col-4 col-sm-4 col-xs-8 mb-1 px-0 mx-0">
-                                <input v-model="searchTerm" v-on:keyup.enter="doFulltextSearch" id="search-string" class="form-control form-control-sm mr-sm-2 d-inline w-50 d-flex ml-auto" type="search" placeholder="Suchen" aria-label="Search">
-                                <button @click="doFulltextSearch" id="search-full-text" class="btn btn-light btn-sm d-inline mr-0" type="button"><i class="fa fa-search"></i></button>
-                            </div>
-                        </div>
-                        <div v-if="showSearchResults" class="row w-100 px-0 mx-0" style="z-index:3000;">
-                            <div class="col-9 d-inline d-xs-none"></div>
-                            <div class="col-3 col-xs-12 p-3 bg-light" style="max-height:80vh; overflow:auto">
-                                <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideSearchResults">
-                                    <span aria-hidden="true">&times;</span>
-                                </button><br>
-                                <div class="mb-2">{{ searchResults.length }} Suchtreffer für '{{ searchTerm }}':</div>
-                                <ul id="search-results" class="list-unstyled">
-                                    <li class="mb-2" v-for="res in searchResults" v-if="res.doc.short.length > 0">
-                                        <a 
-                                            class="underline"
-                                            style="word-wrap: break-word; color: #004C97 !important;"
-                                            :href="'#'+res.doc.link"
-                                            @click="searchResultClick(res.doc)"
-                                            >
-                                            {{ res.doc.short }}
-                                            </a>
+                                <ul class="nav nav-tabs" id="longpageFeatures" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="toc-tab" data-toggle="tab" href="#tableofcontent" role="tab" aria-controls="tableofcontents" aria-selected="false" @click="showTabContent()">
+                                            <i class="fa fa-list"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="concepts-tab" data-toggle="tab" href="#concepts" role="tab" aria-controls="concepts" aria-selected="false" @click="showTabContent()">
+                                            <i class="fa fa-map"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="tests-tab" data-toggle="tab" href="#tests" role="tab" aria-controls="tests" aria-selected="false" @click="showTabContent()">
+                                            <i class="fa fa-check"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="bookmarks-tab" data-toggle="tab" href="#bookmarks" role="tab" aria-controls="bookmarkss" aria-selected="false" @click="showTabContent()">
+                                            <i class="fa fa-bookmark"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="annotations-tab" data-toggle="tab" href="#annotations" role="tab" aria-controls="annotations" aria-selected="false" @click="showTabContent()">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="search-tab" data-toggle="tab" href="#search" role="tab" aria-controls="search" aria-selected="false" @click="showTabContent()">
+                                            <i class="fa fa-search"></i>
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                    </nav>
-                    <div v-if="showTOC" class="row px-0 m-0" id="table-of-content" style="z-index:3000;">
-                        <div class="bg-light col-4 col-lg-4 col-xs-12 p-3 m-0" style="max-height:80vh; overflow:auto">
-                            <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTOC">
-                                <span aria-hidden="true">&times;</span>
-                            </button><br>
-                            <ul id="toclist" class="nav-pills"></ul>
+                        
+                        <!-- -->
+                        <div :style="{visibility: tabContentVisible ? 'visible' : 'hidden'}" class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade" id="tableofcontent" role="tabpanel" aria-labelledby="toc-tab">
+                                <div class="m-auto" style="max-height:80vh; overflow:auto">
+                                    <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button><br>
+                                    <ul id="toclist" class="nav-pills"></ul>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="concepts" role="tabpanel" aria-labelledby="toc-tab">
+                                Concepts
+                                <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="tab-pane fade" id="tests" role="tabpanel" aria-labelledby="toc-tab">
+                                Tests
+                                <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="tab-pane fade" id="bookmarks" role="tabpanel" aria-labelledby="toc-tab">
+                                Bookmarks
+                                <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="tab-pane fade" id="annotations" role="tabpanel" aria-labelledby="toc-tab">
+                                Annotations
+                                <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="search-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
+                                <div class="form-inline col-4 col-sm-4 col-xs-8 mb-1 px-0 mx-0">
+                            
+                                    <input v-model="searchTerm" v-on:keyup.enter="doFulltextSearch" id="search-string" class="form-control form-control-sm mr-sm-2 d-inline w-50 d-flex ml-auto" type="search" placeholder="Suchen" aria-label="Search">
+                                    <button @click="doFulltextSearch" id="search-full-text" class="btn btn-light btn-sm d-inline mr-0" type="button"><i class="fa fa-search"></i></button>
+                                    <div v-if="showSearchResults" class="row w-100 px-0 mx-0" style="z-index:3000;">
+                                        <div class="col-9 d-inline d-xs-none"></div>
+                                        <div class="col-3 col-xs-12 p-3 bg-light" style="max-height:80vh; overflow:auto">
+                                            <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideSearchResults">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button><br>
+                                            <div class="mb-2">{{ searchResults.length }} Suchtreffer für '{{ searchTerm }}':</div>
+                                            <ul id="search-results" class="list-unstyled">
+                                                <li class="mb-2" v-for="res in searchResults" v-if="res.doc.short.length > 0">
+                                                    <a 
+                                                        class="underline"
+                                                        style="word-wrap: break-word; color: #004C97 !important;"
+                                                        :href="'#'+res.doc.link"
+                                                        @click="searchResultClick(res.doc)"
+                                                        >
+                                                        {{ res.doc.short }}
+                                                        </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+
+                        <!-- -->
+                        
+                    </nav>
+                    
                     <ReadingTime></ReadingTime>
                 </div>
             `
