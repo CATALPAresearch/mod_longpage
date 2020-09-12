@@ -10,13 +10,15 @@
  */
 define([
     'jquery',
-    //'jqueryui',
+    M.cfg.wwwroot + "/mod/page/lib/build/vue.min",
     'theme_boost/popover',
     M.cfg.wwwroot + '/mod/page/amd/src/Longtext.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Utils.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Logging.js'
 ],
-    function ($, Popover, Longtext, Utils, Log) {
+    function ($, Vue, Popover, Longtext, Utils, Log) {
+
+
         $(function () {
             $('.longpage-footnote button').popover({
                 html: true,
@@ -28,44 +30,23 @@ define([
             });
         });
 
-
-        require.config({
-            enforceDefine: false,
-            baseUrl: M.cfg.wwwroot + "/mod/page/lib/",
-            paths: {
-                "vue259": ["https://cdn.jsdelivr.net/npm/vue@2.5.9/dist/vue", "vue"]//,
-                //"d3": ["build/d3.v4.min"]
-            },
-            shim: {
-                'vue259': {
-                    exports: 'Vue'
-                }
-            }
-        });
-
-
-        var start = function (courseid, pagename) {
-            require([
-                'vue259'//,
-                //'d3'
-            ], function (vue) {
-                var utils = new Utils();
-                var log = new Log(utils, courseid, {
-                    context: 'mod_page',
-                    outputType: 1
-                });
-                new Longtext(vue, utils, log, pagename);
-            });
-        };
-
         return {
             init: function (courseid, pagename) {
+
                 try {
-                    start(courseid, pagename);
+                    var utils = new Utils();
+                    var log = new Log(utils, courseid, {
+                        context: 'mod_page',
+                        outputType: 1
+                    });
+                    new Longtext(Vue, utils, log, pagename);
                 } catch (e) {
                     console.error(e);
                 }
 
+
             }
+
         };
+
     });

@@ -308,6 +308,52 @@ code {
   display: inline;
 }
 
+.longpage-paragraph {
+  position: relative;
+}
+
+.longpage-container .reading-progress {
+  z-index: 40;
+  display: block;
+  height: 100%;
+  min-width: 1px;
+  background-color: #004C97;
+  position: absolute;
+  top: 0;
+  border-radius: 2px/50px;
+  opacity: 0.3;
+}
+
+.longpage-container .progress-0 {
+  width: 1px;
+  right: -10px;
+}
+
+.longpage-container .progress-1 {
+  width: 4px;
+  right: -12px;
+}
+
+.longpage-container .progress-2 {
+  width: 8px;
+  right: -14px;
+}
+
+.longpage-container .progress-3 {
+  width: 12px;
+  right: -16px;
+}
+
+.longpage-container .progress-4 {
+  width: 16px;
+  right: -18px;
+}
+
+.longpage-container .progress-5 {
+  width: 20px;
+  right: -20px;
+}
+
 /* */
 
 .blocks {

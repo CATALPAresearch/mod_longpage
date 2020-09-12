@@ -269,6 +269,22 @@ class mod_page_external extends external_api {
         $transaction = $DB->start_delegated_transaction();
         $res = $DB->insert_records("logstore_standard_log", array($r)); // $CFG->prefix .
         $transaction->allow_commit();
+
+        // quick event logging
+        $lesson->timemodified = time();
+        $coursemodule = get_fast_modinfo((int)$data['courseid'])->instances[$modulename][$instanceid];
+        $context = context_module::instance($coursemodule->id);
+
+        /*
+        $event = \core\event\mod_page::scroll2(array(
+            'context'=>0,
+            'objectid'=>0, 
+            'userid'=>$USER->id,
+            'timecreated'=>$data['utc']
+            'other'=>$data['targetID']
+        ));
+        $event->trigger();
+        */
         
         return array('response'=> json_encode($r));
     } 
