@@ -223,11 +223,15 @@ html {
 
 .longpage-container .longpage-image-caption, .longpage-container .longpage-table-caption {
   font-size: 0.9em;
-  font-weight: bold;
+  font-weight: normal;
   margin-top: 0;
   margin-bottom: 1em;
   line-height: 1.4em;
   padding: 4px 6px;
+}
+
+.longpage-caption-label {
+  font-weight: bold;
 }
 
 .longpage-container ul, .longpage-container ol {
@@ -427,6 +431,16 @@ code {
 
 .header-not-at-top {
   background-color: #28a745;
+}
+
+.longpage-marginal {
+  align-content: flex-start;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.longpage-bold {
+  font-weight: bold;
 }
 
 .longpage-tabbing {

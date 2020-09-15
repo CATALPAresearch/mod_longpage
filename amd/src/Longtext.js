@@ -8,25 +8,30 @@
 
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/page/amd/src/ReadingTime.js',
-    M.cfg.wwwroot + '/mod/page/amd/src/TableOfContent.js',
-    M.cfg.wwwroot + '/mod/page/amd/src/Search.js',
-    M.cfg.wwwroot + '/mod/page/amd/src/ReadingProgress.js',
-    M.cfg.wwwroot + '/mod/page/amd/src/CourseRecommondation',
-], function ($, ReadingTime, TableOfContent, Search, ReadingProgress, CourseRecommondation) {
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/ReadingTime.js',
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/TableOfContent.js',
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/Search.js',
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/ReadingProgress.js',
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/CourseRecommondation',
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/Bookmark',
+], function ($, ReadingTime, TableOfContent, Search, ReadingProgress, CourseRecommondation, Bookmark) {
 
 
     // new CourseRecommender();
 
-    var Longtext = function (Vue, utils, logger, pagename) {
+        var Longtext = function (Vue, Store, utils, logger, pagename) {
         Vue.component('TableOfContent', TableOfContent);
         Vue.component('Search', Search);
         Vue.component('ReadingProgress', ReadingProgress);
         Vue.component('ReadingTime', ReadingTime);
         Vue.component('CourseRecommondation', CourseRecommondation);
+        Vue.component('Bookmark', Bookmark);
+
+        const pageStore = new Store();
 
         new Vue({
             el: 'longpage-container',
+            store: pageStore.store,
             data: function () {
                 return {
                     pagename: '',
@@ -39,7 +44,6 @@ define([
             },
             components: { },
             mounted: function () {
-                
                 this.pagename = pagename;
 
                 // log bootstrap interactions
@@ -85,6 +89,8 @@ define([
                 hideTabContent() {
                     this.tabContentVisible = false;
                 },
+
+                
 
                 decode: function (str) {
                     let out = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
@@ -149,10 +155,10 @@ define([
                                 </button>
                             </div>
                             <div class="tab-pane fade" id="bookmarks" role="tabpanel" aria-labelledby="toc-tab">
-                                Bookmarks
-                                <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                Lesezeichen:
+                                <ul>
+                                    <li></li>
+                                </ul>
                             </div>
                             <div class="tab-pane fade" id="annotations" role="tabpanel" aria-labelledby="toc-tab">
                                 Annotations
@@ -167,7 +173,7 @@ define([
                     </nav>
                     <ReadingTime></ReadingTime>
                     <ReadingProgress v-on:log='log'></ReadingProgress>
-                    
+                    <Bookmark v-on:log='log'></Bookmark>
                 </div>
             `
         });

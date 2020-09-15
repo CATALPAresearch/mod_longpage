@@ -11,12 +11,13 @@
 define([
     'jquery',
     M.cfg.wwwroot + "/mod/page/lib/build/vue.min",
+    M.cfg.wwwroot + "/mod/page/amd/src/Stores/PageStore",
     'theme_boost/popover',
     M.cfg.wwwroot + '/mod/page/amd/src/Longtext.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Utils.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Logging.js'
 ],
-    function ($, Vue, Popover, Longtext, Utils, Log) {
+    function ($, Vue, Store, Popover, Longtext, Utils, Log) {
 
 
         $(function () {
@@ -39,7 +40,7 @@ define([
                         context: 'mod_page',
                         outputType: 1
                     });
-                    new Longtext(Vue, utils, log, pagename);
+                    new Longtext(Vue, Store, utils, log, pagename);
                 } catch (e) {
                     console.error(e);
                 }

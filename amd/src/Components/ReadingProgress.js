@@ -9,7 +9,6 @@ define([
 
             data: function () {
                 return {
-                    //showTOC: false,
                 }
             },
 

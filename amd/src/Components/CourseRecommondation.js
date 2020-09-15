@@ -87,6 +87,9 @@ define([
 
     template: `
         <div>
+            <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="$emit('hideTabContent')">
+                <span aria-hidden="true">&times;</span>
+            </button>
             <ul>
                 <li v-for="course in courses">{{ course.course}}: {{course.unit}} ({{course.confidence}})</li>
             </ul>
