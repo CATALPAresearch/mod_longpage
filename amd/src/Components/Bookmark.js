@@ -16,6 +16,9 @@ define([
                 y: 0,
                 showTools: false,
                 selectedText: '',
+                startNode: 0,
+                endNode: 0,
+                target: '',
                 debug: true
             }
         },
@@ -27,19 +30,21 @@ define([
         },
 
         mounted() {
-            console.log('storeBookmarks', this.$store.state.bam);
             this.container = document.querySelector(".longpage-container");
             this.container.addEventListener('mouseup', this.onMouseup)
         },
 
         beforeDestroy() {
-            var box = document.querySelector(".longpage-container");
+            this.container = document.querySelector(".longpage-container"); // Why?
             this.container.removeEventListener('mouseup', this.onMouseup)
         },
 
         methods: {
             onMouseup(e) {
-                const selection = window.getSelection()
+
+                let selection = window.getSelection ? window.getSelection() : document.selection.createRange();
+                console.log('selection', selection)
+                console.log('range', selection.getRangeAt(0))
                 const startNode = selection.getRangeAt(0).startContainer.parentNode
                 const endNode = selection.getRangeAt(0).endContainer.parentNode
                 if (!startNode.isSameNode(endNode)) {
@@ -47,7 +52,7 @@ define([
                     return
                 }
                 const { x, y, width, height, top } = selection.getRangeAt(0).getBoundingClientRect();
-                
+
                 if (!width) {
                     this.showTools = false
                     return
@@ -60,7 +65,7 @@ define([
                 //this.y = e.clientY - off + 20;//-1*relative.y - top + 10;//y+r.bottom;//y + window.scrollY - 10
                 this.y = r.y - off + 70;
                 if (this.debug) {
-                    console.log('scrollY',window.scrollY)
+                    console.log('scrollY', window.scrollY)
                     console.log('sel', r.y, r.top)
                     console.log('rel', relative.y, relative.top)
                     console.log('top offset:', off)
@@ -68,7 +73,39 @@ define([
                     console.log('current result', this.y)
                 }
                 this.showTools = true
-                this.selectedText = selection.toString()
+                this.selectedText = selection.toString();
+                this.selectionStart = selection.getRangeAt(0).startContainer;
+                this.selectionEnd = endNode;
+                this.target = this.createUniqid();
+                console.log(this.selectionStart)
+            },
+
+            insertLabel: function (pos, label) {
+                let t = '<span id="' + label + '" />';
+                let content = 'sss';
+                let query = 's';
+                content.replace(new RegExp(query, "gi"), match => {
+                    return '<span class="highlightText">' + match + '</span>';
+                });
+                //d1.insertAdjacentHTML('afterend', '<div id="two">two</div>');
+            },
+
+            prependBookmarkLabel: function () {
+                let label = document.createElement("SPAN");
+                //label.innerHTML = "LABEL";
+                let att = document.createAttribute('id');
+                att.value = this.target;
+                label.setAttributeNode(att);
+                this.selectionStart.parentElement.insertBefore(label, this.selectionStart.parentElement.children[0])
+            },
+
+            createUniqid: function () {
+                var date = new Date().getTime();
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    var r = (date + Math.random() * 16) % 16 | 0;
+                    date = Math.floor(date / 16);
+                    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                });
             },
 
             handleAction(action) {
@@ -76,8 +113,17 @@ define([
                 //this.$emit(action, this.selectedText)
             },
 
-            handleBookmark(){
-                console.log(this.selectedText);
+            handleBookmark() {
+                console.log('added: ', this.selectedText);
+                this.prependBookmarkLabel()
+                this.$store.commit('addBookmarks', {
+                    text: this.selectedText,
+                    target: this.target,
+                    start: this.startNode,
+                    end: this.endNode,
+                    created: new Date(),
+                    user: 'me'
+                })
             }
         },
 
@@ -85,9 +131,9 @@ define([
             <div>
                 <div v-show="showTools" class="tools" :style="{'left': x+'px', 'top': y+'px', 'z-index':4500}" @mousedown.prevent="">
                     <span class="item" @mousedown.prevent="handleBookmark()">
-                        Lesezeichen
+                        <i class="fa fa-bookmark mr-2"></i>Lesezeichen
                     </span>
-                    <span class="item" @mousedown.prevent="handleAction('highlight')">
+                    <span hidden class="item" @mousedown.prevent="handleAction('highlight')">
                         highlight me
                     </span>
                 </div>

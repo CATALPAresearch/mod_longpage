@@ -7,11 +7,17 @@ define([
     function Store() {
 
         Vue.use(Vuex)
-        
+
         this.store = new Vuex.Store({
             state: {
                 bookmarks: [],
                 bam: 44
+            },
+            getters: {
+                getBookmarks: (state, getters) => {
+                    return state.bookmarks;
+                },
+                
             },
             mutations: {
                 addBookmarks(state, bookmark) {

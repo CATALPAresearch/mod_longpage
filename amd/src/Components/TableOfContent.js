@@ -73,12 +73,13 @@ define([
                 },
             },
             template: `
-                <div class="m-auto" style="max-height:80vh; overflow:auto">
+                <div>
                     <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="$emit('hideTabContent')">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <br>
-                    <ul id="toclist" class="nav-pills"></ul>
+                    <div class="m-auto w-md-75 w-xs-100" style="max-height:80vh; overflow:auto">
+                        <ul id="toclist" class="nav-pills"></ul>
+                    </div>
                 </div>
             `
         });

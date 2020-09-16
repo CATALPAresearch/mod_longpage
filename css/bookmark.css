@@ -1,13 +1,13 @@
 .tools {
     height: 30px;
     padding: 5px 10px;
-    background: #555;
-    color:#fff;
+    background: #aaa;
+    color: #000;
     border-radius: 5px;
     position: absolute;
     top: 0;
     left: 0;
-    transform: translate(-50%, -100%);
+    /*transform: translate(-50%, -100%);*/
     transition: 0.2s all;
     display: flex;
     justify-content: center;
@@ -19,15 +19,24 @@
     content: '';
     position: absolute;
     left: 50%;
-    bottom: -5px;
+    bottom: -6px;
     transform: translateX(-50%);
+    transition: 0.2s all;
     width: 0;
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 6px solid #333;
+    border-top: 6px solid #aaa;
+}
+
+.tools:hover {
+    background: #eee;
+}
+
+.tools:hover::after {
+    border-top: 6px solid #eee;
 }
 
 .item {
-    color:white;
+    color: #000;
 }

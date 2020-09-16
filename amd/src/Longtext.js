@@ -104,36 +104,36 @@ define([
                             <span class="title-toc col-4 col-sm-4 col-xs-12">
                                 <a class="navbar-brand">{{ pagename }}</a>
                             </span>
-                            <div class="col-4 col-sm-4 col-xs-4">
+                            <div class="col-8 col-md-8 col-xs-12">
                                 <ul class="nav nav-tabs" id="longpageFeatures" role="tablist">
                                     <li class="nav-item">
                                         <a class="nav-link" id="toc-tab" data-toggle="tab" href="#tableofcontent" role="tab" aria-controls="tableofcontents" aria-selected="false" @click="showTabContent()">
-                                            <i class="fa fa-list"></i>
+                                            <i class="fa fa-list"></i><span class="ml-1 d-none d-md-inline">Inhaltsverzeichnis</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <li hidden class="nav-item">
                                         <a class="nav-link" id="concepts-tab" data-toggle="tab" href="#concepts" role="tab" aria-controls="concepts" aria-selected="false" @click="showTabContent()">
-                                            <i class="fa fa-map"></i>
+                                            <i class="fa fa-map"></i><span class="ml-1 d-none d-md-inline">Concept Map</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <li hidden class="nav-item">
                                         <a class="nav-link" id="tests-tab" data-toggle="tab" href="#tests" role="tab" aria-controls="tests" aria-selected="false" @click="showTabContent()">
-                                            <i class="fa fa-check"></i>
+                                            <i class="fa fa-check"></i> <span class="ml-1 d-none d-md-inline">Selbsttestaufgaben</span>
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="bookmarks-tab" data-toggle="tab" href="#bookmarks" role="tab" aria-controls="bookmarkss" aria-selected="false" @click="showTabContent()">
-                                            <i class="fa fa-bookmark"></i>
+                                            <i class="fa fa-bookmark"></i><span class="ml-1 d-none d-md-inline">Lesezeichen</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <li hidden class="nav-item">
                                         <a class="nav-link" id="annotations-tab" data-toggle="tab" href="#annotations" role="tab" aria-controls="annotations" aria-selected="false" @click="showTabContent()">
-                                            <i class="fa fa-pencil"></i>
+                                            <i class="fa fa-pencil"></i><span class="ml-1 d-none d-md-inline">Hervorhebungen</span>
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="search-tab" data-toggle="tab" href="#search" role="tab" aria-controls="search" aria-selected="false" @click="showTabContent()">
-                                            <i class="fa fa-search"></i>
+                                            <i class="fa fa-search"></i> <span class="ml-1 d-none d-md-inline">Suche</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -141,32 +141,40 @@ define([
                         </div>
                         
                         <!-- -->
-                        <div :style="{visibility: tabContentVisible ? 'visible' : 'hidden'}" class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade" id="tableofcontent" role="tabpanel" aria-labelledby="toc-tab">
+                        <div :style="{display: tabContentVisible ? 'block' : 'none'}" class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade p-3" id="tableofcontent" role="tabpanel" aria-labelledby="toc-tab">
                                 <TableOfContent @hideTabContent='hideTabContent' v-on:log='log'></TableOfContent>
                             </div>
-                            <div class="tab-pane fade" id="concepts" role="tabpanel" aria-labelledby="toc-tab">
+                            <div class="tab-pane fade v" id="concepts" role="tabpanel" aria-labelledby="toc-tab">
                                 <CourseRecommondation @hideTabContent='hideTabContent' v-on:log='log'></CourseRecommondation>
                             </div>
-                            <div class="tab-pane fade" id="tests" role="tabpanel" aria-labelledby="toc-tab">
+                            <div class="tab-pane fade p-3" id="tests" role="tabpanel" aria-labelledby="toc-tab">
                                 Tests
                                 <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="tab-pane fade" id="bookmarks" role="tabpanel" aria-labelledby="toc-tab">
-                                Lesezeichen:
-                                <ul>
-                                    <li></li>
-                                </ul>
+                            <div class="tab-pane fade p-3" id="bookmarks" role="tabpanel" aria-labelledby="toc-tab">
+                                <div v-if="$store.getters.getBookmarks.length == 0">
+                                    Es wurden noch keine Lesezeichen angelegt. Markieren Sie einen Textauschnitt, um ein Lesezeichen anzulegen.
+                                </div>
+                                <div v-if="$store.getters.getBookmarks.length > 0">
+                                    Meine Lesezeichen:
+                                    <ul>
+                                        <li v-for="b in $store.getters.getBookmarks"><a :href="'#'+b.target">{{ b.text }}</a></li>
+                                    </ul>
+                                    <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="tab-pane fade" id="annotations" role="tabpanel" aria-labelledby="toc-tab">
+                            <div class="tab-pane fade p-3" id="annotations" role="tabpanel" aria-labelledby="toc-tab">
                                 Annotations
                                 <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="search-pane fade" id="search" role="tabpanel" aria-labelledby="search-tab">
+                            <div class="tab-pane fade p-3" id="search" role="tabpanel" aria-labelledby="search-tab">
                                 <Search @hideTabContent='hideTabContent' v-on:log='log'></Search>
                             </div>
                         </div>

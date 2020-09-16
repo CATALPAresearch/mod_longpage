@@ -97,7 +97,7 @@ define([
             },
 
             template: `
-                <div class="form-inline col-4 col-sm-4 col-xs-8 mb-1 px-0 mx-0">
+                <div class="form-inline text-right">
                     <input v-model="searchTerm" v-on:keyup.enter="doFulltextSearch" id="search-string" class="form-control form-control-sm mr-sm-2 d-inline w-50 d-flex ml-auto" type="search" placeholder="Suchen" aria-label="Search">
                     <button @click="doFulltextSearch" id="search-full-text" class="btn btn-light btn-sm d-inline mr-0" type="button"><i class="fa fa-search"></i></button>
                     <div v-if="showSearchResults" class="row w-100 px-0 mx-0" style="z-index:3000;">
