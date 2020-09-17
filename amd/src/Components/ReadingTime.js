@@ -1,9 +1,10 @@
 /**
  * TODO
- * - counting images does not work
  * - testing is necessary. I am not sure whether all nestes DOM-Elements are considered using .text()
+ * ---
+ * - counting images does not work
  * - the estimation by certain types of headings should be abstracted
- * - language support
+ * - language support / language detection
  */
 
 define([
@@ -41,7 +42,7 @@ define([
                 calcH2: function () {
                     let output = $('<span></span>')
                         .addClass('longpage-reading-time-estimation mx-0 my-1 p-0')
-                        .text('Geschätzte Lesezeit ' + this.fastSum + ' - ' + this.slowSum + ' Minuten');
+                        .text('Geschätzte Lesezeit ' + this.convertToReadableTime(this.fastSum) + ' - ' + this.convertToReadableTime(this.slowSum) + ' Stunden');
                     $(this.parantSelector + ' h2').after(output);
 
                     return;
@@ -110,7 +111,20 @@ define([
                     let readingTimeFast = Math.ceil(textlength / (readingSpeed.cpm + readingSpeed.variance) + numImg * 0.3);
                     this.slowSum += readingTimeSlow;
                     this.fastSum += readingTimeFast;
-                    return 'Geschätzte Lesezeit ' + readingTimeFast + '-' + readingTimeSlow + ' Minuten';
+                    return 'Geschätzte Lesezeit ' + this.convertToReadableTime(readingTimeFast) + '-' + this.convertToReadableTime(readingTimeSlow) + ' Stunden';
+                },
+
+                convertToReadableTime: function (time) {
+                    
+                    if (time < 60) {
+                        return '0:' + (time < 10 ? '0' + time : time);
+                    } else if (time > 59 && time < 3600) {
+                        let hours = Math.ceil(time / 60);
+                        let minutes = time % 60;
+                        return hours + ':' + (minutes < 10 ? '0' + minutes : minutes);
+                    }
+                    return time; // should be a rar case, but needs to be treated in some way
+                    
                 }
             },
             template: `<div></div>`
