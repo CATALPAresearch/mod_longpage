@@ -590,3 +590,7 @@ code {
     margin-top: 10px;
   }
 }
+
+.longpage-container p, .longpage-container .longpage-assignment, .longpage-container ol, .longpage-container ul, .longpage-container h2, .longpage-container h3, .longpage-container h4 {
+  /*color:#28a745;*/
+}

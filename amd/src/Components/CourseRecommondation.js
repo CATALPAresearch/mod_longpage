@@ -7,7 +7,7 @@
 define([
     'jquery',
     'core/ajax',
-    M.cfg.wwwroot + '/mod/page/lib/build/vue.min'
+    M.cfg.wwwroot + '/mod/page/lib/build/vue.min.js'
 ], function ($, ajax, Vue) {
 
         Vue.component('CourseRecommondation',

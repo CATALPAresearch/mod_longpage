@@ -10,9 +10,9 @@
  */
 define([
     'jquery',
-    M.cfg.wwwroot + "/mod/page/lib/build/vue.min",
-    M.cfg.wwwroot + "/mod/page/amd/src/Stores/PageStore",
-    'theme_boost/popover',
+    M.cfg.wwwroot + "/mod/page/lib/build/vue.min.js",
+    M.cfg.wwwroot + "/mod/page/amd/src/Stores/PageStore.js",
+    'theme_boost/popover.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Longtext.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Utils.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Logging.js'

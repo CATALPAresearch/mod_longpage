@@ -12,8 +12,8 @@ define([
     M.cfg.wwwroot + '/mod/page/amd/src/Components/TableOfContent.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Components/Search.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Components/ReadingProgress.js',
-    M.cfg.wwwroot + '/mod/page/amd/src/Components/CourseRecommondation',
-    M.cfg.wwwroot + '/mod/page/amd/src/Components/Bookmark',
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/CourseRecommondation.js',
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/Bookmark.js',
 ], function ($, ReadingTime, TableOfContent, Search, ReadingProgress, CourseRecommondation, Bookmark) {
 
 
@@ -107,27 +107,27 @@ define([
                             <div class="col-8 col-md-8 col-xs-12">
                                 <ul class="nav nav-tabs" id="longpageFeatures" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link" id="toc-tab" data-toggle="tab" href="#tableofcontent" role="tab" aria-controls="tableofcontents" aria-selected="false" @click="showTabContent()">
+                                        <a class="nav-link" id="toc-tab" title="Inhaltsverzeichnis" data-toggle="tab" href="#tableofcontent" role="tab" aria-controls="tableofcontents" aria-selected="false" @click="showTabContent()">
                                             <i class="fa fa-list"></i><span class="ml-1 d-none d-md-inline">Inhaltsverzeichnis</span>
                                         </a>
                                     </li>
                                     <li hidden class="nav-item">
-                                        <a class="nav-link" id="concepts-tab" data-toggle="tab" href="#concepts" role="tab" aria-controls="concepts" aria-selected="false" @click="showTabContent()">
+                                        <a class="nav-link" id="concepts-tab" title="Concept Map" data-toggle="tab" href="#concepts" role="tab" aria-controls="concepts" aria-selected="false" @click="showTabContent()">
                                             <i class="fa fa-map"></i><span class="ml-1 d-none d-md-inline">Concept Map</span>
                                         </a>
                                     </li>
                                     <li hidden class="nav-item">
-                                        <a class="nav-link" id="tests-tab" data-toggle="tab" href="#tests" role="tab" aria-controls="tests" aria-selected="false" @click="showTabContent()">
+                                        <a class="nav-link" id="tests-tab" title="Selbsttests" data-toggle="tab" href="#tests" role="tab" aria-controls="tests" aria-selected="false" @click="showTabContent()">
                                             <i class="fa fa-check"></i> <span class="ml-1 d-none d-md-inline">Selbsttestaufgaben</span>
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="bookmarks-tab" data-toggle="tab" href="#bookmarks" role="tab" aria-controls="bookmarkss" aria-selected="false" @click="showTabContent()">
+                                        <a class="nav-link" id="bookmarks-tab" title="Lesezeichen" data-toggle="tab" href="#bookmarks" role="tab" aria-controls="bookmarkss" aria-selected="false" @click="showTabContent()">
                                             <i class="fa fa-bookmark"></i><span class="ml-1 d-none d-md-inline">Lesezeichen</span>
                                         </a>
                                     </li>
                                     <li hidden class="nav-item">
-                                        <a class="nav-link" id="annotations-tab" data-toggle="tab" href="#annotations" role="tab" aria-controls="annotations" aria-selected="false" @click="showTabContent()">
+                                        <a class="nav-link" id="annotations-tab" title="Hervorhebungen" data-toggle="tab" href="#annotations" role="tab" aria-controls="annotations" aria-selected="false" @click="showTabContent()">
                                             <i class="fa fa-pencil"></i><span class="ml-1 d-none d-md-inline">Hervorhebungen</span>
                                         </a>
                                     </li>
@@ -155,7 +155,10 @@ define([
                                 </button>
                             </div>
                             <div class="tab-pane fade p-3" id="bookmarks" role="tabpanel" aria-labelledby="toc-tab">
-                                <div v-if="$store.getters.getBookmarks.length == 0">
+                                <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
+                                        <span aria-hidden="true">&times;</span>
+                                </button>
+                                <div class="w-75" v-if="$store.getters.getBookmarks.length == 0">
                                     Es wurden noch keine Lesezeichen angelegt. Markieren Sie einen Textauschnitt, um ein Lesezeichen anzulegen.
                                 </div>
                                 <div v-if="$store.getters.getBookmarks.length > 0">
@@ -163,9 +166,6 @@ define([
                                     <ul>
                                         <li v-for="b in $store.getters.getBookmarks"><a :href="'#'+b.target">{{ b.text }}</a></li>
                                     </ul>
-                                    <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
                                 </div>
                             </div>
                             <div class="tab-pane fade p-3" id="annotations" role="tabpanel" aria-labelledby="toc-tab">

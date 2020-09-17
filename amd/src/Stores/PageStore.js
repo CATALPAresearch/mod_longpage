@@ -1,7 +1,7 @@
 
 define([
-    M.cfg.wwwroot + '/mod/page/lib/build/vue.min',
-    M.cfg.wwwroot + '/mod/page/lib/build/vuex.min'
+    M.cfg.wwwroot + '/mod/page/lib/build/vue.min.js',
+    M.cfg.wwwroot + '/mod/page/lib/build/vuex.min.js'
 ], function (Vue, Vuex) {
 
     function Store() {

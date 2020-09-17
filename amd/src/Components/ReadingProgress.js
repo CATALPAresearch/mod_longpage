@@ -1,6 +1,6 @@
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/page/lib/build/vue.min'
+    M.cfg.wwwroot + '/mod/page/lib/build/vue.min.js'
 ], function ($, Vue) {
 
     Vue.component('ReadingProgress',
