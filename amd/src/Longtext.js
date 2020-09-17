@@ -1,8 +1,6 @@
 /**
  * TODO
  * 
- * Logging
- * - consider pollyfills for scrolling: https://github.com/w3c/IntersectionObserver/tree/master/polyfill
  *
  */
 
@@ -11,8 +9,8 @@ define([
     M.cfg.wwwroot + '/mod/page/amd/src/Components/ReadingTime.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Components/TableOfContent.js',
     M.cfg.wwwroot + '/mod/page/amd/src/Components/Search.js',
-    M.cfg.wwwroot + '/mod/page/amd/src/Components/ReadingProgress.js',
-    M.cfg.wwwroot + '/mod/page/amd/src/Components/CourseRecommondation.js',
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/ReadingProgress.js', // attention
+    M.cfg.wwwroot + '/mod/page/amd/src/Components/CourseRecommondation.js', // attention
     M.cfg.wwwroot + '/mod/page/amd/src/Components/Bookmark.js',
 ], function ($, ReadingTime, TableOfContent, Search, ReadingProgress, CourseRecommondation, Bookmark) {
 
@@ -180,7 +178,7 @@ define([
                         </div>
                     </nav>
                     <ReadingTime></ReadingTime>
-                    <ReadingProgress v-on:log='log'></ReadingProgress>
+                    <!--<ReadingProgress v-on:log='log'></ReadingProgress>-->
                     <Bookmark v-on:log='log'></Bookmark>
                 </div>
             `
