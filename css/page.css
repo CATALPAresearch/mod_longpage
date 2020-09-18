@@ -35,6 +35,7 @@ html {
 
 #longpage-navbar .navbar-brand {
   color: #333;
+  white-space: normal;
 }
 
 #top-of-site-pixel-anchor {
@@ -591,6 +592,12 @@ code {
   }
 }
 
-.longpage-container p, .longpage-container .longpage-assignment, .longpage-container ol, .longpage-container ul, .longpage-container h2, .longpage-container h3, .longpage-container h4 {
-  /*color:#28a745;*/
+.longpage-container p, 
+.longpage-container .longpage-assignment, 
+.longpage-container ol, 
+.longpage-container ul, 
+.longpage-container h2, 
+.longpage-container h3, 
+.longpage-container h4 {
+  color:#28a745 !important;
 }

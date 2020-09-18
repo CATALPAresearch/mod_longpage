@@ -1,5 +1,13 @@
 /**
  * See also: https://moodle.org/plugins/block_annotate
+ * 
+ * TODO:
+ * - place tool-menu
+ * - delete bookmarks
+ * - indicate bookmarks in the text
+ * - find proper label for a bookmark in the list
+ * ----
+ * prepare highlighting
  */
 
 define([
@@ -44,12 +52,12 @@ define([
 
                 let selection = window.getSelection ? window.getSelection() : document.selection.createRange();
                 console.log('selection', selection)
-                console.log('range', selection.getRangeAt(0))
+                //console.log('range', selection.getRangeAt(0))
                 const startNode = selection.getRangeAt(0).startContainer.parentNode
                 const endNode = selection.getRangeAt(0).endContainer.parentNode
                 if (!startNode.isSameNode(endNode)) {
-                    this.showTools = false
-                    return
+                    this.showTools = false;
+                    return;
                 }
                 const { x, y, width, height, top } = selection.getRangeAt(0).getBoundingClientRect();
 

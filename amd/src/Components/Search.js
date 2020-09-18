@@ -1,3 +1,11 @@
+/**
+ * TODO:
+ * - close btn disappears when scrolling down the results
+ * - Suchbegriff im Text hervorheben
+ * ---
+ * - remove jquery
+ */
+
 define([
     'jquery',
     M.cfg.wwwroot + '/mod/page/lib/build/vue.min.js'
@@ -77,7 +85,7 @@ define([
                         });
                         this.searchResults = this.searchResults.map(function (res) {
                             let pos = res.doc.body.indexOf(_this.searchTerm);
-                            res.doc.short = pos > 0 ? '... ' + res.doc.body.substr(pos - 20 > 0 ? pos - 20 : 0, 40) : _this.searchTerm;
+                            res.doc.short = pos > 0 ? '... ' + res.doc.body.substr(pos - 20 > 0 ? pos - 20 : 0, 40).replace(_this.searchTerm, '<strong>'+_this.searchTerm+'</strong>') : _this.searchTerm;
                             //console.log(pos, _this.searchTerm, res.doc.short)
                             return res;
                         })
@@ -97,16 +105,18 @@ define([
             },
 
             template: `
-                <div class="form-inline text-right">
-                    <input v-model="searchTerm" v-on:keyup.enter="doFulltextSearch" id="search-string" class="form-control form-control-sm mr-sm-2 d-inline w-50 d-flex ml-auto" type="search" placeholder="Suchen" aria-label="Search">
-                    <button @click="doFulltextSearch" id="search-full-text" class="btn btn-light btn-sm d-inline mr-0" type="button"><i class="fa fa-search"></i></button>
-                    <div v-if="showSearchResults" class="row w-100 px-0 mx-0" style="z-index:3000;">
-                        <div class="col-9 d-inline d-xs-none"></div>
-                        <div class="col-3 col-xs-12 p-3 bg-light" style="max-height:80vh; overflow:auto">
+                <div class="form-inline w-md-75 w-xs-100">
+                    <div class="w-100 mb-1 text-right">
+                        <input v-model="searchTerm" v-on:keyup.enter="doFulltextSearch" id="search-string" class="form-control form-control-sm mr-sm-2 d-inline w-md-50 w-xs-75 d-inline ml-auto" type="search" placeholder="Suchen" aria-label="Search">
+                        <button @click="doFulltextSearch" id="search-full-text" class="btn btn-light btn-sm d-inline mr-0" type="button"><i class="fa fa-search"></i></button>
+                    </div>
+                    <div v-if="showSearchResults" class="row w-md-50 w-xs-100 ml-auto px-0 mx-0" style="z-index:3000;">
+                        <div class="w-100 text-right">
                             <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="$emit('hideTabContent')">
                                 <span aria-hidden="true">&times;</span>
                             </button>
-                            <br>
+                        </div>
+                        <div class="p-3 bg-light" style="max-height:80vh; overflow:auto">
                             <div class="mb-2">{{ searchResults.length }} Suchtreffer für '{{ searchTerm }}':</div>
                             <ul id="search-results" class="list-unstyled">
                                 <li class="mb-2" v-for="res in searchResults" v-if="res.doc.short.length > 0">
@@ -116,7 +126,8 @@ define([
                                         :href="'#'+res.doc.link"
                                         @click="searchResultClick(res.doc)"
                                         >
-                                        {{ res.doc.short }}
+                                        <span v-html="res.doc.short"></span>
+                                        
                                         </a>
                                 </li>
                             </ul>

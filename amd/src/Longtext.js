@@ -1,6 +1,7 @@
 /**
  * TODO
- * 
+ * ---
+ * - replace jquery event handling
  *
  */
 
@@ -14,10 +15,9 @@ define([
     M.cfg.wwwroot + '/mod/page/amd/src/Components/Bookmark.js',
 ], function ($, ReadingTime, TableOfContent, Search, ReadingProgress, CourseRecommondation, Bookmark) {
 
-
     // new CourseRecommender();
 
-        var Longtext = function (Vue, Store, utils, logger, pagename) {
+    var Longtext = function (Vue, Store, utils, logger, pagename) {
         Vue.component('TableOfContent', TableOfContent);
         Vue.component('Search', Search);
         Vue.component('ReadingProgress', ReadingProgress);
@@ -29,52 +29,37 @@ define([
 
         new Vue({
             el: 'longpage-container',
+
             store: pageStore.store,
+
             data: function () {
                 return {
                     pagename: '',
                     tabContentVisible: false,
-                    //
-                    filter_assessment: true,
-                    filter_text: true,
-                    content: []
                 };
             },
-            components: { },
+
             mounted: function () {
                 this.pagename = pagename;
+                var _this = this;
 
                 // log bootstrap interactions
+
                 $('.longpage-citation').click(function () {
-                    this.log('citation_view', { citation: $(this).data('content') });
+                    _this.log('citation_view', { citation: $(this).data('content') });
                 });
                 $('.longpage-footnote').click(function () {
-                    this.log('footnote_view', { title: $(this).find('button').data('original-title'), text: $(this).find('button').data('content') });
+                    _this.log('footnote_view', { title: $(this).find('button').data('original-title'), text: $(this).find('button').data('content') });
                 });
                 $('.longpage-crossref').click(function () {
-                    this.log('crossref_follow', { source: $(this).text(), target: $(this).attr('href'), parent: $(this).parent().attr('id') });
+                    _this.log('crossref_follow', { source: $(this).text(), target: $(this).attr('href'), parent: $(this).parent().attr('id') });
                 });
                 $('.longpage-assignment-link').click(function () {
-                    this.log('assignment_open', { target: $(this).attr('href') });
+                    _this.log('assignment_open', { target: $(this).attr('href') });
                 });
 
             },
-            computed: {
-                filteredContent: function () {
-                    var _this = this;
-                    var filtered = Object.values(this.content).filter(function (c) {
-                        if (c.type === 'assessment' && this.filter_assessment) {
-                            return true;
-                        } else if (c.type === 'content' && this.filter_text) {
-                            return true;
-                        }
-                        return false;
-                    });
-                    return Object.values(filtered).filter(function (c) {
-                        return '';//Object.values(c).join(' ').toLowerCase().includes(_this.search.toLowerCase());
-                    });
-                }
-            },
+
             methods: {
 
                 log(key, values) {
@@ -84,11 +69,11 @@ define([
                 showTabContent() {
                     this.tabContentVisible = true;
                 },
+
                 hideTabContent() {
                     this.tabContentVisible = false;
+                    document.querySelector('#longpage-features').querySelector('a.active.show').classList.remove("active");
                 },
-
-                
 
                 decode: function (str) {
                     let out = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
@@ -103,7 +88,7 @@ define([
                                 <a class="navbar-brand">{{ pagename }}</a>
                             </span>
                             <div class="col-8 col-md-8 col-xs-12">
-                                <ul class="nav nav-tabs" id="longpageFeatures" role="tablist">
+                                <ul class="nav nav-tabs" id="longpage-features" role="tablist">
                                     <li class="nav-item">
                                         <a class="nav-link" id="toc-tab" title="Inhaltsverzeichnis" data-toggle="tab" href="#tableofcontent" role="tab" aria-controls="tableofcontents" aria-selected="false" @click="showTabContent()">
                                             <i class="fa fa-list"></i><span class="ml-1 d-none d-md-inline">Inhaltsverzeichnis</span>
@@ -138,7 +123,7 @@ define([
                             </div>
                         </div>
                         
-                        <!-- -->
+                        <!-- Longpage Feature Tabs -->
                         <div :style="{display: tabContentVisible ? 'block' : 'none'}" class="tab-content" id="myTabContent">
                             <div class="tab-pane fade p-3" id="tableofcontent" role="tabpanel" aria-labelledby="toc-tab">
                                 <TableOfContent @hideTabContent='hideTabContent' v-on:log='log'></TableOfContent>
@@ -177,16 +162,14 @@ define([
                             </div>
                         </div>
                     </nav>
+
                     <ReadingTime></ReadingTime>
                     <!--<ReadingProgress v-on:log='log'></ReadingProgress>-->
                     <Bookmark v-on:log='log'></Bookmark>
                 </div>
             `
         });
-        // });
     };// end Longtext
-
-
 
     return Longtext;
 });

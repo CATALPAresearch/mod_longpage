@@ -1,3 +1,12 @@
+/**
+ * TODO
+ * - store and load individual progress in DB
+ * - visualize individual progress
+ * - visualize course progress
+ * ---
+ * - remove jquery
+ */
+
 define([
     'jquery',
     M.cfg.wwwroot + '/mod/page/lib/build/vue.min.js'
