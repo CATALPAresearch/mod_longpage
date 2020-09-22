@@ -72,29 +72,55 @@ if ($inpopup and $page->display == RESOURCELIB_DISPLAY_POPUP) {
 
 echo $OUTPUT->header();
 
+if (access_control()) {
+    
+    if (!isset($options['printheading']) || !empty($options['printheading'])) {
+        echo '<longpage-container></longpage-container>';
+    }
 
-if (!isset($options['printheading']) || !empty($options['printheading'])) {
-    echo '<longpage-container></longpage-container>';
+    echo '<div class="rowx w-100">';
+    $content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_page', 'content', $page->revision);
+    $formatoptions = new stdClass;
+    $formatoptions->noclean = true;
+    $formatoptions->context = $context;
+    $content = format_text($content, $page->contentformat, $formatoptions);
+
+    // output content
+    echo '<div class="w-100 m-auto longpage-container" lang="de">';
+
+    echo $OUTPUT->box($content, "generalbox center clearfix");
+    echo '</div>';
+    echo '</div>'; // end row
+
+    echo '<div id="top-of-site-pixel-anchor"></div>';
+    $PAGE->requires->js_call_amd('mod_page/page', 'init', array($cm->id, format_string($page->name)));
+
+} else {
+    echo '<div class="alert alert-danger w-75" role="alert">';
+    echo '<h4>Kein Zugang</h4><br/>Wir können Ihnen zu dieser Ressource leider keinen Zugang gewähren, da Sie den Untersuchungen im Rahmen des Forschungsprojekt APLE nicht zugestimmt haben.';
+    $limit = new DateTime("2020-10-31 23:59:59");
+    $now = new DateTime();
+    if ($now < $limit) {
+        echo '<br/><br/><button class="btn btn-primary">Nachträglich der Teilnahme am Forschungsprojekt zustimmen</button><button class="btn btn-link" style="float:right;">Zurück zum Kurs</button>';
+    }
+    echo '</div>';
 }
 
+echo $OUTPUT->footer();
 
-echo '<div class="rowx w-100">';
-$content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_page', 'content', $page->revision);
-$formatoptions = new stdClass;
-$formatoptions->noclean = true;
-//$formatoptions->overflowdiv = true;
-$formatoptions->context = $context;
-$content = format_text($content, $page->contentformat, $formatoptions);
 
-// output content
-echo '<div class="w-100 m-auto longpage-container" lang="de">';
-
-echo $OUTPUT->box($content, "generalbox center clearfix");
-echo '</div>';
-echo '</div>'; // end row
-
-echo '<div id="top-of-site-pixel-anchor"></div>';
-$PAGE->requires->js_call_amd('mod_page/page', 'init', array($cm->id, format_string($page->name)));
+function access_control()
+{
+    global $DB, $USER;
+    $version = 3;
+    $transaction = $DB->start_delegated_transaction();
+    $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "timemodified");
+    $transaction->allow_commit();
+    if (isset($res->timemodified) && $res->timemodified > 1000) {
+        return true;
+    }
+    return false;
+}
 
 $strlastmodified = get_string("lastmodified");
 echo "<div class=\"col-12\" lang=\"de\"><div class=\"last-modified modified\">$strlastmodified: ".userdate($page->timemodified)."</div></div>";

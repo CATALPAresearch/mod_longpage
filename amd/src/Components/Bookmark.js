@@ -51,7 +51,7 @@ define([
             onMouseup(e) {
 
                 let selection = window.getSelection ? window.getSelection() : document.selection.createRange();
-                console.log('selection', selection)
+                //console.log('selection', selection)
                 //console.log('range', selection.getRangeAt(0))
                 const startNode = selection.getRangeAt(0).startContainer.parentNode
                 const endNode = selection.getRangeAt(0).endContainer.parentNode

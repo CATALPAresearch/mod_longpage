@@ -24,6 +24,8 @@ define([
             mounted: function () {
                 this.generateTableOfContent();
                 let _this = this;
+
+                // capture and log events
                 $('.nav-link-h4').click(function () {
                     _this.$emit('log', 'toc_entry_open', { level: 'h4', target: $(this).attr('href') });
                 });
@@ -49,6 +51,7 @@ define([
                             $('.nav-link-h3').click(function (e) {
                                 var target = $(this).attr('href');
                                 window.location.href = window.location.href.split('#')[0] + target;
+                                return; 
                                 var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop || window.pageYOffset;
                                 //var elPos = document.getElementById(target.replace('#', '')).scrollTop; // not working
                                 window.scroll({
@@ -56,7 +59,7 @@ define([
                                     left: 0,
                                     behavior: 'smooth'
                                 });
-                                console.log(scrollPos, target, window.scrollY)
+                                // console.log(scrollPos, target, window.scrollY, window.location.href.split('#')[0] + target)
 
                             });
                             var wrap = $('<div></div>')
@@ -80,6 +83,7 @@ define([
                     });
                 },
             },
+
             template: `
                 <div>
                     <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="$emit('hideTabContent')">
@@ -92,4 +96,3 @@ define([
             `
         });
 });
-

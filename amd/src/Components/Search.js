@@ -1,8 +1,7 @@
 /**
  * TODO:
- * - close btn disappears when scrolling down the results
- * - Suchbegriff im Text hervorheben
  * ---
+ * - Suchbegriff im Text hervorheben
  * - remove jquery
  */
 
