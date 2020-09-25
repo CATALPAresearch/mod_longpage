@@ -29,6 +29,4 @@ define([
     }
 
     return Store;
-
-
 });

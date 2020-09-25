@@ -15,8 +15,6 @@ define([
     M.cfg.wwwroot + '/mod/page/amd/src/Components/Bookmark.js',
 ], function ($, ReadingTime, TableOfContent, Search, ReadingProgress, CourseRecommondation, Bookmark) {
 
-    // new CourseRecommender();
-
     var Longtext = function (Vue, Store, utils, logger, pagename) {
         Vue.component('TableOfContent', TableOfContent);
         Vue.component('Search', Search);

@@ -106,7 +106,7 @@ if (access_control()) {
     echo '</div>';
 }
 
-echo $OUTPUT->footer();
+
 
 
 function access_control()
