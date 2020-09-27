@@ -112,14 +112,19 @@ if (access_control()) {
 function access_control()
 {
     global $DB, $USER;
-    $version = 3;
-    $transaction = $DB->start_delegated_transaction();
-    $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "timemodified");
-    $transaction->allow_commit();
-    if (isset($res->timemodified) && $res->timemodified > 1000) {
+    require_login();
+    if (isset($_SESSION['policy_accepted']) && $_SESSION['policy_accepted'] === true) {
         return true;
     }
+    $version = 1;
+    $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "timemodified");
+    if (isset($res->timemodified) && $res->timemodified > 1000) {
+        $_SESSION['policy_accepted'] = true;
+        return true;
+    }
+    $_SESSION['policy_accepted'] = false;
     return false;
+
 }
 
 $strlastmodified = get_string("lastmodified");
