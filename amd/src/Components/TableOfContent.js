@@ -45,7 +45,7 @@ define([
                     $(".longpage-container h3, .longpage-container h4").each(function () {
                         if ($(this).is("h3")) { // .tagName === 'H3'
                             $(this).attr('id', "xh3item-" + indexH3);
-                            li = "<li class='nav-item'><a class='nav-link nav-link-h3' data-parent='#toclist' data-toggle='collapse' data-target='#h3item-" + indexH3 + "' href='#xh3item-" + indexH3 + "'>" + $(this).text() + "</a></li>";
+                            li = "<li class='nav-item'><a class='nav-link nav-link-h3' data-parent='#toclist' data-target='#h3item-" + indexH3 + "' href='#xh3item-" + indexH3 + "'>" + $(this).text() + "</a></li>";
                             prevH2List = $('<ul></ul>').addClass('nav flex-column ml-3');
                             prevH2Item = $(li); // var doc = new DOMParser().parseFromString(xmlString, "text/html");
                             $('.nav-link-h3').click(function (e) {
@@ -64,7 +64,7 @@ define([
                             });
                             var wrap = $('<div></div>')
                                 .attr('id', 'h3item-' + indexH3)
-                                .addClass('collapse')
+                                //.addClass('collapse')
                                 .append(prevH2List)
                                 ;
                             prevH2Item.append(wrap);

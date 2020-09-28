@@ -41,7 +41,8 @@ define([
             methods: {
                 calcH2: function () {
                     let output = $('<span></span>')
-                        .addClass('longpage-reading-time-estimation mx-0 my-1 p-0')
+                        .addClass('mx-0 my-1 p-0')
+                        .addAttr('style', ' font-size: 0.8em; color: #333333;')
                         .text('Geschätzte Lesezeit ' + this.convertToReadableTime(this.fastSum) + ' - ' + this.convertToReadableTime(this.slowSum) + ' Stunden');
                     $(this.parantSelector + ' h2').after(output);
 
@@ -66,7 +67,8 @@ define([
                             $(this).removeClass('tmp-marked')
                         });
                         let output = $('<span></span>')
-                            .addClass('longpage-reading-time-estimation mx-0 my-1 p-0')
+                            .addClass('mx-0 my-1 p-0')
+                            .addAttr('style', ' font-size: 0.8em; color: #333333;')
                             .text(this.estimateTime(out, numberOfImages));
                         fromm.after(output);
                         console.log('h2', numerOfHeadings, out.length, numberOfImages)
@@ -95,7 +97,8 @@ define([
                             $(this).removeClass('tmp-marked-h3')
                         });
                         let output = $('<div></div>')
-                            .addClass('longpage-reading-time-estimation mx-0 my-3 p-0')
+                            .addClass('mx-0 my-3 p-0')
+                            .addAttr('style', ' font-size: 0.8em; color: #333333;')
                             .text(this.estimateTime(out, numberOfImages));
                         fromm.after(output);
                         //console.log('h3', numerOfHeadings, out.length, numberOfImages)
