@@ -77,7 +77,7 @@ define([
                 calcH3: function () {
                     let numerOfHeadings = $(this.parantSelector + ' h3').length;
                     // add a dummy heading at the end.
-                    $(this.parantSelector).append('<h3 style="display:inline;" class="dummy-heading-3">dummy</h3>');
+                    $(this.parantSelector).append('<h3 style="display:inline;color:#fff;" class="dummy-heading-3"></h3>');
                     // iterate over all headings and determine the text length and number of images
                     for (var i = 0; i < numerOfHeadings; i++) {
                         let numberOfImages = 0;
