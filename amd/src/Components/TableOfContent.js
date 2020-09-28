@@ -18,6 +18,8 @@ define([
 
             data: function () {
                 return {
+                    h3: [],
+                    h4: [],
                 }
             },
 
@@ -35,53 +37,45 @@ define([
             },
 
             methods: {
+
                 generateTableOfContent: function () {
+                    let _this = this;
                     // Generates a table of content from a HTML DOM
-                    var prevH2Item = {};
-                    var prevH2List = {};
-                    var li = {};
                     var indexH3 = 0;
                     var indexH4 = 0;
                     $(".longpage-container h3, .longpage-container h4").each(function () {
                         if ($(this).is("h3")) { // .tagName === 'H3'
+                            _this.h3.push({ id: "xh3item-" + indexH3, parent: null, text: $(this).text() });
                             $(this).attr('id', "xh3item-" + indexH3);
-                            li = "<li class='nav-item'><a class='nav-link nav-link-h3' data-parent='#toclist' data-target='#h3item-" + indexH3 + "' href='#xh3item-" + indexH3 + "'>" + $(this).text() + "</a></li>";
-                            prevH2List = $('<ul></ul>').addClass('nav flex-column ml-3');
-                            prevH2Item = $(li); // var doc = new DOMParser().parseFromString(xmlString, "text/html");
-                            $('.nav-link-h3').click(function (e) {
-                                var target = $(this).attr('href');
-                                window.location.href = window.location.href.split('#')[0] + target;
-                                return; 
-                                var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop || window.pageYOffset;
-                                //var elPos = document.getElementById(target.replace('#', '')).scrollTop; // not working
-                                window.scroll({
-                                    top: scrollPos - 30,
-                                    left: 0,
-                                    behavior: 'smooth'
-                                });
-                                // console.log(scrollPos, target, window.scrollY, window.location.href.split('#')[0] + target)
-
-                            });
-                            var wrap = $('<div></div>')
-                                .attr('id', 'h3item-' + indexH3)
-                                //.addClass('collapse')
-                                .append(prevH2List)
-                                ;
-                            prevH2Item.append(wrap);
-                            if (window["toclist"]) {
-                                prevH2Item.appendTo("#toclist");
-                            } else {
-                                console.log('Could not find toclist');
-                            }
                             indexH3++;
                         } else if ($(this).is("h4")) {
+                            _this.h4.push({ id: "h4item-" + indexH4, parent: "xh3item-" + (indexH3-1), text: $(this).text() });
                             $(this).attr('id', "h4item-" + indexH4);
-                            li = "<li class='nav-item'><a class='nav-link nav-link-h4' href='#h4item-" + indexH4 + "'>" + $(this).text() + "</a></li>";
-                            prevH2List.append(li);
                             indexH4++;
                         }
                     });
                 },
+                getChildren: function (id) {
+                    return this.h4.filter(function (d) {
+                        return d.parent === id ? true : false;
+                    });
+                },
+                followLink: function (target, level, event) {
+                    let elem = document.getElementById(target);
+                    if (!elem) { return; }
+                    this.$emit('log', 'toc_entry_open', { level: level, target: target, title: elem.innerHTML });
+                    //history.pushState(null, null, target)
+                    var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop || window.pageYOffset;
+                    let elScrollOffset = elem.getBoundingClientRect().top
+                    let scrollOffset = window.pageYOffset || document.documentElement.scrollTop
+                    let padding = 50
+
+                    window.scroll({
+                        top: elScrollOffset + scrollOffset - padding,
+                        behavior: 'smooth'
+                    });
+                    event.preventDefault();
+                }
             },
 
             template: `
@@ -90,7 +84,17 @@ define([
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <div class="m-auto w-md-75 w-xs-100" style="max-height:80vh; overflow:auto">
-                        <ul id="toclist" class="nav-pills"></ul>
+                        <ul id="toc" class="nav-pills list-unstyled mt-0 pt-0">
+                            <li v-for="heading in h3" class="mb-2">
+                                <a v-on:click="followLink(heading.id, 'h3', $event)" class="bold">{{ heading.text }}</a>
+                                <ul v-if="getChildren(heading.id).length > 0" class="ml-3">
+                                    <li v-for="subhead in getChildren(heading.id)">
+                                        <a v-on:click="followLink(subhead.id, 'h4', $event)">{{ subhead.text }}</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul hidden id="toclist" class="nav-pills list-unstyled"></ul>
                     </div>
                 </div>
             `
