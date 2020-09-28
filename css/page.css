@@ -166,6 +166,30 @@ html {
   padding: 4px 8px 4px 0;
 }
 
+/* bad hack for 1D */
+
+table {
+  border-top: 2px solid #333;
+  border-bottom: 2px solid #333;
+  margin: 0 8px;
+  width:100%;
+}
+
+table thead {
+  border-bottom: 2px solid #333;
+}
+
+table tbody tr td {
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 4px 6px;
+  vertical-align: top;
+  margin: 0;
+}
+
+/* END bad hack for 1D */
+
 .longpage-container .longpage-image-block img {
   max-height: 80vh;
   align-content: center;
@@ -444,6 +468,7 @@ code {
 }
 
 /* Small devices (landscape phones, 576px and up) */
+
 @media (min-width: 576px) and (max-width: 767.98px) {
   h1, .h1 {
     font-size: 1.3rem;
@@ -451,6 +476,7 @@ code {
 }
 
 /* XS Extra small devices (portrait phones, less than 576px) */
+
 @media (max-width: 575.98px) {
   #page-navbar .breadcrumb {
     display: none;
