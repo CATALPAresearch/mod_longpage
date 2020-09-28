@@ -1,85 +1,9 @@
-#table-of-content {
-    position: relative;
-    width: 80%;
-    margin: 10px auto 0 auto;
-    align-content: space-around;
+/* Style */
+
+.longpage-toc-container a {
+    cursor: pointer;
 }
 
-#table-of-content.header-not-at-top {
-    position: fixed;
-    top: 105px;
-    left: 0px;
-    background-color: #fff;
-    color: #004C97;
-    max-height: 80vh;
-    z-index: 1001;
-}
-
-#table-of-content ul li {
-    display: block;
-}
-
-#table-of-content ul li a {
-    padding-top: 0;
-    padding-bottom: 6px;
-}
-
-#table-of-content ul li div ul {
-    padding-top: 0;
-    padding-bottom: 6px;
-    text-align: left;
-}
-
-#table-of-content .nav-link {
-    padding-top: 0;
-    padding-bottom: 6px;
-    font-size: 1em;
-    padding-left: 4px;
-    max-width: 100%;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    line-height: 1.2em;
-    text-align: left;
-}
-
-#table-of-content.header-not-at-top .nav-link {
-    padding-top: 0;
-    padding-bottom: 6px;
-    font-size: 0.8em;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    line-height: 1em;
-    text-align: left;
-}
-
-/* Medium devices (tablets, 768px and up) */
-
-@media (min-width: 768px) and (max-width: 991.98px) {
-    #table-of-content.header-not-at-top {
-        position: fixed;
-        top: 50px;
-        left: 0px;
-        background-color: #fff;
-        color: #004C97;
-        max-height: 80vh;
-        width: 100% !important;
-        z-index: 1001;
-    }
-    ul#toclist {
-        margin: 0 0 10px 15px;
-    }
-    #table-of-content ul li div ul {
-        padding-top: 0;
-        padding-bottom: 6px;
-        text-align: left;
-        margin-bottom: 0;
-    }
-}
-
-/* XS Extra small devices (portrait phones, less than 576px) */
-
-@media (max-width: 575.98px) {
-    #table-of-content {
-        display: inline;
-    }
+.longpage-toc-container a:hover {
+    text-decoration-style: solid;
 }

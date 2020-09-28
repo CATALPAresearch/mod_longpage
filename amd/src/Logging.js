@@ -99,6 +99,7 @@ define(['core/ajax'], function(ajax) {
                     break;
                 case 1:
                     this.sendLog(logEntry);
+                    console.log(logEntry);
                     break;
                 default:
                     // Do nothing

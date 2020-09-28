@@ -25,15 +25,6 @@ define([
 
             mounted: function () {
                 this.generateTableOfContent();
-                let _this = this;
-
-                // capture and log events
-                $('.nav-link-h4').click(function () {
-                    _this.$emit('log', 'toc_entry_open', { level: 'h4', target: $(this).attr('href') });
-                });
-                $('.nav-link-h3').click(function () {
-                    _this.$emit('log', 'toc_entry_open', { level: 'h3', target: $(this).attr('href') });
-                });
             },
 
             methods: {
@@ -74,12 +65,13 @@ define([
                         top: elScrollOffset + scrollOffset - padding,
                         behavior: 'smooth'
                     });
+                    this.$emit('hideTabContent');
                     event.preventDefault();
                 }
             },
 
             template: `
-                <div>
+                <div class="longpage-toc-container">
                     <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="$emit('hideTabContent')">
                         <span aria-hidden="true">&times;</span>
                     </button>
