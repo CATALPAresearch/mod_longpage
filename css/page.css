@@ -168,18 +168,18 @@ html {
 
 /* bad hack for 1D */
 
-table {
+.longpage-container table {
   border-top: 2px solid #333;
   border-bottom: 2px solid #333;
   margin: 0 8px;
-  width:100%;
+  width: 100%;
 }
 
-table thead {
+.longpage-container table thead {
   border-bottom: 2px solid #333;
 }
 
-table tbody tr td {
+.longpage-container table tbody tr td {
   border-bottom: 1px solid #ccc;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
@@ -513,5 +513,5 @@ code {
 }
 
 .longpage-container p, .longpage-container .longpage-assignment, .longpage-container ol, .longpage-container ul, .longpage-container h2, .longpage-container h3, .longpage-container h4 {
-  color: #28a745 !important;
+  /*color: #28a745 !important;*/
 }
