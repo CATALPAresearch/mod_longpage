@@ -55,8 +55,8 @@ define([
                     let elem = document.getElementById(target);
                     if (!elem) { return; }
                     this.$emit('log', 'toc_entry_open', { level: level, target: target, title: elem.innerHTML });
-                    //history.pushState(null, null, target)
-                    var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop || window.pageYOffset;
+                    // history.pushState(null, null, target)
+                    // var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop || window.pageYOffset;
                     let elScrollOffset = elem.getBoundingClientRect().top
                     let scrollOffset = window.pageYOffset || document.documentElement.scrollTop
                     let padding = 50

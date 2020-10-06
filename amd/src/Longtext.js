@@ -15,7 +15,7 @@ define([
     M.cfg.wwwroot + '/mod/page/amd/src/Components/Bookmark.js',
 ], function ($, ReadingTime, TableOfContent, Search, ReadingProgress, CourseRecommondation, Bookmark) {
 
-    var Longtext = function (Vue, Store, utils, logger, pagename) {
+    var Longtext = function (Vue, Store, utils, logger, context) {
         Vue.component('TableOfContent', TableOfContent);
         Vue.component('Search', Search);
         Vue.component('ReadingProgress', ReadingProgress);
@@ -23,7 +23,7 @@ define([
         Vue.component('CourseRecommondation', CourseRecommondation);
         Vue.component('Bookmark', Bookmark);
 
-        const pageStore = new Store();
+        const pageStore = new Store(context);
 
         new Vue({
             el: 'longpage-container',
@@ -32,15 +32,15 @@ define([
 
             data: function () {
                 return {
-                    pagename: '',
+                    pagename: context.pagename, // TODO: replace
+                    context: context,
                     tabContentVisible: false,
                 };
             },
 
             mounted: function () {
-                this.pagename = pagename;
                 var _this = this;
-
+                this.$store.dispatch('loadBookmarks');
                 // log bootstrap interactions
 
                 $('.longpage-citation').click(function () {
@@ -73,9 +73,21 @@ define([
                     document.querySelector('#longpage-features').querySelector('a.active.show').classList.remove("active");
                 },
 
-                decode: function (str) {
-                    let out = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
-                    return out;
+                followLink: function (target, event) {
+                    let elem = document.getElementById(target);
+                    if (!elem) { return; }
+
+                    //this.$emit('log', 'toc_entry_open', { level: level, target: target, title: elem.innerHTML });
+                    //history.pushState(null, null, target)
+                    let elScrollOffset = elem.getBoundingClientRect().top
+                    let scrollOffset = window.pageYOffset || document.documentElement.scrollTop
+                    let padding = 150;
+                    window.scroll({
+                        top: elScrollOffset + scrollOffset - padding,
+                        behavior: 'smooth'
+                    });
+                    this.hideTabContent();
+                    event.preventDefault();
                 }
             },
             template: `
@@ -102,7 +114,7 @@ define([
                                             <i class="fa fa-check"></i> <span class="ml-1 d-none d-md-inline">Selbsttestaufgaben</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    <li class="nav-item" hidden>
                                         <a class="nav-link" id="bookmarks-tab" title="Lesezeichen" data-toggle="tab" href="#bookmarks" role="tab" aria-controls="bookmarkss" aria-selected="false" @click="showTabContent()">
                                             <i class="fa fa-bookmark"></i><span class="ml-1 d-none d-md-inline">Lesezeichen</span>
                                         </a>
@@ -145,7 +157,10 @@ define([
                                 <div v-if="$store.getters.getBookmarks.length > 0">
                                     Meine Lesezeichen:
                                     <ul>
-                                        <li v-for="b in $store.getters.getBookmarks"><a :href="'#'+b.target">{{ b.text }}</a></li>
+                                        <li v-for="b in $store.getters.getBookmarks">
+                                            <a v-on:click="followLink(b.target, $event)" style="cursor:pointer;">{{ b.selection }}</a> 
+                                            <i v-on:click="$store.commit('removeBookmark', b.id)" class="ml-3 p-1 fa fa-trash"></i>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -162,7 +177,7 @@ define([
                     </nav>
 
                     <ReadingTime></ReadingTime>
-                    <!--<ReadingProgress v-on:log='log'></ReadingProgress>-->
+                    <ReadingProgress v-on:log='log' v-bind:context="context"></ReadingProgress>
                     <Bookmark v-on:log='log'></Bookmark>
                 </div>
             `

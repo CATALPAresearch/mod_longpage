@@ -15,7 +15,7 @@ define(['core/ajax'], function(ajax) {
         this.courseid = courseid;
         this.name = 'log_page';
         this.options = utils.mergeObjects({
-            outputType: 0, // -1: no logging, 0: console.log(), 1: server log, 
+            outputType: 1, // -1: no logging, 0: console.log(), 1: server log, 
             prefix: '',
             loggerServiceUrl: null,
             loggerServiceParams: { "data": {} },
@@ -41,7 +41,7 @@ define(['core/ajax'], function(ajax) {
                     //protocol: window.location.protocol,
                     //port: window.location.port,
                     host: window.location.host,
-                    pathname: window.location.pathname,
+                    pathname: window.location.href,
                     hash: window.location.hash,
                     tabId: window.name.split('=')[0] === "APLE-MOODLE" ? window.name.split('=')[1] : "unknown"
                 },
@@ -99,7 +99,7 @@ define(['core/ajax'], function(ajax) {
                     break;
                 case 1:
                     this.sendLog(logEntry);
-                    //console.log(logEntry);
+                    //console.log(logEntry.value);
                     break;
                 default:
                     // Do nothing
@@ -110,11 +110,12 @@ define(['core/ajax'], function(ajax) {
          * Makes an AJAX call to send the log data set to the server
          */
         this.sendLog = function (entry) {
+            let _this = this;
             ajax.call([{
                 methodname: 'mod_page_log',
                 args: {
                     data: {
-                        courseid: this.courseid,
+                        courseid: _this.courseid,
                         action: entry.action,
                         utc: Math.ceil(entry.utc / 1000),
                         entry: JSON.stringify(entry)
@@ -124,7 +125,7 @@ define(['core/ajax'], function(ajax) {
                     //console.log('ok', msg);
                 },
                 fail: function (e) {
-                    //console.error('fail',e);
+                    console.error('fail', e);
                 }
             }]);
         };

@@ -72,7 +72,7 @@ if ($inpopup and $page->display == RESOURCELIB_DISPLAY_POPUP) {
 
 echo $OUTPUT->header();
 
-if (format_ladtopics\blocking::tool_policy_accepted() == true) {
+if (mod_page\blocking::tool_policy_accepted() == true) {
     
     if (!isset($options['printheading']) || !empty($options['printheading'])) {
         echo '<longpage-container></longpage-container>';
@@ -93,32 +93,16 @@ if (format_ladtopics\blocking::tool_policy_accepted() == true) {
     echo '</div>'; // end row
 
     echo '<div id="top-of-site-pixel-anchor"></div>';
-    $PAGE->requires->js_call_amd('mod_page/page', 'init', array($cm->id, format_string($page->name)));
+    $PAGE->requires->js_call_amd('mod_page/page', 'init', array($course->id, $page->id, format_string($page->name)));
 
 } else {
-    $url = new moodle_url('/mod/page/redirect-blocking.php');
+    echo "Umleitung";
+    $url = new moodle_url('/mod/page/blocking-redirect.php');
+    redirect($url);
 }
 
 
 
-
-function access_control()
-{
-    global $DB, $USER;
-    require_login();
-    if (isset($_SESSION['policy_accepted']) && $_SESSION['policy_accepted'] === true) {
-        return true;
-    }
-    $version = 3; // 3 11
-    $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "timemodified");
-    if (isset($res->timemodified) && $res->timemodified > 1000) {
-        $_SESSION['policy_accepted'] = true;
-        return true;
-    }
-    $_SESSION['policy_accepted'] = false;
-    return false;
-
-}
 
 $strlastmodified = get_string("lastmodified");
 echo "<div class=\"col-12\" lang=\"de\"><div class=\"last-modified modified\">$strlastmodified: ".userdate($page->timemodified)."</div></div>";

@@ -9,19 +9,20 @@
 
 define([
     'jquery',
+    'core/ajax',
     M.cfg.wwwroot + '/mod/page/lib/build/vue.min.js'
-], function ($, Vue) {
+], function ($, ajax, Vue) {
 
     Vue.component('ReadingProgress',
         {
-            props: ['log'],
+            props: ['log', 'context'],
 
             data: function () {
                 return {
                 }
             },
 
-            mounted: function () {
+            mounted: function () { 
                 this.enableScrollLogging();
 
                 this.visualizeReadingProgress();
@@ -91,6 +92,7 @@ define([
                                     scrollYDistance = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
                                     var logentry = {
                                         utc: now.getTime(),
+                                        pageid: _this.context.pageid,
                                         relativeTime: entry.time,
                                         targetID: entry.target.id,
                                         targetTag: entry.target.localName,
@@ -128,22 +130,26 @@ define([
                 },
 
 
-                visualizeReadingProgress: function () {
-                    let data = {
-                        'paragraph-13': 3,
-                        'paragraph-44': 4,
-                        'paragraph-55': 5,
-                        'paragraph-46': 0,
-                        'paragraph-47': 1,
-                    }
+                visualizeReadingProgress: function () { 
+                    return;
 
-                    /*for (let i in data) {
-                        console.log(i, data[i])
-                        $('#' + i).append($('<span></span>').addClass('reading-progress progress-' + data[i]));
-                    }*/
-                    for (var i = 1; i < 460; i++) {
-                        $('#paragraph-' + i).append($('<span></span>').addClass('reading-progress progress-' + Math.ceil(Math.random() * 5)));
-                    }
+                    ajax.call([{
+                        methodname: 'mod_page_getreadingprogress',
+                        args: { data: { courseid: this.context.courseid, pageid: this.context.pageid } },
+                        done: function (reads) {
+                            console.log(reads);
+                            try {
+                                let data = JSON.parse(reads.response);
+                                for (var i = 1; i < 460; i++) {
+                                    $('#paragraph-' + i).append($('<span></span>').addClass('reading-progress progress-' + Math.ceil(Math.random() * 5)));
+                                }
+                            } catch (e) { console.log(e) }
+                        },
+                        fail: function (e) { console.error('fail', e); }
+                    }]);
+                    
+
+                    
                 },
             },
 

@@ -23,15 +23,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../../config.php');
-
+//require_once(dirname(__FILE__) . '/../../config.php');
+require('../../config.php');
 $limit = new DateTime("2020-10-31 23:59:59");
-$link = $CFG->wwwroot.'/user/policy.php';
+$link = $CFG->wwwroot.'/course/format/ladtopics/policy.php';
 
 $context = context_system::instance();
 global $USER, $PAGE, $DB, $CFG;
 $PAGE->set_context($context);
-$PAGE->set_url($CFG->wwwroot.'/question/type/selfassess/redirect.php');
+$PAGE->set_url($CFG->wwwroot.'/mod/page/blocking-redirect.php');
 
 $PAGE->set_pagelayout('course');
 $PAGE->set_title("Kein Zugang");

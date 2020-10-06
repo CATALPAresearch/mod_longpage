@@ -16,7 +16,7 @@
 
 // author: Marc Burchart <marc.burchart@fernuni-hagen.de>
 
-namespace format_ladtopics;
+namespace mod_page;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -27,11 +27,12 @@ class blocking
         global $DB, $USER;
         require_login();
         if (isset($_SESSION['policy_accepted']) && $_SESSION['policy_accepted'] === true) {
-            return true;
+            //return true;
         }
-        $version = 11;// 3  11
-        $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "timemodified");
-        if (isset($res->timemodified) && $res->timemodified > 1000) {
+        $version = 3;// local_niels: 11  aple: 3
+        $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "status");
+        
+        if (isset($res->status) && (int)$res->status == 1) {
             $_SESSION['policy_accepted'] = true;
             return true;
         }

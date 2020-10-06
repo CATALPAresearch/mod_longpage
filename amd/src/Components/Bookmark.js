@@ -116,22 +116,29 @@ define([
                 });
             },
 
-            handleAction(action) {
+            handleAction: function(action) {
                 console.log(this.selectedText);
                 //this.$emit(action, this.selectedText)
             },
 
-            handleBookmark() {
+            handleBookmark: function() {
                 console.log('added: ', this.selectedText);
-                this.prependBookmarkLabel()
+                this.prependBookmarkLabel();
+                let id = 'lp-' + Math.ceil(Math.random() * 200000);
                 this.$store.commit('addBookmarks', {
-                    text: this.selectedText,
+                    id: id,
+                    selection: this.selectedText + '(' + this.getPreviousHeading(id) +')',
                     target: this.target,
                     start: this.startNode,
                     end: this.endNode,
-                    created: new Date(),
+                    created: (new Date()).getTime(),
                     user: 'me'
                 })
+            },
+
+            getPreviousHeading: function(selector) {
+                return $(selector).prev('H4').text();
+
             }
         },
 

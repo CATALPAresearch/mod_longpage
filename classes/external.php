@@ -37,7 +37,8 @@ require_once("$CFG->libdir/externallib.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 3.0
  */
-class mod_page_external extends external_api {
+class mod_page_external extends external_api
+{
 
     /**
      * Returns description of method parameters
@@ -45,7 +46,8 @@ class mod_page_external extends external_api {
      * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function view_page_parameters() {
+    public static function view_page_parameters()
+    {
         return new external_function_parameters(
             array(
                 'pageid' => new external_value(PARAM_INT, 'page instance id')
@@ -61,14 +63,17 @@ class mod_page_external extends external_api {
      * @since Moodle 3.0
      * @throws moodle_exception
      */
-    public static function view_page($pageid) {
+    public static function view_page($pageid)
+    {
         global $DB, $CFG;
         require_once($CFG->dirroot . "/mod/page/lib.php");
 
-        $params = self::validate_parameters(self::view_page_parameters(),
-                                            array(
+        $params = self::validate_parameters(
+            self::view_page_parameters(),
+            array(
                                                 'pageid' => $pageid
-                                            ));
+                                            )
+        );
         $warnings = array();
 
         // Request and permission validation.
@@ -95,7 +100,8 @@ class mod_page_external extends external_api {
      * @return external_description
      * @since Moodle 3.0
      */
-    public static function view_page_returns() {
+    public static function view_page_returns()
+    {
         return new external_single_structure(
             array(
                 'status' => new external_value(PARAM_BOOL, 'status: true if success'),
@@ -110,11 +116,15 @@ class mod_page_external extends external_api {
      * @return external_function_parameters
      * @since Moodle 3.3
      */
-    public static function get_pages_by_courses_parameters() {
-        return new external_function_parameters (
+    public static function get_pages_by_courses_parameters()
+    {
+        return new external_function_parameters(
             array(
                 'courseids' => new external_multiple_structure(
-                    new external_value(PARAM_INT, 'Course id'), 'Array of course ids', VALUE_DEFAULT, array()
+                    new external_value(PARAM_INT, 'Course id'),
+                    'Array of course ids',
+                    VALUE_DEFAULT,
+                    array()
                 ),
             )
         );
@@ -128,8 +138,8 @@ class mod_page_external extends external_api {
      * @return array of warnings and pages
      * @since Moodle 3.3
      */
-    public static function get_pages_by_courses($courseids = array()) {
-
+    public static function get_pages_by_courses($courseids = array())
+    {
         $warnings = array();
         $returnedpages = array();
 
@@ -146,7 +156,6 @@ class mod_page_external extends external_api {
 
         // Ensure there are courseids to loop through.
         if (!empty($params['courseids'])) {
-
             list($courses, $warnings) = external_util::validate_courses($params['courseids'], $mycourses);
 
             // Get the pages in this course, this function checks users visibility permissions.
@@ -157,13 +166,26 @@ class mod_page_external extends external_api {
                 // Entry to return.
                 $page->name = external_format_string($page->name, $context->id);
 
-                list($page->intro, $page->introformat) = external_format_text($page->intro,
-                                                                $page->introformat, $context->id, 'mod_page', 'intro', null);
+                list($page->intro, $page->introformat) = external_format_text(
+                    $page->intro,
+                    $page->introformat,
+                    $context->id,
+                    'mod_page',
+                    'intro',
+                    null
+                );
                 $page->introfiles = external_util::get_area_files($context->id, 'mod_page', 'intro', false, false);
 
                 $options = array('noclean' => true);
-                list($page->content, $page->contentformat) = external_format_text($page->content, $page->contentformat,
-                                                                $context->id, 'mod_page', 'content', $page->revision, $options);
+                list($page->content, $page->contentformat) = external_format_text(
+                    $page->content,
+                    $page->contentformat,
+                    $context->id,
+                    'mod_page',
+                    'content',
+                    $page->revision,
+                    $options
+                );
                 $page->contentfiles = external_util::get_area_files($context->id, 'mod_page', 'content');
 
                 $returnedpages[] = $page;
@@ -183,7 +205,8 @@ class mod_page_external extends external_api {
      * @return external_single_structure
      * @since Moodle 3.3
      */
-    public static function get_pages_by_courses_returns() {
+    public static function get_pages_by_courses_returns()
+    {
         return new external_single_structure(
             array(
                 'pages' => new external_multiple_structure(
@@ -218,12 +241,13 @@ class mod_page_external extends external_api {
     }
 
     /**
-     * Takes video player log data form the client
+     * Takes Longpage log data form the client
      */
-    public static function log_parameters() {
+    public static function log_parameters()
+    {
         return new external_function_parameters(
             array(
-                'data' => 
+                'data' =>
                     new external_single_structure(
                         array(
                             'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
@@ -231,16 +255,18 @@ class mod_page_external extends external_api {
                             'action' => new external_value(PARAM_TEXT, '..action', VALUE_OPTIONAL),
                             'entry' => new external_value(PARAM_RAW, 'log data', VALUE_OPTIONAL)
                         )
-                )
+                    )
             )
         );
     }
-    public static function log_returns() {
+    public static function log_returns()
+    {
         return new external_single_structure(
-                array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
+            array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
         );
     }
-    public static function log($data) {
+    public static function log($data)
+    {
         global $CFG, $DB, $USER;
         
         $r = new stdClass();
@@ -256,29 +282,62 @@ class mod_page_external extends external_api {
         $r->contextid=120;
         $r->contextlevel=70;
         $r->contextinstanceid=86;
-        $r->userid=$USER->id; 
+        $r->userid=$USER->id;
         $r->courseid=(int)$data['courseid'];
+
         //$r->relateduserid=NULL;
         $r->anonymous=0;
-        $r->other=$data[entry];	 
+        $r->other=$data['entry'];
         $r->timecreated=$data['utc'];
-        $r->origin='web';	 
+        $r->origin='web';
         $r->ip=$_SERVER['REMOTE_ADDR'];
         //$r->realuserid=NULL;
         
-        $transaction = $DB->start_delegated_transaction();
-        $res = $DB->insert_records("logstore_standard_log", array($r)); // $CFG->prefix .
-        $transaction->allow_commit();
+        //$transaction = $DB->start_delegated_transaction();
+        //$res = $DB->insert_record("logstore_standard_log", (array)$r);
+        //$transaction->allow_commit();
+
+        $d=0;
+        if ($data['action']=="scroll") {
+            $d = json_decode($data['entry']);
+            $s = new stdClass();
+            $s->section = $d->value->targetID;
+            $s->sectionoffset = (int)$d->value->scrollYDistance;
+            $s->userid = $USER->id;
+            $s->courseid = (int)$data['courseid'];
+            $s->pageid = (int)$d->value->pageid;
+            $s->creationdate = $d->utc;
+            try {
+                $transaction = $DB->start_delegated_transaction();
+                $res2 = $DB->insert_records("page_reading", array($s));
+                $transaction->allow_commit();
+            } catch (Throwable $e) {
+                $transaction->rollback($e); // rethrows exception
+            }
+        }
+
+        /* CREATE TABLE m_page_reading (
+    id int NOT NULL AUTO_INCREMENT,
+    section varchar(255),
+    sectionoffset int,
+    userid int,
+    courseid int,
+    pageid int,
+    creationdate int,
+    PRIMARY KEY (id)
+);
+         */
+
 
         // quick event logging
-        $lesson->timemodified = time();
-        $coursemodule = get_fast_modinfo((int)$data['courseid'])->instances[$modulename][$instanceid];
-        $context = context_module::instance($coursemodule->id);
+        //$lesson->timemodified = time();
+        //$coursemodule = get_fast_modinfo((int)$data['courseid'])->instances[$modulename][$instanceid];
+        //$context = context_module::instance($coursemodule->id);
 
         /*
         $event = \core\event\mod_page::scroll2(array(
             'context'=>0,
-            'objectid'=>0, 
+            'objectid'=>0,
             'userid'=>$USER->id,
             'timecreated'=>$data['utc']
             'other'=>$data['targetID']
@@ -286,8 +345,281 @@ class mod_page_external extends external_api {
         $event->trigger();
         */
         
-        return array('response'=> json_encode($r));
-    } 
-    public static function log_is_allowed_from_ajax() { return true; }
-    
+        return array('response'=> json_encode($d));
+    }
+    public static function log_is_allowed_from_ajax()
+    {
+        return true;
+    }
+
+
+
+    /**
+     * Get bookmarks
+     */
+    public static function getbookmark_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'data' =>
+                    new external_single_structure(
+                        array(
+                            'courseid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                            'pageid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
+                        )
+                    )
+            )
+        );
+    }
+    public static function getbookmark_returns()
+    {
+        return new external_single_structure(
+            array( 'response' => new external_value(PARAM_RAW, 'All bookmarks of an user') )
+        );
+    }
+    public static function getbookmark($data)
+    {
+        global $CFG, $DB, $USER;
+        
+        $r = new stdClass();
+        $r->userid = $USER->id;
+        $r->courseid = $data['courseid'];
+        $r->pageid = $data['pageid'];
+        $r->visible = 1;
+
+        $transaction = $DB->start_delegated_transaction();
+        $res = $DB->get_records("page_bookmark", (array)$r);
+        $transaction->allow_commit();
+
+        return array('response'=> json_encode($res));
+    }
+    public static function getbookmark_is_allowed_from_ajax()
+    {
+        return true;
+    }
+
+
+
+    /**
+     * Updates a bookmark
+     */
+    public static function updatebookmark_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'data' =>
+                    new external_single_structure(
+                        array(
+                            'id' => new external_value(PARAM_INTEGER, ''),
+                            'title' => new external_value(PARAM_TEXT, ''),
+                            'selection' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                            'target' => new external_value(PARAM_TEXT, ''),
+                            'section' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                            'courseid' => new external_value(PARAM_INTEGER, ''),
+                            'pageid' => new external_value(PARAM_INTEGER, ''),
+                            'creationdate' => new external_value(PARAM_INTEGER, '', VALUE_OPTIONAL),
+                            'position' => new external_value(PARAM_INTEGER, '', VALUE_OPTIONAL),
+                            'visible' => new external_value(PARAM_INTEGER, '', VALUE_OPTIONAL)
+                        )
+                    )
+            )
+        );
+    }
+    public static function updatebookmark_returns()
+    {
+        return new external_single_structure(
+            array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
+        );
+    }
+    public static function updatebookmark($data)
+    {
+        global $CFG, $DB, $USER;
+        
+        $r = new stdClass();
+        $r->id = $data['id'];
+        $r->title = $data['title'];
+        $r->selection = $data['selection'];
+        $r->target = $data['target'];
+        $r->section = $data['section'];
+        $r->userid = $USER->id;
+        $r->courseid = $data['courseid'];
+        $r->pageid = $data['pageid'];
+        $r->creationdate = $data['creationdate'];
+        $r->position = $data['position'];
+        $r->visible = $data['visible'];
+
+        $transaction = $DB->start_delegated_transaction();
+        $res = $DB->update_record("page_bookmark", (array)$r);
+        $transaction->allow_commit();
+
+        return array('response'=> json_encode($res));
+    }
+    public static function updatebookmark_is_allowed_from_ajax()
+    {
+        return true;
+    }
+
+
+
+    /**
+     * Add bookmarks
+     */
+    public static function addbookmark_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'data' =>
+                    new external_single_structure(
+                        array(
+                            'title' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                            'selection' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                            'target' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                            'section' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                            'courseid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                            'pageid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                            'creationdate' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                            'position' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                            'visible' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
+                        )
+                    )
+            )
+        );
+    }
+    public static function addbookmark_returns()
+    {
+        return new external_single_structure(
+            array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
+        );
+    }
+    public static function addbookmark($data)
+    {
+        global $CFG, $DB, $USER;
+        
+        $r = new stdClass();
+        $r->title = $data['title'];
+        $r->selection = $data['selection'];
+        $r->target = $data['target'];
+        $r->section = $data['section'];
+        $r->userid = $USER->id;
+        $r->courseid = $data['courseid'];
+        $r->pageid = $data['pageid'];
+        $r->creationdate = $data['creationdate'];
+        $r->position = $data['position'];
+        $r->visible = $data['visible'];
+
+        $transaction = $DB->start_delegated_transaction();
+        $res = $DB->insert_record("page_bookmark", (array)$r);
+        $transaction->allow_commit();
+
+        return array('response'=> json_encode($res));
+    }
+    public static function addbookmark_is_allowed_from_ajax()
+    {
+        return true;
+    }
+
+
+
+    /**
+     * Removes a bookmark by setting visible = false
+     */
+    public static function removebookmark_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'data' =>
+                    new external_single_structure(
+                        array(
+                            'id' => new external_value(PARAM_INTEGER, '', VALUE_OPTIONAL)
+                        )
+                    )
+            )
+        );
+    }
+    public static function removebookmark_returns()
+    {
+        return new external_single_structure(
+            array( 'response' => new external_value(PARAM_RAW, 'All bookmarks of an user') )
+        );
+    }
+    public static function removebookmark($data)
+    {
+        global $CFG, $DB, $USER;
+        
+        $r = new stdClass();
+        $r->id = $data['id'];
+        $r->userid = $USER->id;
+        $r->visible = 0;
+
+        $transaction = $DB->start_delegated_transaction();
+        $res = $DB->update_record("page_bookmark", array($r));
+        $transaction->allow_commit();
+
+        return array('response'=> json_encode($res));
+    }
+    public static function removebookmark_is_allowed_from_ajax()
+    {
+        return true;
+    }
+
+
+
+
+
+
+ /**
+     * Get readingprogress
+     */
+    public static function getreadingprogress_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'data' =>
+                    new external_single_structure(
+                        array(
+                            'courseid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                            'pageid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
+                        )
+                    )
+            )
+        );
+    }
+    public static function getreadingprogress_returns()
+    {
+        return new external_single_structure(
+            array( 'response' => new external_value(PARAM_RAW, 'All bookmarks of an user') )
+        );
+    }
+    public static function getreadingprogress($data)
+    {
+        global $CFG, $DB, $USER;
+        
+        $r = new stdClass();
+        $r->userid = $USER->id;
+        $r->courseid = $data['courseid'];
+        $r->pageid = $data['pageid'];
+        
+        $query = '
+            SELECT section, count(section) 
+            FROM '. $CFG->prefix .'page_reading
+            GROUP by section
+            WHERE userid=? AND courseid=? AND pageid=?
+            ';
+            
+        $transaction = $DB->start_delegated_transaction();
+        $res = $DB->get_records_sql($query, array($USER->id, $data['courseid'], $data['pageid']));
+        $transaction->allow_commit();
+
+        return array('response'=> json_encode($res));
+    }
+    public static function getreadingprogress_is_allowed_from_ajax()
+    {
+        return true;
+    }
+
+
+
+
+
+
 }

@@ -31,14 +31,14 @@ define([
         });
 
         return {
-            init: function (courseid, pagename) {
+            init: function (courseid, pageid, pagename) {
                 try {
                     var utils = new Utils();
                     var log = new Log(utils, courseid, {
                         context: 'mod_page',
                         outputType: 1
                     });
-                    new Longtext(Vue, Store, utils, log, pagename);
+                    new Longtext(Vue, Store, utils, log, { courseid: courseid, pageid: pageid, pagename: pagename });
                 } catch (e) {
                     console.error(e);
                 }
