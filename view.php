@@ -72,7 +72,7 @@ if ($inpopup and $page->display == RESOURCELIB_DISPLAY_POPUP) {
 
 echo $OUTPUT->header();
 
-if (access_control()) {
+if (format_ladtopics\blocking::tool_policy_accepted() == true) {
     
     if (!isset($options['printheading']) || !empty($options['printheading'])) {
         echo '<longpage-container></longpage-container>';
@@ -96,14 +96,7 @@ if (access_control()) {
     $PAGE->requires->js_call_amd('mod_page/page', 'init', array($cm->id, format_string($page->name)));
 
 } else {
-    echo '<div class="alert alert-danger w-75" role="alert">';
-    echo '<h4>Kein Zugang</h4><br/>Wir können Ihnen zu dieser Ressource leider keinen Zugang gewähren, da Sie den Untersuchungen im Rahmen des Forschungsprojekt APLE nicht zugestimmt haben.';
-    $limit = new DateTime("2020-10-31 23:59:59");
-    $now = new DateTime();
-    if ($now < $limit) {
-        echo '<br/><br/><button class="btn btn-primary">Nachträglich der Teilnahme am Forschungsprojekt zustimmen</button><button class="btn btn-link" style="float:right;">Zurück zum Kurs</button>';
-    }
-    echo '</div>';
+    $url = new moodle_url('/mod/page/redirect-blocking.php');
 }
 
 
@@ -116,7 +109,7 @@ function access_control()
     if (isset($_SESSION['policy_accepted']) && $_SESSION['policy_accepted'] === true) {
         return true;
     }
-    $version = 1;
+    $version = 3; // 3 11
     $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "timemodified");
     if (isset($res->timemodified) && $res->timemodified > 1000) {
         $_SESSION['policy_accepted'] = true;
