@@ -122,7 +122,7 @@ define(['core/ajax'], function(ajax) {
                     }
                 },
                 done: function (msg) {
-                    //console.log('ok', msg);
+                    // console.log('ok', msg);
                 },
                 fail: function (e) {
                     console.error('fail', e);

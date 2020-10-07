@@ -131,17 +131,17 @@ define([
 
 
                 visualizeReadingProgress: function () { 
-                    return;
-
-                    ajax.call([{
+                   ajax.call([{
                         methodname: 'mod_page_getreadingprogress',
                         args: { data: { courseid: this.context.courseid, pageid: this.context.pageid } },
                         done: function (reads) {
-                            console.log(reads);
                             try {
-                                let data = JSON.parse(reads.response);
-                                for (var i = 1; i < 460; i++) {
-                                    $('#paragraph-' + i).append($('<span></span>').addClass('reading-progress progress-' + Math.ceil(Math.random() * 5)));
+                                let data = Object.values(JSON.parse(reads.response));
+                                let max = data.reduce((a, b) => a.count > b.count ? a : b).count; 
+                                for (var i = 0; i < data.length; i++) {
+                                    $('#' + data[i].section).append(
+                                        $('<span></span>').addClass('reading-progress progress-' + Math.ceil(data[i].count/max * 5) )
+                                    );
                                 }
                             } catch (e) { console.log(e) }
                         },

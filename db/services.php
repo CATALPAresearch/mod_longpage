@@ -82,7 +82,7 @@ $functions = array(
         'ajax'        => true 
     ),
     
-
+    
     'mod_page_reading' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'reading',

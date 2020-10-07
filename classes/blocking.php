@@ -29,7 +29,7 @@ class blocking
         if (isset($_SESSION['policy_accepted']) && $_SESSION['policy_accepted'] === true) {
             //return true;
         }
-        $version = 3;// local_niels: 11  aple: 3
+        $version = 11;// local_niels: 11  aple: 3
         $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "status");
         
         if (isset($res->status) && (int)$res->status == 1) {

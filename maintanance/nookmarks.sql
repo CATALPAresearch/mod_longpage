@@ -1,5 +1,6 @@
+/*postgres !!*/
 CREATE TABLE m_page_bookmark (
-    id int NOT NULL AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     title varchar(255),
     selection varchar(255),
     target varchar(255),
@@ -7,20 +8,18 @@ CREATE TABLE m_page_bookmark (
     userid int,
     courseid int,
     pageid int,
-    creationdate int,
+    creationdate bigint,
     position int,
-    visible int,
-    PRIMARY KEY (id)
+    visible int
 );
 
-
+/*postgres !!*/
 CREATE TABLE m_page_reading (
-    id int NOT NULL AUTO_INCREMENT,
-    section varchar(255),
+    id SERIAL PRIMARY KEY,
+    section TEXT,
     sectionoffset int,
     userid int,
     courseid int,
     pageid int,
-    creationdate int,
-    PRIMARY KEY (id)
+    creationdate bigint,
 );

@@ -293,59 +293,27 @@ class mod_page_external extends external_api
         $r->ip=$_SERVER['REMOTE_ADDR'];
         //$r->realuserid=NULL;
         
-        //$transaction = $DB->start_delegated_transaction();
-        //$res = $DB->insert_record("logstore_standard_log", (array)$r);
-        //$transaction->allow_commit();
-
-        $d=0;
+        $transaction = $DB->start_delegated_transaction();
+        $res = $DB->insert_record("logstore_standard_log", (array)$r);
+        $transaction->allow_commit();
+        
+        
         if ($data['action']=="scroll") {
             $d = json_decode($data['entry']);
             $s = new stdClass();
             $s->section = $d->value->targetID;
             $s->sectionoffset = (int)$d->value->scrollYDistance;
-            $s->userid = $USER->id;
+            $s->userid = (int)$USER->id;
             $s->courseid = (int)$data['courseid'];
             $s->pageid = (int)$d->value->pageid;
-            $s->creationdate = $d->utc;
-            try {
-                $transaction = $DB->start_delegated_transaction();
-                $res2 = $DB->insert_records("page_reading", array($s));
-                $transaction->allow_commit();
-            } catch (Throwable $e) {
-                $transaction->rollback($e); // rethrows exception
-            }
+            $s->creationdate = (int)$d->utc;
+            
+            $transaction = $DB->start_delegated_transaction();
+            $res2 = $DB->insert_record("page_reading", (array)$s);
+            $transaction->allow_commit();
         }
-
-        /* CREATE TABLE m_page_reading (
-    id int NOT NULL AUTO_INCREMENT,
-    section varchar(255),
-    sectionoffset int,
-    userid int,
-    courseid int,
-    pageid int,
-    creationdate int,
-    PRIMARY KEY (id)
-);
-         */
-
-
-        // quick event logging
-        //$lesson->timemodified = time();
-        //$coursemodule = get_fast_modinfo((int)$data['courseid'])->instances[$modulename][$instanceid];
-        //$context = context_module::instance($coursemodule->id);
-
-        /*
-        $event = \core\event\mod_page::scroll2(array(
-            'context'=>0,
-            'objectid'=>0,
-            'userid'=>$USER->id,
-            'timecreated'=>$data['utc']
-            'other'=>$data['targetID']
-        ));
-        $event->trigger();
-        */
+        return array('response'=> json_encode($res));
         
-        return array('response'=> json_encode($d));
     }
     public static function log_is_allowed_from_ajax()
     {
@@ -600,10 +568,9 @@ class mod_page_external extends external_api
         $r->pageid = $data['pageid'];
         
         $query = '
-            SELECT section, count(section) 
-            FROM '. $CFG->prefix .'page_reading
+            SELECT section, count(section) as count
+            FROM (SELECT * FROM '.$CFG->prefix.'page_reading AS m WHERE userid=? AND courseid=? AND pageid=?) as mm
             GROUP by section
-            WHERE userid=? AND courseid=? AND pageid=?
             ';
             
         $transaction = $DB->start_delegated_transaction();
