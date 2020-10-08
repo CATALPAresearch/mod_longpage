@@ -3,7 +3,6 @@
  * 
  * TODO:
  * - place tool-menu
- * - delete bookmarks
  * - indicate bookmarks in the text
  * - find proper label for a bookmark in the list
  * ----

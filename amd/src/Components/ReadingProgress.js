@@ -1,7 +1,7 @@
 /**
  * TODO
- * - store and load individual progress in DB
- * - visualize individual progress
+ * - label fast scrolling and reading in data base
+ * - contineously load read progress data
  * - visualize course progress
  * ---
  * - remove jquery
@@ -22,7 +22,7 @@ define([
                 }
             },
 
-            mounted: function () { 
+            mounted: function () {
                 this.enableScrollLogging();
 
                 this.visualizeReadingProgress();
@@ -130,26 +130,29 @@ define([
                 },
 
 
-                visualizeReadingProgress: function () { 
-                   ajax.call([{
+                visualizeReadingProgress: function () {
+
+                    return;
+
+                    ajax.call([{
                         methodname: 'mod_page_getreadingprogress',
                         args: { data: { courseid: this.context.courseid, pageid: this.context.pageid } },
                         done: function (reads) {
                             try {
                                 let data = Object.values(JSON.parse(reads.response));
-                                let max = data.reduce((a, b) => a.count > b.count ? a : b).count; 
+                                let max = data.reduce((a, b) => a.count > b.count ? a : b).count;
                                 for (var i = 0; i < data.length; i++) {
                                     $('#' + data[i].section).append(
-                                        $('<span></span>').addClass('reading-progress progress-' + Math.ceil(data[i].count/max * 5) )
+                                        $('<span></span>').addClass('reading-progress progress-' + Math.ceil(data[i].count / max * 5))
                                     );
                                 }
                             } catch (e) { console.log(e) }
                         },
                         fail: function (e) { console.error('fail', e); }
                     }]);
-                    
 
-                    
+
+
                 },
             },
 
