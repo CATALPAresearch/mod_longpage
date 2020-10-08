@@ -1,8 +1,5 @@
 /**
  * TODO:
- * - click auf Items ohne Subitems
- * - liste verbessern 
- * ---
  * - remove jquery
  * - put toc into the store
  */

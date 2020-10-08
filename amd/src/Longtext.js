@@ -32,7 +32,6 @@ define([
 
             data: function () {
                 return {
-                    pagename: context.pagename, // TODO: replace
                     context: context,
                     tabContentVisible: false,
                 };
@@ -41,8 +40,8 @@ define([
             mounted: function () {
                 var _this = this;
                 this.$store.dispatch('loadBookmarks');
+                
                 // log bootstrap interactions
-
                 $('.longpage-citation').click(function () {
                     _this.log('citation_view', { citation: $(this).data('content') });
                 });
@@ -95,7 +94,7 @@ define([
                     <nav id="longpage-navbar" class="navbar-expand navbar-light bg-light py-2 mx-0 pl-1 pr-2">
                         <div class="row w-100 px-0 mx-0">
                             <span class="title-toc col-4 col-sm-4 col-xs-12">
-                                <a class="navbar-brand">{{ pagename }}</a>
+                                <a class="navbar-brand">{{ context.pagename }}</a>
                             </span>
                             <div class="col-8 col-md-8 col-xs-12">
                                 <ul class="nav nav-tabs" id="longpage-features" role="tablist">
