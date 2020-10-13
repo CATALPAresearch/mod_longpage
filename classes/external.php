@@ -313,7 +313,6 @@ class mod_page_external extends external_api
             $transaction->allow_commit();
         }
         return array('response'=> json_encode($res));
-        
     }
     public static function log_is_allowed_from_ajax()
     {
@@ -514,13 +513,8 @@ class mod_page_external extends external_api
     {
         global $CFG, $DB, $USER;
         
-        $r = new stdClass();
-        $r->id = $data['id'];
-        $r->userid = $USER->id;
-        $r->visible = 0;
-
         $transaction = $DB->start_delegated_transaction();
-        $res = $DB->update_record("page_bookmark", array($r));
+        $res = $DB->delete_records("page_bookmark", array('id'=>(int)$data['id'], 'userid'=> (int)$USER->id));
         $transaction->allow_commit();
 
         return array('response'=> json_encode($res));
@@ -535,9 +529,9 @@ class mod_page_external extends external_api
 
 
 
- /**
-     * Get readingprogress
-     */
+    /**
+        * Get readingprogress
+        */
     public static function getreadingprogress_parameters()
     {
         return new external_function_parameters(
@@ -583,10 +577,4 @@ class mod_page_external extends external_api
     {
         return true;
     }
-
-
-
-
-
-
 }
