@@ -37,6 +37,15 @@ define([
                 };
             },
 
+            created: function(){
+                let _this = this;
+                document.addEventListener('keyup', function (evt) {
+                    if (evt.keyCode === 27) {
+                        _this.hideTabContent();
+                    }
+                });
+            },
+
             mounted: function () {
                 var _this = this;
                 this.$store.dispatch('loadBookmarks');
@@ -69,10 +78,13 @@ define([
 
                 hideTabContent() {
                     this.tabContentVisible = false;
-                    document.querySelector('#longpage-features').querySelector('a.active.show').classList.remove("active");
+                    if (document.querySelector('#longpage-features').querySelector('a.active.show')){
+                        document.querySelector('#longpage-features').querySelector('a.active.show').classList.remove("active");
+                    }
                 },
 
                 followLink: function (target, event) {
+                    console.log('click', target)
                     let elem = document.getElementById(target);
                     if (!elem) { return; }
 
@@ -113,7 +125,7 @@ define([
                                             <i class="fa fa-check"></i> <span class="ml-1 d-none d-md-inline">Selbsttestaufgaben</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item" hidden>
+                                    <li class="nav-item">
                                         <a class="nav-link" id="bookmarks-tab" title="Lesezeichen" data-toggle="tab" href="#bookmarks" role="tab" aria-controls="bookmarkss" aria-selected="false" @click="showTabContent()">
                                             <i class="fa fa-bookmark"></i><span class="ml-1 d-none d-md-inline">Lesezeichen</span>
                                         </a>

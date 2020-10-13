@@ -40,3 +40,9 @@
 .item {
     color: #000;
 }
+
+.mark-bookmark {
+    background-color: #aaa;
+    border-radius: 3px;
+    padding: 1px 0px;
+}

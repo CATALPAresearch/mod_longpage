@@ -66,7 +66,7 @@ define([
                             .attr('style', ' font-size: 0.8em; color: #333333;')
                             .html(this.estimateTime(out, numberOfImages));
                         fromm.after(output);
-                        console.log('h2', numerOfHeadings, out.length, numberOfImages)
+                        //console.log('h2', numerOfHeadings, out.length, numberOfImages)
                         $('.dummy-heading').remove();
                     }
 

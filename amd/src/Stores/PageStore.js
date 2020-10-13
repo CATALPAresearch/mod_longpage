@@ -9,7 +9,6 @@ define([
 
         Vue.use(Vuex);
 
-
         this.store = new Vuex.Store({
             state: {
                 courseid: context.courseid,
@@ -36,7 +35,7 @@ define([
                             data: { 
                                 title: bookmark.selection,
                                 selection: bookmark.selection,
-                                target: bookmark.id,
+                                target: bookmark.target,
                                 section: 'h3',
                                 courseid: context.courseid, 
                                 pageid: context.pageid,
@@ -55,6 +54,18 @@ define([
                     state.bookmarks = state.bookmarks.filter(function (b) {
                         return b.id === id ? false : true;
                     });
+                    ajax.call([{
+                        methodname: 'mod_page_removebookmark',
+                        args: {
+                            data: {
+                                id: id
+                            }
+                        },
+                        done: function (res) {
+                            console.log(res)
+                        },
+                        fail: function (e) { console.error('fail_add', e); }
+                    }]);
                 }
             },
             actions: {
