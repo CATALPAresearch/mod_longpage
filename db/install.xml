@@ -27,13 +27,109 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="page_annotation" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="page_annotation_body" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="value" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotation" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="page_annotation_target" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="styleclass" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="page" REFFIELDS="id"/>
+        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotation" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="page_selector" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="selectortypeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="annotationtargetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="selectortype" TYPE="foreign" FIELDS="selectortypeid" REFTABLE="page_selector_type" REFFIELDS="id"/>
+        <KEY NAME="annotationtarget" TYPE="foreign" FIELDS="annotationtargetid" REFTABLE="page_annotation_target" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="page_selector_type" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="type" TYPE="text" LENGTH="63" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="page_range_selector" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="startcontainer" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="startoffset" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="endcontainer" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="endoffset" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="selectorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="selector" TYPE="foreign" FIELDS="selectorid" REFTABLE="page_selector" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="page_text_position_selector" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="end" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="start" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="selectorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="selector" TYPE="foreign" FIELDS="selectorid" REFTABLE="page_selector" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="page_text_quote_selector" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="exact" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="prefix" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="suffix" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="selectorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="selector" TYPE="foreign" FIELDS="selectorid" REFTABLE="page_selector" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
     <TABLE NAME="page_bookmark" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="title" TYPE="text" LENGTH="255" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="selection" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="target" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="section" TYPE="int" LENGTH="255" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="section" TYPE="text" LENGTH="255" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -47,7 +143,7 @@
     <TABLE NAME="page_reading" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="section" TYPE="int" LENGTH="255" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="section" TYPE="text" LENGTH="255" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="sectionoffset" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
