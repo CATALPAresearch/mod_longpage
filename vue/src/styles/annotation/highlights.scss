@@ -1,0 +1,54 @@
+/*
+ * Based on Hypothesis client's styles (see https://github.com/hypothesis/client):
+ *   - src/styles/annotator/highlights.scss
+ */
+@import '../variables.scss';
+@import '../mixins/a11y.scss';
+@use 'sass:color';
+
+@mixin colorized-bg-highlight($color) {
+  background-color: $color;
+  // Give a highlight inside a larger highlight a different color to stand out.
+  .longpage-highlight {
+    background-color: scale-color($color, $lightness: -25%);
+  }
+  &.longpage-highlight-focused {
+    background-color: scale-color($color, $lightness: +25%) !important;
+    .longpage-highlight {
+      background-color: transparent !important;
+    }
+  }
+}
+
+// `longpage-highlights-always-on` is a class that is toggled on the
+//  annotated longpage-container when highlights are enabled/disabled.
+.longpage-highlights-always-on {
+  .longpage-highlight {
+    cursor: pointer;
+    &.bg-yellow {
+      @include colorized-bg-highlight($color-highlight-yellow);
+    }
+    &.bg-blue {
+      @include colorized-bg-highlight($color-highlight-blue);
+    }
+    &.bg-magenta {
+      @include colorized-bg-highlight($color-highlight-magenta);
+    }
+    &.bg-green {
+      @include colorized-bg-highlight($color-highlight-green);
+    }
+    // Make highlights visible to screen readers.
+    // See also - https://developer.paciellogroup.com/blog/2017/12/short-note-on-making-your-mark-more-accessible/.
+    &::before {
+      @include screen-reader-only;
+
+      // nb. The leading/trailing spaces are intended to ensure the text is treated
+      // as separate words by assisitve technologies from the content before/after it.
+      content: ' highlight start ';
+    }
+    &::after {
+      @include screen-reader-only;
+      content: ' highlight end ';
+    }
+  }
+}

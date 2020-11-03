@@ -1,8 +1,8 @@
 {
     "name": "longpage",
     "version": "1.0.0",
-    "description": "Moodle activity plagung for reading long text",
-    "main": "amd/src/page.js",
+    "description": "Moodle activity plugin for reading long text",
+    "main": "vue/src/main.js",
     "directories": {
         "lib": "lib",
         "test": "tests"

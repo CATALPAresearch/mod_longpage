@@ -43,7 +43,7 @@ $functions = array(
         'description'   => 'Get readingprogress for a page and user',
         'type'          => 'read',
         'capabilities'  => 'mod/page:view',
-        'ajax'        => true 
+        'ajax'        => true
     ),
 
     'mod_page_getbookmark' => array(
@@ -52,7 +52,7 @@ $functions = array(
         'description'   => 'Get bookmark for a page',
         'type'          => 'read',
         'capabilities'  => 'mod/page:view',
-        'ajax'        => true 
+        'ajax'        => true
     ),
 
     'mod_page_updatebookmark' => array(
@@ -61,7 +61,7 @@ $functions = array(
         'description'   => 'Updates bookmark for a page',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view',
-        'ajax'        => true 
+        'ajax'        => true
     ),
 
      'mod_page_addbookmark' => array(
@@ -70,7 +70,7 @@ $functions = array(
         'description'   => 'Add bookmark to a page',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view',
-        'ajax'        => true 
+        'ajax'        => true
     ),
 
      'mod_page_removebookmark' => array(
@@ -79,17 +79,16 @@ $functions = array(
         'description'   => 'Remove bookmark to a page',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view',
-        'ajax'        => true 
+        'ajax'        => true
     ),
-    
-    
+
     'mod_page_reading' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'reading',
         'description'   => 'Writes reading and scroll data to database',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view',
-        'ajax'        => true 
+        'ajax'        => true
     ),
 
     'mod_page_view_page' => array(

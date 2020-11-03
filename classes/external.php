@@ -268,7 +268,7 @@ class mod_page_external extends external_api
     public static function log($data)
     {
         global $CFG, $DB, $USER;
-        
+
         $r = new stdClass();
         $r->name='mod_page';
         $r->component='mod_page';
@@ -292,12 +292,12 @@ class mod_page_external extends external_api
         $r->origin='web';
         $r->ip=$_SERVER['REMOTE_ADDR'];
         //$r->realuserid=NULL;
-        
+
         $transaction = $DB->start_delegated_transaction();
         $res = $DB->insert_record("logstore_standard_log", (array)$r);
         $transaction->allow_commit();
-        
-        
+
+
         if ($data['action']=="scroll") {
             $d = json_decode($data['entry']);
             $s = new stdClass();
@@ -307,7 +307,7 @@ class mod_page_external extends external_api
             $s->courseid = (int)$data['courseid'];
             $s->pageid = (int)$d->value->pageid;
             $s->creationdate = (int)$d->utc;
-            
+
             $transaction = $DB->start_delegated_transaction();
             $res2 = $DB->insert_record("page_reading", (array)$s);
             $transaction->allow_commit();
@@ -347,13 +347,11 @@ class mod_page_external extends external_api
     public static function getbookmark($data)
     {
         global $CFG, $DB, $USER;
-        
         $r = new stdClass();
         $r->userid = $USER->id;
         $r->courseid = $data['courseid'];
         $r->pageid = $data['pageid'];
         $r->visible = 1;
-
         $transaction = $DB->start_delegated_transaction();
         $res = $DB->get_records("page_bookmark", (array)$r);
         $transaction->allow_commit();
@@ -401,7 +399,7 @@ class mod_page_external extends external_api
     public static function updatebookmark($data)
     {
         global $CFG, $DB, $USER;
-        
+
         $r = new stdClass();
         $r->id = $data['id'];
         $r->title = $data['title'];
@@ -461,7 +459,7 @@ class mod_page_external extends external_api
     public static function addbookmark($data)
     {
         global $CFG, $DB, $USER;
-        
+
         $r = new stdClass();
         $r->title = $data['title'];
         $r->selection = $data['selection'];
@@ -512,7 +510,7 @@ class mod_page_external extends external_api
     public static function removebookmark($data)
     {
         global $CFG, $DB, $USER;
-        
+
         $transaction = $DB->start_delegated_transaction();
         $res = $DB->delete_records("page_bookmark", array('id'=>(int)$data['id'], 'userid'=> (int)$USER->id));
         $transaction->allow_commit();
@@ -555,18 +553,18 @@ class mod_page_external extends external_api
     public static function getreadingprogress($data)
     {
         global $CFG, $DB, $USER;
-        
+
         $r = new stdClass();
         $r->userid = $USER->id;
         $r->courseid = $data['courseid'];
         $r->pageid = $data['pageid'];
-        
+
         $query = '
             SELECT section, count(section) as count
             FROM (SELECT * FROM '.$CFG->prefix.'page_reading AS m WHERE userid=? AND courseid=? AND pageid=?) as mm
             GROUP by section
             ';
-            
+
         $transaction = $DB->start_delegated_transaction();
         $res = $DB->get_records_sql($query, array($USER->id, $data['courseid'], $data['pageid']));
         $transaction->allow_commit();

@@ -31,7 +31,7 @@
  *
  * grunt amd     Create the Asynchronous Module Definition JavaScript files.  See: MDL-49046.
  *               Done here as core Gruntfile.js currently *nix only.
- 
+
  * Plumbing tasks & targets:
  * -------------------------
  * Lower level tasks encapsulating a specific piece of functionality
@@ -44,27 +44,26 @@
  * @author Niels Seidel niels.seidel@fernuni-hagen.de
  * @license MIT
  */
-
-module.exports = function (grunt) { // jshint ignore:line
+module.exports = function(grunt) { // jshint ignore:line
 
     // Import modules.
     var path = require('path');
     var moodleroot = path.dirname(path.dirname(__dirname)); // jshint ignore:line
-    
+
 
     grunt.initConfig({
         ts: {
             amd: {
-                //tsconfig: moodleroot + '/format/ladtopics/amd/src/tsconfig.json',
+                // Tsconfig: moodleroot + '/format/ladtopics/amd/src/tsconfig.json',
                 src: ["./amd/src/*.ts", "!node_modules/**"]
             }
         },
         jshint: {
-            // define the files to lint
-            files: ["amd/src/page.js"],
-            // configure JSHint (documented at http://www.jshint.com/docs/)
+            // Define the files to lint
+            files: ["amd/src/main.js"],
+            // Configure JSHint (documented at http://www.jshint.com/docs/)
             options: {
-                // more options here if you want to override JSHint defaults
+                // More options here if you want to override JSHint defaults
                 globals: {
                     jQuery: true,
                     console: true,
@@ -79,11 +78,11 @@ module.exports = function (grunt) { // jshint ignore:line
             // To fail on warnings call: grunt eslint --max-lint-warnings=0
             // Also --max-lint-warnings=-1 can be used to display warnings but not fail.
             options: {
-                //quiet: (!grunt.option('show-lint-warnings')) && (typeof grunt.option('max-lint-warnings') === 'undefined'),
-                //maxWarnings: ((typeof grunt.option('max-lint-warnings') !== 'undefined') ? grunt.option('max-lint-warnings') : -1)
+                // Quiet: (!grunt.option('show-lint-warnings')) && (typeof grunt.option('max-lint-warnings') === 'undefined'),
+                // maxWarnings: ((typeof grunt.option('max-lint-warnings') !== 'undefined') ? grunt.option('max-lint-warnings') : -1)
             },
             all: ['**/*.js']
-            
+
         },
         terser: {
             lib: {
@@ -95,7 +94,7 @@ module.exports = function (grunt) { // jshint ignore:line
                     src: ['*.js', '!*.min.js'],
                     dest: './lib/build',
                     cwd: './lib/src',
-                    rename: function (dst, src) {
+                    rename: function(dst, src) {
                         return dst + '/' + src.replace('.js', '.min.js');
                     }
                 }]
@@ -109,9 +108,20 @@ module.exports = function (grunt) { // jshint ignore:line
                     src: ['*.js', '!*.min.js'],
                     dest: './amd/build',
                     cwd: './amd/src',
-                    rename: function (dst, src) {
+                    rename: function(dst, src) {
                         return dst + '/' + src.replace('.js', '.min.js');
                     }
+                }]
+            }
+        },
+        sass: {
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: './css/src',
+                    src: ['**/*.{css,scss,sass}'],
+                    dest: './css/build',
+                    ext: '.css'
                 }]
             }
         },
@@ -119,7 +129,7 @@ module.exports = function (grunt) { // jshint ignore:line
             minify: {
                 files: [{
                     expand: true,
-                    cwd: './css',
+                    cwd: './css/build',
                     src: ['**/*.css', '!**/*.min.css'],
                     dest: './css/min',
                     ext: '.min.css'
@@ -142,12 +152,14 @@ module.exports = function (grunt) { // jshint ignore:line
     grunt.loadNpmTasks('grunt-terser');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('eslint-grunt');
+    grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
 
     grunt.registerTask("plugin-build", ["ts", "terser"]);
     grunt.registerTask("plugin-terser", ["terser"]);
     grunt.registerTask("plugin-test", ["eslint:all"]);
+    grunt.registerTask("plugin-sass", ["sass"]);
     grunt.registerTask("plugin-css", ["cssmin"]);
-    grunt.registerTask("plugin-all", ["ts", "terser", "cssmin"]);
+    grunt.registerTask("plugin-all", ["ts", "terser", "sass", "cssmin"]);
 
 };

@@ -73,7 +73,7 @@ if ($inpopup and $page->display == RESOURCELIB_DISPLAY_POPUP) {
 echo $OUTPUT->header();
 
 if (mod_page\blocking::tool_policy_accepted() == true) {
-    
+
     if (!isset($options['printheading']) || !empty($options['printheading'])) {
         echo '<longpage-container></longpage-container>';
     }
@@ -93,7 +93,7 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     echo '</div>'; // end row
 
     echo '<div id="top-of-site-pixel-anchor"></div>';
-    $PAGE->requires->js_call_amd('mod_page/page', 'init', array($course->id, $page->id, format_string($page->name)));
+    $PAGE->requires->js_call_amd('mod_page/app-lazy', 'init', array($course->id, $page->id, format_string($page->name)));
 
 } else {
     echo "Umleitung";
