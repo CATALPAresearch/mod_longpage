@@ -1,5 +1,13 @@
-node_modules
-vue/node_modules
-.idea
 git-ftp.sh
 x.html
+
+# Build artifacts
+amd/build
+amd/src
+
+# Node modules
+vue/node_modules
+node_modules
+
+# IDE
+.idea
