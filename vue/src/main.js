@@ -11,9 +11,7 @@
 import $ from 'jquery';
 import App from './App';
 import Log from './lib/Logging';
-import Store from './store/PageStore';
 import Utils from './util/utils';
-import Vue from 'vue';
 
 $(function() {
     $('.longpage-footnote button').popover({
@@ -35,7 +33,7 @@ export const init = (courseid, pageid, pagename) => {
             context: 'mod_page',
             outputType: 1
         });
-        new App(Vue, Store, utils, log, {courseid, pageid, pagename});
+        new App(utils, log, {courseid, pageid, pagename});
     } catch (e) {
         /* eslint-disable no-console */
         console.error(e);

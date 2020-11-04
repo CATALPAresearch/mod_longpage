@@ -4,19 +4,19 @@
  * - replace jquery event handling
  *
  */
+import './styles/main.scss';
 import $ from 'jquery';
 import AnnotationWrapper from './components/AnnotationWrapper';
 // import Bookmark from './components/Bookmark';
 import CourseRecommondation from './components/CourseRecommondation';
+import {createStore} from './store/store';
 import ReadingProgress from './components/ReadingProgress';
 import ReadingTime from './components/ReadingTime';
 import TableOfContent from './components/TableOfContent';
 import Search from './components/Search';
-import './styles/main.scss';
+import Vue from 'vue';
 
-export default function (Vue, Store, utils, logger, context) {
-    const pageStore = new Store(context);
-
+export default function (utils, logger, context) {
     document.body.appendChild((() => {
         const div = document.createElement('div');
         div.setAttribute('id', 'annotation-toolbar-popover');
@@ -37,8 +37,7 @@ export default function (Vue, Store, utils, logger, context) {
             Search,
             TableOfContent,
         },
-        store: pageStore.store,
-
+        store: createStore(context),
         data: function () {
             return {
                 context: context,
