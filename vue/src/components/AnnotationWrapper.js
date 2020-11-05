@@ -1,3 +1,4 @@
+import {ACT, GET} from "../store/types";
 import AnnotationToolbarPopover from "./annotation/AnnotationToolbarPopover.vue";
 import { AnnotationToolbarPopoverPositioner } from "../lib/annotation/annotation-toolbar-popover-positioner";
 import { ArrowDirection } from "../config/constants";
@@ -63,11 +64,18 @@ export default {
     this.selectionListener.unsubscribe();
   },
   methods: {
-    createAnnotation(styleClass) { // TODO: Insert in store
+    createAnnotation(styleClass) {
       Promise.all(this.selectedRanges.map(this.getSelectors)).then(selectors => {
-        const annotation = new Annotation(0, selectors.map(selectors => (new AnnotationTarget(selectors, 0, styleClass)))); // TODO: Insert userid & pageid
+        const annotation = new Annotation(
+          this.$store.getters[GET.USER_ID],
+          selectors.map(selectors => (new AnnotationTarget(
+            selectors,
+            this.$store.getters[GET.PAGE_ID],
+            styleClass
+          )))
+        );
         this.anchoring.anchor(annotation, styleClass).then(() => {
-          console.log(annotation);
+          this.$store.dispatch(ACT.CREATE_ANNOTATION, annotation);
         });
       });
     },

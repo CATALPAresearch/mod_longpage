@@ -23,8 +23,11 @@ export default function (utils, logger, context) {
         return div;
     })());
 
+    const store = createStore(context);
+
     new Vue({
         el: '#annotation-toolbar-popover',
+        store,
         render: h => h(AnnotationWrapper)
     });
 
@@ -37,7 +40,7 @@ export default function (utils, logger, context) {
             Search,
             TableOfContent,
         },
-        store: createStore(context),
+        store,
         data: function () {
             return {
                 context: context,

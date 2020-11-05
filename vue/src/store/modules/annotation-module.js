@@ -10,12 +10,14 @@ export default {
     },
     actions: {
         [ACT.CREATE_ANNOTATION]({commit, getters}, annotation) {
+            console.log(annotation);
             ajax.call([{
                 methodname: 'mod_page_create_annotation',
                 args: {
                     data: annotation,
                 },
-                done: (_) => {
+                done: (res) => {
+                    console.log(res);
                     commit(MUTATE.SET_ANNOTATIONS, [getters[GET.ANNOTATIONS], annotation])
                 },
                 fail: (e) => {

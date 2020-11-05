@@ -24,7 +24,7 @@ $(function() {
     });
 });
 
-export const init = (courseid, pageid, pagename) => {
+export const init = (courseid, pageid, pagename, userId) => {
     // We need to overwrite the variable for lazy loading.
     __webpack_public_path__ = M.cfg.wwwroot + '/mod/page/amd/build/';
     try {
@@ -33,7 +33,7 @@ export const init = (courseid, pageid, pagename) => {
             context: 'mod_page',
             outputType: 1
         });
-        new App(utils, log, {courseid, pageid, pagename});
+        new App(utils, log, {courseid, pageid, pagename, userId});
     } catch (e) {
         /* eslint-disable no-console */
         console.error(e);
