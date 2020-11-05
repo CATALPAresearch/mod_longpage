@@ -100,6 +100,15 @@ $functions = array(
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
 
+    'mod_page_create_annotation' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'create_page_annotation',
+        'description'   => 'Create an annotation',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
+
     'mod_page_get_pages_by_courses' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_pages_by_courses',
