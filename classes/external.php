@@ -28,6 +28,16 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once("$CFG->libdir/externallib.php");
 
+function array_pick_keys($array, $keys)
+{
+    return array_intersect_key($array, array_fill_keys($keys, 1));
+}
+
+function array_omit_keys($array, $keys)
+{
+    return array_diff_key($array, array_fill_keys($keys, 1));
+}
+
 /**
  * Page external functions
  *
@@ -39,6 +49,96 @@ require_once("$CFG->libdir/externallib.php");
  */
 class mod_page_external extends external_api
 {
+
+    /**
+     * Returns description of method parameters
+     *
+     * @param object annotation
+     * @return $annotationid
+     * @since Moodle 3.0
+     */
+    public static function create_page_annotation($annotation)
+    {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $annotationid = $DB->insert_record("page_annotation", array_pick_keys($annotation, ['timecreated', 'timemodified', 'userid']));
+        self::create_page_annotation_targets($annotation['target'], $annotationid);
+        $transaction->allow_commit();
+
+        return array('id'=> $annotationid);
+    }
+
+    private static function create_page_annotation_targets($targets, $annotationid)
+    {
+        global $DB;
+
+        foreach ($targets as $target) {
+            $targetid = $DB->insert_record('page_annotation_target', array_merge(array_pick_keys($target, ['pageid', 'styleclass']), array('annotationid' => $annotationid)));
+            foreach ($target['selector'] as $selector) {
+                $selectorid = $DB->insert_record('page_selector', array('annotationtargetid' => $targetid, 'selectortype' => $selector['type']));
+                $DB->insert_record('page_' . $selector['type'], array_merge(array_omit_keys($selector, ['type']), array('selectorid' => $selectorid)));
+            }
+        }
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function create_page_annotation_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'annotation' => new external_single_structure(
+                    array(
+                        'target' => new external_multiple_structure(
+                            new external_single_structure(
+                                array(
+                                    'selector' => new external_multiple_structure(
+                                        new external_single_structure(
+                                            array(
+                                                'type' => new external_value(PARAM_TEXT, '', VALUE_REQUIRED, 'RangeSelector', false),
+                                                'startposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                                                'startcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                                                'startoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                                                'endposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                                                'endcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                                                'endoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                                                'exact' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                                                'prefix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                                                'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                                            ), '', VALUE_OPTIONAL
+                                        )
+                                    ),
+                                    'pageid' => new external_value(PARAM_TEXT),
+                                    'styleclass' => new external_value(PARAM_TEXT),
+                                ), '', VALUE_OPTIONAL
+                            )
+                        ),
+                        'timecreated' => new external_value(PARAM_INT),
+                        'timemodified' => new external_value(PARAM_INT),
+                        'userid' => new external_value(PARAM_TEXT),
+                    )
+                )
+            )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_single_structure
+     * @since Moodle 3.0
+     */
+    public static function create_page_annotation_returns()
+    {
+        return new external_single_structure(
+            array( 'id' => new external_value(PARAM_RAW) )
+        );
+    }
 
     /**
      * Returns description of method parameters

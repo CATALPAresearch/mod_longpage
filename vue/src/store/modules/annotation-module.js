@@ -1,5 +1,7 @@
 import ajax from 'core/ajax';
 import {GET, ACT, MUTATE} from '../types';
+import {deepLowerCaseKeys} from '../../util/misc'
+import {snakeCase} from 'lodash';
 
 export default {
     state: {
@@ -10,11 +12,18 @@ export default {
     },
     actions: {
         [ACT.CREATE_ANNOTATION]({commit, getters}, annotation) {
-            console.log(annotation);
             ajax.call([{
                 methodname: 'mod_page_create_annotation',
                 args: {
-                    data: annotation,
+                    annotation: deepLowerCaseKeys({
+                        target: annotation.target.map(target => ({
+                            ...target,
+                            selector: target.selector.map(selector => ({...selector, type: snakeCase(selector.type)})),
+                        })),
+                        timecreated: annotation.timecreated,
+                        timemodified: annotation.timemodified,
+                        userid: annotation.userid,
+                    }),
                 },
                 done: (res) => {
                     console.log(res);
