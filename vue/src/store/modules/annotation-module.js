@@ -1,7 +1,7 @@
 import ajax from 'core/ajax';
 import {GET, ACT, MUTATE} from '../types';
 import {deepLowerCaseKeys} from '../../util/misc'
-import {snakeCase} from 'lodash';
+import {capitalize, snakeCase} from "../../util/misc";
 
 export default {
     state: {
@@ -25,20 +25,30 @@ export default {
                         userid: annotation.userid,
                     }),
                 },
-                done: (res) => {
-                    console.log(res);
-                    commit(MUTATE.SET_ANNOTATIONS, [getters[GET.ANNOTATIONS], annotation])
+                done: ({id}) => {
+                    commit(MUTATE.SET_ANNOTATIONS, [...getters[GET.ANNOTATIONS], {...annotation, id}])
                 },
                 fail: (e) => {
                     console.error('"mod_page_create_annotation" failed', e);
                 }
             }]);
         },
-        [ACT.READ_ANNOTATIONS]({commit}) {
+        [ACT.FETCH_ANNOTATIONS]({commit, getters}) {
             ajax.call([{
-                methodname: 'mod_page_get_annotations_by_page',
+                methodname: 'mod_page_get_annotations_by_page_and_user',
+                args: {
+                    pageid: getters[GET.PAGE_ID],
+                    userid: getters[GET.USER_ID],
+                },
                 done: (annotations) => {
-                    commit(MUTATE.SET_ANNOTATIONS, annotations)
+                    const an = JSON.parse(annotations).map(annotation => ({
+                        ...annotation,
+                        target: annotation.target.map(t => ({
+                            ...t,
+                            selector: t.selector.map(s => ({...s, type: capitalize(s.type)})),
+                        })),
+                    }));
+                    commit(MUTATE.SET_ANNOTATIONS, an);
                 },
                 fail: (e) => {
                     console.error('"mod_page_get_annotations_by_page" failed', e);

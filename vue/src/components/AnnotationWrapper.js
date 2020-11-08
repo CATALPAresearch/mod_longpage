@@ -7,6 +7,7 @@ import { describe } from "../lib/annotation/hypothesis/anchoring/html";
 import { Annotation } from "../lib/annotation/types/annotation";
 import { AnnotationTarget } from "../lib/annotation/types/annotation-target";
 import {Anchoring} from "../lib/annotation/anchoring";
+import {mapGetters} from "vuex";
 import {setHighlightsVisible} from "../lib/annotation/highlighting";
 
 export default {
@@ -47,7 +48,17 @@ export default {
           this.annotationToolbarPopover.width.bind(this.annotationToolbarPopover),
           this.annotationToolbarPopover.arrowHeight.bind(this.annotationToolbarPopover),
       );
-    }
+    },
+    ...mapGetters({
+      annotations: GET.ANNOTATIONS,
+    }),
+  },
+  watch: {
+    annotations(annotations) {
+      annotations.forEach(annotation => {
+        this.anchoring.anchor(annotation);
+      })
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -58,6 +69,7 @@ export default {
       );
       this.anchoring = new Anchoring(this.targetRoot);
       setHighlightsVisible(this.targetRoot, true);
+      this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
     });
   },
   beforeDestroy() {

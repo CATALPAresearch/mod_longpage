@@ -22,10 +22,9 @@ export class Anchoring {
      * Used after new annotation have been loaded & after new annotation has been created.
      *
      * @param {Annotation} annotation
-     * @param {string} cssClass
      * @return {Promise<Anchor[]>}
      */
-    anchor(annotation, cssClass) {
+    anchor(annotation) {
         let anchor;
 
         // Anchors for all annotations are in the `anchors` instance property. These
@@ -94,7 +93,7 @@ export class Anchoring {
             const normedRange = range.normalize(this.root);
             const highlights = /** @type {AnnotationHighlight[]} */ (highlightRange(
                 normedRange,
-                cssClass
+                anchor.target.styleclass
             ))
             // You need to put some information on the highlight so when it is clicked later on we can identify the annotation
             highlights.forEach(h => {

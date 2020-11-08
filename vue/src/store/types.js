@@ -8,7 +8,7 @@ export const GET = Object.freeze({
 
 export const ACT = Object.freeze({
   CREATE_ANNOTATION: 'Create Annotation',
-  READ_ANNOTATIONS: 'Read Annotations',
+  FETCH_ANNOTATIONS: 'Fetch Annotations',
 });
 
 export const MUTATE = Object.freeze({
