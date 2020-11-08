@@ -212,6 +212,33 @@ class mod_page_external extends external_api
         );
     }
 
+    private static function get_selectors_by_annotation_target($target)
+    {
+        global $DB;
+
+        $result = array();
+        $selectors = $DB->get_records('page_selector', array('annotationtargetid' => $target->id));
+        foreach ($selectors as $selector) {
+            $typed_selector = $DB->get_record('page_' . $selector->selectortype, array('selectorid' => $selector->id));
+            $typed_selector->type = $selector->selectortype;
+            array_push($result, omit_keys($typed_selector, ['id', 'selectorid']));
+        }
+        return $result;
+    }
+
+    private static function get_targets_by_annotation($annotation, $pageid)
+    {
+        global $DB;
+
+        $result = array();
+        $targets = $DB->get_records('page_annotation_target', array('annotationid' => $annotation->id, 'pageid' => $pageid));
+        foreach ($targets as $target) {
+            $target->selector = self::get_selectors_by_annotation_target($target);
+            array_push($result, omit_keys($target, ['id', 'annotationid']));
+        }
+        return $result;
+    }
+
     public static function get_annotations_by_page_and_user($pageid, $userid)
     {
         global $DB;
@@ -219,17 +246,7 @@ class mod_page_external extends external_api
         $transaction = $DB->start_delegated_transaction(); // TODO: Is transaction really necessary? Is there no eager loading?
         $annotations = array_values($DB->get_records('page_annotation', array('userid' => $userid)));
         foreach ($annotations as $annotation) {
-            $targets = $DB->get_records('page_annotation_target', array('annotationid' => $annotation->id, 'pageid' => $pageid));
-            foreach ($targets as $target) {
-                $annotation->target = omit_keys($target, ['id', 'annotationid']);
-                $selectors = $DB->get_records('page_selector', array('annotationtargetid' => $target->id));
-                $annotation->target->selector = array();
-                foreach ($selectors as $selector) {
-                    $typed_selector = omit_keys($DB->get_record('page_' . $selector->selectortype, array('selectorid' => $selector->id)), ['id', 'selectorid']);
-                    $typed_selector->type = $selector->selectortype;
-                    array_push($annotation->target->selector, $typed_selector);
-                }
-            }
+            $annotation->target = self::get_targets_by_annotation($annotation, $pageid);
         }
         $transaction->allow_commit();
 
