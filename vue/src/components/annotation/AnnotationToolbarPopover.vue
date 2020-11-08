@@ -21,7 +21,6 @@
           v-for="(option, index) in highlightingOptions"
           class="annotation-toolbar-item dot longpage-highlight"
           :class="[option]"
-          :style="option"
           :key="index"
           @click.prevent="$emit('highlight', option)"
       >A</div>

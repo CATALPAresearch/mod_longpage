@@ -42,9 +42,9 @@ export default {
         visible: false,
         zIndex: undefined,
       },
-      targetRoot: null,
       selectionListener: new SelectionListener(),
       selectedRanges: [],
+      targetRoot: null,
     }
   },
   computed: {
