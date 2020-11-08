@@ -1,3 +1,13 @@
+<template>
+  <annotation-toolbar-popover
+      v-bind="annotationToolbarPopoverProps"
+      @highlight="createAnnotation"
+      ref="annotationToolbarPopover"
+      class="longpage-highlights-always-on"
+  />
+</template>
+
+<script>
 import {ACT, GET} from "../store/types";
 import AnnotationToolbarPopover from "./annotation/AnnotationToolbarPopover.vue";
 import { AnnotationToolbarPopoverPositioner } from "../lib/annotation/annotation-toolbar-popover-positioner";
@@ -111,12 +121,5 @@ export default {
       this.annotationToolbarPopoverProps.zIndex = zIndex;
     }
   },
-  template: `
-      <annotation-toolbar-popover
-          v-bind="annotationToolbarPopoverProps"
-          @highlight="createAnnotation"
-          ref="annotationToolbarPopover"
-          class="longpage-highlights-always-on"
-      />
-  `,
 };
+</script>

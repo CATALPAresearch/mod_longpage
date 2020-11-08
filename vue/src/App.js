@@ -6,7 +6,7 @@
  */
 import './styles/main.scss';
 import $ from 'jquery';
-import AnnotationWrapper from './components/AnnotationWrapper';
+import AnnotationWrapper from './components/AnnotationWrapper.vue';
 // import Bookmark from './components/Bookmark';
 import CourseRecommondation from './components/CourseRecommondation';
 import {createStore} from './store/store';
