@@ -99,7 +99,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
-
     'mod_page_create_annotation' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_page_annotation',
@@ -108,7 +107,14 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-
+    'mod_page_get_annotations_by_page_and_user' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'get_annotations_by_page_and_user',
+        'description'   => 'Get annotations by page and user',
+        'type'          => 'read',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
     'mod_page_get_pages_by_courses' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_pages_by_courses',
