@@ -1,7 +1,7 @@
 import ajax from 'core/ajax';
 import {GET, ACT, MUTATE} from '../types';
-import {deepLowerCaseKeys} from '../../util/misc'
-import {capitalize, snakeCase} from "../../util/misc";
+import MappingService from "@/services/mapping-service";
+import {MoodleWSMethods} from "@/config/constants";
 
 export default {
     state: {
@@ -12,21 +12,13 @@ export default {
     },
     actions: {
         [ACT.CREATE_ANNOTATION]({commit, getters}, annotation) {
+            const methodname = MoodleWSMethods.CREATE_ANNOTATION;
             ajax.call([{
-                methodname: 'mod_page_create_annotation',
-                args: {
-                    annotation: deepLowerCaseKeys({
-                        target: annotation.target.map(target => ({
-                            ...target,
-                            selector: target.selector.map(selector => ({...selector, type: snakeCase(selector.type)})),
-                        })),
-                        timecreated: annotation.timecreated,
-                        timemodified: annotation.timemodified,
-                        userid: annotation.userid,
-                    }),
-                },
+                methodname,
+                args: MappingService[methodname](annotation),
                 done: ({id}) => {
-                    commit(MUTATE.SET_ANNOTATIONS, [...getters[GET.ANNOTATIONS], {...annotation, id}])
+                    annotation.id = id;
+                    commit(MUTATE.SET_ANNOTATIONS, [...getters[GET.ANNOTATIONS], annotation])
                 },
                 fail: (e) => {
                     console.error('"mod_page_create_annotation" failed', e);
@@ -34,21 +26,15 @@ export default {
             }]);
         },
         [ACT.FETCH_ANNOTATIONS]({commit, getters}) {
+            const methodname = MoodleWSMethods.GET_ANNOTATIONS;
             ajax.call([{
-                methodname: 'mod_page_get_annotations_by_page_and_user',
+                methodname,
                 args: {
                     pageid: getters[GET.PAGE_ID],
                     userid: getters[GET.USER_ID],
                 },
                 done: (annotations) => {
-                    const an = JSON.parse(annotations).map(annotation => ({
-                        ...annotation,
-                        target: annotation.target.map(t => ({
-                            ...t,
-                            selector: t.selector.map(s => ({...s, type: capitalize(s.type)})),
-                        })),
-                    }));
-                    commit(MUTATE.SET_ANNOTATIONS, an);
+                    commit(MUTATE.SET_ANNOTATIONS, MappingService[methodname](annotations));
                 },
                 fail: (e) => {
                     console.error('"mod_page_get_annotations_by_page" failed', e);

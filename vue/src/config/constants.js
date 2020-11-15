@@ -18,6 +18,11 @@ export const HighlightingConfig = Object.freeze({
 
 export const LANGUAGE = 'de';
 
+export const MoodleWSMethods = Object.freeze({
+    GET_ANNOTATIONS: 'mod_page_get_annotations_by_page_and_user',
+    CREATE_ANNOTATION: 'mod_page_create_annotation',
+});
+
 export const SelectorType = Object.freeze({
     TEXT_POSITION_SELECTOR: 'TextPositionSelector',
     TEXT_QUOTE_SELECTOR: 'TextQuoteSelector',

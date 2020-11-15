@@ -13,6 +13,15 @@
 import AnnotationCard from "./annotation-sidebar/AnnotationCard.vue";
 import {mapGetters} from "vuex";
 import {GET} from "@/store/types";
+import {SelectorType} from "@/config/constants";
+
+const AnnotationSortingFunction = Object.freeze({
+  BY_POSITION: (annotationA, annotationB) => {
+    const {start: startA = 0} = annotationA.target[0].selector.find(s => s.type === SelectorType.TEXT_POSITION_SELECTOR) || {};
+    const {start: startB = 0} = annotationB.target[0].selector.find(s => s.type === SelectorType.TEXT_POSITION_SELECTOR) || {};
+    return startA - startB;
+  }
+});
 
 export default {
   name: "AnnotationSidebar",
@@ -21,7 +30,9 @@ export default {
   },
   computed: {
     annotationsOrderedByTextPosition() {
-      return this.annotations.sort((annA, annB) => annA.target[0].selector[1].startposition - annB.target[0].selector[1].startposition);
+      const sortedAnnotations =  this.annotations.sort(AnnotationSortingFunction.BY_POSITION);
+      console.log(sortedAnnotations);
+      return sortedAnnotations;
     },
     ...mapGetters({
       annotations: GET.ANNOTATIONS,
