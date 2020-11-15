@@ -4,6 +4,7 @@
  * - replace jquery event handling
  *
  */
+import './assets/icons';
 import './styles/main.scss';
 import $ from 'jquery';
 import AnnotationWrapper from './components/AnnotationWrapper.vue';
@@ -15,6 +16,11 @@ import ReadingTime from './components/ReadingTime';
 import TableOfContent from './components/TableOfContent';
 import Search from './components/Search';
 import Vue from 'vue';
+import Fragment from 'vue-fragment';
+import {i18n} from './config/i18n';
+import AnnotationSidebar from "./components/annotation/AnnotationSidebar.vue";
+
+Vue.use(Fragment.Plugin);
 
 export default function (utils, logger, context) {
     document.body.appendChild((() => {
@@ -23,12 +29,25 @@ export default function (utils, logger, context) {
         return div;
     })());
 
+    document.querySelector('.longpage-container').parentElement.appendChild((() => {
+        const div = document.createElement('div');
+        div.setAttribute('id', 'annotation-sidebar');
+        return div;
+    })())
+
     const store = createStore(context);
 
     new Vue({
         el: '#annotation-toolbar-popover',
         store,
-        render: h => h(AnnotationWrapper)
+        render: h => h(AnnotationWrapper),
+    });
+
+    new Vue({
+        el: '#annotation-sidebar',
+        i18n: i18n,
+        store,
+        render: h => h(AnnotationSidebar),
     });
 
     new Vue({

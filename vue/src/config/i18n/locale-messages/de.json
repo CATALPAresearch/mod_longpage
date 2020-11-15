@@ -1,0 +1,9 @@
+{
+  "annotationSidebar": {
+    "heading": "Annotationen",
+    "annotationCard": {
+      "created": "erstellt",
+      "lastModified": "zuletzt bearbeitet"
+    }
+  }
+}

@@ -78,7 +78,7 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
         echo '<longpage-container></longpage-container>';
     }
 
-    echo '<div class="rowx w-100">';
+    echo '<div class="row w-100 no-gutters">';
     $content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_page', 'content', $page->revision);
     $formatoptions = new stdClass;
     $formatoptions->noclean = true;
@@ -86,7 +86,7 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     $content = format_text($content, $page->contentformat, $formatoptions);
 
     // output content
-    echo '<div class="w-100 m-auto longpage-container" lang="de">';
+    echo '<div class="m-auto longpage-container col" lang="de">';
 
     echo $OUTPUT->box($content, "generalbox center clearfix");
     echo '</div>';

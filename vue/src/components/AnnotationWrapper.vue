@@ -23,7 +23,7 @@ import {setHighlightsVisible} from "../lib/annotation/highlighting";
 export default {
   name: "AnnotationWrapper",
   components: {
-    AnnotationToolbarPopover
+    AnnotationToolbarPopover,
   },
   data() {
     return {

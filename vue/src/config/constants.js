@@ -15,3 +15,11 @@ export const HighlightingConfig = Object.freeze({
     HL_FOCUSED_CLASS_NAME: 'longpage-highlight-focused',
     SHOW_HLS_CLASS_NAME: 'longpage-highlights-always-on',
 });
+
+export const LANGUAGE = 'de';
+
+export const SelectorType = Object.freeze({
+    TEXT_POSITION_SELECTOR: 'TextPositionSelector',
+    TEXT_QUOTE_SELECTOR: 'TextQuoteSelector',
+    RANGE_SELECTOR: 'RangeSelector',
+});

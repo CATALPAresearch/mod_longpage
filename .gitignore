@@ -6,8 +6,8 @@ amd/build
 amd/src
 
 # Node modules
-vue/node_modules
 node_modules
 
 # IDE
 .idea
+webpack.config.idea.js
