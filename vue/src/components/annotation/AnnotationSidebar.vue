@@ -1,7 +1,8 @@
 <template>
-  <div id="annotation-sidebar" class="col-3 p-3">
-    <h2 id="annotation-sidebar-heading">{{ $t('annotationSidebar.heading') }}</h2>
+  <div id="annotation-sidebar" class="col col-3 p-4">
+    <h2 class="mb-4" id="annotation-sidebar-heading">{{ $t('annotationSidebar.heading') }}</h2>
     <annotation-card
+        class="mb-4"
         v-for="annotation in annotationsOrderedByTextPosition"
         :key="annotation.id"
         :annotation="annotation"
@@ -30,9 +31,7 @@ export default {
   },
   computed: {
     annotationsOrderedByTextPosition() {
-      const sortedAnnotations =  this.annotations.sort(AnnotationSortingFunction.BY_POSITION);
-      console.log(sortedAnnotations);
-      return sortedAnnotations;
+      return this.annotations.sort(AnnotationSortingFunction.BY_POSITION);
     },
     ...mapGetters({
       annotations: GET.ANNOTATIONS,
@@ -43,7 +42,7 @@ export default {
 
 <style lang="scss" scoped>
   #annotation-sidebar {
-    box-shadow: -2px 4px rgba(0,0,0,.08);
+    border-left: 1px solid #dee2e6;
     position: sticky;
 
     #annotation-sidebar-heading {

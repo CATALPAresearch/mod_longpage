@@ -87,15 +87,15 @@ export default {
   },
   methods: {
     createAnnotation(styleClass) {
-      Promise.all(this.selectedRanges.map(this.getSelectors)).then(selectors => {
-        const annotation = new Annotation(
-          this.$store.getters[GET.USER_ID],
-          selectors.map(selectors => (new AnnotationTarget(
-            selectors,
-            this.$store.getters[GET.PAGE_ID],
-            styleClass
-          )))
-        );
+      Promise.all(this.selectedRanges.map(this.getSelectors)).then(selectorsInSelectors => {
+        const annotation = new Annotation({
+          userid: this.$store.getters[GET.USER_ID],
+          target: selectorsInSelectors.map(selectors => new AnnotationTarget({
+            selector: selectors,
+            pageid: this.$store.getters[GET.PAGE_ID],
+            styleclass: styleClass,
+          })),
+        });
         this.anchoring.anchor(annotation, styleClass).then(() => {
           this.$store.dispatch(ACT.CREATE_ANNOTATION, annotation);
         });

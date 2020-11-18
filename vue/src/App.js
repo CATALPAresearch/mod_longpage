@@ -29,7 +29,7 @@ export default function (utils, logger, context) {
         return div;
     })());
 
-    document.querySelector('.longpage-container').parentElement.appendChild((() => {
+    document.querySelector('.longpage-main').appendChild((() => {
         const div = document.createElement('div');
         div.setAttribute('id', 'annotation-sidebar');
         return div;

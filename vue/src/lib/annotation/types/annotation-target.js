@@ -1,6 +1,6 @@
 export class AnnotationTarget {
-    constructor(selectors = [], pageid, styleclass) {
-        this.selector = selectors;
+    constructor({selector = [], pageid, styleclass}) {
+        this.selector = selector;
         this.pageid = pageid;
         this.styleclass = styleclass;
     }
