@@ -529,3 +529,18 @@ code {
 .longpage-container p, .longpage-container .longpage-assignment, .longpage-container ol, .longpage-container ul, .longpage-container h2, .longpage-container h3, .longpage-container h4 {
   /*color: #28a745 !important;*/
 }
+
+#overlay {
+  position: -webkit-sticky;
+  position: sticky;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255,255,255,0.5);
+  z-index: 2;
+  cursor: pointer;
+}

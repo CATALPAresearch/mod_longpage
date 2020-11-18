@@ -19,38 +19,39 @@ import Vue from 'vue';
 import Fragment from 'vue-fragment';
 import {i18n} from './config/i18n';
 import AnnotationSidebar from "./components/annotation/AnnotationSidebar.vue";
+import {createElement} from "@/util/misc";
 
 Vue.use(Fragment.Plugin);
 
 export default function (utils, logger, context) {
-    document.body.appendChild((() => {
-        const div = document.createElement('div');
-        div.setAttribute('id', 'annotation-toolbar-popover');
-        return div;
-    })());
+    const createOverlay = () => {
+        const overlay = createElement('div', { id: 'overlay' });
+        overlay.addEventListener('click', () => {
+           overlay.style.display = 'none';
+        });
+        return overlay;
+    };
 
-    document.querySelector('.longpage-main').appendChild((() => {
-        const div = document.createElement('div');
-        div.setAttribute('id', 'annotation-sidebar');
-        return div;
-    })())
+    document.body.appendChild(createElement('div', { id: 'annotation-toolbar-popover' }));
+    document.querySelector('.longpage-main').appendChild(createElement('div', { id: 'annotation-sidebar' }));
+    document.querySelector('#longpage-container').appendChild(createOverlay());
 
     const store = createStore(context);
 
-    new Vue({
+    const annotationToolbarPopover = new Vue({
         el: '#annotation-toolbar-popover',
         store,
         render: h => h(AnnotationWrapper),
     });
 
-    new Vue({
+    const annotationSidebar = new Vue({
         el: '#annotation-sidebar',
         i18n: i18n,
         store,
         render: h => h(AnnotationSidebar),
     });
 
-    new Vue({
+    const longpageContainer = new Vue({
         el: 'longpage-container',
         components: {
             CourseRecommondation,
@@ -66,7 +67,6 @@ export default function (utils, logger, context) {
                 tabContentVisible: false,
             };
         },
-
         created: function () {
             let _this = this;
             document.addEventListener('keyup', function (evt) {
@@ -75,7 +75,6 @@ export default function (utils, logger, context) {
                 }
             });
         },
-
         mounted: function () {
             var _this = this;
             this.$store.dispatch('loadBookmarks');
@@ -102,7 +101,6 @@ export default function (utils, logger, context) {
             });
 
         },
-
         methods: {
 
             log(key, values) {

@@ -12,11 +12,9 @@
   .longpage-highlight {
     background-color: scale-color($color, $lightness: -25%);
   }
-  &.longpage-highlight-focused {
-    background-color: scale-color($color, $lightness: +25%) !important;
-    .longpage-highlight {
-      background-color: transparent !important;
-    }
+
+  &.important {
+    background-color: $color !important;
   }
 }
 
@@ -25,6 +23,7 @@
 .longpage-highlights-always-on {
   .longpage-highlight {
     cursor: pointer;
+    position: relative;
     &.bg-yellow {
       @include colorized-bg-highlight($color-highlight-yellow);
     }

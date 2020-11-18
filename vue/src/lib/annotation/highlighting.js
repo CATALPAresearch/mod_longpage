@@ -157,7 +157,7 @@ export function getHighlightsContainingNode(node) {
   const highlights = [];
 
   while (el) {
-    if (el.classList.contains(HighlightingConfig.HL_TAG_NAME)) {
+    if (el.classList.contains(HighlightingConfig.HL_CLASS_NAME)) {
       highlights.push(/** @type {HighlightElement} */ (el));
     }
     el = el.parentElement;

@@ -1,14 +1,19 @@
 import ajax from 'core/ajax';
 import {GET, ACT, MUTATE} from '../types';
 import MappingService from "@/services/mapping-service";
-import {MoodleWSMethods} from "@/config/constants";
+import {HighlightingConfig, MoodleWSMethods} from "@/config/constants";
 
 export default {
     state: {
         annotations: [],
+        selectedAnnotations: [],
     },
     getters: {
         [GET.ANNOTATIONS]: ({annotations}) => annotations,
+        [GET.SELECTED_ANNOTATIONS]: ({selectedAnnotations}) => selectedAnnotations,
+        [GET.SELECTED_HIGHLIGHTS]: ({selectedAnnotations}) => {
+            return Array.from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME)).filter(element => selectedAnnotations.includes(element._annotation));
+        }
     },
     actions: {
         [ACT.CREATE_ANNOTATION]({commit, getters}, annotation) {
@@ -43,11 +48,14 @@ export default {
         },
     },
     mutations: {
+        [MUTATE.RESET_ANNOTATIONS](state) {
+            state.annotations = [];
+        },
         [MUTATE.SET_ANNOTATIONS](state, annotations) {
             state.annotations = annotations;
         },
-        [MUTATE.RESET_ANNOTATIONS](state) {
-            state.annotations = [];
+        [MUTATE.SET_SELECTED_ANNOTATIONS](state, selectedAnnotations) {
+            state.selectedAnnotations = selectedAnnotations;
         }
     },
 }

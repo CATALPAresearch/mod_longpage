@@ -1,5 +1,5 @@
 <template>
-  <div class="border-secondary card hvr-grow-shadow" @click="$emit('selected')">
+  <div class="border-secondary card hvr-grow-shadow" @click.stop="selectAnnotation">
     <div class="card-body text-dark p-2">
       <div class="font-weight-lighter mb-1 text-right text-small">
         {{ $t('annotationSidebar.annotationCard.created') }} {{ createdLocaleDateString }}
@@ -23,9 +23,12 @@
 </template>
 
 <script>
-import {Annotation} from "../../../lib/annotation/types/annotation";
+import {Annotation} from "@/lib/annotation/types/annotation";
 import {DateTimeFormatter} from "@/config/i18n";
-import {SelectorType} from '../../../config/constants';
+import {HighlightingConfig,SelectorType} from '@/config/constants';
+import {mapMutations} from 'vuex';
+import scrollIntoView from 'scroll-into-view';
+import {MUTATE} from "@/store/types";
 
 export default {
   name: "AnnotationCard",
@@ -43,12 +46,23 @@ export default {
       const textQuoteSelector = this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
       return textQuoteSelector ? textQuoteSelector.exact : '';
     },
+    highlightHTMLElement() {
+      return Array.from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME)).find(element => element._annotation === this.annotation);
+    },
     lastModifiedLocaleDateString() {
       return DateTimeFormatter.format(new Date(Number(this.annotation.timemodified)));
       return this.annotation.timemodified === this.annotation.timecreated ?
           DateTimeFormatter.format(new Date(Number(this.annotation.timemodified))) : '';
     },
   },
+  methods: {
+    selectAnnotation() {
+      this.setSelectedAnnotations([this.annotation]);
+      scrollIntoView(this.highlightHTMLElement);
+      document.getElementById('overlay').style.display = 'block';
+    },
+    ...mapMutations({ setSelectedAnnotations: MUTATE.SET_SELECTED_ANNOTATIONS }),
+  }
 }
 </script>
 

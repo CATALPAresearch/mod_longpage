@@ -24,6 +24,10 @@ const AnnotationSortingFunction = Object.freeze({
   }
 });
 
+const setZIndex = (htmlElements, zIndex) => {
+  htmlElements.forEach(element => element.style.zIndex = zIndex);
+};
+
 export default {
   name: "AnnotationSidebar",
   components: {
@@ -31,11 +35,18 @@ export default {
   },
   computed: {
     annotationsOrderedByTextPosition() {
-      return this.annotations.sort(AnnotationSortingFunction.BY_POSITION);
+      return Array.from(this.annotations).sort(AnnotationSortingFunction.BY_POSITION);
     },
     ...mapGetters({
       annotations: GET.ANNOTATIONS,
+      selectedHighlights: GET.SELECTED_HIGHLIGHTS,
     }),
+  },
+  watch: {
+    selectedHighlights(newValue, oldValue) {
+      setZIndex(newValue, 3); // TODO: Get value from overlay
+      setZIndex(oldValue, 2); // TODO: Get value from old value
+    },
   },
 }
 </script>
