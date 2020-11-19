@@ -23,10 +23,23 @@ export default {
                 args: MappingService[methodname](annotation),
                 done: ({id}) => {
                     annotation.id = id;
-                    commit(MUTATE.SET_ANNOTATIONS, [...getters[GET.ANNOTATIONS], annotation])
+                    commit(MUTATE.SET_ANNOTATIONS, [...getters[GET.ANNOTATIONS], annotation]);
                 },
                 fail: (e) => {
                     console.error('"mod_page_create_annotation" failed', e);
+                }
+            }]);
+        },
+        [ACT.DELETE_ANNOTATION]({commit, getters}, annotation) {
+            const methodname = MoodleWSMethods.DELETE_ANNOTATION;
+            ajax.call([{
+                methodname,
+                args: { id: annotation.id },
+                done: () => {
+                    commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
+                },
+                fail: (e) => {
+                    console.error('"mod_page_delete_annotation" failed', e);
                 }
             }]);
         },
@@ -48,8 +61,11 @@ export default {
         },
     },
     mutations: {
-        [MUTATE.RESET_ANNOTATIONS](state) {
-            state.annotations = [];
+        [MUTATE.ADD_ANNOTATIONS](state, annotations) {
+            state.annotations.push(...annotations);
+        },
+        [MUTATE.REMOVE_ANNOTATIONS](state, annotations) {
+            state.annotations = state.annotations.filter(annotation => !annotations.includes(annotation));
         },
         [MUTATE.SET_ANNOTATIONS](state, annotations) {
             state.annotations = annotations;

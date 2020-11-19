@@ -107,6 +107,14 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
+    'mod_page_delete_annotation' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'delete_page_annotation',
+        'description'   => 'Delete an annotation',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
     'mod_page_get_annotations_by_page_and_user' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_annotations_by_page_and_user',

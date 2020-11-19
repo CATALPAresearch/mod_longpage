@@ -64,7 +64,7 @@ class mod_page_external extends external_api
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $annotationid = $DB->insert_record("page_annotation", pick_keys($annotation, ['timecreated', 'timemodified', 'userid']));
+        $annotationid = $DB->insert_record('page_annotation', pick_keys($annotation, ['timecreated', 'timemodified', 'userid']));
         self::create_page_annotation_targets($annotation['target'], $annotationid);
         $transaction->allow_commit();
 
@@ -127,6 +127,52 @@ class mod_page_external extends external_api
                 )
             )
         );
+    }
+
+    /**
+     * Delete page annotation
+     *
+     * @param integer id
+     * @return void
+     * @since Moodle 3.0
+     */
+    public static function delete_page_annotation($id)
+    {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $targets = $DB->get_records('page_annotation_target', array('annotationid' => $id));
+        foreach ($targets as $target) {
+            $selectors = $DB->get_records('page_selector', array('annotationtargetid' => $target->id));
+            foreach ($selectors as $selector) {
+                $DB->delete_records('page_' . $selector->selectortype, array('selectorid' => $selector->id));
+                $DB->delete_records('page_selector', array('id' => $selector->id));
+            }
+        }
+        $DB->delete_records('page_annotation_target', array('annotationid' => $id));
+        $DB->delete_records('page_annotation_body', array('annotationid' => $id));
+        $DB->delete_records('page_annotation', array('id' => $id));
+        $transaction->allow_commit();
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function delete_page_annotation_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                    'id' => new external_value(PARAM_INT),
+            )
+        );
+    }
+
+    public static function delete_page_annotation_returns()
+    {
+        return null;
     }
 
     /**
@@ -277,42 +323,6 @@ class mod_page_external extends external_api
      */
     public static function get_annotations_by_page_and_user_returns()
     {
-        //return new external_multiple_structure(
-        //    new external_single_structure(
-        //        array(
-        //                'target' => new external_multiple_structure(
-        //                        new external_single_structure(
-        //                                array(
-        //                                        //'selector' => new external_multiple_structure(
-        //                                        //        new external_single_structure(
-        //                                        //                array(
-        //                                        //                        'type' => new external_value(PARAM_TEXT, '', VALUE_REQUIRED, 'RangeSelector', false),
-        //                                        //                        'startposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-        //                                        //                        'startcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-        //                                        //                        'startoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-        //                                        //                        'endposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-        //                                        //                        'endcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-        //                                        //                        'endoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-        //                                        //                        'exact' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-        //                                        //                        'prefix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-        //                                        //                        'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-        //                                        //                ), '', VALUE_OPTIONAL
-        //                                        //        )
-        //                                        //),
-        //                                        'pageid' => new external_value(PARAM_TEXT),
-        //                                        'styleclass' => new external_value(PARAM_TEXT),
-        //                                        'id' => new external_value(PARAM_INT),
-        //                                        'annotationid' => new external_value(PARAM_INT),
-        //                                ), '', VALUE_OPTIONAL
-        //                        )
-        //                ),
-        //                'timecreated' => new external_value(PARAM_INT),
-        //                'timemodified' => new external_value(PARAM_INT),
-        //                'userid' => new external_value(PARAM_TEXT),
-        //                'id' => new external_value(PARAM_INT),
-        //        )
-        //    )
-        //);
         return new external_value(PARAM_RAW, 'All annotations of a user of a page');
     }
 

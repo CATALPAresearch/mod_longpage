@@ -63,13 +63,6 @@ export default {
       annotations: GET.ANNOTATIONS,
     }),
   },
-  watch: {
-    annotations(annotations) {
-      annotations.forEach(annotation => {
-        this.anchoring.anchor(annotation);
-      })
-    },
-  },
   mounted() {
     this.$nextTick(() => {
       this.targetRoot = document.body;
@@ -77,12 +70,13 @@ export default {
           this.onSelection.bind(this),
           this.onClearSelection.bind(this),
       );
-      this.anchoring = new Anchoring(this.targetRoot);
+      this.anchoring = new Anchoring(this.targetRoot, this.$store);
       setHighlightsVisible(this.targetRoot, true);
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
     });
   },
   beforeDestroy() {
+    this.anchoring.unsubscribe();
     this.selectionListener.unsubscribe();
   },
   methods: {
@@ -96,9 +90,7 @@ export default {
             styleclass: styleClass,
           })),
         });
-        this.anchoring.anchor(annotation, styleClass).then(() => {
-          this.$store.dispatch(ACT.CREATE_ANNOTATION, annotation);
-        });
+        this.$store.dispatch(ACT.CREATE_ANNOTATION, annotation);
       });
     },
     getSelectors(range) {

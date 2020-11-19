@@ -17,7 +17,8 @@ export const ACT = Object.freeze({
 });
 
 export const MUTATE = Object.freeze({
-  RESET_ANNOTATIONS: 'Reset Annotations',
+  ADD_ANNOTATIONS: 'Add Annotations',
+  REMOVE_ANNOTATIONS: 'Remove Annotations by Id',
   SET_ANNOTATIONS: 'Set Annotations',
   SET_SELECTED_ANNOTATIONS: 'Set Selected Annotations',
 });

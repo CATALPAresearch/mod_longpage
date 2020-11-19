@@ -20,6 +20,7 @@ export const LANGUAGE = 'de';
 export const MoodleWSMethods = Object.freeze({
     GET_ANNOTATIONS: 'mod_page_get_annotations_by_page_and_user',
     CREATE_ANNOTATION: 'mod_page_create_annotation',
+    DELETE_ANNOTATION: 'mod_page_delete_annotation',
 });
 
 export const SelectorType = Object.freeze({

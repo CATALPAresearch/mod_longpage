@@ -15,7 +15,7 @@
         </span>
       </div>
       <div class="annotation-actions card-actions text-right">
-        <font-awesome-icon class="ml-1" icon="trash" @click.stop="$emit('delete')" />
+        <font-awesome-icon class="ml-1" icon="trash" @click.stop="deleteAnnotation" />
         <font-awesome-icon class="ml-1" icon="pen" @click.stop="$emit('edit')" />
       </div>
     </div>
@@ -26,9 +26,9 @@
 import {Annotation} from "@/lib/annotation/types/annotation";
 import {DateTimeFormatter} from "@/config/i18n";
 import {HighlightingConfig,SelectorType} from '@/config/constants';
-import {mapMutations} from 'vuex';
+import {mapActions, mapMutations} from 'vuex';
 import scrollIntoView from 'scroll-into-view';
-import {MUTATE} from "@/store/types";
+import {ACT, MUTATE} from "@/store/types";
 
 export default {
   name: "AnnotationCard",
@@ -56,12 +56,16 @@ export default {
     },
   },
   methods: {
+    deleteAnnotation() {
+      this[ACT.DELETE_ANNOTATION](this.annotation);
+    },
     selectAnnotation() {
-      this.setSelectedAnnotations([this.annotation]);
+      this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
       scrollIntoView(this.highlightHTMLElement);
       document.getElementById('overlay').style.display = 'block';
     },
-    ...mapMutations({ setSelectedAnnotations: MUTATE.SET_SELECTED_ANNOTATIONS }),
+    ...mapActions([ACT.DELETE_ANNOTATION]),
+    ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
   }
 }
 </script>

@@ -1,3 +1,8 @@
+/*
+* TODO:
+*  - Improve on readability
+*/
+
 /**
  * Based on Hypothesis client's modules (see https://github.com/hypothesis/client):
  *   - src/annotator/guest.js
@@ -5,16 +10,32 @@
 import {highlightRange, removeHighlights} from "./highlighting";
 import {anchor} from "./hypothesis/anchoring/html";
 import {sniff} from "./hypothesis/anchoring/range";
+import {MUTATE} from "@/store/types";
 
 export class Anchoring {
     /**
      * @param {HTMLElement} root
      * @param {Anchor[]} anchors
      */
-    constructor(root, anchors = []) {
+    constructor(root, store, anchors = []) {
         this.anchoring = {anchor};
         this.root = root
         this.anchors = anchors;
+        this.unsubscribe = store.subscribe((mutation) => {
+            switch (mutation.type) {
+                case MUTATE.SET_ANNOTATIONS:
+                    this.detachAll();
+                case MUTATE.ADD_ANNOTATIONS:
+                    mutation.payload.forEach(annotation => {
+                        this.anchor(annotation);
+                    });
+                    break;
+                case MUTATE.REMOVE_ANNOTATIONS:
+                    mutation.payload.forEach(annotation => {
+                        this.detach(annotation);
+                    });
+            }
+        })
     }
 
     /**
@@ -192,9 +213,24 @@ export class Anchoring {
         }
 
         this.anchors = anchors;
+        this.removeHighlights(unhighlight);
+    }
 
+    detachAll() {
+        this.removeHighlights(this.getAllHighlights());
+        this.anchors = [];
+    }
+
+    getAllHighlights() {
+        return this.anchors.reduce((highlights, anchor) => {
+            highlights.push(...(anchor.highlights || []));
+            return highlights;
+        }, []);
+    }
+
+    removeHighlights(highlights) {
         requestAnimationFrame(() => {
-            removeHighlights(unhighlight);
+            removeHighlights(highlights);
         });
     }
 }
