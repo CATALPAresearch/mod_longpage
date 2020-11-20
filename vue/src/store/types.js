@@ -14,6 +14,7 @@ export const ACT = Object.freeze({
   DELETE_ANNOTATION: 'Delete Annotation',
   EDIT_ANNOTATION: 'Edit Annotation',
   FETCH_ANNOTATIONS: 'Fetch Annotations',
+  UPDATE_ANNOTATION_BODY: 'Update Annotation Body',
 });
 
 export const MUTATE = Object.freeze({
@@ -21,4 +22,5 @@ export const MUTATE = Object.freeze({
   REMOVE_ANNOTATIONS: 'Remove Annotations by Id',
   SET_ANNOTATIONS: 'Set Annotations',
   SET_SELECTED_ANNOTATIONS: 'Set Selected Annotations',
+  UPDATE_ANNOTATION: 'Update Annotation',
 });

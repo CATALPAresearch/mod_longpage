@@ -14,26 +14,43 @@
           {{ highlightedText }}
         </span>
       </div>
+      <div>
+        <span v-if="!isBeingEdited">{{ annotation.body }}</span>
+        <textarea v-model="annotationUpdate.body"  class="form-control" rows="3" v-else/>
+      </div>
       <div class="annotation-actions card-actions text-right">
-        <font-awesome-icon class="ml-1" icon="trash" @click.stop="deleteAnnotation" />
-        <font-awesome-icon class="ml-1" icon="pen" @click.stop="$emit('edit')" />
+        <div v-if="!isBeingEdited">
+          <font-awesome-icon class="ml-1" icon="trash" @click.stop="deleteAnnotation" />
+          <font-awesome-icon class="ml-1" icon="pen" @click.stop="openEditor" />
+        </div>
+        <div v-else>
+          <font-awesome-icon class="ml-1" icon="times" @click.stop="closeEditor" />
+          <font-awesome-icon class="ml-1" icon="save" @click.stop="updateAnnotation" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import {ACT, MUTATE} from "@/store/types";
 import {Annotation} from "@/lib/annotation/types/annotation";
+import {cloneDeep} from 'lodash';
 import {DateTimeFormatter} from "@/config/i18n";
 import {HighlightingConfig,SelectorType} from '@/config/constants';
 import {mapActions, mapMutations} from 'vuex';
 import scrollIntoView from 'scroll-into-view';
-import {ACT, MUTATE} from "@/store/types";
 
 export default {
   name: "AnnotationCard",
   props: {
     annotation: {type: Annotation, required: true},
+  },
+  data() {
+    return {
+      isBeingEdited: false,
+      annotationUpdate: null,
+    };
   },
   computed: {
     annotationTarget() {
@@ -56,15 +73,27 @@ export default {
     },
   },
   methods: {
+    closeEditor() {
+      this.isBeingEdited = false;
+      this.annotationUpdate = null;
+    },
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
+    },
+    openEditor() {
+      this.isBeingEdited = true;
+      this.annotationUpdate = cloneDeep(this.annotation);
     },
     selectAnnotation() {
       this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
       scrollIntoView(this.highlightHTMLElement);
       document.getElementById('overlay').style.display = 'block';
     },
-    ...mapActions([ACT.DELETE_ANNOTATION]),
+    updateAnnotation() {
+      this[ACT.UPDATE_ANNOTATION_BODY](this.annotationUpdate);
+      this.closeEditor();
+    },
+    ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION_BODY]),
     ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
   }
 }

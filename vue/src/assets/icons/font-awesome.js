@@ -1,5 +1,7 @@
 import {
     faPen,
+    faSave,
+    faTimes,
     faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText} from '@fortawesome/vue-fontawesome';
@@ -8,6 +10,8 @@ import Vue from 'vue';
 
 library.add(
     faPen,
+    faSave,
+    faTimes,
     faTrash,
 );
 

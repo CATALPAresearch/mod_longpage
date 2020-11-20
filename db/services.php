@@ -115,6 +115,14 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
+    'mod_page_update_annotation_body' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'update_page_annotation_body',
+        'description'   => 'Update an annotation',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
     'mod_page_get_annotations_by_page_and_user' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_annotations_by_page_and_user',

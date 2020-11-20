@@ -59,6 +59,22 @@ export default {
                 }
             }]);
         },
+        [ACT.UPDATE_ANNOTATION_BODY]({commit, getters}, annotationUpdate) {
+            const methodname = MoodleWSMethods.UPDATE_ANNOTATION_BODY;
+            ajax.call([{
+                methodname,
+                args: {
+                    annotation_id: annotationUpdate.id,
+                    value: annotationUpdate.body,
+                },
+                done: (annotations) => {
+                    commit(MUTATE.UPDATE_ANNOTATION, annotationUpdate);
+                },
+                fail: (e) => {
+                    console.error('"mod_page_update_annotation_body" failed', e);
+                }
+            }]);
+        },
     },
     mutations: {
         [MUTATE.ADD_ANNOTATIONS](state, annotations) {
@@ -72,6 +88,10 @@ export default {
         },
         [MUTATE.SET_SELECTED_ANNOTATIONS](state, selectedAnnotations) {
             state.selectedAnnotations = selectedAnnotations;
+        },
+        [MUTATE.UPDATE_ANNOTATION](state, annotationUpdate) {
+            const annotationIndex = state.annotations.findIndex(annotation => annotation.id === annotationUpdate.id);
+            state.annotations.splice(annotationIndex, 1, annotationUpdate);
         }
     },
 }

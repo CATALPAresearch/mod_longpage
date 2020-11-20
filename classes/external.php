@@ -51,7 +51,6 @@ function omit_keys($arrOrObj, $keys)
  */
 class mod_page_external extends external_api
 {
-
     /**
      * Creates page annotation
      *
@@ -66,22 +65,12 @@ class mod_page_external extends external_api
         $transaction = $DB->start_delegated_transaction();
         $annotationid = $DB->insert_record('page_annotation', pick_keys($annotation, ['timecreated', 'timemodified', 'userid']));
         self::create_page_annotation_targets($annotation['target'], $annotationid);
+        if (isset($annotation['body'])) {
+            $DB->insert_record('page_annotation_body', array('annotationid' => $annotationid, 'value' => $annotation['body']));
+        }
         $transaction->allow_commit();
 
         return array('id'=> $annotationid);
-    }
-
-    private static function create_page_annotation_targets($targets, $annotationid)
-    {
-        global $DB;
-
-        foreach ($targets as $target) {
-            $targetid = $DB->insert_record('page_annotation_target', array_merge(pick_keys($target, ['pageid', 'styleclass']), array('annotationid' => $annotationid)));
-            foreach ($target['selector'] as $selector) {
-                $selectorid = $DB->insert_record('page_selector', array('annotationtargetid' => $targetid, 'selectortype' => $selector['type']));
-                $DB->insert_record('page_' . $selector['type'], array_merge(omit_keys($selector, ['type']), array('selectorid' => $selectorid)));
-            }
-        }
     }
 
     /**
@@ -96,6 +85,7 @@ class mod_page_external extends external_api
             array(
                 'annotation' => new external_single_structure(
                     array(
+                        'body' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
                         'target' => new external_multiple_structure(
                             new external_single_structure(
                                 array(
@@ -127,6 +117,32 @@ class mod_page_external extends external_api
                 )
             )
         );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_single_structure
+     * @since Moodle 3.0
+     */
+    public static function create_page_annotation_returns()
+    {
+        return new external_single_structure(
+                array( 'id' => new external_value(PARAM_RAW) )
+        );
+    }
+
+    private static function create_page_annotation_targets($targets, $annotationid)
+    {
+        global $DB;
+
+        foreach ($targets as $target) {
+            $targetid = $DB->insert_record('page_annotation_target', array_merge(pick_keys($target, ['pageid', 'styleclass']), array('annotationid' => $annotationid)));
+            foreach ($target['selector'] as $selector) {
+                $selectorid = $DB->insert_record('page_selector', array('annotationtargetid' => $targetid, 'selectortype' => $selector['type']));
+                $DB->insert_record('page_' . $selector['type'], array_merge(omit_keys($selector, ['type']), array('selectorid' => $selectorid)));
+            }
+        }
     }
 
     /**
@@ -173,19 +189,6 @@ class mod_page_external extends external_api
     public static function delete_page_annotation_returns()
     {
         return null;
-    }
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_single_structure
-     * @since Moodle 3.0
-     */
-    public static function create_page_annotation_returns()
-    {
-        return new external_single_structure(
-            array( 'id' => new external_value(PARAM_RAW) )
-        );
     }
 
     /**
@@ -293,6 +296,7 @@ class mod_page_external extends external_api
         $annotations = array_values($DB->get_records('page_annotation', array('userid' => $userid)));
         foreach ($annotations as $annotation) {
             $annotation->target = self::get_targets_by_annotation($annotation, $pageid);
+            $annotation->body = $DB->get_record('page_annotation_body', array('annotationid' => $annotation->id))->value;
         }
         $transaction->allow_commit();
 
@@ -309,8 +313,8 @@ class mod_page_external extends external_api
     {
         return new external_function_parameters(
                 array(
-                    'pageid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                    'userid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
+                    'pageid' => new external_value(PARAM_INT),
+                    'userid' => new external_value(PARAM_INT)
                 )
         );
     }
@@ -795,5 +799,50 @@ class mod_page_external extends external_api
     public static function getreadingprogress_is_allowed_from_ajax()
     {
         return true;
+    }
+
+    /**
+     * Updates page annotation body
+     *
+     * @param integer annotation_id
+     * @param string value
+     * @return null //TODO: What are the correct types? How do I correctly document methods?
+     * @since Moodle 3.0
+     */
+    public static function update_page_annotation_body($annotation_id, $value) // TODO: This does only work as long as there is only one body per annotation.
+    {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $annotation_body = $DB->get_record('page_annotation_body', array('annotationid' => $annotation_id));
+        $DB->update_record('page_annotation_body', array('id' => $annotation_body->id, 'value' => $value));
+        $transaction->allow_commit();
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function update_page_annotation_body_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'annotation_id' => new external_value(PARAM_INT),
+                'value' => new external_value(PARAM_TEXT),
+            )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return null
+     * @since Moodle 3.0
+     */
+    public static function update_page_annotation_body_returns()
+    {
+       return null;
     }
 }

@@ -21,6 +21,7 @@ export const MoodleWSMethods = Object.freeze({
     GET_ANNOTATIONS: 'mod_page_get_annotations_by_page_and_user',
     CREATE_ANNOTATION: 'mod_page_create_annotation',
     DELETE_ANNOTATION: 'mod_page_delete_annotation',
+    UPDATE_ANNOTATION_BODY: 'mod_page_update_annotation_body',
 });
 
 export const SelectorType = Object.freeze({

@@ -6,6 +6,7 @@ import {AnnotationTarget} from "@/lib/annotation/types/annotation-target";
 const MappingService = {
     [MoodleWSMethods.CREATE_ANNOTATION]: (annotation) => ({
         annotation: {
+            body: annotation.body,
             target: annotation.target.map(target => ({
                 ...target,
                 selector: target.selector.map(selector => {
