@@ -1,5 +1,5 @@
 <template>
-  <div class="border-secondary card hvr-grow-shadow" @click.stop="selectAnnotation">
+  <div :id="`annotation-card-${annotation.id}`" class="annotation-card border-secondary card hvr-grow-shadow" @click.stop="selectAnnotation">
     <div class="card-body text-dark p-2">
       <div class="font-weight-lighter mb-1 text-right text-small">
         {{ $t('annotationSidebar.annotationCard.created') }} {{ createdLocaleDateString }}

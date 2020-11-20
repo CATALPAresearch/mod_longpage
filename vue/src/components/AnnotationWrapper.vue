@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import {ACT, GET} from "../store/types";
+import {ACT, GET, MUTATE} from "../store/types";
 import AnnotationToolbarPopover from "./annotation/AnnotationToolbarPopover.vue";
 import { AnnotationToolbarPopoverPositioner } from "../lib/annotation/annotation-toolbar-popover-positioner";
 import { ArrowDirection } from "../config/constants";
@@ -17,8 +17,10 @@ import { describe } from "../lib/annotation/hypothesis/anchoring/html";
 import { Annotation } from "../lib/annotation/types/annotation";
 import { AnnotationTarget } from "../lib/annotation/types/annotation-target";
 import {Anchoring} from "../lib/annotation/anchoring";
-import {mapGetters} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
 import {setHighlightsVisible} from "../lib/annotation/highlighting";
+import {addAnnotationSelectionListener} from "@/lib/annotation/highlight-selection-listener";
+import scrollIntoView from "scroll-into-view";
 
 export default {
   name: "AnnotationWrapper",
@@ -73,6 +75,12 @@ export default {
       this.anchoring = new Anchoring(this.targetRoot, this.$store);
       setHighlightsVisible(this.targetRoot, true);
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
+      addAnnotationSelectionListener(annotations => {
+        if (annotations.length > 0) {
+          const element = document.getElementById(id);
+          scrollIntoView(element);
+        }
+      });
     });
   },
   beforeDestroy() {
@@ -111,7 +119,8 @@ export default {
       this.annotationToolbarPopoverProps.left = left;
       this.annotationToolbarPopoverProps.top = top;
       this.annotationToolbarPopoverProps.zIndex = zIndex;
-    }
+    },
+    ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
   },
 };
 </script>
