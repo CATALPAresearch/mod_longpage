@@ -226,11 +226,6 @@ html {
   padding-left: 0.3em;
 }
 
-.longpage-main > .col {
-  height: calc(100vh - 50px);
-  overflow: auto;
-}
-
 .longpage-center {
   text-align: center;
 }
@@ -543,4 +538,8 @@ code {
   background-color: rgba(255,255,255,0.5);
   z-index: 2;
   cursor: pointer;
+}
+
+#region-main {
+  overflow: visible;
 }

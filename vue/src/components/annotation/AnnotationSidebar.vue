@@ -1,12 +1,16 @@
 <template>
-  <div id="annotation-sidebar" class="col col-3 p-4">
-    <h2 class="mb-4" id="annotation-sidebar-heading">{{ $t('annotationSidebar.heading') }}</h2>
-    <annotation-card
-        class="mb-4"
-        v-for="annotation in annotationsOrderedByTextPosition"
-        :key="annotation.id"
-        :annotation="annotation"
-    />
+  <div id="annotation-sidebar-wrapper" class="col col-4">
+    <div id="annotation-sidebar">
+      <h2 id="annotation-sidebar-heading" class="mt-4 mx-4">{{ $t('annotationSidebar.heading') }}</h2>
+      <div id="annotation-card-container">
+        <annotation-card
+            class="m-4"
+            v-for="annotation in annotationsOrderedByTextPosition"
+            :key="annotation.id"
+            :annotation="annotation"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -52,12 +56,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  #annotation-sidebar {
+  #annotation-sidebar-wrapper {
     border-left: 1px solid #dee2e6;
-    position: sticky;
 
-    #annotation-sidebar-heading {
-      font-weight: bold;
+    #annotation-sidebar {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 100px;
+      overflow: auto;
+      height: calc(100vh - 50px);
+
+      #annotation-sidebar-heading {
+        font-weight: bold;
+        position: -webkit-sticky;
+        position: sticky;
+      }
+
+      #annotation-card-container {
+        overflow: auto;
+      }
     }
   }
 </style>

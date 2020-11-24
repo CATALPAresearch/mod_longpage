@@ -34,7 +34,7 @@ export default function (utils, logger, context) {
 
     document.body.appendChild(createElement('div', { id: 'annotation-toolbar-popover' }));
     document.querySelector('.longpage-main').appendChild(createElement('div', { id: 'annotation-sidebar' }));
-    document.querySelector('#longpage-container').appendChild(createOverlay());
+    document.querySelector('.longpage-container').appendChild(createOverlay());
 
     const store = createStore(context);
 

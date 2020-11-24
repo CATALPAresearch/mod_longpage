@@ -1,5 +1,5 @@
 <template>
-  <div :id="`annotation-card-${annotation.id}`" class="annotation-card border-secondary card hvr-grow-shadow" @click.stop="selectAnnotation">
+  <div :id="`annotation-card-${annotation.id}`" class="annotation-card border-secondary card hvr-glow" @click.stop="selectAnnotation">
     <div class="card-body text-dark p-2">
       <div class="font-weight-lighter mb-1 text-right text-small">
         {{ $t('annotationSidebar.annotationCard.created') }} {{ createdLocaleDateString }}
@@ -14,7 +14,7 @@
           {{ highlightedText }}
         </span>
       </div>
-      <div>
+      <div class="p-2">
         <span v-if="!isBeingEdited">{{ annotation.body }}</span>
         <textarea v-model="annotationUpdate.body"  class="form-control" rows="3" v-else/>
       </div>
@@ -101,7 +101,6 @@ export default {
 
 <style lang="scss" scoped>
   .card {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     display: block;
 
     &:hover {
