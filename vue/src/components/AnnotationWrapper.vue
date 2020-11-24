@@ -22,6 +22,8 @@ import {setHighlightsVisible} from "../lib/annotation/highlighting";
 import {addAnnotationSelectionListener} from "@/lib/annotation/highlight-selection-listener";
 import scrollIntoView from "scroll-into-view";
 
+const getAnnotationCardId = annotationId => `annotation-card-${annotationId}`
+
 export default {
   name: "AnnotationWrapper",
   components: {
@@ -77,7 +79,7 @@ export default {
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
       addAnnotationSelectionListener(annotations => {
         if (annotations.length > 0) {
-          const element = document.getElementById(id);
+          const element = document.getElementById(getAnnotationCardId(annotations[0].id));
           scrollIntoView(element);
         }
       });
