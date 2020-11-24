@@ -108,8 +108,14 @@ export default {
       this.selectedRanges = [];
       this.annotationToolbarPopoverProps.visible = false;
     },
+    isInsideTarget(range) {
+      return document.querySelector('.longpage-container').contains(range.commonAncestorContainer);
+    },
     onSelection(range, focusRect, isBackwards) {
-      if (!focusRect) this.onClearSelection();
+      if (!focusRect || !this.isInsideTarget(range)) {
+        this.onClearSelection();
+        return
+      }
       this.selectedRanges = [range];
       this.setPositionProps(this.annotationToolbarPopoverPositioner.calculatePositionProps(focusRect, isBackwards));
       this.annotationToolbarPopoverProps.visible = true;
