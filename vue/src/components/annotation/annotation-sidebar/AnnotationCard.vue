@@ -16,7 +16,7 @@
       </div>
       <div class="p-2">
         <span v-if="!isBeingEdited">{{ annotation.body }}</span>
-        <textarea v-model="annotationUpdate.body"  class="form-control" rows="3" v-else/>
+        <textarea v-model="annotationUpdate.body"  @click.stop="" class="form-control" rows="3" v-else/>
       </div>
       <div class="annotation-actions card-actions text-right">
         <div v-if="!isBeingEdited">
