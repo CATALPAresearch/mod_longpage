@@ -41,8 +41,8 @@ export default {
             $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function(i, val) {
                 _this.index.addDoc({id: i, title: $(val).text(), body: '', link: $(val).attr('id')});
             });
-
             $('.longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre').each(function(i, val) {
+
                 if ($(this).is("h2") || $(this).is("h3") || $(this).is("h4")) {
                     _this.index.addDoc({id: i, title: $(val).text(), body: '', link: $(val).attr('id')});
                 } else {
@@ -64,7 +64,11 @@ export default {
                         body: {boost: 1}
                     }
                 });
-                this.searchResults = this.searchResults.map(function(res) {
+                this.searchResults = this.searchResults.map(function(response) {
+                    const res = {
+                        ...response,
+                        doc: _this.index.documentStore.getDoc(response.ref)
+                    }
                     let pos = res.doc.body.indexOf(_this.searchTerm);
                     res.doc.short = pos > 0 ? '... ' + res.doc.body.substr(pos - 20 > 0 ? pos - 20 : 0, 40).replace(_this.searchTerm, '<strong>' + _this.searchTerm + '</strong>') : _this.searchTerm;
                     // Console.log(pos, _this.searchTerm, res.doc.short)
