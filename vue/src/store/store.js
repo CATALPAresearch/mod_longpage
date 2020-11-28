@@ -1,5 +1,4 @@
 import AnnotationModule from './modules/annotation-module';
-import {createBookmarkingModule} from './modules/bookmarking-module';
 import Vuex, {Store} from 'vuex';
 import Vue from 'vue';
 import {GET} from "./types";
@@ -9,7 +8,6 @@ Vue.use(Vuex);
 export const createStore = (context) => new Store({
   modules: {
     AnnotationModule,
-    BookmarkingModule: createBookmarkingModule(context),
   },
   state: {
     courseid: context.courseid,

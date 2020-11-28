@@ -113,23 +113,6 @@
         <KEY NAME="selector" TYPE="foreign" FIELDS="selectorid" REFTABLE="page_selector" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="page_bookmark" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="title" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="selection" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="target" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="section" TYPE="text" LENGTH="255" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="userid" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="creationdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="position" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
     <TABLE NAME="page_reading" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>

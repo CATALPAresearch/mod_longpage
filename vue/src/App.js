@@ -8,7 +8,6 @@ import './assets/icons';
 import './styles/main.scss';
 import $ from 'jquery';
 import AnnotationWrapper from './components/AnnotationWrapper.vue';
-// import Bookmark from './components/Bookmark';
 import CourseRecommondation from './components/CourseRecommondation';
 import {createStore} from './store/store';
 import ReadingProgress from './components/ReadingProgress';
@@ -77,8 +76,6 @@ export default function (utils, logger, context) {
         },
         mounted: function () {
             var _this = this;
-            this.$store.dispatch('loadBookmarks');
-
             // log bootstrap interactions
             $('.longpage-citation').click(function () {
                 _this.log('citation_view', {citation: $(this).data('content')});
@@ -102,40 +99,18 @@ export default function (utils, logger, context) {
 
         },
         methods: {
-
             log(key, values) {
                 logger.add(key, values);
             },
-
             showTabContent() {
                 this.tabContentVisible = true;
             },
-
             hideTabContent() {
                 this.tabContentVisible = false;
                 if (document.querySelector('#longpage-features').querySelector('a.active.show')) {
                     document.querySelector('#longpage-features').querySelector('a.active.show').classList.remove("active");
                 }
             },
-
-            followLink: function (target, event) {
-                let elem = document.getElementById(target);
-                if (!elem) {
-                    return;
-                }
-
-                //this.$emit('log', 'toc_entry_open', { level: level, target: target, title: elem.innerHTML });
-                //history.pushState(null, null, target)
-                let elScrollOffset = elem.getBoundingClientRect().top
-                let scrollOffset = window.pageYOffset || document.documentElement.scrollTop
-                let padding = 150;
-                window.scroll({
-                    top: elScrollOffset + scrollOffset - padding,
-                    behavior: 'smooth'
-                });
-                this.hideTabContent();
-                event.preventDefault();
-            }
         },
         template: `
             <div>
@@ -162,16 +137,6 @@ export default function (utils, logger, context) {
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="bookmarks-tab" title="Lesezeichen" data-toggle="tab" href="#bookmarks" role="tab" aria-controls="bookmarkss" aria-selected="false" @click="showTabContent()">
-                                        <i class="fa fa-bookmark"></i><span class="ml-1 d-none d-md-inline">Lesezeichen</span>
-                                    </a>
-                                </li>
-                                <li hidden class="nav-item">
-                                    <a class="nav-link" id="annotations-tab" title="Hervorhebungen" data-toggle="tab" href="#annotations" role="tab" aria-controls="annotations" aria-selected="false" @click="showTabContent()">
-                                        <i class="fa fa-pencil"></i><span class="ml-1 d-none d-md-inline">Hervorhebungen</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link" id="search-tab" data-toggle="tab" href="#search" role="tab" aria-controls="search" aria-selected="false" @click="showTabContent()">
                                         <i class="fa fa-search"></i> <span class="ml-1 d-none d-md-inline">Suche</span>
                                     </a>
@@ -194,29 +159,6 @@ export default function (utils, logger, context) {
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="tab-pane fade p-3" id="bookmarks" role="tabpanel" aria-labelledby="toc-tab">
-                            <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
-                                    <span aria-hidden="true">&times;</span>
-                            </button>
-                            <div class="w-75" v-if="$store.getters.getBookmarks.length == 0">
-                                Es wurden noch keine Lesezeichen angelegt. Markieren Sie einen Textauschnitt, um ein Lesezeichen anzulegen.
-                            </div>
-                            <div v-if="$store.getters.getBookmarks.length > 0">
-                                Meine Lesezeichen:
-                                <ul>
-                                    <li v-for="b in $store.getters.getBookmarks">
-                                        <a v-on:click="followLink(b.target, $event)" style="cursor:pointer;">{{ b.selection }}</a> 
-                                        <i v-on:click="$store.commit('removeBookmark', b.id)" class="ml-3 p-1 fa fa-trash"></i>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade p-3" id="annotations" role="tabpanel" aria-labelledby="toc-tab">
-                            Annotations
-                            <button type="button" class="close ml-auto align-self-center d-block" aria-label="Close" v-on:click="hideTabContent()">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
                         <div class="tab-pane fade p-3" id="search" role="tabpanel" aria-labelledby="search-tab">
                             <Search @hideTabContent='hideTabContent' v-on:log='log'></Search>
                         </div>
@@ -225,7 +167,6 @@ export default function (utils, logger, context) {
 
                 <ReadingTime></ReadingTime>
                 <ReadingProgress v-on:log='log' v-bind:context="context"></ReadingProgress>
-<!--                <Bookmark v-on:log='log'></Bookmark>-->
             </div>
         `
     });

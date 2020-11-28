@@ -27,7 +27,6 @@
 defined('MOODLE_INTERNAL') || die;
 
 $functions = array(
-
     'mod_page_log' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'log',
@@ -45,43 +44,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'        => true
     ),
-
-    'mod_page_getbookmark' => array(
-        'classname'     => 'mod_page_external',
-        'methodname'    => 'getbookmark',
-        'description'   => 'Get bookmark for a page',
-        'type'          => 'read',
-        'capabilities'  => 'mod/page:view',
-        'ajax'        => true
-    ),
-
-    'mod_page_updatebookmark' => array(
-        'classname'     => 'mod_page_external',
-        'methodname'    => 'updatebookmark',
-        'description'   => 'Updates bookmark for a page',
-        'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
-        'ajax'        => true
-    ),
-
-     'mod_page_addbookmark' => array(
-        'classname'     => 'mod_page_external',
-        'methodname'    => 'addbookmark',
-        'description'   => 'Add bookmark to a page',
-        'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
-        'ajax'        => true
-    ),
-
-     'mod_page_removebookmark' => array(
-        'classname'     => 'mod_page_external',
-        'methodname'    => 'removebookmark',
-        'description'   => 'Remove bookmark to a page',
-        'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
-        'ajax'        => true
-    ),
-
     'mod_page_reading' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'reading',
@@ -90,7 +52,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'        => true
     ),
-
     'mod_page_view_page' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'view_page',
