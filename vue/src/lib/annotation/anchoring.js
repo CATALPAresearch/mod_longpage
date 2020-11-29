@@ -22,19 +22,17 @@ export class Anchoring {
         this.root = root
         this.anchors = anchors;
         this.unsubscribe = store.subscribe((mutation) => {
-            setTimeout(() => {
-                switch (mutation.type) {
-                    case MUTATE.SET_ANNOTATIONS:
-                        this.detachAllAnnotations();
-                    case MUTATE.ADD_ANNOTATIONS:
-                        this.anchorAnnotations(mutation.payload);
-                        break;
-                    case MUTATE.REMOVE_ANNOTATIONS:
-                        mutation.payload.forEach(annotation => {
-                            this.detachAnnotation(annotation);
-                        });
-                }
-            }, 2500)
+            switch (mutation.type) {
+                case MUTATE.SET_ANNOTATIONS:
+                    this.detachAllAnnotations();
+                case MUTATE.ADD_ANNOTATIONS:
+                    this.anchorAnnotations(mutation.payload);
+                    break;
+                case MUTATE.REMOVE_ANNOTATIONS:
+                    mutation.payload.forEach(annotation => {
+                        this.detachAnnotation(annotation);
+                    });
+            }
         })
     }
 
