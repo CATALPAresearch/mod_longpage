@@ -23,7 +23,7 @@ export default {
                 args: MappingService[methodname](annotation),
                 done: ({id}) => {
                     annotation.id = id;
-                    commit(MUTATE.SET_ANNOTATIONS, [...getters[GET.ANNOTATIONS], annotation]);
+                    commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
                 },
                 fail: (e) => {
                     console.error('"mod_page_create_annotation" failed', e);

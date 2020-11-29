@@ -22,20 +22,27 @@ export class Anchoring {
         this.root = root
         this.anchors = anchors;
         this.unsubscribe = store.subscribe((mutation) => {
-            switch (mutation.type) {
-                case MUTATE.SET_ANNOTATIONS:
-                    this.detachAll();
-                case MUTATE.ADD_ANNOTATIONS:
-                    mutation.payload.forEach(annotation => {
-                        this.anchor(annotation);
-                    });
-                    break;
-                case MUTATE.REMOVE_ANNOTATIONS:
-                    mutation.payload.forEach(annotation => {
-                        this.detach(annotation);
-                    });
-            }
+            setTimeout(() => {
+                switch (mutation.type) {
+                    case MUTATE.SET_ANNOTATIONS:
+                        this.detachAllAnnotations();
+                    case MUTATE.ADD_ANNOTATIONS:
+                        this.anchorAnnotations(mutation.payload);
+                        break;
+                    case MUTATE.REMOVE_ANNOTATIONS:
+                        mutation.payload.forEach(annotation => {
+                            this.detachAnnotation(annotation);
+                        });
+                }
+            }, 2500)
         })
+    }
+
+    anchorAnnotations(annotations) {
+        annotations.reduce(
+            (anchorPromises, annotation) => anchorPromises.then(() => this.anchorAnnotation(annotation)),
+            Promise.resolve(),
+        )
     }
 
     /**
@@ -45,7 +52,7 @@ export class Anchoring {
      * @param {Annotation} annotation
      * @return {Promise<Anchor[]>}
      */
-    anchor(annotation) {
+    anchorAnnotation(annotation) {
         let anchor;
 
         // Anchors for all annotations are in the `anchors` instance property. These
@@ -200,7 +207,7 @@ export class Anchoring {
      *
      * @param {Annotation} annotation
      */
-    detach(annotation) {
+    detachAnnotation(annotation) {
         const anchors = [];
         let unhighlight = [];
 
@@ -216,7 +223,7 @@ export class Anchoring {
         this.removeHighlights(unhighlight);
     }
 
-    detachAll() {
+    detachAllAnnotations() {
         this.removeHighlights(this.getAllHighlights());
         this.anchors = [];
     }
