@@ -36,15 +36,15 @@ const MappingService = {
                         return {
                             type,
                             endContainer: s.endcontainer,
-                            endOffset: s.endoffset,
+                            endOffset: Number(s.endoffset),
                             startContainer: s.startcontainer,
-                            startOffset: s.startoffset,
+                            startOffset: Number(s.startoffset),
                         }
                     case SelectorType.TEXT_POSITION_SELECTOR:
                         return {
                             type,
-                            end: s.endposition,
-                            start: s.startposition,
+                            end: Number(s.endposition),
+                            start: Number(s.startposition),
                         }
                     default:
                         return {
