@@ -65,17 +65,13 @@ export default {
       position: -webkit-sticky;
       position: sticky;
       top: calc(#{$moodle-navbar-height} + #{$longpage-navbar-height});
-      overflow: auto;
+      overflow-y: auto;
       height: calc(100vh - #{$moodle-navbar-height} - #{$longpage-navbar-height});
 
       #annotation-sidebar-heading {
         font-weight: bold;
         position: -webkit-sticky;
         position: sticky;
-      }
-
-      #annotation-card-container {
-        overflow: auto;
       }
     }
   }
