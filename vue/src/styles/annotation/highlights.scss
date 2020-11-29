@@ -7,23 +7,30 @@
 @use 'sass:color';
 
 @mixin colorized-bg-highlight($color) {
-  background-color: $color;
-  // Give a highlight inside a larger highlight a different color to stand out.
-  .longpage-highlight {
-    background-color: scale-color($color, $lightness: -25%);
-  }
-
-  &.important {
-    background-color: $color !important;
-  }
+  background: transparent linear-gradient(
+                  to right,
+                  rgba($color, 0.3),
+                  rgba($color, 0.9) 4%,
+                  rgba($color, 0.5)
+  );
 }
 
 // `longpage-highlights-always-on` is a class that is toggled on the
 //  annotated longpage-container when highlights are enabled/disabled.
 .longpage-highlights-always-on {
   .longpage-highlight {
-    cursor: pointer;
     position: relative;
+    mix-blend-mode: multiply;
+    margin: 0 -0.4em;
+    padding: 0.1em 0.4em;
+    border-radius: 0.8em 0.3em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .annotation-toolbar-item, .longpage-highlight {
+    cursor: pointer;
+
     &.bg-yellow {
       @include colorized-bg-highlight($color-highlight-yellow);
     }
