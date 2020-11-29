@@ -9,9 +9,9 @@
 
 <script>
 import {ACT, GET, MUTATE} from "@/store/types";
+import {ArrowDirection, LONGPAGE_MAIN_ID, LONGPAGE_TEXT_CONTAINER_ID} from "../../config/constants";
 import AnnotationToolbarPopover from "./AnnotationToolbarPopover.vue";
 import { AnnotationToolbarPopoverPositioner } from "../../lib/annotation/annotation-toolbar-popover-positioner";
-import { ArrowDirection } from "../../config/constants";
 import { SelectionListener } from "../../lib/annotation/selection-listener";
 import { describe } from "../../lib/annotation/hypothesis/anchoring/html";
 import { Annotation } from "../../lib/annotation/types/annotation";
@@ -25,7 +25,7 @@ import scrollIntoView from "scroll-into-view";
 const getAnnotationCardId = annotationId => `annotation-card-${annotationId}`
 
 export default {
-  name: "AnnotationWrapper",
+  name: 'AnnotationWrapper',
   components: {
     AnnotationToolbarPopover,
   },
@@ -59,7 +59,7 @@ export default {
     },
     annotationToolbarPopoverPositioner() {
       return new AnnotationToolbarPopoverPositioner(
-          this.targetRoot,
+          document.body,
           this.annotationToolbarPopover.height.bind(this.annotationToolbarPopover),
           this.annotationToolbarPopover.width.bind(this.annotationToolbarPopover),
           this.annotationToolbarPopover.arrowHeight.bind(this.annotationToolbarPopover),
@@ -71,13 +71,13 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.targetRoot = document.body;
+      this.targetRoot = document.getElementById(LONGPAGE_TEXT_CONTAINER_ID);
       this.selectionListener.subscribe(
           this.onSelection.bind(this),
           this.onClearSelection.bind(this),
       );
       this.anchoring = new Anchoring(this.targetRoot, this.$store);
-      setHighlightsVisible(this.targetRoot, true);
+      setHighlightsVisible(document.getElementById(LONGPAGE_MAIN_ID), true);
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
       addAnnotationSelectionListener(annotations => {
         if (annotations.length > 0) {
@@ -113,7 +113,7 @@ export default {
       this.annotationToolbarPopoverProps.visible = false;
     },
     isInsideTarget(range) {
-      return document.querySelector('.longpage-container').contains(range.commonAncestorContainer);
+      return this.targetRoot.contains(range.commonAncestorContainer);
     },
     onSelection(range, focusRect, isBackwards) {
       if (!focusRect || !this.isInsideTarget(range)) {
