@@ -28,7 +28,7 @@ const MappingService = {
     [MoodleWSMethods.GET_ANNOTATIONS]: (response) => JSON.parse(response).map(annotation => new Annotation({
         ...annotation,
         target: annotation.target.map(t => new AnnotationTarget({
-            ...t,
+            pageId: t.pageid,
             selector: t.selector.map(s => {
                 const type = capitalize(s.type);
                 switch (type) {
@@ -53,7 +53,9 @@ const MappingService = {
                         }
                 }
             }),
+            styleclass: t.styleclass,
         })),
+        userId: annotation.userid,
     })),
 };
 
