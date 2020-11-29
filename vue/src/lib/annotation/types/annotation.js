@@ -5,14 +5,14 @@ export class Annotation {
     /**
      * @param {AnnotationTarget[]} target
      * @param body
-     * @param userid
+     * @param userId
      */
-    constructor({ body = '', id, target = [], timecreated = Date.now(), timemodified = Date.now(), userid }) {
+    constructor({ body = '', id, target = [], timecreated = Date.now(), timemodified = Date.now(), userId }) {
         this.body = body;
         this.id = id;
         this.target = target;
         this.timecreated = timecreated;
         this.timemodified = timemodified;
-        this.userid = userid;
+        this.userId = userId;
     }
 }

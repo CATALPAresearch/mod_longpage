@@ -8,9 +8,9 @@
  */
 import ajax from 'core/ajax';
 
-export default function (utils, courseid, options) {
+export default function (utils, courseId, options) {
     this.utils = utils;
-    this.courseid = courseid;
+    this.courseId = courseId;
     this.name = 'log_page';
     this.options = utils.mergeObjects({
         outputType: 1, // -1: no logging, 0: console.log(), 1: server log,
@@ -113,7 +113,7 @@ export default function (utils, courseid, options) {
             methodname: 'mod_page_log',
             args: {
                 data: {
-                    courseid: _this.courseid,
+                    courseid: _this.courseId,
                     action: entry.action,
                     utc: Math.ceil(entry.utc / 1000),
                     entry: JSON.stringify(entry)

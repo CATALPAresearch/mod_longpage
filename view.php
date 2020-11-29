@@ -56,7 +56,6 @@ require_capability('mod/page:view', $context);
 page_view($page, $course, $cm, $context);
 
 $PAGE->set_url('/mod/page/view.php', array('id' => $cm->id));
-$PAGE->requires->css( '/mod/page/styles.css', true );
 
 $options = empty($page->displayoptions) ? array() : unserialize($page->displayoptions);
 
@@ -75,10 +74,10 @@ echo $OUTPUT->header();
 if (mod_page\blocking::tool_policy_accepted() == true) {
 
     if (!isset($options['printheading']) || !empty($options['printheading'])) {
-        echo '<longpage-container></longpage-container>';
+        echo '<longpage-app-container></longpage-app-container>';
     }
 
-    echo '<div class="longpage-main row w-100 no-gutters">';
+    echo '<div id="longpage-main" class="row w-100 no-gutters">';
     $content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_page', 'content', $page->revision);
     $formatoptions = new stdClass;
     $formatoptions->noclean = true;
@@ -86,7 +85,7 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     $content = format_text($content, $page->contentformat, $formatoptions);
 
     // output content
-    echo '<div class="m-auto longpage-container col" lang="de">';
+    echo '<div id="longpage-text-container" class="m-auto longpage-container col" lang="de">';
 
     echo $OUTPUT->box($content, "generalbox center clearfix");
     echo '</div></div>';

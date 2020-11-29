@@ -1,11 +1,8 @@
 export const GET = Object.freeze({
   ANNOTATIONS: 'Get Annotations',
-  COURSE_ID: 'Get Course Id',
-  PAGE_ID: 'Get Page Id',
-  PAGE_NAME: 'Get Page Name',
+  LONGPAGE_CONTEXT: 'Get Longpage Context',
   SELECTED_ANNOTATIONS: 'Get Selected Annotations',
   SELECTED_HIGHLIGHTS: 'Get Selected Highlights',
-  USER_ID: 'Get User Id',
 });
 
 export const ACT = Object.freeze({

@@ -8,17 +8,17 @@
 </template>
 
 <script>
-import {ACT, GET, MUTATE} from "../store/types";
-import AnnotationToolbarPopover from "./annotation/AnnotationToolbarPopover.vue";
-import { AnnotationToolbarPopoverPositioner } from "../lib/annotation/annotation-toolbar-popover-positioner";
-import { ArrowDirection } from "../config/constants";
-import { SelectionListener } from "../lib/annotation/selection-listener";
-import { describe } from "../lib/annotation/hypothesis/anchoring/html";
-import { Annotation } from "../lib/annotation/types/annotation";
-import { AnnotationTarget } from "../lib/annotation/types/annotation-target";
-import {Anchoring} from "../lib/annotation/anchoring";
+import {ACT, GET, MUTATE} from "@/store/types";
+import AnnotationToolbarPopover from "./AnnotationToolbarPopover.vue";
+import { AnnotationToolbarPopoverPositioner } from "../../lib/annotation/annotation-toolbar-popover-positioner";
+import { ArrowDirection } from "../../config/constants";
+import { SelectionListener } from "../../lib/annotation/selection-listener";
+import { describe } from "../../lib/annotation/hypothesis/anchoring/html";
+import { Annotation } from "../../lib/annotation/types/annotation";
+import { AnnotationTarget } from "../../lib/annotation/types/annotation-target";
+import {Anchoring} from "../../lib/annotation/anchoring";
 import {mapGetters, mapMutations} from "vuex";
-import {setHighlightsVisible} from "../lib/annotation/highlighting";
+import {setHighlightsVisible} from "../../lib/annotation/highlighting";
 import {addAnnotationSelectionListener} from "@/lib/annotation/highlight-selection-listener";
 import scrollIntoView from "scroll-into-view";
 
@@ -93,10 +93,10 @@ export default {
     createAnnotation(styleClass) {
       Promise.all(this.selectedRanges.map(this.getSelectors)).then(selectorsInSelectors => {
         const annotation = new Annotation({
-          userid: this.$store.getters[GET.USER_ID],
+          userId: this.$store.getters[GET.LONGPAGE_CONTEXT].userId,
           target: selectorsInSelectors.map(selectors => new AnnotationTarget({
             selector: selectors,
-            pageid: this.$store.getters[GET.PAGE_ID],
+            pageId: this.$store.getters[GET.LONGPAGE_CONTEXT].pageId,
             styleclass: styleClass,
           })),
         });

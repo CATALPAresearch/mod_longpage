@@ -17,6 +17,10 @@ export const HighlightingConfig = Object.freeze({
 
 export const LANGUAGE = 'de';
 
+export const LONGPAGE_MAIN_ID = 'longpage-main';
+export const LONGPAGE_TEXT_CONTAINER_ID = 'longpage-text-container';
+export const LONGPAGE_TEX_OVERLAY_ID = 'longpage-text-overlay';
+
 export const MoodleWSMethods = Object.freeze({
     GET_ANNOTATIONS: 'mod_page_get_annotations_by_page_and_user',
     CREATE_ANNOTATION: 'mod_page_create_annotation',

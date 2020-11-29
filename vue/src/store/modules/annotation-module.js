@@ -45,11 +45,12 @@ export default {
         },
         [ACT.FETCH_ANNOTATIONS]({commit, getters}) {
             const methodname = MoodleWSMethods.GET_ANNOTATIONS;
+            const context = getters[GET.LONGPAGE_CONTEXT];
             ajax.call([{
                 methodname,
                 args: {
-                    pageid: getters[GET.PAGE_ID],
-                    userid: getters[GET.USER_ID],
+                    pageid: context.pageId,
+                    userid: context.userId,
                 },
                 done: (annotations) => {
                     commit(MUTATE.SET_ANNOTATIONS, MappingService[methodname](annotations));

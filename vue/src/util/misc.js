@@ -8,6 +8,8 @@ export {snakeCase} from 'lodash';
 
 export const capitalize = flow(camelCase, upperFirst);
 
+export const createDiv = (attributes) => createElement('div', attributes)
+
 export const createElement = (tag, attributes) => {
     const element = document.createElement(tag);
     Object.entries(attributes).forEach(([attrKey, attrValue]) => { element.setAttribute(attrKey, attrValue) });

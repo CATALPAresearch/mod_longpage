@@ -37,7 +37,7 @@ import {ACT, MUTATE} from "@/store/types";
 import {Annotation} from "@/lib/annotation/types/annotation";
 import {cloneDeep} from 'lodash';
 import {DateTimeFormatter} from "@/config/i18n";
-import {HighlightingConfig,SelectorType} from '@/config/constants';
+import {HighlightingConfig, LONGPAGE_TEX_OVERLAY_ID, SelectorType} from '@/config/constants';
 import {mapActions, mapMutations} from 'vuex';
 import scrollIntoView from 'scroll-into-view';
 
@@ -87,7 +87,7 @@ export default {
     selectAnnotation() {
       this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
       scrollIntoView(this.highlightHTMLElement);
-      document.getElementById('overlay').style.display = 'block';
+      document.getElementById(LONGPAGE_TEX_OVERLAY_ID).style.display = 'block';
     },
     updateAnnotation() {
       this[ACT.UPDATE_ANNOTATION_BODY](this.annotationUpdate);

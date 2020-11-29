@@ -47,7 +47,7 @@
  *   or not. TODO
  * @prop {string} timecreated
  * @prop {string} timemodified
- * @prop {number} userid
+ * @prop {number} userId
  * @prop {boolean} hidden TODO
  *
  * @prop {AnnotationTarget[]} target

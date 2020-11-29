@@ -101,7 +101,7 @@ export default {
 
                             var logentry = {
                                 utc: now.getTime(),
-                                pageid: _this.context.pageid,
+                                pageId: _this.context.pageId,
                                 relativeTime: entry.time, // ??
                                 targetID: entry.target.id,
                                 targetTag: entry.target.localName,
@@ -227,7 +227,7 @@ export default {
         visualizeReadingProgress: function() {
             ajax.call([{
                 methodname: 'mod_page_getreadingprogress',
-                args: {data: {courseid: this.context.courseid, pageid: this.context.pageid}},
+                args: {data: {courseId: this.context.courseId, pageId: this.context.pageId}},
                 done: function(reads) {
                     try {
                         let data = Object.values(JSON.parse(reads.response));

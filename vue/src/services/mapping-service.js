@@ -8,7 +8,7 @@ const MappingService = {
         annotation: {
             body: annotation.body,
             target: annotation.target.map(target => ({
-                ...target,
+                pageid: target.pageId,
                 selector: target.selector.map(selector => {
                     const type = snakeCase(selector.type);
                     if (selector.type === SelectorType.TEXT_POSITION_SELECTOR) return {
@@ -18,10 +18,11 @@ const MappingService = {
                     };
                     return {...selector, type};
                 }).map(deepLowerCaseKeys),
+                styleclass: target.styleclass,
             })),
             timecreated: annotation.timecreated,
             timemodified: annotation.timemodified,
-            userid: annotation.userid,
+            userid: annotation.userId,
         },
     }),
     [MoodleWSMethods.GET_ANNOTATIONS]: (response) => JSON.parse(response).map(annotation => new Annotation({

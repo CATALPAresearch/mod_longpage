@@ -55,16 +55,18 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+  @import "../../styles/main.scss";
+
   #annotation-sidebar-wrapper {
     border-left: 1px solid #dee2e6;
 
     #annotation-sidebar {
       position: -webkit-sticky;
       position: sticky;
-      top: 100px;
+      top: calc(#{$moodle-navbar-height} + #{$longpage-navbar-height});
       overflow: auto;
-      height: calc(100vh - 50px);
+      height: calc(100vh - #{$moodle-navbar-height} - #{$longpage-navbar-height});
 
       #annotation-sidebar-heading {
         font-weight: bold;
