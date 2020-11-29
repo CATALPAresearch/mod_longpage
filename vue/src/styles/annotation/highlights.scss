@@ -27,14 +27,20 @@
     &.bg-yellow {
       @include colorized-bg-highlight($color-highlight-yellow);
     }
+    &.bg-green {
+      @include colorized-bg-highlight($color-highlight-green);
+    }
+    &.bg-orange {
+      @include colorized-bg-highlight($color-highlight-orange);
+    }
+    &.bg-violet {
+      @include colorized-bg-highlight($color-highlight-violet);
+    }
     &.bg-blue {
       @include colorized-bg-highlight($color-highlight-blue);
     }
-    &.bg-magenta {
-      @include colorized-bg-highlight($color-highlight-magenta);
-    }
-    &.bg-green {
-      @include colorized-bg-highlight($color-highlight-green);
+    &.bg-pink {
+      @include colorized-bg-highlight($color-highlight-pink);
     }
     // Make highlights visible to screen readers.
     // See also - https://developer.paciellogroup.com/blog/2017/12/short-note-on-making-your-mark-more-accessible/.

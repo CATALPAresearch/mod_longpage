@@ -35,10 +35,12 @@ export default {
       annotationToolbarPopoverProps: {
         arrowDirection: ArrowDirection.UP,
         highlightingOptions: [
-          "bg-yellow",
-          "bg-blue",
-          "bg-magenta",
-          "bg-green",
+          'bg-yellow',
+          'bg-green',
+          'bg-orange',
+          'bg-violet',
+          'bg-blue',
+          'bg-pink',
         ],
         left: 0,
         showDelete: false,
