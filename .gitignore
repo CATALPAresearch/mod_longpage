@@ -1,10 +1,6 @@
 git-ftp.sh
 x.html
 
-# Build artifacts
-amd/build
-amd/src
-
 # Node modules
 node_modules
 
