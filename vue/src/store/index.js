@@ -1,11 +1,8 @@
 import AnnotationModule from './modules/annotation-module';
-import Vuex, {Store} from 'vuex';
-import Vue from 'vue';
+import {createStore} from 'vuex';
 import {GET} from "./types";
 
-Vue.use(Vuex);
-
-export const createStore = (longpageContext) => new Store({
+export const initStore = (longpageContext) => createStore({
     modules: {
       AnnotationModule,
     },

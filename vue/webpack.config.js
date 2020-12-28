@@ -1,7 +1,7 @@
 var path = require('path');
-var webpack = require('webpack');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const {VueLoaderPlugin} = require('vue-loader');
+var webpack = require('webpack');
 
 module.exports = (env, options) => {
     const exports = {
@@ -14,34 +14,39 @@ module.exports = (env, options) => {
             libraryTarget: 'amd',
         },
         module: {
-            rules: [{
-                test: /\.js?$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/
-            }, {
-                test: /\.(sa|sc|c)ss$/,
-                use: [
-                    'vue-style-loader',
-                    'css-loader',
-                    'sass-loader',
-                ]
-            }, {
-                test: /\.vue$/,
-                loader: 'vue-loader',
-                options: {
-                    loaders: {
-                        scss: 'vue-style-loader!css-loader!sass-loader'
+            rules: [
+                {
+                    test: /\.js?$/,
+                    loader: 'babel-loader',
+                    exclude: /node_modules/
+                },
+                {
+                    test: /\.(sa|sc|c)ss$/,
+                    use: [
+                        'vue-style-loader',
+                        'css-loader',
+                        'sass-loader',
+                    ],
+                },
+                {
+                    test: /\.vue$/,
+                    loader: 'vue-loader',
+                    options: {
+                        loaders: {
+                            scss: 'vue-style-loader!css-loader!sass-loader'
+                        },
                     }
+                },
+                {
+                    test: /\.(eot|svg|ttf|woff|woff2)$/,
+                    loader: 'url-loader'
                 }
-            }, {
-                test: /\.(eot|svg|ttf|woff|woff2)$/,
-                loader: 'url-loader'
-            }]
+            ]
         },
         resolve: {
             alias: {
                 '@': path.resolve(__dirname, 'src'),
-                'vue$': 'vue/dist/vue.esm.js'
+                'vue$': 'vue/dist/vue.esm-bundler.js',
             },
             extensions: ['*', '.js', '.vue', '.json']
         },
@@ -62,7 +67,7 @@ module.exports = (env, options) => {
         },
         devtool: '#eval-source-map',
         plugins: [
-            new VueLoaderPlugin()
+            new VueLoaderPlugin(),
         ],
         watchOptions: {
             ignored: /node_modules/

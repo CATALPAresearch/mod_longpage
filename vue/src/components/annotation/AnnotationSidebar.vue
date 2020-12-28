@@ -1,15 +1,18 @@
 <template>
-  <div id="annotation-sidebar-wrapper" class="col col-4">
-    <div id="annotation-sidebar">
-      <h2 id="annotation-sidebar-heading" class="mt-4 mx-4">{{ $t('annotationSidebar.heading') }}</h2>
-      <div id="annotation-card-container">
-        <annotation-card
-            class="m-4"
-            v-for="annotation in annotationsOrderedByTextPosition"
-            :key="annotation.id"
-            :annotation="annotation"
-        />
-      </div>
+  <div id="annotation-sidebar">
+    <h2
+      id="annotation-sidebar-heading"
+      class="mt-4 mx-4"
+    >
+      {{ $t('annotationSidebar.heading') }}
+    </h2>
+    <div id="annotation-card-container">
+      <annotation-card
+        v-for="annotation in annotationsOrderedByTextPosition"
+        :key="annotation.id"
+        class="m-4"
+        :annotation="annotation"
+      />
     </div>
   </div>
 </template>
@@ -52,7 +55,7 @@ export default {
       setZIndex(oldValue, 2); // TODO: Get value from old value
     },
   },
-}
+};
 </script>
 
 <style lang="scss">

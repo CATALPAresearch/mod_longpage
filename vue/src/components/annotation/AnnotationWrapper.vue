@@ -1,9 +1,9 @@
 <template>
   <annotation-toolbar-popover
-      v-bind="annotationToolbarPopoverProps"
-      @highlight="createAnnotation"
-      ref="annotationToolbarPopover"
-      class="longpage-highlights-always-on"
+    ref="annotationToolbarPopover"
+    v-bind="annotationToolbarPopoverProps"
+    class="longpage-highlights-always-on"
+    @highlight="createAnnotation"
   />
 </template>
 
@@ -11,18 +11,18 @@
 import {ACT, GET, MUTATE} from "@/store/types";
 import {ArrowDirection, LONGPAGE_MAIN_ID, LONGPAGE_TEXT_CONTAINER_ID} from "../../config/constants";
 import AnnotationToolbarPopover from "./AnnotationToolbarPopover.vue";
-import { AnnotationToolbarPopoverPositioner } from "../../lib/annotation/annotation-toolbar-popover-positioner";
-import { SelectionListener } from "../../lib/annotation/selection-listener";
-import { describe } from "../../lib/annotation/hypothesis/anchoring/html";
-import { Annotation } from "../../lib/annotation/types/annotation";
-import { AnnotationTarget } from "../../lib/annotation/types/annotation-target";
+import {AnnotationToolbarPopoverPositioner} from "../../lib/annotation/annotation-toolbar-popover-positioner";
+import {SelectionListener} from "../../lib/annotation/selection-listener";
+import {describe} from "../../lib/annotation/hypothesis/anchoring/html";
+import {Annotation} from "../../lib/annotation/types/annotation";
+import {AnnotationTarget} from "../../lib/annotation/types/annotation-target";
 import {Anchoring} from "../../lib/annotation/anchoring";
 import {mapGetters, mapMutations} from "vuex";
 import {setHighlightsVisible} from "../../lib/annotation/highlighting";
 import {addAnnotationSelectionListener} from "@/lib/annotation/highlight-selection-listener";
 import scrollIntoView from "scroll-into-view";
 
-const getAnnotationCardId = annotationId => `annotation-card-${annotationId}`
+const getAnnotationCardId = annotationId => `annotation-card-${annotationId}`;
 
 export default {
   name: 'AnnotationWrapper',
@@ -51,7 +51,7 @@ export default {
       selectionListener: new SelectionListener(),
       selectedRanges: [],
       targetRoot: null,
-    }
+    };
   },
   computed: {
     annotationToolbarPopover() {
@@ -87,7 +87,7 @@ export default {
       });
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.anchoring.unsubscribe();
     this.selectionListener.unsubscribe();
   },
@@ -118,7 +118,7 @@ export default {
     onSelection(range, focusRect, isBackwards) {
       if (!focusRect || !this.isInsideTarget(range)) {
         this.onClearSelection();
-        return
+        return;
       }
       this.selectedRanges = [range];
       this.setPositionProps(this.annotationToolbarPopoverPositioner.calculatePositionProps(focusRect, isBackwards));

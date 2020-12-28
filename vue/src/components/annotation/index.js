@@ -1,29 +1,33 @@
 import {LONGPAGE_MAIN_ID, LONGPAGE_TEX_OVERLAY_ID, LONGPAGE_TEXT_CONTAINER_ID} from "@/config/constants";
-import AnnotationSidebar from "./AnnotationSidebar";
+import AnnotationSidebar from "./AnnotationSidebar.vue";
 import AnnotationWrapper from "./AnnotationWrapper";
 import {createDiv} from "@/util/misc";
 import {i18n} from "@/config/i18n";
 import {toIdSelector} from "@/util/style";
-import Vue from "vue";
+import {createApp} from "vue";
+import {FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText} from "@/assets/icons/font-awesome";
 
 const useAnnotationSidebar = (store) => {
-    document.querySelector(toIdSelector(LONGPAGE_MAIN_ID)).appendChild(createDiv({id: 'annotation-sidebar'}));
-    new Vue({
-        el: '#annotation-sidebar',
-        i18n,
-        store,
-        render: h => h(AnnotationSidebar),
-    });
+    const rootContainerId = 'annotation-sidebar-wrapper';
+    document
+        .querySelector(toIdSelector(LONGPAGE_MAIN_ID))
+        .appendChild(createDiv({"class": 'col col-4', id: rootContainerId}));
+    createApp(AnnotationSidebar)
+        .component('font-awesome-icon', FontAwesomeIcon)
+        .component('font-awesome-layers', FontAwesomeLayers)
+        .component('font-awesome-layers-text', FontAwesomeLayersText)
+        .use(i18n)
+        .use(store)
+        .mount(toIdSelector(rootContainerId));
 };
 
 const useAnnotationToolbarPopover = (store) => {
-    document.body.appendChild(createDiv({id: 'annnotation-toolbar-popover'}));
-    new Vue({
-        el: '#annnotation-toolbar-popover',
-        i18n,
-        store,
-        render: h => h(AnnotationWrapper),
-    });
+    const rootContainerId = 'annnotation-toolbar-popover';
+    document.body.appendChild(createDiv({id: rootContainerId}));
+    createApp(AnnotationWrapper)
+        .use(i18n)
+        .use(store)
+        .mount(toIdSelector(rootContainerId));
 };
 
 const useLongpageTextOverlay = () => {
