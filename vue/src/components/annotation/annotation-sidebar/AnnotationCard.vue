@@ -1,5 +1,9 @@
 <template>
-  <div :id="`annotation-card-${annotation.id}`" class="annotation-card border-secondary card hvr-glow" @click.stop="selectAnnotation">
+  <div
+    :id="`annotation-card-${annotation.id}`"
+    class="annotation-card border-secondary card hvr-glow"
+    @click.stop="selectAnnotation"
+  >
     <div class="card-body text-dark p-2">
       <div class="font-weight-lighter mb-1 text-right text-small">
         {{ $t('annotationSidebar.annotationCard.created') }} {{ createdLocaleDateString }}
@@ -10,22 +14,54 @@
         </span>
       </div>
       <div class="mb-1 p-2">
-        <span class="font-italic longpage-highlight text-small" :class="annotationTarget.styleclass">
+        <span
+          class="font-italic longpage-highlight text-small"
+          :class="annotationTarget.styleclass"
+        >
           {{ highlightedText }}
         </span>
       </div>
       <div class="p-2">
-        <span v-if="!isBeingEdited">{{ annotation.body }}</span>
-        <textarea v-model="annotationUpdate.body"  @click.stop="" class="form-control" rows="3" v-else/>
+        <div v-if="!isBeingEdited">
+          <p
+            v-for="(b) in annotation.body"
+            :key="b.id"
+          >
+            {{ b.value }}
+          </p>
+        </div>
+        <textarea
+          v-else
+          v-model="annotationUpdate.body"
+          class="form-control"
+          rows="3"
+          @click.stop=""
+        />
       </div>
       <div class="annotation-actions card-actions text-right">
         <div v-if="!isBeingEdited">
-          <font-awesome-icon class="ml-1" icon="trash" @click.stop="deleteAnnotation" />
-          <font-awesome-icon class="ml-1" icon="pen" @click.stop="openEditor" />
+          <font-awesome-icon
+            class="ml-1"
+            icon="trash"
+            @click.stop="deleteAnnotation"
+          />
+          <font-awesome-icon
+            class="ml-1"
+            icon="pen"
+            @click.stop="openEditor"
+          />
         </div>
         <div v-else>
-          <font-awesome-icon class="ml-1" icon="times" @click.stop="closeEditor" />
-          <font-awesome-icon class="ml-1" icon="save" @click.stop="updateAnnotation" />
+          <font-awesome-icon
+            class="ml-1"
+            icon="times"
+            @click.stop="closeEditor"
+          />
+          <font-awesome-icon
+            class="ml-1"
+            icon="save"
+            @click.stop="updateAnnotation"
+          />
         </div>
       </div>
     </div>
@@ -33,16 +69,16 @@
 </template>
 
 <script>
-import {ACT, MUTATE} from "@/store/types";
-import {Annotation} from "@/lib/annotation/types/annotation";
+import {ACT, MUTATE} from '@/store/types';
+import {Annotation} from '@/lib/annotation/types/annotation';
 import {cloneDeep} from 'lodash';
-import {DateTimeFormatter} from "@/config/i18n";
+import {DateTimeFormatter} from '@/config/i18n';
 import {HighlightingConfig, LONGPAGE_TEX_OVERLAY_ID, SelectorType} from '@/config/constants';
 import {mapActions, mapMutations} from 'vuex';
 import scrollIntoView from 'scroll-into-view';
 
 export default {
-  name: "AnnotationCard",
+  name: 'AnnotationCard',
   props: {
     annotation: {type: Annotation, required: true},
   },
@@ -64,7 +100,9 @@ export default {
       return textQuoteSelector ? textQuoteSelector.exact : '';
     },
     highlightHTMLElement() {
-      return Array.from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME)).find(element => element._annotation === this.annotation);
+      return Array
+          .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
+          .find(element => element._annotation === this.annotation);
     },
     lastModifiedLocaleDateString() {
       return DateTimeFormatter.format(new Date(Number(this.annotation.timemodified)));
@@ -96,7 +134,7 @@ export default {
     ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION_BODY]),
     ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
