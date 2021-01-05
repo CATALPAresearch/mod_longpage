@@ -8,19 +8,19 @@
 </template>
 
 <script>
-import {ACT, GET, MUTATE} from "@/store/types";
-import {ArrowDirection, LONGPAGE_MAIN_ID, LONGPAGE_TEXT_CONTAINER_ID} from "../../config/constants";
-import AnnotationToolbarPopover from "./AnnotationToolbarPopover.vue";
-import {AnnotationToolbarPopoverPositioner} from "../../lib/annotation/annotation-toolbar-popover-positioner";
-import {SelectionListener} from "../../lib/annotation/selection-listener";
-import {describe} from "../../lib/annotation/hypothesis/anchoring/html";
-import {Annotation} from "../../lib/annotation/types/annotation";
-import {AnnotationTarget} from "../../lib/annotation/types/annotation-target";
-import {Anchoring} from "../../lib/annotation/anchoring";
-import {mapGetters, mapMutations} from "vuex";
-import {setHighlightsVisible} from "../../lib/annotation/highlighting";
-import {addAnnotationSelectionListener} from "@/lib/annotation/highlight-selection-listener";
-import scrollIntoView from "scroll-into-view";
+import {ACT, GET, MUTATE} from '@/store/types';
+import {ArrowDirection, LONGPAGE_MAIN_ID, LONGPAGE_TEXT_CONTAINER_ID} from '@/config/constants';
+import AnnotationToolbarPopover from './AnnotationToolbarPopover.vue';
+import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-toolbar-popover-positioner';
+import {SelectionListener} from '@/lib/annotation/selection-listener';
+import {describe} from '@/lib/annotation/hypothesis/anchoring/html';
+import {Annotation} from '@/lib/annotation/types/annotation';
+import {Anchoring} from '@/lib/annotation/anchoring';
+import {mapGetters, mapMutations} from 'vuex';
+import {setHighlightsVisible} from '@/lib/annotation/highlighting';
+import {addAnnotationSelectionListener} from '@/lib/annotation/highlight-selection-listener';
+import scrollIntoView from 'scroll-into-view';
+import {PageSegment} from '@/lib/annotation/types/page-segment';
 
 const getAnnotationCardId = annotationId => `annotation-card-${annotationId}`;
 
@@ -96,9 +96,9 @@ export default {
       Promise.all(this.selectedRanges.map(this.getSelectors)).then(selectorsInSelectors => {
         const annotation = new Annotation({
           userId: this.$store.getters[GET.LONGPAGE_CONTEXT].userId,
-          target: selectorsInSelectors.map(selectors => new AnnotationTarget({
+          pageId: this.$store.getters[GET.LONGPAGE_CONTEXT].pageId,
+          target: selectorsInSelectors.map(selectors => new PageSegment({
             selector: selectors,
-            pageId: this.$store.getters[GET.LONGPAGE_CONTEXT].pageId,
             styleclass: styleClass,
           })),
         });

@@ -40,6 +40,41 @@ function omit_keys($arrOrObj, $keys)
     return gettype($arrOrObj) == 'array' ? $result : (object) $result;
 }
 
+const MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT = 0;
+const MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION = 1;
+
+const MOD_PAGE_ANNOTATION_TAG_TYPE_STANDARD = 0;
+const MOD_PAGE_ANNOTATION_TAG_TYPE_MOTIVATION = 1;
+
+abstract class mod_page_selector {
+    const TYPE_TEXT_QUOTE_SELECTOR = 0;
+    const TYPE_TEXT_POSITION_SELECTOR = 1;
+    const TYPE_RANGE_SELECTOR = 2;
+
+    const TABLE_NAME_TEXT_QUOTE_SELECTOR = 'page_text_quote_selectors';
+    const TABLE_NAME_TEXT_POSITION_SELECTOR = 'page_text_position_selectors';
+    const TABLE_NAME_RANGE_SELECTOR = 'page_range_selectors';
+
+    private static $TYPE_TO_TABLE_NAME_MAPPING = array(
+        self::TYPE_TEXT_QUOTE_SELECTOR => self::TABLE_NAME_TEXT_QUOTE_SELECTOR,
+        self::TYPE_TEXT_POSITION_SELECTOR => self::TABLE_NAME_TEXT_POSITION_SELECTOR,
+        self::TYPE_RANGE_SELECTOR => self::TABLE_NAME_RANGE_SELECTOR,
+    );
+
+    private static $TABLE_NAME_TO_TYPE_MAPPING;
+
+    static function map_type_to_table_name($type) {
+        return self::$TYPE_TO_TABLE_NAME_MAPPING[$type];
+    }
+
+    static function map_table_name_to_type($table_name) {
+        if (!isset(self::$TABLE_NAME_TO_TYPE_MAPPING)) {
+            self::$TABLE_NAME_TO_TYPE_MAPPING = array_flip(self::$TYPE_TO_TABLE_NAME_MAPPING);
+        }
+        return self::$TABLE_NAME_TO_TYPE_MAPPING[$table_name];
+    }
+}
+
 /**
  * Page external functions
  *
@@ -63,11 +98,11 @@ class mod_page_external extends external_api
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $annotationid = $DB->insert_record('page_annotation', pick_keys($annotation, ['timecreated', 'timemodified', 'userid']));
+        $annotationid = $DB->insert_record('page_annotations', pick_keys($annotation, ['anonymous', 'pageid', 'private', 'timecreated', 'timemodified', 'userid']));
         self::create_page_annotation_targets($annotation['target'], $annotationid);
-        if (isset($annotation['body'])) {
-            $DB->insert_record('page_annotation_body', array('annotationid' => $annotationid, 'value' => $annotation['body']));
-        }
+        self::create_page_annotation_bodies($annotation['body'], $annotationid);
+        self::create_page_annotation_tags($annotation['tags'], $annotationid);
+        self::create_page_annotation_tags($annotation['motivation'], $annotationid, MOD_PAGE_ANNOTATION_TAG_TYPE_MOTIVATION);
         $transaction->allow_commit();
 
         return array('id'=> $annotationid);
@@ -85,10 +120,19 @@ class mod_page_external extends external_api
             array(
                 'annotation' => new external_single_structure(
                     array(
-                        'body' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                        'anonymous' => new external_value(PARAM_BOOL),
+                        'private' => new external_value(PARAM_BOOL),
+                        'body' => new external_multiple_structure(
+                                new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                        ),
+                        'motivation' => new external_multiple_structure(
+                          new external_value(PARAM_TEXT),
+                        ),
+                        'pageid' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
                         'target' => new external_multiple_structure(
                             new external_single_structure(
                                 array(
+                                    'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
                                     'selector' => new external_multiple_structure(
                                         new external_single_structure(
                                             array(
@@ -105,10 +149,12 @@ class mod_page_external extends external_api
                                             ), '', VALUE_OPTIONAL
                                         )
                                     ),
-                                    'pageid' => new external_value(PARAM_TEXT),
-                                    'styleclass' => new external_value(PARAM_TEXT),
+                                    'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
                                 ), '', VALUE_OPTIONAL
                             )
+                        ),
+                        'tags' => new external_multiple_structure(
+                            new external_value(PARAM_TEXT)
                         ),
                         'timecreated' => new external_value(PARAM_INT),
                         'timemodified' => new external_value(PARAM_INT),
@@ -137,11 +183,21 @@ class mod_page_external extends external_api
         global $DB;
 
         foreach ($targets as $target) {
-            $targetid = $DB->insert_record('page_annotation_target', array_merge(pick_keys($target, ['pageid', 'styleclass']), array('annotationid' => $annotationid)));
-            foreach ($target['selector'] as $selector) {
-                $selectorid = $DB->insert_record('page_selector', array('annotationtargetid' => $targetid, 'selectortype' => $selector['type']));
-                $DB->insert_record('page_' . $selector['type'], array_merge(omit_keys($selector, ['type']), array('selectorid' => $selectorid)));
+            $type = isset($target['annotationid']) ? MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION : MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT;
+            $targetid = $DB->insert_record('page_annotation_targets', array('annotationid' => $annotationid, 'type' => $type));
+            switch ($type) {
+                case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
+                    $segmentid = $DB->insert_record('page_segments', array('annotationtargetid' => $targetid, 'styleclass' => $target['styleclass']));
+                    foreach ($target['selector'] as $selector) {
+                        $selectortype = $selector['type'];
+                        $selectorid = $DB->insert_record('page_selectors', array('segmentid' => $segmentid, 'type' => $selectortype));
+                        $DB->insert_record(mod_page_selector::map_type_to_table_name($selector['type']), array_merge(omit_keys($selector, ['type']), array('selectorid' => $selectorid)));
+                    }
+                    break;
+                case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
+                    $DB->insert_record('page_annot_annot_targets', array('annotationid' => $annotationid, 'targetid' => $targetid));
             }
+
         }
     }
 
@@ -261,46 +317,63 @@ class mod_page_external extends external_api
         );
     }
 
-    private static function get_selectors_by_annotation_target($target)
+    private static function get_selectors_by_segment_id($segmentid)
     {
         global $DB;
 
-        $result = array();
-        $selectors = $DB->get_records('page_selector', array('annotationtargetid' => $target->id));
-        foreach ($selectors as $selector) {
-            $typed_selector = $DB->get_record('page_' . $selector->selectortype, array('selectorid' => $selector->id));
-            $typed_selector->type = $selector->selectortype;
-            array_push($result, omit_keys($typed_selector, ['id', 'selectorid']));
-        }
-        return $result;
+        $selectors = $DB->get_records('page_selectors', array('segmentid' => $segmentid));
+        return array_values(array_map(function($selector) {
+            global $DB;
+
+            $table_name = mod_page_selector::map_type_to_table_name($selector->type);
+            $typed_selector = $DB->get_record($table_name, array('selectorid' => $selector->id));
+            $typed_selector->type = $selector->type;
+            return omit_keys($typed_selector, ['id', 'selectorid']);
+        }, $selectors));
     }
 
-    private static function get_targets_by_annotation($annotation, $pageid)
+    private static function get_annotation_targets($annotationid)
     {
         global $DB;
 
-        $result = array();
-        $targets = $DB->get_records('page_annotation_target', array('annotationid' => $annotation->id, 'pageid' => $pageid));
-        foreach ($targets as $target) {
-            $target->selector = self::get_selectors_by_annotation_target($target);
-            array_push($result, omit_keys($target, ['id', 'annotationid']));
-        }
-        return $result;
+        $targets = $DB->get_records('page_annotation_targets', array('annotationid' => $annotationid));
+        return array_values(array_map(function($target) {
+            global $DB;
+
+            $target = omit_keys($target, ['annotationid']);
+            switch ($target->type) {
+                case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
+                    return (object) array_merge((array) $target, (array) self::get_page_segment_by_target_id($target->id));
+                case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
+                    return (object) array_merge((array) $target, (array) $DB->get_record('page_annot_annot_targets', array('targetid' => $target->id), 'annotationid'));
+            }
+        }, $targets));
     }
 
+    // TODO: Return number strings as numbers
     public static function get_annotations_by_page_and_user($pageid, $userid)
     {
         global $DB;
 
-        $transaction = $DB->start_delegated_transaction(); // TODO: Is transaction really necessary? Is there no eager loading?
-        $annotations = array_values($DB->get_records('page_annotation', array('userid' => $userid)));
+        $transaction = $DB->start_delegated_transaction();
+        $select = 'pageid = ? AND (userid = ? OR private = 0)';
+        $params = array('pageid' => $pageid, 'userid' => $userid);
+        $annotations = $DB->get_records_select('page_annotations', $select, $params);
         foreach ($annotations as $annotation) {
-            $annotation->target = self::get_targets_by_annotation($annotation, $pageid);
-            $annotation->body = $DB->get_record('page_annotation_body', array('annotationid' => $annotation->id))->value;
+            $annotation->target = self::get_annotation_targets($annotation->id);
+            $annotation->body = self::get_annotation_bodies($annotation->id);
+            $tags = self::get_annotation_tags($annotation->id);
+            $annotation->tags = array_filter($tags, function($tag) {
+                return $tag->type === MOD_PAGE_ANNOTATION_TAG_TYPE_STANDARD;
+            });
+            $annotation->motivation = array_filter($tags, function($tag) {
+                return $tag->type === MOD_PAGE_ANNOTATION_TAG_TYPE_MOTIVATION;
+            });
+            if ((bool) $annotation->anonymous) unset($annotation->userid);
         }
         $transaction->allow_commit();
 
-        return json_encode($annotations);
+        return json_encode(array_values($annotations));
     }
 
     /**
@@ -637,5 +710,68 @@ class mod_page_external extends external_api
     public static function update_page_annotation_body_returns()
     {
        return null;
+    }
+
+    private static function create_page_annotation_bodies($bodies, $annotationid) {
+        global $DB;
+
+        foreach ($bodies as $body) {
+            $DB->insert_record('page_annotation_bodies', array('annotationid' => $annotationid, 'value' => $body));
+        }
+    }
+
+    private static function create_page_annotation_tags($tags, $annotationid, $tagtype = MOD_PAGE_ANNOTATION_TAG_TYPE_STANDARD) {
+        global $DB;
+
+        foreach ($tags as $tag) {
+            $tagid = self::insert_record_if_it_not_exists('page_annotation_tags', ['value' => $tag, 'type' => $tagtype]);
+            $DB->insert_record('page_annotation_annot_tags', ['annotationid' => $annotationid, 'tagid' => $tagid]);
+        }
+    }
+
+    private static function insert_record_if_it_not_exists($table, $dataobject, $returnid = true, $bulk = false) {
+        global $DB;
+
+        $record = $DB->get_record($table, $dataobject);
+        if ((bool) $record) return $returnid ? $record->id : null;
+
+        return $DB->insert_record($table, $dataobject, $returnid, $bulk);
+    }
+
+    /**
+     * @param object $targetid
+     * @return array
+     */
+    private static function get_page_segment_by_target_id($targetid) {
+        global $DB;
+
+        $segment = $DB->get_record('page_segments', array('annotationtargetid' => $targetid));
+        $segment->selector = self::get_selectors_by_segment_id($segment->id);
+
+        return omit_keys($segment, ['id', 'annotationtargetid']);
+    }
+
+    /**
+     * @param $DB
+     * @param $annotation
+     * @return mixed
+     */
+    private static function get_annotation_bodies($annotationid) {
+        global $DB;
+
+        $bodies = $DB->get_records('page_annotation_bodies', array('annotationid' => $annotationid));
+        return array_map(function($body) {
+            return omit_keys($body, ['annotationid']);
+        }, $bodies);
+    }
+
+    private static function get_annotation_tags($annotationid) {
+        global $DB;
+
+        $sql = "SELECT t.value, t.type
+                  FROM {page_annotation_annot_tags} n
+                  JOIN {page_annotation_tags} t ON (n.tagid = t.id)
+                 WHERE n.annotationid = ?";
+        return $DB->get_records_sql($sql, ['annotationid' => $annotationid]);
     }
 }

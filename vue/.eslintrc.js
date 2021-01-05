@@ -8,6 +8,8 @@ module.exports = {
         'plugin:vue/vue3-recommended',
     ],
     rules: {
-        'quote-props': ['error', 'as-needed']
+        'no-console': ['error', {allow: ['warn', 'error']}],
+        'quote-props': ['error', 'as-needed'],
+        quotes: ['error', 'single', {avoidEscape: true}]
     }
 };

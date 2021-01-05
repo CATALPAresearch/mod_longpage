@@ -1,7 +1,7 @@
 import ajax from 'core/ajax';
 import {GET, ACT, MUTATE} from '../types';
-import MappingService from "@/services/mapping-service";
-import {HighlightingConfig, MoodleWSMethods} from "@/config/constants";
+import MappingService from '@/services/mapping-service';
+import {HighlightingConfig, MoodleWSMethods} from '@/config/constants';
 
 export default {
     state: {
@@ -12,11 +12,13 @@ export default {
         [GET.ANNOTATIONS]: ({annotations}) => annotations,
         [GET.SELECTED_ANNOTATIONS]: ({selectedAnnotations}) => selectedAnnotations,
         [GET.SELECTED_HIGHLIGHTS]: ({selectedAnnotations}) => {
-            return Array.from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME)).filter(element => selectedAnnotations.includes(element._annotation));
+            return Array
+                .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
+                .filter(element => selectedAnnotations.includes(element._annotation));
         }
     },
     actions: {
-        [ACT.CREATE_ANNOTATION]({commit, getters}, annotation) {
+        [ACT.CREATE_ANNOTATION]({commit}, annotation) {
             const methodname = MoodleWSMethods.CREATE_ANNOTATION;
             ajax.call([{
                 methodname,
@@ -30,11 +32,11 @@ export default {
                 }
             }]);
         },
-        [ACT.DELETE_ANNOTATION]({commit, getters}, annotation) {
+        [ACT.DELETE_ANNOTATION]({commit}, annotation) {
             const methodname = MoodleWSMethods.DELETE_ANNOTATION;
             ajax.call([{
                 methodname,
-                args: { id: annotation.id },
+                args: {id: annotation.id},
                 done: () => {
                     commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
                 },
@@ -56,19 +58,20 @@ export default {
                     commit(MUTATE.SET_ANNOTATIONS, MappingService[methodname](annotations));
                 },
                 fail: (e) => {
-                    console.error('"mod_page_get_annotations_by_page" failed', e);
+                    console.error(`"${methodname}" failed`, e);
                 }
             }]);
         },
-        [ACT.UPDATE_ANNOTATION_BODY]({commit, getters}, annotationUpdate) {
+        [ACT.UPDATE_ANNOTATION_BODY]({commit}, annotationUpdate) {
             const methodname = MoodleWSMethods.UPDATE_ANNOTATION_BODY;
             ajax.call([{
                 methodname,
                 args: {
+                    // eslint-disable-next-line camelcase
                     annotation_id: annotationUpdate.id,
                     value: annotationUpdate.body,
                 },
-                done: (annotations) => {
+                done: () => {
                     commit(MUTATE.UPDATE_ANNOTATION, annotationUpdate);
                 },
                 fail: (e) => {
@@ -95,4 +98,4 @@ export default {
             state.annotations.splice(annotationIndex, 1, annotationUpdate);
         }
     },
-}
+};
