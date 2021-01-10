@@ -7,10 +7,10 @@
  * Based on Hypothesis client's modules (see https://github.com/hypothesis/client):
  *   - src/annotator/guest.js
  */
-import {highlightRange, removeHighlights} from "./highlighting";
-import {anchor} from "./hypothesis/anchoring/html";
-import {sniff} from "./hypothesis/anchoring/range";
-import {MUTATE} from "@/store/types";
+import {highlightRange, removeHighlights} from './highlighting';
+import {anchor} from './hypothesis/anchoring/html';
+import {sniff} from './hypothesis/anchoring/range';
+import {MUTATE} from '@/store/types';
 
 export class Anchoring {
     /**
@@ -19,7 +19,7 @@ export class Anchoring {
      */
     constructor(root, store, anchors = []) {
         this.anchoring = {anchor};
-        this.root = root
+        this.root = root;
         this.anchors = anchors;
         this.unsubscribe = store.subscribe((mutation) => {
             switch (mutation.type) {
@@ -33,14 +33,14 @@ export class Anchoring {
                         this.detachAnnotation(annotation);
                     });
             }
-        })
+        });
     }
 
     anchorAnnotations(annotations) {
         annotations.reduce(
             (anchorPromises, annotation) => anchorPromises.then(() => this.anchorAnnotation(annotation)),
             Promise.resolve(),
-        )
+        );
     }
 
     /**
@@ -90,7 +90,7 @@ export class Anchoring {
                 !target.selector ||
                 !target.selector.some(s => s.type === 'TextQuoteSelector')
             ) {
-                return Promise.resolve({ annotation, target });
+                return Promise.resolve({annotation, target});
             }
 
             // Find a target using the anchoring module.
@@ -120,7 +120,7 @@ export class Anchoring {
             const highlights = /** @type {AnnotationHighlight[]} */ (highlightRange(
                 normedRange,
                 anchor.target.styleclass
-            ))
+            ));
             // You need to put some information on the highlight so when it is clicked later on we can identify the annotation
             highlights.forEach(h => {
                 h._annotation = anchor.annotation;
@@ -150,8 +150,8 @@ export class Anchoring {
             // (i.e. we didn't find it in the page and thus it has no range).
             let {hasAnchorableTargets, hasAnchoredTargets} = getAnnotationsAnchoringState(anchors);
             annotation.$orphan = hasAnchorableTargets && !hasAnchoredTargets;
-            return anchors
-        }
+            return anchors;
+        };
 
         /**
          * Inform other parts of the application about
@@ -161,7 +161,7 @@ export class Anchoring {
          */
         const sync = anchors => {
             // Add the anchors for this annotation to instance storage.
-            this.anchors = this.anchors.concat(anchors)
+            this.anchors = this.anchors.concat(anchors);
             // TODO: Inform other parts of the application about the results of anchoring.
             return anchors;
         };
@@ -210,7 +210,7 @@ export class Anchoring {
         let unhighlight = [];
 
         for (let anchor of this.anchors) {
-            if (anchor.annotation === annotation) {
+            if (anchor.annotation.id === annotation.id) {
                 unhighlight.push(...(anchor.highlights || []));
             } else {
                 anchors.push(anchor);
