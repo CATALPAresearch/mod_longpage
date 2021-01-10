@@ -34,6 +34,7 @@
         <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="anonymous" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="private" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="body" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="rating" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -44,38 +45,16 @@
         <KEY NAME="context" TYPE="foreign" FIELDS="pageid" REFTABLE="page" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="page_annotation_bodies" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="value" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
     <TABLE NAME="page_annotation_tags" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="type" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="page_annotation_annot_tags" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="tagid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
-        <KEY NAME="tag" TYPE="foreign" FIELDS="tagid" REFTABLE="page_annotation_tags" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_annotation_views" COMMENT="">
@@ -121,12 +100,12 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="targetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="annotationtargetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
-        <KEY NAME="annotationtarget" TYPE="foreign" FIELDS="targetid" REFTABLE="page_annotation_targets" REFFIELDS="id"/>
+        <KEY NAME="annotationtarget" TYPE="foreign" FIELDS="annotationtargetid" REFTABLE="page_annotation_targets" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_segments" COMMENT="">

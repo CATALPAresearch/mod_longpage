@@ -28,16 +28,28 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once("$CFG->libdir/externallib.php");
 
-function pick_keys($arrOrObj, $keys)
-{
+function pick_keys($arrOrObj, $keys) {
     $result = array_intersect_key((array) $arrOrObj, array_fill_keys($keys, 1));
     return gettype($arrOrObj) == 'array' ? $result : (object) $result;
 }
 
-function omit_keys($arrOrObj, $keys)
-{
+function omit_keys($arrOrObj, $keys) {
     $result = array_diff_key((array) $arrOrObj, array_fill_keys($keys, 1));
     return gettype($arrOrObj) == 'array' ? $result : (object) $result;
+}
+
+function array_map_merge($arrays, $tomerge) {
+    return array_map(static function($array) use ($tomerge) {
+        return array_merge($array, $tomerge);
+    }, $arrays);
+}
+
+function object_merge(...$objects) {
+    $result = [];
+    foreach ($objects as $object) {
+        $result = array_merge($result, (array) $object);
+    }
+    return (object) $result;
 }
 
 const MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT = 0;
@@ -84,8 +96,7 @@ abstract class mod_page_selector {
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 3.0
  */
-class mod_page_external extends external_api
-{
+class mod_page_external extends external_api {
     /**
      * Creates page annotation
      *
@@ -93,19 +104,19 @@ class mod_page_external extends external_api
      * @return array with annotation id
      * @since Moodle 3.0
      */
-    public static function create_page_annotation($annotation)
-    {
+    public static function create_page_annotation($annotation) {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $annotationid = $DB->insert_record('page_annotations', pick_keys($annotation, ['anonymous', 'pageid', 'private', 'timecreated', 'timemodified', 'userid']));
+        $annotation['timecreated'] = time();
+        $annotation['timemodified'] = time();
+        $annotationid =
+            $DB->insert_record('page_annotations', pick_keys($annotation, ['anonymous', 'body', 'pageid', 'private', 'userid']));
         self::create_page_annotation_targets($annotation['target'], $annotationid);
-        self::create_page_annotation_bodies($annotation['body'], $annotationid);
-        self::create_page_annotation_tags($annotation['tags'], $annotationid);
-        self::create_page_annotation_tags($annotation['motivation'], $annotationid, MOD_PAGE_ANNOTATION_TAG_TYPE_MOTIVATION);
+        $DB->insert_records('page_annotation_tags', array_map_merge($annotation['tags'], ['annotationid' => $annotationid]));
         $transaction->allow_commit();
 
-        return array('id'=> $annotationid);
+        return ['id' => $annotationid]; // TODO: Update return value - get full annotation
     }
 
     /**
@@ -114,55 +125,15 @@ class mod_page_external extends external_api
      * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function create_page_annotation_parameters()
-    {
-        return new external_function_parameters(
-            array(
-                'annotation' => new external_single_structure(
-                    array(
-                        'anonymous' => new external_value(PARAM_BOOL),
-                        'private' => new external_value(PARAM_BOOL),
-                        'body' => new external_multiple_structure(
-                                new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                        ),
-                        'motivation' => new external_multiple_structure(
-                          new external_value(PARAM_TEXT),
-                        ),
-                        'pageid' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                        'target' => new external_multiple_structure(
-                            new external_single_structure(
-                                array(
-                                    'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                                    'selector' => new external_multiple_structure(
-                                        new external_single_structure(
-                                            array(
-                                                'type' => new external_value(PARAM_TEXT, '', VALUE_REQUIRED, 'RangeSelector', false),
-                                                'startposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                                                'startcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                                                'startoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                                                'endposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                                                'endcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                                                'endoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                                                'exact' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                                                'prefix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                                                'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                                            ), '', VALUE_OPTIONAL
-                                        )
-                                    ),
-                                    'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                                ), '', VALUE_OPTIONAL
-                            )
-                        ),
-                        'tags' => new external_multiple_structure(
-                            new external_value(PARAM_TEXT)
-                        ),
-                        'timecreated' => new external_value(PARAM_INT),
-                        'timemodified' => new external_value(PARAM_INT),
-                        'userid' => new external_value(PARAM_TEXT),
-                    )
-                )
-            )
-        );
+    public static function create_page_annotation_parameters() {
+        return new external_function_parameters([
+            'annotation' => new external_single_structure([
+                'pageid' => new external_value(PARAM_INT),
+                'userid' => new external_value(PARAM_INT),
+                self::page_annotation_parameters(),
+                self::page_annotation_target_parameters(),
+            ])
+        ]);
     }
 
     /**
@@ -171,34 +142,77 @@ class mod_page_external extends external_api
      * @return external_single_structure
      * @since Moodle 3.0
      */
-    public static function create_page_annotation_returns()
-    {
+    public static function create_page_annotation_returns() {
         return new external_single_structure(
-                array( 'id' => new external_value(PARAM_RAW) )
+            array('id' => new external_value(PARAM_RAW))
         );
     }
 
-    private static function create_page_annotation_targets($targets, $annotationid)
-    {
+    private static function create_page_annotation_targets($targets, $annotationid) {
         global $DB;
 
         foreach ($targets as $target) {
-            $type = isset($target['annotationid']) ? MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION : MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT;
-            $targetid = $DB->insert_record('page_annotation_targets', array('annotationid' => $annotationid, 'type' => $type));
-            switch ($type) {
+            $target['id'] =
+                $DB->insert_record('page_annotation_targets', ['annotationid' => $annotationid, 'type' => $target['type']]);
+            switch ($target['type']) {
                 case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
-                    $segmentid = $DB->insert_record('page_segments', array('annotationtargetid' => $targetid, 'styleclass' => $target['styleclass']));
-                    foreach ($target['selector'] as $selector) {
-                        $selectortype = $selector['type'];
-                        $selectorid = $DB->insert_record('page_selectors', array('segmentid' => $segmentid, 'type' => $selectortype));
-                        $DB->insert_record(mod_page_selector::map_type_to_table_name($selector['type']), array_merge(omit_keys($selector, ['type']), array('selectorid' => $selectorid)));
-                    }
+                    self::create_page_segment(pick_keys($target, ['selector', 'styleclass']), $target['id']);
                     break;
                 case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
-                    $DB->insert_record('page_annot_annot_targets', array('annotationid' => $annotationid, 'targetid' => $targetid));
+                    $DB->insert_record('page_annot_annot_targets', ['annotationid' => $annotationid, 'targetid' => $target['id']]);
+                    break;
             }
 
         }
+    }
+
+    /**
+     * @param $segment
+     * @param $targetid
+     */
+    private static function create_page_segment($segment, $targetid) {
+        global $DB;
+
+        $segmentid =
+            $DB->insert_record('page_segments', ['annotationtargetid' => $targetid, 'styleclass' => $segment['styleclass']]);
+        self::create_page_selectors($segment['selector'], $segmentid);
+    }
+
+    /**
+     * @param $selectors // TODO: Correct and complete documentations of external functions
+     * @param $segmentid
+     */
+    private static function create_page_selectors($selectors, $segmentid): void {
+        global $DB;
+
+        foreach ($selectors as $selector) {
+            $selectorid = $DB->insert_record('page_selectors', ['segmentid' => $segmentid, 'type' => $selector['type']]);
+            $DB->insert_record(mod_page_selector::map_type_to_table_name($selector['type']),
+                array_merge(omit_keys($selector, ['type']), ['selectorid' => $selectorid]));
+        }
+    }
+
+    public static function page_annotation_target_parameters() {
+        return new external_function_parameters([
+            'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL), // TODO: Introduce new target to frontend
+            'selector' => new external_multiple_structure(
+                new external_single_structure([
+                    'type' => new external_value(PARAM_INT),
+                    // TODO: Introduce new type to frontend, return type with get response
+                    'startposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'startcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'startoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'endposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'endcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'endoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'exact' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'prefix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                ]), '', VALUE_OPTIONAL
+            ),
+            'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+            'type' => new external_value(PARAM_INT), // TODO: Introduce new type to frontend
+        ]);
     }
 
     /**
@@ -208,23 +222,17 @@ class mod_page_external extends external_api
      * @return void
      * @since Moodle 3.0
      */
-    public static function delete_page_annotation($id)
-    {
+    public static function delete_page_annotation($id) {
         global $DB;
+        $assocconditions = ['annotationid' => $id];
 
-        $transaction = $DB->start_delegated_transaction();
-        $targets = $DB->get_records('page_annotation_target', array('annotationid' => $id));
-        foreach ($targets as $target) {
-            $selectors = $DB->get_records('page_selector', array('annotationtargetid' => $target->id));
-            foreach ($selectors as $selector) {
-                $DB->delete_records('page_' . $selector->selectortype, array('selectorid' => $selector->id));
-                $DB->delete_records('page_selector', array('id' => $selector->id));
-            }
-        }
-        $DB->delete_records('page_annotation_target', array('annotationid' => $id));
-        $DB->delete_records('page_annotation_body', array('annotationid' => $id));
-        $DB->delete_records('page_annotation', array('id' => $id));
-        $transaction->allow_commit();
+        $DB->start_delegated_transaction();
+        self::delete_page_annotation_targets($assocconditions);
+        $DB->delete_records('page_annotation_tags', $assocconditions);
+        $DB->delete_records('page_annotation_ratings', $assocconditions);
+        $DB->delete_records('page_annotation_views', $assocconditions);
+        $DB->delete_records('page_annotation', ['id' => $id]);
+        $DB->allow_commit();
     }
 
     /**
@@ -233,28 +241,62 @@ class mod_page_external extends external_api
      * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function delete_page_annotation_parameters()
-    {
-        return new external_function_parameters(
-            array(
-                    'id' => new external_value(PARAM_INT),
-            )
-        );
+    public static function delete_page_annotation_parameters() {
+        return new external_function_parameters([
+            'id' => new external_value(PARAM_INT),
+        ]);
     }
 
-    public static function delete_page_annotation_returns()
-    {
+    public static function delete_page_annotation_returns() {
         return null;
     }
 
+    private static function delete_page_annotation_targets($conditions) {
+        global $DB;
+
+        $targets = $DB->get_records('page_annotation_targets', $conditions);
+        foreach ($targets as $target) {
+            $conditions = ['annotationtargetid' => $target->id];
+            switch ($target->type) {
+                case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
+                    self::delete_page_segments($conditions);
+                    break;
+                case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
+                    $DB->delete_records('page_annot_annot_targets', $conditions);
+                    break;
+            }
+        }
+        $DB->delete_records('page_annotation_targets', $conditions);
+    }
+
+    private static function delete_page_segments($conditions) {
+        global $DB;
+
+        $pagesegments = $DB->get_records('page_segments', $conditions);
+        foreach ($pagesegments as $pagesegment) {
+            self::delete_page_selectors(['segmentid' => $pagesegment->id]);
+        }
+        $DB->delete_records('page_segments', $conditions);
+    }
+
+    private static function delete_page_selectors($conditions) {
+        global $DB;
+
+        $pageselectors = $DB->get_records('page_selectors', $conditions);
+        foreach ($pageselectors as $pageselector) {
+            $tablename = mod_page_selector::map_type_to_table_name($pageselector->type);
+            $DB->delete_records($tablename, ['selectorid' => $pageselector->id]);
+        }
+        $DB->delete_records('page_selectors', $conditions);
+    }
+
     /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function view_page_parameters()
-    {
+    public static function view_page_parameters() {
         return new external_function_parameters(
             array(
                 'pageid' => new external_value(PARAM_INT, 'page instance id')
@@ -267,19 +309,18 @@ class mod_page_external extends external_api
      *
      * @param int $pageid the page instance id
      * @return array of warnings and status result
-     * @since Moodle 3.0
      * @throws moodle_exception
+     * @since Moodle 3.0
      */
-    public static function view_page($pageid)
-    {
+    public static function view_page($pageid) {
         global $DB, $CFG;
         require_once($CFG->dirroot . "/mod/page/lib.php");
 
         $params = self::validate_parameters(
             self::view_page_parameters(),
             array(
-                                                'pageid' => $pageid
-                                            )
+                'pageid' => $pageid
+            )
         );
         $warnings = array();
 
@@ -307,8 +348,7 @@ class mod_page_external extends external_api
      * @return external_description
      * @since Moodle 3.0
      */
-    public static function view_page_returns()
-    {
+    public static function view_page_returns() {
         return new external_single_structure(
             array(
                 'status' => new external_value(PARAM_BOOL, 'status: true if success'),
@@ -317,94 +357,89 @@ class mod_page_external extends external_api
         );
     }
 
-    private static function get_selectors_by_segment_id($segmentid)
-    {
+    private static function get_selectors($segmentid) {
         global $DB;
 
-        $selectors = $DB->get_records('page_selectors', array('segmentid' => $segmentid));
-        return array_values(array_map(function($selector) {
-            global $DB;
-
-            $table_name = mod_page_selector::map_type_to_table_name($selector->type);
-            $typed_selector = $DB->get_record($table_name, array('selectorid' => $selector->id));
-            $typed_selector->type = $selector->type;
-            return omit_keys($typed_selector, ['id', 'selectorid']);
+        $selectors = $DB->get_records('page_selectors', ['segmentid' => $segmentid]);
+        return array_values(array_map(function($selector) use ($DB) {
+            $result = $DB->get_record(
+                mod_page_selector::map_type_to_table_name($selector->type),
+                ['selectorid' => $selector->id]
+            );
+            $result->type = $selector->type;
+            return omit_keys($result, ['id', 'selectorid']);
         }, $selectors));
     }
 
-    private static function get_annotation_targets($annotationid)
-    {
+    private static function get_annotation_targets($annotationid) {
         global $DB;
 
-        $targets = $DB->get_records('page_annotation_targets', array('annotationid' => $annotationid));
-        return array_values(array_map(function($target) {
-            global $DB;
-
-            $target = omit_keys($target, ['annotationid']);
+        $targets = $DB->get_records('page_annotation_targets', ['annotationid' => $annotationid]);
+        return array_values(array_map(function($target) use ($DB) {
+            $targetid = $target->id;
+            $result = omit_keys($target, ['annotationid', 'id']);
             switch ($target->type) {
                 case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
-                    return (object) array_merge((array) $target, (array) self::get_page_segment_by_target_id($target->id));
+                    return object_merge(self::get_page_segment($targetid), $result);
                 case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
-                    return (object) array_merge((array) $target, (array) $DB->get_record('page_annot_annot_targets', array('targetid' => $target->id), 'annotationid'));
+                    return object_merge(
+                        $DB->get_record('page_annot_annot_targets', ['targetid' => $targetid], 'annotationid'),
+                        $result
+                    );
             }
         }, $targets));
     }
 
     // TODO: Return number strings as numbers
-    public static function get_annotations_by_page_and_user($pageid, $userid)
-    {
+    public static function get_annotations($pageid, $userid) { // TODO: Make naming of functions consistent
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $select = 'pageid = ? AND (userid = ? OR private = 0)';
-        $params = array('pageid' => $pageid, 'userid' => $userid);
-        $annotations = $DB->get_records_select('page_annotations', $select, $params);
+        $annotations = self::get_annotations_visible_to_user($pageid, $userid);
         foreach ($annotations as $annotation) {
-            $annotation->target = self::get_annotation_targets($annotation->id);
-            $annotation->body = self::get_annotation_bodies($annotation->id);
-            $tags = self::get_annotation_tags($annotation->id);
-            $annotation->tags = array_filter($tags, function($tag) {
-                return $tag->type === MOD_PAGE_ANNOTATION_TAG_TYPE_STANDARD;
-            });
-            $annotation->motivation = array_filter($tags, function($tag) {
-                return $tag->type === MOD_PAGE_ANNOTATION_TAG_TYPE_MOTIVATION;
-            });
-            if ((bool) $annotation->anonymous) unset($annotation->userid);
+            self::add_assoc_to_and_anonymize_annot($annotation);
         }
         $transaction->allow_commit();
 
-        return json_encode(array_values($annotations));
+        return array_values($annotations); // TODO: Explicit return type
     }
 
     /**
-     * Describes the parameters for get_annotations_by_page_and_user.
+     * Describes the parameters for get_annotations.
      *
      * @return external_function_parameters
      * @since Moodle 3.3
      */
-    public static function get_annotations_by_page_and_user_parameters()
-    {
-        return new external_function_parameters(
-                array(
-                    'pageid' => new external_value(PARAM_INT),
-                    'userid' => new external_value(PARAM_INT)
-                )
-        );
+    public static function get_annotations_parameters() {
+        return new external_function_parameters([
+            'pageid' => new external_value(PARAM_INT),
+            'userid' => new external_value(PARAM_INT)
+        ]);
     }
 
     /**
      * Returns description of method result value
      *
-     * @return external_multiple_structure
+     * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function get_annotations_by_page_and_user_returns()
-    {
+    public static function get_annotations_returns() {
+        return new external_function_parameters(
+            new external_multiple_structure([
+                new external_single_structure(array_merge([
+                    'pageid' => new external_value(PARAM_TEXT),
+                    'target' => self::page_annotation_target_parameters(),
+                    'userid' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                ], self::page_annotation_parameters())),
+            ])
+        );
+
         return new external_value(PARAM_RAW, 'All annotations of a user of a page');
     }
 
-    public static function get_annotations_by_page_and_user_is_allowed_from_ajax()
-    {
+    // TODO: Add returns for create and update
+
+    public static function get_annotations_is_allowed_from_ajax() {
         return true;
     }
 
@@ -414,8 +449,7 @@ class mod_page_external extends external_api
      * @return external_function_parameters
      * @since Moodle 3.3
      */
-    public static function get_pages_by_courses_parameters()
-    {
+    public static function get_pages_by_courses_parameters() {
         return new external_function_parameters(
             array(
                 'courseids' => new external_multiple_structure(
@@ -436,8 +470,7 @@ class mod_page_external extends external_api
      * @return array of warnings and pages
      * @since Moodle 3.3
      */
-    public static function get_pages_by_courses($courseids = array())
-    {
+    public static function get_pages_by_courses($courseids = array()) {
         $warnings = array();
         $returnedpages = array();
 
@@ -503,8 +536,7 @@ class mod_page_external extends external_api
      * @return external_single_structure
      * @since Moodle 3.3
      */
-    public static function get_pages_by_courses_returns()
-    {
+    public static function get_pages_by_courses_returns() {
         return new external_single_structure(
             array(
                 'pages' => new external_multiple_structure(
@@ -541,8 +573,7 @@ class mod_page_external extends external_api
     /**
      * Takes Longpage log data form the client
      */
-    public static function log_parameters()
-    {
+    public static function log_parameters() {
         return new external_function_parameters(
             array(
                 'data' =>
@@ -557,72 +588,69 @@ class mod_page_external extends external_api
             )
         );
     }
-    public static function log_returns()
-    {
+
+    public static function log_returns() {
         return new external_single_structure(
-            array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
+            array('response' => new external_value(PARAM_RAW, 'Server respons to the incomming log'))
         );
     }
-    public static function log($data)
-    {
+
+    public static function log($data) {
         global $CFG, $DB, $USER;
 
         $r = new stdClass();
-        $r->name='mod_page';
-        $r->component='mod_page';
-        $r->eventname='\mod_page\event\course_module_' . $data['action'];
-        $r->action=$data['action'];
-        $r->target='course_module';
-        $r->objecttable='page';
-        $r->objectid=0;
-        $r->crud='r';
-        $r->edulevel=2;
-        $r->contextid=120;
-        $r->contextlevel=70;
-        $r->contextinstanceid=86;
-        $r->userid=$USER->id;
-        $r->courseid=(int)$data['courseid'];
+        $r->name = 'mod_page';
+        $r->component = 'mod_page';
+        $r->eventname = '\mod_page\event\course_module_' . $data['action'];
+        $r->action = $data['action'];
+        $r->target = 'course_module';
+        $r->objecttable = 'page';
+        $r->objectid = 0;
+        $r->crud = 'r';
+        $r->edulevel = 2;
+        $r->contextid = 120;
+        $r->contextlevel = 70;
+        $r->contextinstanceid = 86;
+        $r->userid = $USER->id;
+        $r->courseid = (int) $data['courseid'];
 
         //$r->relateduserid=NULL;
-        $r->anonymous=0;
-        $r->other=$data['entry'];
-        $r->timecreated=$data['utc'];
-        $r->origin='web';
-        $r->ip=$_SERVER['REMOTE_ADDR'];
+        $r->anonymous = 0;
+        $r->other = $data['entry'];
+        $r->timecreated = $data['utc'];
+        $r->origin = 'web';
+        $r->ip = $_SERVER['REMOTE_ADDR'];
         //$r->realuserid=NULL;
 
         $transaction = $DB->start_delegated_transaction();
-        $res = $DB->insert_record("logstore_standard_log", (array)$r);
+        $res = $DB->insert_record("logstore_standard_log", (array) $r);
         $transaction->allow_commit();
 
-
-        if ($data['action']=="scroll") {
+        if ($data['action'] == "scroll") {
             $d = json_decode($data['entry']);
             $s = new stdClass();
             $s->section = $d->value->targetID;
-            $s->sectionoffset = (int)$d->value->scrollYDistance;
-            $s->userid = (int)$USER->id;
-            $s->courseid = (int)$data['courseid'];
-            $s->pageid = (int)$d->value->pageid;
-            $s->creationdate = (int)$d->utc;
+            $s->sectionoffset = (int) $d->value->scrollYDistance;
+            $s->userid = (int) $USER->id;
+            $s->courseid = (int) $data['courseid'];
+            $s->pageid = (int) $d->value->pageid;
+            $s->creationdate = (int) $d->utc;
 
             $transaction = $DB->start_delegated_transaction();
-            $res2 = $DB->insert_record("page_reading", (array)$s);
+            $res2 = $DB->insert_record("page_reading", (array) $s);
             $transaction->allow_commit();
         }
-        return array('response'=> json_encode($res));
+        return array('response' => json_encode($res));
     }
 
-    public static function log_is_allowed_from_ajax()
-    {
+    public static function log_is_allowed_from_ajax() {
         return true;
     }
 
     /**
-        * Get readingprogress
-        */
-    public static function getreadingprogress_parameters()
-    {
+     * Get readingprogress
+     */
+    public static function getreadingprogress_parameters() {
         return new external_function_parameters(
             array(
                 'data' =>
@@ -635,14 +663,14 @@ class mod_page_external extends external_api
             )
         );
     }
-    public static function getreadingprogress_returns()
-    {
+
+    public static function getreadingprogress_returns() {
         return new external_single_structure(
-            array( 'response' => new external_value(PARAM_RAW, 'All bookmarks of an user') )
+            array('response' => new external_value(PARAM_RAW, 'All bookmarks of an user'))
         );
     }
-    public static function getreadingprogress($data)
-    {
+
+    public static function getreadingprogress($data) {
         global $CFG, $DB, $USER;
 
         $r = new stdClass();
@@ -652,7 +680,7 @@ class mod_page_external extends external_api
 
         $query = '
             SELECT section, count(section) as count
-            FROM (SELECT * FROM '.$CFG->prefix.'page_reading AS m WHERE userid=? AND courseid=? AND pageid=?) as mm
+            FROM (SELECT * FROM ' . $CFG->prefix . 'page_reading AS m WHERE userid=? AND courseid=? AND pageid=?) as mm
             GROUP by section
             ';
 
@@ -660,10 +688,10 @@ class mod_page_external extends external_api
         $res = $DB->get_records_sql($query, array($USER->id, $data['courseid'], $data['pageid']));
         $transaction->allow_commit();
 
-        return array('response'=> json_encode($res));
+        return array('response' => json_encode($res));
     }
-    public static function getreadingprogress_is_allowed_from_ajax()
-    {
+
+    public static function getreadingprogress_is_allowed_from_ajax() {
         return true;
     }
 
@@ -675,13 +703,15 @@ class mod_page_external extends external_api
      * @return null //TODO: What are the correct types? How do I correctly document methods?
      * @since Moodle 3.0
      */
-    public static function update_page_annotation_body($annotation_id, $value) // TODO: This does only work as long as there is only one body per annotation.
-    {
+    public static function update_page_annotation($annotation) {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $annotation_body = $DB->get_record('page_annotation_body', array('annotationid' => $annotation_id));
-        $DB->update_record('page_annotation_body', array('id' => $annotation_body->id, 'value' => $value));
+        $annotation['timemodified'] = time();
+        $DB->update_record('page_annotations', omit_keys($annotation, ['tags']));
+        if (!empty($annotation['tags'])) {
+            self::update_page_annotation_tags($annotation['tags'], $annotation['id']);
+        }
         $transaction->allow_commit();
     }
 
@@ -691,14 +721,24 @@ class mod_page_external extends external_api
      * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function update_page_annotation_body_parameters()
-    {
-        return new external_function_parameters(
-            array(
-                'annotation_id' => new external_value(PARAM_INT),
+    public static function update_page_annotation_parameters() {
+        return new external_function_parameters([
+            'annotation' => new external_single_structure(array_merge([
+                'id' => new external_value(PARAM_INT),
+            ], self::page_annotation_parameters())),
+        ]);
+    }
+
+    private static function page_annotation_parameters($required = false) {
+        return [
+            'anonymous' => new external_value(PARAM_BOOL, '', $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
+            'body' => new external_value(PARAM_TEXT, '', $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
+            'private' => new external_value(PARAM_BOOL, '', $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
+            'tags' => new external_multiple_structure(new external_single_structure([
                 'value' => new external_value(PARAM_TEXT),
-            )
-        );
+                'type' => new external_value(PARAM_TEXT, '', $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
+            ]), $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
+        ];
     }
 
     /**
@@ -707,71 +747,63 @@ class mod_page_external extends external_api
      * @return null
      * @since Moodle 3.0
      */
-    public static function update_page_annotation_body_returns()
-    {
-       return null;
+    public static function update_page_annotation_returns() {
+        return new external_function_parameters([
+            'id' => new external_value(PARAM_INT),
+            self::page_annotation_parameters(true),
+        ]);
     }
 
-    private static function create_page_annotation_bodies($bodies, $annotationid) {
+    private static function update_page_annotation_tags($tags, $annotationid) {
         global $DB;
 
-        foreach ($bodies as $body) {
-            $DB->insert_record('page_annotation_bodies', array('annotationid' => $annotationid, 'value' => $body));
-        }
-    }
-
-    private static function create_page_annotation_tags($tags, $annotationid, $tagtype = MOD_PAGE_ANNOTATION_TAG_TYPE_STANDARD) {
-        global $DB;
-
-        foreach ($tags as $tag) {
-            $tagid = self::insert_record_if_it_not_exists('page_annotation_tags', ['value' => $tag, 'type' => $tagtype]);
-            $DB->insert_record('page_annotation_annot_tags', ['annotationid' => $annotationid, 'tagid' => $tagid]);
-        }
-    }
-
-    private static function insert_record_if_it_not_exists($table, $dataobject, $returnid = true, $bulk = false) {
-        global $DB;
-
-        $record = $DB->get_record($table, $dataobject);
-        if ((bool) $record) return $returnid ? $record->id : null;
-
-        return $DB->insert_record($table, $dataobject, $returnid, $bulk);
+        $DB->delete_records('page_annotation_tags', ['annotationid' => $annotationid]);
+        $DB->insert_records('page_annotation_tags', array_map_merge($tags, ['annotationid' => $annotationid]));
     }
 
     /**
      * @param object $targetid
      * @return array
      */
-    private static function get_page_segment_by_target_id($targetid) {
+    private static function get_page_segment($targetid) {
         global $DB;
 
-        $segment = $DB->get_record('page_segments', array('annotationtargetid' => $targetid));
-        $segment->selector = self::get_selectors_by_segment_id($segment->id);
+        $segment = $DB->get_record('page_segments', ['annotationtargetid' => $targetid]);
+        $segment->selector = self::get_selectors($segment->id);
 
         return omit_keys($segment, ['id', 'annotationtargetid']);
     }
 
     /**
-     * @param $DB
-     * @param $annotation
-     * @return mixed
+     * @param $pageid
+     * @param $userid
+     * @return array
      */
-    private static function get_annotation_bodies($annotationid) {
+    private static function get_annotations_visible_to_user($pageid, $userid) {
         global $DB;
 
-        $bodies = $DB->get_records('page_annotation_bodies', array('annotationid' => $annotationid));
-        return array_map(function($body) {
-            return omit_keys($body, ['annotationid']);
-        }, $bodies);
+        $select = 'pageid = ? AND (userid = ? OR private = 0)';
+        $params = ['pageid' => $pageid, 'userid' => $userid];
+        return $DB->get_records_select('page_annotations', $select, $params);
     }
 
-    private static function get_annotation_tags($annotationid) {
+    /**
+     * @param $annotation
+     */
+    private static function anonymize_annotation($annotation) {
+        unset($annotation->userid);
+    }
+
+    /**
+     * @param $annotation
+     */
+    private static function add_assoc_to_and_anonymize_annot($annotation) {
         global $DB;
 
-        $sql = "SELECT t.value, t.type
-                  FROM {page_annotation_annot_tags} n
-                  JOIN {page_annotation_tags} t ON (n.tagid = t.id)
-                 WHERE n.annotationid = ?";
-        return $DB->get_records_sql($sql, ['annotationid' => $annotationid]);
+        $annotation->target = self::get_annotation_targets($annotation->id);
+        $annotation->tags = $DB->get_records('page_annotation_tags', ['annotationid' => $annotation->id], ['value', 'type']);
+        if ((bool) $annotation->anonymous) {
+            self::anonymize_annotation($annotation);
+        }
     }
 }

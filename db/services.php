@@ -84,9 +84,9 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-    'mod_page_get_annotations_by_page_and_user' => array(
+    'mod_page_get_annotations' => array(
         'classname'     => 'mod_page_external',
-        'methodname'    => 'get_annotations_by_page_and_user',
+        'methodname'    => 'get_annotations',
         'description'   => 'Get annotations by page and user',
         'type'          => 'read',
         'capabilities'  => 'mod/page:view',
