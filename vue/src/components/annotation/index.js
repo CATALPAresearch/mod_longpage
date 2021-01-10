@@ -1,4 +1,4 @@
-import {LONGPAGE_MAIN_ID, LONGPAGE_TEX_OVERLAY_ID, LONGPAGE_TEXT_CONTAINER_ID} from '@/config/constants';
+import {LONGPAGE_MAIN_ID, LONGPAGE_TEXT_OVERLAY_ID, LONGPAGE_TEXT_CONTAINER_ID} from '@/config/constants';
 import AnnotationSidebar from './AnnotationSidebar.vue';
 import AnnotationWrapper from './AnnotationWrapper';
 import {createDiv} from '@/util/misc';
@@ -31,7 +31,7 @@ const useAnnotationToolbarPopover = (store) => {
 };
 
 const useLongpageTextOverlay = () => {
-    const overlay = createDiv({id: LONGPAGE_TEX_OVERLAY_ID});
+    const overlay = createDiv({id: LONGPAGE_TEXT_OVERLAY_ID});
     document.querySelector(toIdSelector(LONGPAGE_TEXT_CONTAINER_ID)).appendChild(overlay);
     overlay.addEventListener('click', () => {
         overlay.style.display = 'none';

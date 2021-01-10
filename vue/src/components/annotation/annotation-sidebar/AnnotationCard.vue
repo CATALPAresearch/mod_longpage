@@ -68,9 +68,9 @@ import {ACT, MUTATE} from '@/store/types';
 import {Annotation} from '@/lib/annotation/types/annotation';
 import {cloneDeep} from 'lodash';
 import DateTimeText from '@/components/DateTimeText';
-import {HighlightingConfig, LONGPAGE_TEX_OVERLAY_ID, SelectorType} from '@/config/constants';
+import {HighlightingConfig, LONGPAGE_TEXT_OVERLAY_ID, SCROLL_INTO_VIEW_OPTIONS, SelectorType} from '@/config/constants';
 import {mapActions, mapMutations} from 'vuex';
-import scrollIntoView from 'scroll-into-view';
+import scrollIntoView from 'scroll-into-view-if-needed';
 
 export default {
   name: 'AnnotationCard',
@@ -94,11 +94,6 @@ export default {
       const textQuoteSelector = this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
       return textQuoteSelector ? textQuoteSelector.exact : '';
     },
-    highlightHTMLElement() {
-      return Array
-          .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
-          .find(element => element._annotation === this.annotation);
-    },
   },
   methods: {
     closeEditor() {
@@ -107,14 +102,19 @@ export default {
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
     },
+    getHighlightHTMLElement() {
+      return Array
+          .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
+          .find(element => element._annotation.id === this.annotation.id);
+    },
     openEditor() {
       this.isBeingEdited = true;
       this.annotationUpdate = cloneDeep(this.annotation);
     },
     selectAnnotation() {
       this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
-      scrollIntoView(this.highlightHTMLElement);
-      document.getElementById(LONGPAGE_TEX_OVERLAY_ID).style.display = 'block';
+      scrollIntoView(this.getHighlightHTMLElement(), SCROLL_INTO_VIEW_OPTIONS);
+      document.getElementById(LONGPAGE_TEXT_OVERLAY_ID).style.display = 'block';
     },
     updateAnnotation() {
       this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);

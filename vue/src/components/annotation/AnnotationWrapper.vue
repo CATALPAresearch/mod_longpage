@@ -9,7 +9,7 @@
 
 <script>
 import {ACT, GET, MUTATE} from '@/store/types';
-import {ArrowDirection, LONGPAGE_MAIN_ID, LONGPAGE_TEXT_CONTAINER_ID} from '@/config/constants';
+import {ArrowDirection, LONGPAGE_MAIN_ID, LONGPAGE_TEXT_CONTAINER_ID, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
 import AnnotationToolbarPopover from './AnnotationToolbarPopover.vue';
 import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-toolbar-popover-positioner';
 import {SelectionListener} from '@/lib/annotation/selection-listener';
@@ -19,8 +19,8 @@ import {Anchoring} from '@/lib/annotation/anchoring';
 import {mapGetters, mapMutations} from 'vuex';
 import {setHighlightsVisible} from '@/lib/annotation/highlighting';
 import {addAnnotationSelectionListener} from '@/lib/annotation/highlight-selection-listener';
-import scrollIntoView from 'scroll-into-view';
 import {PageSegment} from '@/lib/annotation/types/page-segment';
+import scrollIntoView from 'scroll-into-view-if-needed';
 
 const getAnnotationCardId = annotationId => `annotation-card-${annotationId}`;
 
@@ -82,7 +82,7 @@ export default {
       addAnnotationSelectionListener(annotations => {
         if (annotations.length > 0) {
           const element = document.getElementById(getAnnotationCardId(annotations[0].id));
-          scrollIntoView(element);
+          scrollIntoView(element, {...SCROLL_INTO_VIEW_OPTIONS, boundary: document.getElementById(LONGPAGE_MAIN_ID)});
         }
       });
     });

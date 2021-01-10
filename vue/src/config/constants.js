@@ -1,3 +1,5 @@
+import {toIdSelector} from '@/util/style';
+
 /**
  * The preferred gap between the end of the text selection and the
  * arrow position of the annotation toolbar popover.
@@ -19,7 +21,7 @@ export const LANGUAGE = 'de';
 
 export const LONGPAGE_MAIN_ID = 'longpage-main';
 export const LONGPAGE_TEXT_CONTAINER_ID = 'longpage-text-container';
-export const LONGPAGE_TEX_OVERLAY_ID = 'longpage-text-overlay';
+export const LONGPAGE_TEXT_OVERLAY_ID = 'longpage-text-overlay';
 
 export const MoodleWSMethods = Object.freeze({
     GET_ANNOTATIONS: 'mod_page_get_annotations',
@@ -27,6 +29,11 @@ export const MoodleWSMethods = Object.freeze({
     DELETE_ANNOTATION: 'mod_page_delete_annotation',
     UPDATE_ANNOTATION: 'mod_page_update_annotation',
 });
+
+export const SCROLL_INTO_VIEW_OPTIONS = {
+    block: 'center',
+    scrollMode: 'if-needed'
+};
 
 export const SelectorType = Object.freeze({
     TEXT_POSITION_SELECTOR: 'TextPositionSelector',
