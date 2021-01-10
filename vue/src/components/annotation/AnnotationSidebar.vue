@@ -18,10 +18,10 @@
 </template>
 
 <script>
-import AnnotationCard from "./annotation-sidebar/AnnotationCard.vue";
-import {mapGetters} from "vuex";
-import {GET} from "@/store/types";
-import {SelectorType} from "@/config/constants";
+import AnnotationCard from './annotation-sidebar/AnnotationCard.vue';
+import {mapGetters} from 'vuex';
+import {GET} from '@/store/types';
+import {SelectorType} from '@/config/constants';
 
 const AnnotationSortingFunction = Object.freeze({
   BY_POSITION: (annotationA, annotationB) => {
@@ -32,11 +32,13 @@ const AnnotationSortingFunction = Object.freeze({
 });
 
 const setZIndex = (htmlElements, zIndex) => {
-  htmlElements.forEach(element => element.style.zIndex = zIndex);
+  htmlElements.forEach(element => {
+    element.style.zIndex = zIndex;
+  });
 };
 
 export default {
-  name: "AnnotationSidebar",
+  name: 'AnnotationSidebar',
   components: {
     AnnotationCard
   },
