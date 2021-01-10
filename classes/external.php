@@ -427,6 +427,7 @@ class mod_page_external extends external_api {
     public static function get_annotations_returns() {
         return new external_multiple_structure(
             new external_single_structure(array_merge([
+                'id' => new external_value(PARAM_INT),
                 'pageid' => new external_value(PARAM_INT),
                 'target' => new external_multiple_structure(
                     self::page_annotation_target_parameters()
