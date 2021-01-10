@@ -62,7 +62,7 @@ $functions = array(
     ),
     'mod_page_create_annotation' => array(
         'classname'     => 'mod_page_external',
-        'methodname'    => 'create_page_annotation',
+        'methodname'    => 'create_annotation',
         'description'   => 'Create an annotation',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view',
@@ -70,18 +70,18 @@ $functions = array(
     ),
     'mod_page_delete_annotation' => array(
         'classname'     => 'mod_page_external',
-        'methodname'    => 'delete_page_annotation',
+        'methodname'    => 'delete_annotation',
         'description'   => 'Delete an annotation',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-    'mod_page_update_annotation_body' => array(
+    'mod_page_update_annotation' => array(
         'classname'     => 'mod_page_external',
-        'methodname'    => 'update_page_annotation_body',
+        'methodname'    => 'update_annotation',
         'description'   => 'Update an annotation',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/page:view', // TODO: Update and add capabilities for annotations
         'ajax'          => true
     ),
     'mod_page_get_annotations' => array(

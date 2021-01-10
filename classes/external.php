@@ -104,7 +104,7 @@ class mod_page_external extends external_api {
      * @return array with annotation id
      * @since Moodle 3.0
      */
-    public static function create_page_annotation($annotation) {
+    public static function create_annotation($annotation) {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
@@ -112,7 +112,7 @@ class mod_page_external extends external_api {
         $annotation['timemodified'] = time();
         $annotationid =
             $DB->insert_record('page_annotations', omit_keys($annotation, ['target', 'tags']));
-        self::create_page_annotation_targets($annotation['target'], $annotationid);
+        self::create_annotation_targets($annotation['target'], $annotationid);
         $DB->insert_records('page_annotation_tags', array_map_merge($annotation['tags'], ['annotationid' => $annotationid]));
         $transaction->allow_commit();
 
@@ -125,7 +125,7 @@ class mod_page_external extends external_api {
      * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function create_page_annotation_parameters() {
+    public static function create_annotation_parameters() {
         return new external_function_parameters([
             'annotation' => new external_single_structure(array_merge([
                 'pageid' => new external_value(PARAM_INT),
@@ -143,13 +143,13 @@ class mod_page_external extends external_api {
      * @return external_single_structure
      * @since Moodle 3.0
      */
-    public static function create_page_annotation_returns() {
+    public static function create_annotation_returns() {
         return new external_single_structure(
             array('id' => new external_value(PARAM_RAW))
         );
     }
 
-    private static function create_page_annotation_targets($targets, $annotationid) {
+    private static function create_annotation_targets($targets, $annotationid) {
         global $DB;
 
         foreach ($targets as $target) {
@@ -157,7 +157,7 @@ class mod_page_external extends external_api {
                 $DB->insert_record('page_annotation_targets', ['annotationid' => $annotationid, 'type' => $target['type']]);
             switch ($target['type']) {
                 case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
-                    self::create_page_segment(pick_keys($target, ['selector', 'styleclass']), $target['id']);
+                    self::create_segment(pick_keys($target, ['selector', 'styleclass']), $target['id']);
                     break;
                 case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
                     $DB->insert_record('page_annot_annot_targets', ['annotationid' => $annotationid, 'targetid' => $target['id']]);
@@ -171,19 +171,19 @@ class mod_page_external extends external_api {
      * @param $segment
      * @param $targetid
      */
-    private static function create_page_segment($segment, $targetid) {
+    private static function create_segment($segment, $targetid) {
         global $DB;
 
         $segmentid =
             $DB->insert_record('page_segments', ['annotationtargetid' => $targetid, 'styleclass' => $segment['styleclass']]);
-        self::create_page_selectors($segment['selector'], $segmentid);
+        self::create_selectors($segment['selector'], $segmentid);
     }
 
     /**
      * @param $selectors // TODO: Correct and complete documentations of external functions
      * @param $segmentid
      */
-    private static function create_page_selectors($selectors, $segmentid): void {
+    private static function create_selectors($selectors, $segmentid): void {
         global $DB;
 
         foreach ($selectors as $selector) {
@@ -223,12 +223,12 @@ class mod_page_external extends external_api {
      * @return void
      * @since Moodle 3.0
      */
-    public static function delete_page_annotation($id) {
+    public static function delete_annotation($id) {
         global $DB;
         $assocconditions = ['annotationid' => $id];
 
         $transaction = $DB->start_delegated_transaction();
-        self::delete_page_annotation_targets($assocconditions);
+        self::delete_annotation_targets($assocconditions);
         $DB->delete_records('page_annotation_tags', $assocconditions);
         $DB->delete_records('page_annotation_ratings', $assocconditions);
         $DB->delete_records('page_annotation_views', $assocconditions);
@@ -243,22 +243,22 @@ class mod_page_external extends external_api {
      * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function delete_page_annotation_parameters() {
+    public static function delete_annotation_parameters() {
         return new external_function_parameters([
             'id' => new external_value(PARAM_INT),
         ]);
     }
 
-    public static function delete_page_annotation_returns() {
+    public static function delete_annotation_returns() {
         return null;
     }
 
-    private static function delete_page_annotation_targets($conditions) {
+    private static function delete_annotation_targets($conditions) {
         global $DB;
 
         $targets = $DB->get_records('page_annotation_targets', $conditions);
         foreach ($targets as $target) {
-            self::delete_page_annotation_target($target, $conditions, $DB);
+            self::delete_annotation_target($target, $conditions, $DB);
         }
         $DB->delete_records('page_annotation_targets', $conditions);
     }
@@ -266,13 +266,13 @@ class mod_page_external extends external_api {
     /**
      * @param $target
      */
-    private static function delete_page_annotation_target($target): void {
+    private static function delete_annotation_target($target): void {
         global $DB;
 
         $conditions = ['annotationtargetid' => $target->id];
         switch ($target->type) {
             case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
-                self::delete_page_segments($conditions);
+                self::delete_segments($conditions);
                 break;
             case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
                 $DB->delete_records('page_annot_annot_targets', $conditions);
@@ -280,17 +280,17 @@ class mod_page_external extends external_api {
         }
     }
 
-    private static function delete_page_segments($conditions) {
+    private static function delete_segments($conditions) {
         global $DB;
 
         $pagesegments = $DB->get_records('page_segments', $conditions);
         foreach ($pagesegments as $pagesegment) {
-            self::delete_page_selectors(['segmentid' => $pagesegment->id]);
+            self::delete_selectors(['segmentid' => $pagesegment->id]);
         }
         $DB->delete_records('page_segments', $conditions);
     }
 
-    private static function delete_page_selectors($conditions) {
+    private static function delete_selectors($conditions) {
         global $DB;
 
         $pageselectors = $DB->get_records('page_selectors', $conditions);
@@ -715,14 +715,14 @@ class mod_page_external extends external_api {
      * @return null //TODO: What are the correct types? How do I correctly document methods?
      * @since Moodle 3.0
      */
-    public static function update_page_annotation($annotation) {
+    public static function update_annotation($annotation) {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
         $annotation['timemodified'] = time();
         $DB->update_record('page_annotations', omit_keys($annotation, ['tags']));
         if (!empty($annotation['tags'])) {
-            self::update_page_annotation_tags($annotation['tags'], $annotation['id']);
+            self::update_annotation_tags($annotation['tags'], $annotation['id']);
         }
         $transaction->allow_commit();
     }
@@ -733,7 +733,7 @@ class mod_page_external extends external_api {
      * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function update_page_annotation_parameters() {
+    public static function update_annotation_parameters() {
         return new external_function_parameters([
             'annotation' => new external_single_structure(array_merge([
                 'id' => new external_value(PARAM_INT),
@@ -759,14 +759,14 @@ class mod_page_external extends external_api {
      * @return null
      * @since Moodle 3.0
      */
-    public static function update_page_annotation_returns() {
+    public static function update_annotation_returns() {
         return new external_function_parameters([
             'id' => new external_value(PARAM_INT),
             self::page_annotation_parameters(true),
         ]);
     }
 
-    private static function update_page_annotation_tags($tags, $annotationid) {
+    private static function update_annotation_tags($tags, $annotationid) {
         global $DB;
 
         $DB->delete_records('page_annotation_tags', ['annotationid' => $annotationid]);
