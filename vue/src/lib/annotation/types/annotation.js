@@ -10,8 +10,8 @@ export class Annotation extends AnnotationTarget {
         pageId,
         tags = [],
         target = [],
-        timecreated = Date.now(),
-        timemodified = Date.now(),
+        timecreated = new Date(),
+        timemodified = new Date(),
         userId
     }) {
         super();

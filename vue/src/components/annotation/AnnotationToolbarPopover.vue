@@ -1,47 +1,55 @@
 <template>
   <div
-      :style="style"
-      id="annotation-toolbar-popover"
-      ref="annotationToolbarPopover"
+    id="annotation-toolbar-popover"
+    ref="annotationToolbarPopover"
+    :style="style"
   >
     <div
-        v-show="arrowDirection === ArrowDirection.UP"
-        class="arrow-up mx-auto"
-        ref="arrowUp"
-    ></div>
+      v-show="arrowDirection === ArrowDirection.UP"
+      ref="arrowUp"
+      class="arrow-up mx-auto"
+    />
     <div
-        id="annotation-toolbar"
-        class="d-flex align-items-center p-1"
-        :class="{
-            'shadow-down': arrowDirection === ArrowDirection.DOWN,
-            'shadow-up': arrowDirection === ArrowDirection.UP
-          }"
+      id="annotation-toolbar"
+      class="d-flex align-items-center p-1"
+      :class="{
+        'shadow-down': arrowDirection === ArrowDirection.DOWN,
+        'shadow-up': arrowDirection === ArrowDirection.UP
+      }"
     >
       <div
-          v-for="(option, index) in highlightingOptions"
-          class="annotation-toolbar-item dot"
-          :class="[option]"
-          :key="index"
-          @click.prevent="$emit('highlight', option)"
-      >A</div>
-      <div class="annotation-toolbar-item" v-show="showDelete">
-        <i class="fa fa-trash" @click.prevent="$emit('delete')"></i>
+        v-for="(option, index) in highlightingOptions"
+        :key="index"
+        class="annotation-toolbar-item dot"
+        :class="[option]"
+        @click.prevent="$emit('highlight', option)"
+      >
+        A
+      </div>
+      <div
+        v-show="showDelete"
+        class="annotation-toolbar-item"
+      >
+        <i
+          class="fa fa-trash"
+          @click.prevent="$emit('delete')"
+        />
       </div>
     </div>
     <div
-        v-show="arrowDirection === ArrowDirection.DOWN"
-        class="arrow-down mx-auto"
-        ref="arrowDown"
-    ></div>
+      v-show="arrowDirection === ArrowDirection.DOWN"
+      ref="arrowDown"
+      class="arrow-down mx-auto"
+    />
   </div>
 </template>
 
 <script>
-  import { ArrowDirection } from "../../config/constants";
-  import { toNumber, toPx } from "../../util/style";
+  import {ArrowDirection} from '../../config/constants';
+  import {toNumber, toPx} from '../../util/style';
 
   export default {
-    name: "AnnotationToolbarPopover",
+    name: 'AnnotationToolbarPopover',
     props: {
       arrowDirection: {type: Number, default: ArrowDirection.UP},
       highlightingOptions: {type: Array, default: () => []},
@@ -51,6 +59,7 @@
       visible: {type: Boolean, default: false},
       zIndex: {type: Number, default: 999999},
     },
+    emits: ['highlight'],
     data() {
       return {
         ArrowDirection,
@@ -61,7 +70,7 @@
         return {
           left: toPx(this.left),
           top: toPx(this.top),
-          visibility: this.visible ? "visible" : "hidden",
+          visibility: this.visible ? 'visible' : 'hidden',
           zIndex: this.zIndex,
         };
       },

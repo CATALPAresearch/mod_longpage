@@ -95,13 +95,14 @@ export default {
       return textQuoteSelector ? textQuoteSelector.exact : '';
     },
     highlightHTMLElement() {
-      return Array.from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME)).find(element => element._annotation === this.annotation);
+      return Array
+          .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
+          .find(element => element._annotation === this.annotation);
     },
   },
   methods: {
     closeEditor() {
       this.isBeingEdited = false;
-      this.annotationUpdate = null;
     },
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
