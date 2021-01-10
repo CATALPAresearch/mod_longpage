@@ -425,17 +425,17 @@ class mod_page_external extends external_api {
      * @since Moodle 3.0
      */
     public static function get_annotations_returns() {
-        return new external_function_parameters(
-            new external_multiple_structure([
-                new external_single_structure(array_merge([
-                    'pageid' => new external_value(PARAM_TEXT),
-                    'target' => self::page_annotation_target_parameters(),
-                    'userid' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                ], self::page_annotation_parameters())),
-            ])
+        return new external_multiple_structure(
+            new external_single_structure(array_merge([
+                'pageid' => new external_value(PARAM_INT),
+                'target' => new external_multiple_structure(
+                    self::page_annotation_target_parameters()
+                ),
+                'timecreated' => new external_value(PARAM_INT),
+                'timemodified' => new external_value(PARAM_INT),
+                'userid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+            ], self::page_annotation_parameters())),
         );
-
-        return new external_value(PARAM_RAW, 'All annotations of a user of a page');
     }
 
     // TODO: Add returns for create and update
@@ -802,7 +802,7 @@ class mod_page_external extends external_api {
         global $DB;
 
         $annotation->target = self::get_annotation_targets($annotation->id);
-        $annotation->tags = $DB->get_records('page_annotation_tags', ['annotationid' => $annotation->id], ['value', 'type']);
+        $annotation->tags = $DB->get_records('page_annotation_tags', ['annotationid' => $annotation->id], '', 'value, type');
         if ((bool) $annotation->anonymous) {
             self::anonymize_annotation($annotation);
         }

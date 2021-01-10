@@ -28,7 +28,7 @@ export default {
                     commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
                 },
                 fail: (e) => {
-                    console.error('"mod_page_create_annotation" failed', e);
+                    console.error(`"${methodname}" failed`, e);
                 }
             }]);
         },
@@ -41,7 +41,7 @@ export default {
                     commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
                 },
                 fail: (e) => {
-                    console.error('"mod_page_delete_annotation" failed', e);
+                    console.error(`"${methodname}" failed`, e);
                 }
             }]);
         },
@@ -75,7 +75,7 @@ export default {
                     commit(MUTATE.UPDATE_ANNOTATION, annotationUpdate);
                 },
                 fail: (e) => {
-                    console.error('"mod_page_update_annotation_body" failed', e);
+                    console.error(`"${methodname}" failed`, e);
                 }
             }]);
         },

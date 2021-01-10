@@ -11,13 +11,13 @@
 import './assets/icons';
 import './components/Footnote';
 import App from './App.vue';
-import {initStore} from "@/store";
+import {initStore} from '@/store';
 import {useAnnotations} from './components/annotation';
 import {createApp} from 'vue';
 
 export const init = (courseId, pageId, pageName, userId) => {
   try {
-      const store = initStore({courseId, pageId, pageName, userId});
+      const store = initStore({courseId: Number(courseId), pageId: Number(pageId), pageName, userId: Number(userId)});
       createApp(App)
           .use(store)
           .mount('longpage-app-container');

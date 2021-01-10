@@ -22,7 +22,7 @@ export const LONGPAGE_TEXT_CONTAINER_ID = 'longpage-text-container';
 export const LONGPAGE_TEX_OVERLAY_ID = 'longpage-text-overlay';
 
 export const MoodleWSMethods = Object.freeze({
-    GET_ANNOTATIONS: 'mod_page_get_annotations_by_page_and_user',
+    GET_ANNOTATIONS: 'mod_page_get_annotations',
     CREATE_ANNOTATION: 'mod_page_create_annotation',
     DELETE_ANNOTATION: 'mod_page_delete_annotation',
     UPDATE_ANNOTATION_BODY: 'mod_page_update_annotation_body',

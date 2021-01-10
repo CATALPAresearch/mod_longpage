@@ -60,7 +60,7 @@
           <font-awesome-icon
             class="ml-1"
             icon="save"
-            @click.stop="updateAnnotation"
+            @click.stop="addOrUpdateAnnotationBody"
           />
         </div>
       </div>
@@ -93,7 +93,7 @@ export default {
       return this.annotation.target[0];
     },
     createdLocaleDateString() {
-      return DateTimeFormatter.format(new Date(Number(this.annotation.timecreated)));
+      return DateTimeFormatter.format(this.annotation.timecreated);
     },
     highlightedText() {
       const textQuoteSelector = this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
@@ -127,7 +127,7 @@ export default {
       scrollIntoView(this.highlightHTMLElement);
       document.getElementById(LONGPAGE_TEX_OVERLAY_ID).style.display = 'block';
     },
-    updateAnnotation() {
+    addOrUpdateAnnotationBody() {
       this[ACT.UPDATE_ANNOTATION_BODY](this.annotationUpdate);
       this.closeEditor();
     },
