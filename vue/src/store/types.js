@@ -1,6 +1,9 @@
 export const GET = Object.freeze({
   ANNOTATIONS: 'Get Annotations',
+  ANNOTATIONS_TARGETING_PAGE_SEGMENT: 'Get Annotations Targeting Page Segment',
+  ANNOTATIONS_TARGETING_ANNOTATION: 'Get Annotations Targeting Annotation',
   LONGPAGE_CONTEXT: 'Get Longpage Context',
+  RESPONSES_TO: 'Get Responses To {annotationId}',
   SELECTED_ANNOTATIONS: 'Get Selected Annotations',
   SELECTED_HIGHLIGHTS: 'Get Selected Highlights',
 });

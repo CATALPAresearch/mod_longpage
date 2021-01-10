@@ -3,6 +3,7 @@ import {deepLowerCaseKeys} from '@/util/misc';
 import {AnnotationTargetType, MoodleWSMethods, SelectorType} from '@/config/constants';
 import {invert, omit, pick} from 'lodash';
 import {PageSegment} from '@/lib/annotation/types/page-segment';
+import {TargetAnnotationReference} from '@/lib/annotation/types/target-annotation-reference';
 
 const SELECTOR_TYPE_MAPPING_CLIENT_TO_SERVER = {
     [SelectorType.TEXT_QUOTE_SELECTOR]: 0,
@@ -61,7 +62,7 @@ const MappingService = {
                             }),
                         });
                     case AnnotationTargetType.ANNOTATION:
-                        return {annotationId: t.annotationid};
+                        return new TargetAnnotationReference({annotationId: t.annotationid});
                 }
             }),
             timecreated: this._mapTimeServerToClient(annotation.timecreated),

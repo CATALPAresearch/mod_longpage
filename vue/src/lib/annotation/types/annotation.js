@@ -1,6 +1,4 @@
-import {AnnotationTarget} from '@/lib/annotation/types/annotation-target';
-
-export class Annotation extends AnnotationTarget {
+export class Annotation {
     constructor({
         $orphan = false,
         anonymous = false,
@@ -14,7 +12,6 @@ export class Annotation extends AnnotationTarget {
         timemodified = new Date(),
         userId
     }) {
-        super();
         this.$orphan = $orphan;
         this.anonymous = anonymous;
         this.body = body;

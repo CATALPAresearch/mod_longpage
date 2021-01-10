@@ -1,7 +1,9 @@
 import ajax from 'core/ajax';
+import {AnnotationTargetType, HighlightingConfig, MoodleWSMethods} from '@/config/constants';
+import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
 import {GET, ACT, MUTATE} from '../types';
 import MappingService from '@/services/mapping-service';
-import {HighlightingConfig, MoodleWSMethods} from '@/config/constants';
+
 
 export default {
     state: {
@@ -15,7 +17,16 @@ export default {
             return Array
                 .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
                 .filter(element => selectedAnnotations.includes(element._annotation));
-        }
+        },
+        [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT]: (_, getters) => {
+            filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.PAGE_SEGMENT);
+        },
+        [GET.ANNOTATIONS_TARGETING_ANNOTATION]: (_, getters) => {
+            filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.ANNOTATION);
+        },
+        [GET.RESPONSES_TO]: (_, getters) => (annotationId) => {
+            return getters[GET.ANNOTATIONS_TARGETING_ANNOTATION].find(annotation => annotation.id === annotationId);
+        },
     },
     actions: {
         [ACT.CREATE_ANNOTATION]({commit}, annotation) {

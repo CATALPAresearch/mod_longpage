@@ -7,10 +7,12 @@
  * Based on Hypothesis client's modules (see https://github.com/hypothesis/client):
  *   - src/annotator/guest.js
  */
-import {highlightRange, removeHighlights} from './highlighting';
 import {anchor} from './hypothesis/anchoring/html';
-import {sniff} from './hypothesis/anchoring/range';
+import {AnnotationTargetType} from '@/config/constants';
+import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
+import {highlightRange, removeHighlights} from './highlighting';
 import {MUTATE} from '@/store/types';
+import {sniff} from './hypothesis/anchoring/range';
 
 export class Anchoring {
     /**
@@ -26,11 +28,14 @@ export class Anchoring {
                 case MUTATE.SET_ANNOTATIONS:
                     this.detachAllAnnotations();
                 case MUTATE.ADD_ANNOTATIONS:
-                    this.anchorAnnotations(mutation.payload);
+                    const annotationsToAnchor = filterAnnotationsByTargetType(mutation.payload, AnnotationTargetType.PAGE_SEGMENT);
+                    this.anchorAnnotations(annotationsToAnchor);
                     break;
                 case MUTATE.REMOVE_ANNOTATIONS:
-                    mutation.payload.forEach(annotation => {
-                        this.detachAnnotation(annotation);
+                    filterAnnotationsByTargetType(
+                        mutation.payload, AnnotationTargetType.PAGE_SEGMENT
+                    ).forEach(annotation => {
+                         this.detachAnnotation(annotation);
                     });
             }
         });

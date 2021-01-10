@@ -1,1 +1,5 @@
-export class AnnotationTarget {}
+export class AnnotationTarget {
+    constructor({type}) {
+        this.type = type;
+    }
+}
