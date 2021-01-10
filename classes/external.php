@@ -227,13 +227,14 @@ class mod_page_external extends external_api {
         global $DB;
         $assocconditions = ['annotationid' => $id];
 
-        $DB->start_delegated_transaction();
+        $transaction = $DB->start_delegated_transaction();
         self::delete_page_annotation_targets($assocconditions);
         $DB->delete_records('page_annotation_tags', $assocconditions);
         $DB->delete_records('page_annotation_ratings', $assocconditions);
         $DB->delete_records('page_annotation_views', $assocconditions);
-        $DB->delete_records('page_annotation', ['id' => $id]);
-        $DB->allow_commit();
+        $DB->delete_records('page_annotations', ['id' => $id]);
+        $transaction->allow_commit();
+
     }
 
     /**
@@ -257,17 +258,26 @@ class mod_page_external extends external_api {
 
         $targets = $DB->get_records('page_annotation_targets', $conditions);
         foreach ($targets as $target) {
-            $conditions = ['annotationtargetid' => $target->id];
-            switch ($target->type) {
-                case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
-                    self::delete_page_segments($conditions);
-                    break;
-                case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
-                    $DB->delete_records('page_annot_annot_targets', $conditions);
-                    break;
-            }
+            self::delete_page_annotation_target($target, $conditions, $DB);
         }
         $DB->delete_records('page_annotation_targets', $conditions);
+    }
+
+    /**
+     * @param $target
+     */
+    private static function delete_page_annotation_target($target): void {
+        global $DB;
+
+        $conditions = ['annotationtargetid' => $target->id];
+        switch ($target->type) {
+            case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
+                self::delete_page_segments($conditions);
+                break;
+            case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
+                $DB->delete_records('page_annot_annot_targets', $conditions);
+                break;
+        }
     }
 
     private static function delete_page_segments($conditions) {

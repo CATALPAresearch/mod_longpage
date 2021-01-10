@@ -3,7 +3,6 @@ import {deepLowerCaseKeys} from '@/util/misc';
 import {MoodleWSMethods, SelectorType} from '@/config/constants';
 import {invert, omit, pick} from 'lodash';
 import {PageSegment} from '@/lib/annotation/types/page-segment';
-import {AnnotationBody} from '@/lib/annotation/types/annotation-body';
 
 const SELECTOR_TYPE_MAPPING_CLIENT_TO_SERVER = {
     [SelectorType.TEXT_QUOTE_SELECTOR]: 0,
