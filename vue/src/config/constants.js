@@ -1,4 +1,7 @@
-import {toIdSelector} from '@/util/style';
+export const AnnotationTargetType = {
+    PAGE_SEGMENT: 0,
+    ANNOTATION: 1,
+};
 
 /**
  * The preferred gap between the end of the text selection and the

@@ -1,6 +1,6 @@
 import {Annotation} from '@/lib/annotation/types/annotation';
 import {deepLowerCaseKeys} from '@/util/misc';
-import {MoodleWSMethods, SelectorType} from '@/config/constants';
+import {AnnotationTargetType, MoodleWSMethods, SelectorType} from '@/config/constants';
 import {invert, omit, pick} from 'lodash';
 import {PageSegment} from '@/lib/annotation/types/page-segment';
 
@@ -11,11 +11,6 @@ const SELECTOR_TYPE_MAPPING_CLIENT_TO_SERVER = {
 };
 
 const SELECTOR_TYPE_MAPPING_SERVER_TO_CLIENT = invert(SELECTOR_TYPE_MAPPING_CLIENT_TO_SERVER);
-
-const AnnotationTargetType = {
-    PAGE_SEGMENT: 0,
-    ANNOTATION: 1,
-};
 
 const MappingService = {
     [MoodleWSMethods.CREATE_ANNOTATION](annotation) {
