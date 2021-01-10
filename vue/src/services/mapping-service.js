@@ -74,6 +74,16 @@ const MappingService = {
             userId: annotation.userid,
         }));
     },
+    [MoodleWSMethods.UPDATE_ANNOTATION](annotation) {
+        return deepLowerCaseKeys({
+            annotation: {
+                ...omit(annotation, [
+                    '$orphan', 'isPrivate', 'pageId', 'target', 'timecreated', 'timemodified', 'userId'
+                ]),
+                private: annotation.isPrivate,
+            },
+        });
+    },
     _mapSelectorsClientToServer: function(selectors) {
         return selectors.map(selector => {
             const type = this._mapSelectorTypeClientToServer(selector.type);

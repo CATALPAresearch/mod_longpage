@@ -62,15 +62,11 @@ export default {
                 }
             }]);
         },
-        [ACT.UPDATE_ANNOTATION_BODY]({commit}, annotationUpdate) {
-            const methodname = MoodleWSMethods.UPDATE_ANNOTATION_BODY;
+        [ACT.UPDATE_ANNOTATION]({commit}, annotationUpdate) {
+            const methodname = MoodleWSMethods.UPDATE_ANNOTATION;
             ajax.call([{
                 methodname,
-                args: {
-                    // eslint-disable-next-line camelcase
-                    annotation_id: annotationUpdate.id,
-                    value: annotationUpdate.body,
-                },
+                args: MappingService[methodname](annotationUpdate),
                 done: () => {
                     commit(MUTATE.UPDATE_ANNOTATION, annotationUpdate);
                 },

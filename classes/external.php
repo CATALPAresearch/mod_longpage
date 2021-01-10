@@ -760,10 +760,7 @@ class mod_page_external extends external_api {
      * @since Moodle 3.0
      */
     public static function update_annotation_returns() {
-        return new external_function_parameters([
-            'id' => new external_value(PARAM_INT),
-            self::page_annotation_parameters(true),
-        ]);
+        return null;
     }
 
     private static function update_annotation_tags($tags, $annotationid) {

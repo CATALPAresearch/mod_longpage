@@ -23,11 +23,8 @@
       </div>
       <div class="p-2">
         <div v-if="!isBeingEdited">
-          <p
-            v-for="(b) in annotation.body"
-            :key="b.id"
-          >
-            {{ b.value }}
+          <p>
+            {{ annotation.body }}
           </p>
         </div>
         <textarea
@@ -105,15 +102,13 @@ export default {
           .find(element => element._annotation === this.annotation);
     },
     lastModifiedLocaleDateString() {
-      return DateTimeFormatter.format(new Date(Number(this.annotation.timemodified)));
-      return this.annotation.timemodified === this.annotation.timecreated ?
-          DateTimeFormatter.format(new Date(Number(this.annotation.timemodified))) : '';
+      return this.annotation.timemodified == this.annotation.timecreated ?
+          DateTimeFormatter.format(this.annotation.timemodified) : '';
     },
   },
   methods: {
     closeEditor() {
       this.isBeingEdited = false;
-      this.annotationUpdate = null;
     },
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
@@ -128,10 +123,10 @@ export default {
       document.getElementById(LONGPAGE_TEX_OVERLAY_ID).style.display = 'block';
     },
     addOrUpdateAnnotationBody() {
-      this[ACT.UPDATE_ANNOTATION_BODY](this.annotationUpdate);
+      this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
       this.closeEditor();
     },
-    ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION_BODY]),
+    ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION]),
     ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
   }
 };

@@ -2,6 +2,7 @@ import {AnnotationTarget} from '@/lib/annotation/types/annotation-target';
 
 export class Annotation extends AnnotationTarget {
     constructor({
+        $orphan = false,
         anonymous = false,
         body = '',
         id,
@@ -14,6 +15,7 @@ export class Annotation extends AnnotationTarget {
         userId
     }) {
         super();
+        this.$orphan = $orphan;
         this.anonymous = anonymous;
         this.body = body;
         this.id = id;
