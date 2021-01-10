@@ -111,7 +111,7 @@ class mod_page_external extends external_api {
         $annotation['timecreated'] = time();
         $annotation['timemodified'] = time();
         $annotationid =
-            $DB->insert_record('page_annotations', pick_keys($annotation, ['anonymous', 'body', 'pageid', 'private', 'userid']));
+            $DB->insert_record('page_annotations', omit_keys($annotation, ['target', 'tags']));
         self::create_page_annotation_targets($annotation['target'], $annotationid);
         $DB->insert_records('page_annotation_tags', array_map_merge($annotation['tags'], ['annotationid' => $annotationid]));
         $transaction->allow_commit();
@@ -127,12 +127,13 @@ class mod_page_external extends external_api {
      */
     public static function create_page_annotation_parameters() {
         return new external_function_parameters([
-            'annotation' => new external_single_structure([
+            'annotation' => new external_single_structure(array_merge([
                 'pageid' => new external_value(PARAM_INT),
                 'userid' => new external_value(PARAM_INT),
-                self::page_annotation_parameters(),
-                self::page_annotation_target_parameters(),
-            ])
+                'target' => new external_multiple_structure(
+                    self::page_annotation_target_parameters(),
+                ),
+            ], self::page_annotation_parameters()))
         ]);
     }
 
