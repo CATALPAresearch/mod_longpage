@@ -21,7 +21,7 @@ const MappingService = {
     [MoodleWSMethods.CREATE_ANNOTATION](annotation) {
         return deepLowerCaseKeys({
             annotation: {
-                ...omit(annotation, ['id', 'isPrivate', 'timecreated', 'timemodified']),
+                ...omit(annotation, ['$orphan', 'id', 'isPrivate', 'timecreated', 'timemodified']),
                 private: annotation.isPrivate,
                 target: annotation.target.map(target => (target instanceof PageSegment ? {
                     type: AnnotationTargetType.PAGE_SEGMENT,

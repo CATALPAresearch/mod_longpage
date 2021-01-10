@@ -1,0 +1,28 @@
+{
+  "de": {
+    "time": {
+      "hour": "numeric",
+      "minute": "numeric"
+    },
+    "dateTime": {
+      "hour": "numeric",
+      "minute": "numeric",
+      "month": "short",
+      "day": "numeric",
+      "year": "numeric"
+    },
+    "dateTimeWithoutCentury": {
+      "hour": "numeric",
+      "minute": "numeric",
+      "month": "short",
+      "day": "numeric",
+      "year": "2-digit"
+    },
+    "dateTimeWithoutYear": {
+      "hour": "numeric",
+      "minute": "numeric",
+      "month": "short",
+      "day": "numeric"
+    }
+  }
+}

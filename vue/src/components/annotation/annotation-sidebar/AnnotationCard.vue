@@ -6,10 +6,12 @@
   >
     <div class="card-body text-dark p-2">
       <div class="font-weight-lighter mb-1 text-right text-small">
-        {{ $t('annotationSidebar.annotationCard.created') }} {{ createdLocaleDateString }}
-        <span v-if="createdLocaleDateString !== lastModifiedLocaleDateString">
+        {{ $t('annotationSidebar.annotationCard.created') }}
+        <date-time-text :date-time="annotation.timecreated" />
+        <span v-if="annotation.timecreated !== annotation.timemodified">
           <span class="font-italic">
-            ({{ $t('annotationSidebar.annotationCard.lastModified') }} {{ lastModifiedLocaleDateString }})
+            ({{ $t('annotationSidebar.annotationCard.lastModified') }}
+            <date-time-text :date-time="annotation.timemodified" />)
           </span>
         </span>
       </div>
@@ -22,11 +24,7 @@
         </span>
       </div>
       <div class="p-2">
-        <div v-if="!isBeingEdited">
-          <p>
-            {{ annotation.body }}
-          </p>
-        </div>
+        <span v-if="!isBeingEdited">{{ annotation.body }}</span>
         <textarea
           v-else
           v-model="annotationUpdate.body"
@@ -57,7 +55,7 @@
           <font-awesome-icon
             class="ml-1"
             icon="save"
-            @click.stop="addOrUpdateAnnotationBody"
+            @click.stop="updateAnnotation"
           />
         </div>
       </div>
@@ -69,13 +67,16 @@
 import {ACT, MUTATE} from '@/store/types';
 import {Annotation} from '@/lib/annotation/types/annotation';
 import {cloneDeep} from 'lodash';
-import {DateTimeFormatter} from '@/config/i18n';
+import DateTimeText from '@/components/DateTimeText';
 import {HighlightingConfig, LONGPAGE_TEX_OVERLAY_ID, SelectorType} from '@/config/constants';
 import {mapActions, mapMutations} from 'vuex';
 import scrollIntoView from 'scroll-into-view';
 
 export default {
   name: 'AnnotationCard',
+  components: {
+    DateTimeText,
+  },
   props: {
     annotation: {type: Annotation, required: true},
   },
@@ -89,26 +90,18 @@ export default {
     annotationTarget() {
       return this.annotation.target[0];
     },
-    createdLocaleDateString() {
-      return DateTimeFormatter.format(this.annotation.timecreated);
-    },
     highlightedText() {
       const textQuoteSelector = this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
       return textQuoteSelector ? textQuoteSelector.exact : '';
     },
     highlightHTMLElement() {
-      return Array
-          .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
-          .find(element => element._annotation === this.annotation);
-    },
-    lastModifiedLocaleDateString() {
-      return this.annotation.timemodified == this.annotation.timecreated ?
-          DateTimeFormatter.format(this.annotation.timemodified) : '';
+      return Array.from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME)).find(element => element._annotation === this.annotation);
     },
   },
   methods: {
     closeEditor() {
       this.isBeingEdited = false;
+      this.annotationUpdate = null;
     },
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
@@ -122,7 +115,7 @@ export default {
       scrollIntoView(this.highlightHTMLElement);
       document.getElementById(LONGPAGE_TEX_OVERLAY_ID).style.display = 'block';
     },
-    addOrUpdateAnnotationBody() {
+    updateAnnotation() {
       this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
       this.closeEditor();
     },
