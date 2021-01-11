@@ -1,19 +1,26 @@
 <template>
-  <div id="annotation-sidebar">
+  <div
+    id="annotation-sidebar"
+    class="p-4"
+  >
     <h2
       id="annotation-sidebar-heading"
-      class="mt-4 mx-4"
     >
       {{ $t('annotationSidebar.heading') }}
     </h2>
-    <div id="annotation-card-container">
+    <div
+      v-if="annotationsOrderedByTextPosition.length"
+      id="annotation-card-container"
+    >
       <annotation-card
         v-for="annotation in annotationsOrderedByTextPosition"
         :key="annotation.id"
-        class="m-4"
         :annotation="annotation"
       />
     </div>
+    <p v-else>
+      {{ $t('annotationSidebar.notYetCreatedAnnotations') }}
+    </p>
   </div>
 </template>
 
