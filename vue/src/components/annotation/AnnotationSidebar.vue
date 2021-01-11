@@ -16,6 +16,7 @@
         v-for="annotation in annotationsOrderedByTextPosition"
         :key="annotation.id"
         :annotation="annotation"
+        class="my-4"
       />
     </div>
     <p v-else>
