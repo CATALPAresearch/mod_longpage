@@ -25,7 +25,11 @@ export default {
             return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.ANNOTATION);
         },
         [GET.RESPONSES_TO]: (_, getters) => (annotationId) => {
-            return getters[GET.ANNOTATIONS_TARGETING_ANNOTATION].find(annotation => annotation.id === annotationId);
+            return getters[GET.ANNOTATIONS_TARGETING_ANNOTATION].filter(
+                annotation => annotation.target.some(
+                    ({annotationId: otherAnnotationId}) => otherAnnotationId === annotationId
+                )
+            );
         },
     },
     actions: {

@@ -25,7 +25,7 @@ const MappingService = {
                     styleclass: target.styleclass,
                 } : {
                     type: AnnotationTargetType.ANNOTATION,
-                    annotationid: target.id,
+                    annotationid: target.annotationId,
                 })),
             },
         });

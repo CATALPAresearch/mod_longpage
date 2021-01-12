@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import AnnotationCard from './annotation-sidebar/AnnotationCard.vue';
+import AnnotationCard from './sidebar/AnnotationCard.vue';
 import {mapGetters} from 'vuex';
 import {GET} from '@/store/types';
 import {SelectorType} from '@/config/constants';
@@ -55,7 +55,7 @@ export default {
       return Array.from(this.annotations).sort(AnnotationSortingFunction.BY_POSITION);
     },
     ...mapGetters({
-      annotations: GET.ANNOTATIONS,
+      annotations: GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT,
       selectedHighlights: GET.SELECTED_HIGHLIGHTS,
     }),
   },
