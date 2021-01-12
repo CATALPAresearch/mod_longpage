@@ -6,6 +6,8 @@ export class Annotation {
         id,
         isPrivate = false,
         pageId,
+        rating,
+        ratingByUser,
         tags = [],
         target = [],
         timecreated = new Date(),
@@ -18,6 +20,8 @@ export class Annotation {
         this.id = id;
         this.isPrivate = isPrivate;
         this.pageId = pageId;
+        this.rating = rating;
+        this.ratingByUser = ratingByUser;
         this.tags = tags;
         this.target = target;
         this.timecreated = timecreated;

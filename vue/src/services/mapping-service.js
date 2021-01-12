@@ -33,6 +33,7 @@ const MappingService = {
     [MoodleWSMethods.GET_ANNOTATIONS](annotations) {
         return annotations.map(annotation => new Annotation({
             ...pick(annotation, ['anonymous', 'body', 'id', 'rating', 'tags']),
+            ratingByUser: 1, // TODO: Replace mock with api
             isPrivate: annotation.private,
             pageId: annotation.pageid,
             target: annotation.target.map(t => {
@@ -68,6 +69,7 @@ const MappingService = {
             timecreated: this._mapTimeServerToClient(annotation.timecreated),
             timemodified: this._mapTimeServerToClient(annotation.timemodified),
             userId: annotation.userid,
+            views: 120, // TODO: Replace mock with api; Number of users who viewed it vs. number of views, what counts as a view?
         }));
     },
     [MoodleWSMethods.UPDATE_ANNOTATION](annotation) {
