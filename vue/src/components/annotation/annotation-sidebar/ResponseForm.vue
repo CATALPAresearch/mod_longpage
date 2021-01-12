@@ -1,7 +1,7 @@
 <template>
   <div class="row no-gutters align-items-center">
     <div class="col col-auto p-0">
-      <avatar
+      <user-avatar
         :name="respondent.name"
         :picture="respondent.picture"
         :profile="respondent.profile"
@@ -28,12 +28,12 @@
 </template>
 
 <script>
-import Avatar from '@/components/Avatar';
+import UserAvatar from '@/components/UserAvatar';
 
 export default {
-  name: 'FormResponse',
+  name: 'ResponseForm',
   components: {
-    Avatar,
+    UserAvatar,
   },
   props: {
     respondent: {type: Object, required: true},

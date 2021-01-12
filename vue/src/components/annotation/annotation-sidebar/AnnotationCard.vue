@@ -13,7 +13,7 @@
         class="my-2"
         :annotation="response"
       />
-      <form-response :respondent="author" />
+      <response-form :respondent="author" />
     </div>
   </div>
 </template>
@@ -23,12 +23,12 @@ import {Annotation} from '@/lib/annotation/types/Annotation';
 import AnnotationComponent from './AnnotationComponent';
 import {GET} from '@/store/types';
 import {mapGetters} from 'vuex';
-import FormResponse from '@/components/annotation/annotation-sidebar/FormResponse';
+import ResponseForm from '@/components/annotation/annotation-sidebar/ResponseForm';
 
 export default {
   name: 'AnnotationCard',
   components: {
-    FormResponse,
+    ResponseForm,
     AnnotationComponent,
   },
   props: {

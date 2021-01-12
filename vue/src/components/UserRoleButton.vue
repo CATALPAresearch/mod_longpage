@@ -9,7 +9,7 @@
 
 <script>
   export default {
-  name: 'UserRole',
+  name: 'UserRoleButton',
     props: {
       role: {type: String, required: true},
       href: {type: String},

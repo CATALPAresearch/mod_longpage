@@ -1,7 +1,7 @@
 <template>
   <div class="row no-gutters">
     <div class="col col-auto p-0">
-      <avatar
+      <user-avatar
         :name="author.name"
         :picture="author.picture"
         :profile="author.profile"
@@ -14,7 +14,7 @@
             class="mr-1 align-middle"
             :href="author.profile"
           >{{ author.name }}</a>
-          <btn-user-role
+          <user-role-button
             :role="author.role"
             :href="author.roleOverview"
           />
@@ -61,11 +61,11 @@
           <div>
             <div class="text-small">
               {{ $t('annotationCard.created') }}
-              <text-date-time :date-time="annotation.timecreated" />
+              <date-time-text :date-time="annotation.timecreated" />
               <span v-if="annotation.timecreated.getTime() !== annotation.timemodified.getTime()">
                 <span class="font-italic">
                   ({{ $t('annotationCard.modified') }}
-                  <text-date-time :date-time="annotation.timemodified" />)
+                  <date-time-text :date-time="annotation.timemodified" />)
                 </span>
               </span>
             </div>
@@ -104,19 +104,19 @@
 import {ACT, MUTATE} from '@/store/types';
 import {Annotation} from '@/lib/annotation/types/annotation';
 import {cloneDeep} from 'lodash';
-import TextDateTime from '@/components/TextDateTime';
+import DateTimeText from '@/components/DateTimeText';
 import {HighlightingConfig, SCROLL_INTO_VIEW_OPTIONS, SelectorType} from '@/config/constants';
 import {mapActions, mapMutations} from 'vuex';
 import scrollIntoView from 'scroll-into-view-if-needed';
-import Avatar from '@/components/Avatar';
-import BtnUserRole from '@/components/BtnUserRole';
+import UserAvatar from '@/components/UserAvatar';
+import UserRoleButton from '@/components/UserRoleButton';
 
 export default {
   name: 'AnnotationCard',
   components: {
-    Avatar,
-    BtnUserRole,
-    TextDateTime,
+    UserAvatar,
+    UserRoleButton,
+    DateTimeText,
   },
   props: {
     annotation: {type: Annotation, required: true},
