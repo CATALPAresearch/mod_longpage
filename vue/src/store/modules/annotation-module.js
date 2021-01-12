@@ -19,10 +19,10 @@ export default {
                 .filter(element => selectedAnnotations.includes(element._annotation));
         },
         [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT]: (_, getters) => {
-            filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.PAGE_SEGMENT);
+            return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.PAGE_SEGMENT);
         },
         [GET.ANNOTATIONS_TARGETING_ANNOTATION]: (_, getters) => {
-            filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.ANNOTATION);
+            return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.ANNOTATION);
         },
         [GET.RESPONSES_TO]: (_, getters) => (annotationId) => {
             return getters[GET.ANNOTATIONS_TARGETING_ANNOTATION].find(annotation => annotation.id === annotationId);
