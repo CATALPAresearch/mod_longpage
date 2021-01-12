@@ -160,7 +160,10 @@ class mod_page_external extends external_api {
                     self::create_segment(pick_keys($target, ['selector', 'styleclass']), $target['id']);
                     break;
                 case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
-                    $DB->insert_record('page_annot_annot_targets', ['annotationid' => $annotationid, 'targetid' => $target['id']]);
+                    $DB->insert_record(
+                        'page_annot_annot_targets',
+                        ['annotationid' => $target['annotationid'], 'annotationtargetid' => $target['id']]
+                    );
                     break;
             }
 
@@ -394,7 +397,7 @@ class mod_page_external extends external_api {
                     return object_merge(self::get_page_segment($targetid), $result);
                 case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
                     return object_merge(
-                        $DB->get_record('page_annot_annot_targets', ['targetid' => $targetid], 'annotationid'),
+                        $DB->get_record('page_annot_annot_targets', ['annotationtargetid' => $targetid], 'annotationid'),
                         $result
                     );
             }
