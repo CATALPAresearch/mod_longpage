@@ -1,10 +1,13 @@
 {
+  "annotationCard": {
+    "created": "erstellt",
+    "modified": "bearbeitet"
+  },
   "annotationSidebar": {
     "heading": "Annotationen",
-    "annotationCard": {
-      "created": "erstellt",
-      "lastModified": "zuletzt bearbeitet"
-    },
     "notYetCreatedAnnotations": "Es wurden bisher noch keine Annotationen erstellt. Wählen Sie eine Textpassage aus, um eine Annotation zu erstellen."
+  },
+  "avatar": {
+    "pictureAlt": "Profilbild von {name}"
   }
 }

@@ -1,128 +1,53 @@
 <template>
   <div
     :id="`annotation-card-${annotation.id}`"
-    class="annotation-card border-secondary card hvr-glow"
-    @click.stop="selectAnnotation"
+    class="annotation-card border-secondary card"
   >
-    <div class="card-body text-dark p-2">
-      <div class="font-weight-lighter mb-1 text-right text-small">
-        {{ $t('annotationSidebar.annotationCard.created') }}
-        <date-time-text :date-time="annotation.timecreated" />
-        <span v-if="annotation.timecreated !== annotation.timemodified">
-          <span class="font-italic">
-            ({{ $t('annotationSidebar.annotationCard.lastModified') }}
-            <date-time-text :date-time="annotation.timemodified" />)
-          </span>
-        </span>
-      </div>
-      <div class="mb-1 p-2">
-        <span
-          class="font-italic longpage-highlight text-small"
-          :class="annotationTarget.styleclass"
-        >
-          {{ highlightedText }}
-        </span>
-      </div>
-      <div class="p-2">
-        <span v-if="!isBeingEdited">{{ annotation.body }}</span>
-        <textarea
-          v-else
-          v-model="annotationUpdate.body"
-          class="form-control"
-          rows="3"
-          @click.stop=""
-        />
-      </div>
-      <div class="annotation-actions card-actions text-right">
-        <div v-if="!isBeingEdited">
-          <font-awesome-icon
-            class="ml-1"
-            icon="trash"
-            @click.stop="deleteAnnotation"
-          />
-          <font-awesome-icon
-            class="ml-1"
-            icon="pen"
-            @click.stop="openEditor"
-          />
-        </div>
-        <div v-else>
-          <font-awesome-icon
-            class="ml-1"
-            icon="times"
-            @click.stop="closeEditor"
-          />
-          <font-awesome-icon
-            class="ml-1"
-            icon="save"
-            @click.stop="updateAnnotation"
-          />
-        </div>
-      </div>
+    <div class="card-body text-dark">
+      <annotation-component :annotation="annotation" />
+    </div>
+    <div class="card-footer">
+      <annotation-component
+        v-for="response in responses"
+        :key="response.id * 17"
+        class="my-2"
+        :annotation="response"
+      />
+      <form-response :respondent="author" />
     </div>
   </div>
 </template>
 
 <script>
-import {ACT, MUTATE} from '@/store/types';
-import {Annotation} from '@/lib/annotation/types/annotation';
-import {cloneDeep} from 'lodash';
-import DateTimeText from '@/components/DateTimeText';
-import {HighlightingConfig, LONGPAGE_TEXT_OVERLAY_ID, SCROLL_INTO_VIEW_OPTIONS, SelectorType} from '@/config/constants';
-import {mapActions, mapMutations} from 'vuex';
-import scrollIntoView from 'scroll-into-view-if-needed';
+import {Annotation} from '@/lib/annotation/types/Annotation';
+import AnnotationComponent from './AnnotationComponent';
+import {GET} from '@/store/types';
+import {mapGetters} from 'vuex';
+import FormResponse from '@/components/annotation/annotation-sidebar/FormResponse';
 
 export default {
   name: 'AnnotationCard',
   components: {
-    DateTimeText,
+    FormResponse,
+    AnnotationComponent,
   },
   props: {
     annotation: {type: Annotation, required: true},
   },
-  data() {
-    return {
-      isBeingEdited: false,
-      annotationUpdate: null,
-    };
-  },
   computed: {
-    annotationTarget() {
-      return this.annotation.target[0];
+    responses() {
+      return this[GET.RESPONSES_TO](this.annotation.id);
     },
-    highlightedText() {
-      const textQuoteSelector = this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
-      return textQuoteSelector ? textQuoteSelector.exact : '';
+    ...mapGetters([GET.RESPONSES_TO]),
+    author() {
+      return {
+        name: 'Jens-Christian Dobbert',
+        picture: 'https://moodle-wrm.fernuni-hagen.de/pluginfile.php/4462/user/icon/feu_clean/f2?rev=577610',
+        profile: 'https://moodle-wrm.fernuni-hagen.de/user/view.php?id=92&amp;course=2435',
+        role: 'Betreuer/in',
+        roleOverview: 'https://moodle-wrm.fernuni-hagen.de/user/index.php?contextid=195391&roleid=3',
+      };
     },
-  },
-  methods: {
-    closeEditor() {
-      this.isBeingEdited = false;
-    },
-    deleteAnnotation() {
-      this[ACT.DELETE_ANNOTATION](this.annotation);
-    },
-    getHighlightHTMLElement() {
-      return Array
-          .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
-          .find(element => element._annotation.id === this.annotation.id);
-    },
-    openEditor() {
-      this.isBeingEdited = true;
-      this.annotationUpdate = cloneDeep(this.annotation);
-    },
-    selectAnnotation() {
-      this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
-      scrollIntoView(this.getHighlightHTMLElement(), SCROLL_INTO_VIEW_OPTIONS);
-      // Document.getElementById(LONGPAGE_TEXT_OVERLAY_ID).style.display = 'block';
-      // TODO: Reintroduce and fix overlay (overlays every highlight) or introduce other form of highlighting annotation selected
-    },
-    updateAnnotation() {
-      this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
-      this.closeEditor();
-    },
-    ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION]),
-    ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
   }
 };
 </script>
@@ -130,9 +55,5 @@ export default {
 <style lang="scss" scoped>
   .card {
     display: block;
-
-    &:hover {
-      cursor: pointer;
-    }
   }
 </style>
