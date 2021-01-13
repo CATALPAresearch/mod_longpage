@@ -88,7 +88,10 @@
       <div class="row no-gutters my-1">
         <div class="col col-12 p-0">
           <div>
-            <span v-if="!isBeingEdited">{{ annotation.body }}</span>
+            <span
+              v-if="!isBeingEdited"
+              ref="annotationBody"
+            >{{ annotation.body }}</span>
             <textarea
               v-else
               v-model="annotationUpdate.body"
@@ -112,6 +115,7 @@ import {SelectorType} from '@/config/constants';
 import {mapActions, mapGetters} from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
 import UserRoleButton from '@/components/UserRoleButton';
+import Y from 'core/yui';
 
 /*
   TODO:
@@ -150,9 +154,20 @@ export default {
     },
     ...mapGetters([GET.USER]),
   },
+  mounted() {
+    this.applyMathjaxFilterToBody();
+  },
   methods: {
+    applyMathjaxFilterToBody() {
+      Y.use('mathjax', () => {
+        MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.annotationBody]);
+      });
+    },
     closeEditor() {
       this.isBeingEdited = false;
+      this.$nextTick(() => {
+       this.applyMathjaxFilterToBody();
+      });
     },
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
@@ -161,7 +176,6 @@ export default {
       this.isBeingEdited = true;
       this.annotationUpdate = cloneDeep(this.annotation);
     },
-
     updateAnnotation() {
       this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
       this.closeEditor();

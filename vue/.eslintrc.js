@@ -7,6 +7,9 @@ module.exports = {
         'eslint:recommended',
         'plugin:vue/vue3-recommended',
     ],
+    globals: {
+        MathJax: 'readonly',
+    },
     rules: {
         'no-console': ['error', {allow: ['warn', 'error']}],
         'quote-props': ['error', 'as-needed'],
