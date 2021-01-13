@@ -72,7 +72,10 @@
           </div>
         </div>
       </div>
-      <div class="row no-gutters my-1">
+      <div
+        v-if="highlightedText"
+        class="row no-gutters my-1"
+      >
         <div class="col col-auto p-0">
           <span
             class="font-italic longpage-highlight text-small"
