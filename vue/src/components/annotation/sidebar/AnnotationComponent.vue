@@ -77,12 +77,11 @@
         class="row no-gutters my-1"
       >
         <div class="col col-auto p-0">
-          <span
-            class="font-italic longpage-highlight text-small"
-            :class="annotationTarget.styleclass"
-          >
-            {{ highlightedText }}
-          </span>
+          <expandable-highlight-excerpt
+            :highlighted-text="highlightedText"
+            :highlight-style-class="annotationTarget.styleclass"
+            @highlight-clicked="selectAnnotation"
+          />
         </div>
       </div>
       <div class="row no-gutters my-1">
@@ -107,15 +106,17 @@
 </template>
 
 <script>
-import {ACT, GET} from '@/store/types';
+import {ACT, GET, MUTATE} from '@/store/types';
 import {Annotation} from '@/lib/annotation/types/annotation';
 import {cloneDeep} from 'lodash';
 import DateTimeText from '@/components/DateTimeText';
-import {SelectorType} from '@/config/constants';
-import {mapActions, mapGetters} from 'vuex';
+import {AnnotationTargetType, HighlightingConfig, SCROLL_INTO_VIEW_OPTIONS, SelectorType} from '@/config/constants';
+import {mapActions, mapGetters, mapMutations} from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
 import UserRoleButton from '@/components/UserRoleButton';
 import Y from 'core/yui';
+import scrollIntoView from 'scroll-into-view-if-needed';
+import ExpandableHighlightExcerpt from '@/components/annotation/sidebar/ExpandableHighlightExcerpt';
 
 /*
   TODO:
@@ -128,9 +129,10 @@ import Y from 'core/yui';
 export default {
   name: 'AnnotationCard',
   components: {
+    DateTimeText,
+    ExpandableHighlightExcerpt,
     UserAvatar,
     UserRoleButton,
-    DateTimeText,
   },
   props: {
     annotation: {type: Annotation, required: true},
@@ -149,8 +151,12 @@ export default {
       return this[GET.USER](this.annotation.userId);
     },
     highlightedText() {
-      const textQuoteSelector = this.annotationTarget.selector ? this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR) : undefined;
-      return textQuoteSelector ? textQuoteSelector.exact : '';
+      return this.textQuoteSelector && this.textQuoteSelector.exact;
+    },
+    textQuoteSelector() {
+      if (this.annotationTarget.type !== AnnotationTargetType.PAGE_SEGMENT) return;
+
+      return this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
     },
     ...mapGetters([GET.USER]),
   },
@@ -180,6 +186,18 @@ export default {
       this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
       this.closeEditor();
     },
+    getHighlightHTMLElement() {
+      return Array
+          .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
+          .find(element => element._annotation.id === this.annotation.id);
+    },
+    selectAnnotation() {
+      this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
+      scrollIntoView(this.getHighlightHTMLElement(), SCROLL_INTO_VIEW_OPTIONS);
+      // Document.getElementById(LONGPAGE_TEXT_OVERLAY_ID).style.display = 'block';
+      // TODO: Reintroduce and fix overlay (overlays every highlight) or introduce other form of highlighting annotation selected
+    },
+    ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
     ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION]),
   }
 };

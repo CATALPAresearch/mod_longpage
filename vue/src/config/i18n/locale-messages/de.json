@@ -1,7 +1,9 @@
 {
   "annotationCard": {
     "created": "erstellt",
-    "modified": "bearbeitet"
+    "less": "Weniger",
+    "modified": "bearbeitet",
+    "more": "Mehr"
   },
   "annotationSidebar": {
     "heading": "Annotationen",
