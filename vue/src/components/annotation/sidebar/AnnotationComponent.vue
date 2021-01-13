@@ -104,13 +104,12 @@
 </template>
 
 <script>
-import {ACT, GET, MUTATE} from '@/store/types';
+import {ACT, GET} from '@/store/types';
 import {Annotation} from '@/lib/annotation/types/annotation';
 import {cloneDeep} from 'lodash';
 import DateTimeText from '@/components/DateTimeText';
-import {HighlightingConfig, SCROLL_INTO_VIEW_OPTIONS, SelectorType} from '@/config/constants';
-import {mapActions, mapGetters, mapMutations} from 'vuex';
-import scrollIntoView from 'scroll-into-view-if-needed';
+import {SelectorType} from '@/config/constants';
+import {mapActions, mapGetters} from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
 import UserRoleButton from '@/components/UserRoleButton';
 
@@ -158,27 +157,16 @@ export default {
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
     },
-    getHighlightHTMLElement() {
-      return Array
-          .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
-          .find(element => element._annotation.id === this.annotation.id);
-    },
     openEditor() {
       this.isBeingEdited = true;
       this.annotationUpdate = cloneDeep(this.annotation);
     },
-    selectAnnotation() {
-      this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
-      scrollIntoView(this.getHighlightHTMLElement(), SCROLL_INTO_VIEW_OPTIONS);
-      // Document.getElementById(LONGPAGE_TEXT_OVERLAY_ID).style.display = 'block';
-      // TODO: Reintroduce and fix overlay (overlays every highlight) or introduce other form of highlighting annotation selected
-    },
+
     updateAnnotation() {
       this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
       this.closeEditor();
     },
     ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION]),
-    ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
   }
 };
 </script>

@@ -2,6 +2,7 @@
   <div
     :id="`annotation-card-${annotation.id}`"
     class="annotation-card border-secondary card"
+    @click.stop="selectAnnotation"
   >
     <div class="card-body text-dark">
       <annotation-component :annotation="annotation" />
@@ -23,9 +24,11 @@
 <script>
 import {Annotation} from '@/lib/annotation/types/annotation';
 import AnnotationComponent from './AnnotationComponent';
-import {GET} from '@/store/types';
-import {mapGetters} from 'vuex';
+import {GET, MUTATE} from '@/store/types';
+import {mapGetters, mapMutations} from 'vuex';
 import ResponseForm from '@/components/annotation/sidebar/ResponseForm';
+import scrollIntoView from 'scroll-into-view-if-needed';
+import {HighlightingConfig, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
 
 export default {
   name: 'AnnotationCard',
@@ -50,6 +53,20 @@ export default {
         roleOverview: 'https://moodle-wrm.fernuni-hagen.de/user/index.php?contextid=195391&roleid=3',
       };
     },
+  },
+  methods: {
+    getHighlightHTMLElement() {
+      return Array
+          .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
+          .find(element => element._annotation.id === this.annotation.id);
+    },
+    selectAnnotation() {
+      this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
+      scrollIntoView(this.getHighlightHTMLElement(), SCROLL_INTO_VIEW_OPTIONS);
+      // Document.getElementById(LONGPAGE_TEXT_OVERLAY_ID).style.display = 'block';
+      // TODO: Reintroduce and fix overlay (overlays every highlight) or introduce other form of highlighting annotation selected
+    },
+    ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
   }
 };
 </script>
