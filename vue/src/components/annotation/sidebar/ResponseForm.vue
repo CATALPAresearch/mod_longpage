@@ -13,7 +13,7 @@
           :id="inputId"
           v-model="responseBody"
           class="form-control"
-          placeholder="Antworte"
+          :placeholder="$t('responseForm.placeholder')"
           rows="1"
           @keydown.enter.meta="onSubmit"
         />

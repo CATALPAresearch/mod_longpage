@@ -1,7 +1,7 @@
 {
   "annotationCard": {
     "created": "erstellt",
-    "modified": "bearbeitet"
+    "modified": "bearbeitet",
   },
   "annotationSidebar": {
     "heading": "Annotationen",
@@ -9,5 +9,8 @@
   },
   "avatar": {
     "pictureAlt": "Profilbild von {name}"
+  },
+  "responseForm": {
+    "placeholder": "Antworte"
   }
 }
