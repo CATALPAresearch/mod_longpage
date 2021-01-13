@@ -2,9 +2,8 @@
   <div class="row no-gutters">
     <div class="col col-auto p-0">
       <user-avatar
-        :name="author.name"
-        :picture="author.picture"
-        :profile="author.profile"
+        :fullname="author.fullname"
+        :profile-image="author.profileimage"
       />
     </div>
     <div class="col p-0">
@@ -12,9 +11,10 @@
         <div class="col p-0">
           <a
             class="mr-1 align-middle"
-            :href="author.profile"
-          >{{ author.name }}</a>
+            href="#"
+          >{{ author.fullname }}</a>
           <user-role-button
+            v-if="author.role"
             :role="author.role"
             :href="author.roleOverview"
           />
@@ -101,15 +101,23 @@
 </template>
 
 <script>
-import {ACT, MUTATE} from '@/store/types';
+import {ACT, GET, MUTATE} from '@/store/types';
 import {Annotation} from '@/lib/annotation/types/annotation';
 import {cloneDeep} from 'lodash';
 import DateTimeText from '@/components/DateTimeText';
 import {HighlightingConfig, SCROLL_INTO_VIEW_OPTIONS, SelectorType} from '@/config/constants';
-import {mapActions, mapMutations} from 'vuex';
+import {mapActions, mapGetters, mapMutations} from 'vuex';
 import scrollIntoView from 'scroll-into-view-if-needed';
 import UserAvatar from '@/components/UserAvatar';
 import UserRoleButton from '@/components/UserRoleButton';
+
+/*
+  TODO:
+    - Add to user info:
+      - profile,
+      - role,
+      - roleOverview.
+ */
 
 export default {
   name: 'AnnotationCard',
@@ -128,22 +136,17 @@ export default {
     };
   },
   computed: {
-    author() {
-      return {
-        name: 'Jens-Christian Dobbert',
-        picture: 'https://moodle-wrm.fernuni-hagen.de/pluginfile.php/4462/user/icon/feu_clean/f2?rev=577610',
-        profile: 'https://moodle-wrm.fernuni-hagen.de/user/view.php?id=92&amp;course=2435',
-        role: 'Betreuer/in',
-        roleOverview: 'https://moodle-wrm.fernuni-hagen.de/user/index.php?contextid=195391&roleid=3',
-      };
-    },
     annotationTarget() {
       return this.annotation.target[0];
+    },
+    author() {
+      return this[GET.USER](this.annotation.userId);
     },
     highlightedText() {
       const textQuoteSelector = this.annotationTarget.selector ? this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR) : undefined;
       return textQuoteSelector ? textQuoteSelector.exact : '';
     },
+    ...mapGetters([GET.USER]),
   },
   methods: {
     closeEditor() {

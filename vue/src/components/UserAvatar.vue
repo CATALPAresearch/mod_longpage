@@ -3,12 +3,12 @@
     :href="profile"
   >
     <img
-      :src="picture"
+      :src="profileImage"
       class="userpicture"
       width="35"
       height="35"
-      :alt="$t('annotationCard.authorPictureAlt', {name})"
-      :title="$t('annotationCard.authorPictureAlt', {name})"
+      :alt="$t('annotationCard.authorPictureAlt', {fullname})"
+      :title="$t('annotationCard.authorPictureAlt', {fullname})"
     >
   </a>
 </template>
@@ -17,9 +17,9 @@
   export default {
   name: 'Avatar',
     props: {
-      profile: {type: String},
-      picture: {type: String},
-      name: {type: String},
+      profile: {type: String, default: '#'},
+      profileImage: {type: String, required: true},
+      fullname: {type: String, required: true},
     }
   };
 </script>

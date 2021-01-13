@@ -2,9 +2,8 @@
   <div class="row no-gutters align-items-center">
     <div class="col col-auto p-0">
       <user-avatar
-        :name="user.fullname"
-        :picture="user.profileimage"
-        :profile="''"
+        :fullname="respondent.fullname"
+        :profile-image="respondent.profileimage"
       />
     </div>
     <div class="col p-0">
@@ -40,7 +39,6 @@ import {toIdSelector} from '@/util/style';
 import UserAvatar from '@/components/UserAvatar';
 import {TargetAnnotationReference} from '@/lib/annotation/types/target-annotation-reference';
 
-// TODO: Add user profile link
 export default {
   name: 'ResponseForm',
   components: {
@@ -58,13 +56,13 @@ export default {
     inputId() {
       return `annotation-response-input-${this.annotationId}`;
     },
+    respondent() {
+      return this[GET.USER]();
+    },
     textareaHTMLElement() {
       return document.querySelector(toIdSelector(this.inputId));
     },
-    ...mapGetters({
-        [GET.LONGPAGE_CONTEXT]: GET.LONGPAGE_CONTEXT,
-        user: GET.USER
-    }),
+    ...mapGetters([GET.LONGPAGE_CONTEXT, GET.USER]),
   },
   mounted() {
     autosize(this.textareaHTMLElement);
