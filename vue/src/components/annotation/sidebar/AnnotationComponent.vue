@@ -21,39 +21,39 @@
         </div>
 
         <div class="col col-auto p-0">
-          <font-awesome-icon icon="ellipsis-v" />
-          <!--              <div class="annotation-actions text-right">-->
-          <!--                <div-->
-          <!--                  v-if="!isBeingEdited"-->
-          <!--                  class="d-flex justify-content-between"-->
-          <!--                >-->
-          <!--                  <font-awesome-icon-->
-          <!--                    class="ml-1"-->
-          <!--                    icon="trash"-->
-          <!--                    @click.stop="deleteAnnotation"-->
-          <!--                  />-->
-          <!--                  <font-awesome-icon-->
-          <!--                    class="ml-1"-->
-          <!--                    icon="pen"-->
-          <!--                    @click.stop="openEditor"-->
-          <!--                  />-->
-          <!--                </div>-->
-          <!--                <div-->
-          <!--                  v-else-->
-          <!--                  class="d-flex justify-content-between"-->
-          <!--                >-->
-          <!--                  <font-awesome-icon-->
-          <!--                    class="ml-1"-->
-          <!--                    icon="times"-->
-          <!--                    @click.stop="closeEditor"-->
-          <!--                  />-->
-          <!--                  <font-awesome-icon-->
-          <!--                    class="ml-1"-->
-          <!--                    icon="save"-->
-          <!--                    @click.stop="updateAnnotation"-->
-          <!--                  />-->
-          <!--                </div>-->
-          <!--              </div>-->
+          <!--          <font-awesome-icon icon="ellipsis-v" />-->
+          <div class="annotation-actions text-right">
+            <div
+              v-if="!isBeingEdited"
+              class="d-flex justify-content-between"
+            >
+              <font-awesome-icon
+                class="ml-1"
+                icon="trash"
+                @click.stop="deleteAnnotation"
+              />
+              <font-awesome-icon
+                class="ml-1"
+                icon="pen"
+                @click.stop="openEditor"
+              />
+            </div>
+            <div
+              v-else
+              class="d-flex justify-content-between"
+            >
+              <font-awesome-icon
+                class="ml-1"
+                icon="times"
+                @click.stop="closeEditor"
+              />
+              <font-awesome-icon
+                class="ml-1"
+                icon="save"
+                @click.stop="updateAnnotation"
+              />
+            </div>
+          </div>
         </div>
       </div>
       <div class="row no-gutters my-1">
