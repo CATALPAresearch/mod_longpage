@@ -151,14 +151,14 @@
 
 <script>
 import CourseRecommondation from './components/CourseRecommondation';
-import {GET} from "./store/types";
-import Log from "./lib/Logging";
-import {mapGetters} from "vuex";
+import {ACT, GET} from './store/types';
+import Log from './lib/Logging';
+import {mapActions, mapGetters} from 'vuex';
 import ReadingProgress from './components/ReadingProgress';
 import ReadingTime from './components/ReadingTime';
 import Search from './components/Search';
 import TableOfContent from './components/TableOfContent';
-import Utils from "./util/utils";
+import Utils from './util/utils';
 
 export default {
     name: 'App',
@@ -192,6 +192,7 @@ export default {
       });
     },
     mounted() {
+      this[ACT.FETCH_ENROLLED_USERS]();
       var _this = this;
       // Log bootstrap interactions
       $('.longpage-citation').click(function() {
@@ -224,9 +225,10 @@ export default {
       hideTabContent() {
         this.tabContentVisible = false;
         if (document.querySelector('#longpage-features').querySelector('a.active.show')) {
-          document.querySelector('#longpage-features').querySelector('a.active.show').classList.remove("active");
+          document.querySelector('#longpage-features').querySelector('a.active.show').classList.remove('active');
         }
       },
+      ...mapActions([ACT.FETCH_ENROLLED_USERS]),
     },
 };
 </script>

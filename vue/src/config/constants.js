@@ -28,6 +28,7 @@ export const LONGPAGE_TEXT_OVERLAY_ID = 'longpage-text-overlay';
 
 export const MoodleWSMethods = Object.freeze({
     GET_ANNOTATIONS: 'mod_page_get_annotations',
+    GET_ENROLLED_USERS: 'core_course_get_enrolled_users_by_cmid',
     CREATE_ANNOTATION: 'mod_page_create_annotation',
     DELETE_ANNOTATION: 'mod_page_delete_annotation',
     UPDATE_ANNOTATION: 'mod_page_update_annotation',

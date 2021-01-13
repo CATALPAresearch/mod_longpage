@@ -15,7 +15,6 @@
       />
       <response-form
         :annotation-id="annotation.id"
-        :respondent="author"
       />
     </div>
   </div>
