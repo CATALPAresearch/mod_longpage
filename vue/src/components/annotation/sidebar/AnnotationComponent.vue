@@ -28,29 +28,14 @@
               class="d-flex justify-content-between"
             >
               <font-awesome-icon
-                class="ml-1"
+                class="link ml-2"
                 icon="trash"
-                @click.stop="deleteAnnotation"
+                @click="deleteAnnotation"
               />
               <font-awesome-icon
-                class="ml-1"
+                class="link ml-2"
                 icon="pen"
-                @click.stop="openEditor"
-              />
-            </div>
-            <div
-              v-else
-              class="d-flex justify-content-between"
-            >
-              <font-awesome-icon
-                class="ml-1"
-                icon="times"
-                @click.stop="closeEditor"
-              />
-              <font-awesome-icon
-                class="ml-1"
-                icon="save"
-                @click.stop="updateAnnotation"
+                @click="openEditor"
               />
             </div>
           </div>
@@ -86,18 +71,44 @@
       </div>
       <div class="row no-gutters my-1">
         <div class="col col-12 p-0">
-          <div>
-            <span
-              v-if="!isBeingEdited"
-              ref="annotationBody"
-            >{{ annotation.body }}</span>
+          <span
+            v-if="!isBeingEdited"
+            ref="annotationBody"
+          >{{ annotation.body }}</span>
+          <div
+            v-else
+            class="text-right"
+          >
             <textarea
-              v-else
               v-model="annotationUpdate.body"
               class="form-control"
+              :placeholder="$t('annotationCard.editor.bodyTextareaPlaceholder')"
               rows="3"
               @click.stop=""
+              @keydown.enter.meta.exact="updateAnnotation"
             />
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary ml-2 my-2"
+              @click="closeEditor"
+            >
+              <font-awesome-icon
+                class="ml-1"
+                icon="times"
+              />
+              {{ $t('annotationCard.editor.cancel') }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-primary ml-2 my-2"
+              @click="updateAnnotation"
+            >
+              <font-awesome-icon
+                class="ml-1"
+                icon="save"
+              />
+              {{ $t('annotationCard.editor.save') }}
+            </button>
           </div>
         </div>
       </div>

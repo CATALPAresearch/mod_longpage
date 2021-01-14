@@ -1,5 +1,10 @@
 {
   "annotationCard": {
+    "editor": {
+      "bodyTextareaPlaceholder": "Erstellen Sie eine Anmerkung",
+      "cancel": "Abbrechen",
+      "save": "Speichern"
+    },
     "created": "erstellt",
     "less": "Weniger",
     "modified": "bearbeitet",

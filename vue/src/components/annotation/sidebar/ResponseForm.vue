@@ -18,7 +18,8 @@
         />
         <div class="input-group-append">
           <button
-            class="btn btn-outline-secondary"
+            class="btn"
+            :class="{ 'btn-outline-secondary': !responseBody.length, 'btn-primary': !!responseBody.length }"
             type="button"
             @click="onSubmit"
           >
