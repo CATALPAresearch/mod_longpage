@@ -22,8 +22,8 @@
 </template>
 
 <script>
-  import {GET, MUTATE} from '@/store/types';
-  import {mapGetters, mapMutations} from 'vuex';
+  import {GET, ACT} from '@/store/types';
+  import {mapGetters, mapActions} from 'vuex';
   import {isEmpty} from 'lodash';
 
   export default {
@@ -36,9 +36,9 @@
     },
     methods: {
       resetFilter() {
-        this[MUTATE.SET_ANNOTATION_FILTER]({});
+        this[ACT.FILTER_ANNOTATIONS]({});
       },
-      ...mapMutations([MUTATE.SET_ANNOTATION_FILTER]),
+      ...mapActions([ACT.FILTER_ANNOTATIONS]),
     }
   };
 </script>

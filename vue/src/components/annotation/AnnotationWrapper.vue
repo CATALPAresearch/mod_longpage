@@ -80,7 +80,7 @@ export default {
       setHighlightsVisible(document.getElementById(LONGPAGE_MAIN_ID), true);
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
       addAnnotationSelectionListener(annotations => {
-        this[ACT.FILTER_ANNOTATIONS]({ids: annotations.map(annotation => annotation.id)});
+        if (annotations.length > 0) this[ACT.FILTER_ANNOTATIONS]({ids: annotations.map(annotation => annotation.id)});
       });
     });
   },
