@@ -8,6 +8,7 @@
     >
       {{ $t('annotationSidebar.heading') }}
     </h2>
+    <annotation-filter />
     <div
       v-if="annotationsOrderedByTextPosition.length"
       id="annotation-card-container"
@@ -30,6 +31,7 @@ import AnnotationCard from './sidebar/AnnotationCard.vue';
 import {mapGetters} from 'vuex';
 import {GET} from '@/store/types';
 import {SelectorType} from '@/config/constants';
+import AnnotationFilter from '@/components/annotation/sidebar/AnnotationFilter';
 
 const AnnotationSortingFunction = Object.freeze({
   BY_POSITION: (annotationA, annotationB) => {
@@ -39,15 +41,10 @@ const AnnotationSortingFunction = Object.freeze({
   }
 });
 
-const setZIndex = (htmlElements, zIndex) => {
-  htmlElements.forEach(element => {
-    element.style.zIndex = zIndex;
-  });
-};
-
 export default {
   name: 'AnnotationSidebar',
   components: {
+    AnnotationFilter,
     AnnotationCard
   },
   computed: {
@@ -55,15 +52,8 @@ export default {
       return Array.from(this.annotations).sort(AnnotationSortingFunction.BY_POSITION);
     },
     ...mapGetters({
-      annotations: GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT,
-      selectedHighlights: GET.SELECTED_HIGHLIGHTS,
+      annotations: GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT_FILTERED,
     }),
-  },
-  watch: {
-    selectedHighlights(newValue, oldValue) {
-      setZIndex(newValue, 3); // TODO: Get value from overlay
-      setZIndex(oldValue, 2); // TODO: Get value from old value
-    },
   },
 };
 </script>

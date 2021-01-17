@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import {ACT, GET, MUTATE} from '@/store/types';
+import {ACT, GET} from '@/store/types';
 import {ArrowDirection, LONGPAGE_MAIN_ID, LONGPAGE_TEXT_CONTAINER_ID, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
 import AnnotationToolbarPopover from './AnnotationToolbarPopover.vue';
 import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-toolbar-popover-positioner';
@@ -16,7 +16,7 @@ import {SelectionListener} from '@/lib/annotation/selection-listener';
 import {describe} from '@/lib/annotation/hypothesis/anchoring/html';
 import {Annotation} from '@/lib/annotation/types/annotation';
 import {Anchoring} from '@/lib/annotation/anchoring';
-import {mapGetters, mapMutations} from 'vuex';
+import {mapActions, mapGetters} from 'vuex';
 import {setHighlightsVisible} from '@/lib/annotation/highlighting';
 import {addAnnotationSelectionListener} from '@/lib/annotation/highlight-selection-listener';
 import {PageSegment} from '@/lib/annotation/types/page-segment';
@@ -80,10 +80,7 @@ export default {
       setHighlightsVisible(document.getElementById(LONGPAGE_MAIN_ID), true);
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
       addAnnotationSelectionListener(annotations => {
-        if (annotations.length > 0) {
-          const element = document.getElementById(getAnnotationCardId(annotations[0].id));
-          scrollIntoView(element, {...SCROLL_INTO_VIEW_OPTIONS, boundary: document.getElementById(LONGPAGE_MAIN_ID)});
-        }
+        this[ACT.FILTER_ANNOTATIONS]({ids: annotations.map(annotation => annotation.id)});
       });
     });
   },
@@ -92,6 +89,7 @@ export default {
     this.selectionListener.unsubscribe();
   },
   methods: {
+    ...mapActions([ACT.FILTER_ANNOTATIONS]),
     createAnnotation(styleClass) {
       Promise.all(this.selectedRanges.map(this.getSelectors)).then(selectorsInSelectors => {
         const annotation = new Annotation({
@@ -130,7 +128,6 @@ export default {
       this.annotationToolbarPopoverProps.top = top;
       this.annotationToolbarPopoverProps.zIndex = zIndex;
     },
-    ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
   },
 };
 </script>

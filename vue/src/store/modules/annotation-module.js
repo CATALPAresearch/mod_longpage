@@ -1,5 +1,5 @@
 import ajax from 'core/ajax';
-import {AnnotationTargetType, HighlightingConfig, MoodleWSMethods} from '@/config/constants';
+import {AnnotationTargetType, MoodleWSMethods} from '@/config/constants';
 import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
 import {GET, ACT, MUTATE} from '../types';
 import MappingService from '@/services/mapping-service';
@@ -8,18 +8,19 @@ import MappingService from '@/services/mapping-service';
 export default {
     state: {
         annotations: [],
-        selectedAnnotations: [],
+        annotationFilter: {},
     },
     getters: {
+        [GET.ANNOTATION_FILTER]: ({annotationFilter}) => annotationFilter,
         [GET.ANNOTATIONS]: ({annotations}) => annotations,
-        [GET.SELECTED_ANNOTATIONS]: ({selectedAnnotations}) => selectedAnnotations,
-        [GET.SELECTED_HIGHLIGHTS]: ({selectedAnnotations}) => {
-            return Array
-                .from(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME))
-                .filter(element => selectedAnnotations.includes(element._annotation));
-        },
         [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT]: (_, getters) => {
             return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.PAGE_SEGMENT);
+        },
+        [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT_FILTERED]: (_, getters) => {
+            return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.PAGE_SEGMENT)
+                .filter(annotation => !getters[GET.ANNOTATION_FILTER].ids ||
+                    getters[GET.ANNOTATION_FILTER].ids.includes(annotation.id)
+                );
         },
         [GET.ANNOTATIONS_TARGETING_ANNOTATION]: (_, getters) => {
             return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.ANNOTATION);
@@ -77,6 +78,9 @@ export default {
                 }
             }]);
         },
+        [ACT.FILTER_ANNOTATIONS]({commit}, filter) {
+           commit(MUTATE.SET_ANNOTATION_FILTER, filter);
+        },
         [ACT.UPDATE_ANNOTATION]({commit}, annotationUpdate) {
             const methodname = MoodleWSMethods.UPDATE_ANNOTATION;
             ajax.call([{
@@ -98,11 +102,11 @@ export default {
         [MUTATE.REMOVE_ANNOTATIONS](state, annotations) {
             state.annotations = state.annotations.filter(annotation => !annotations.includes(annotation));
         },
+        [MUTATE.SET_ANNOTATION_FILTER](state, filter) {
+            state.annotationFilter = filter;
+        },
         [MUTATE.SET_ANNOTATIONS](state, annotations) {
             state.annotations = annotations;
-        },
-        [MUTATE.SET_SELECTED_ANNOTATIONS](state, selectedAnnotations) {
-            state.selectedAnnotations = selectedAnnotations;
         },
         [MUTATE.UPDATE_ANNOTATION](state, annotationUpdate) {
             const annotation = state.annotations.find(annotation => annotation.id === annotationUpdate.id);

@@ -10,7 +10,8 @@
     <a
       v-if="isExpandable"
       :key="isExpanded"
-      class="badge badge-light link"
+      role="button"
+      class="badge badge-light"
       @click.stop="isExpanded = !isExpanded"
     >{{ isExpanded ? $t('annotationCard.less') : $t('annotationCard.more') }}</a>
   </div>

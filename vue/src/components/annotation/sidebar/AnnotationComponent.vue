@@ -117,12 +117,12 @@
 </template>
 
 <script>
-import {ACT, GET, MUTATE} from '@/store/types';
+import {ACT, GET} from '@/store/types';
 import {Annotation} from '@/lib/annotation/types/annotation';
 import {cloneDeep} from 'lodash';
 import DateTimeText from '@/components/DateTimeText';
 import {AnnotationTargetType, HighlightingConfig, SCROLL_INTO_VIEW_OPTIONS, SelectorType} from '@/config/constants';
-import {mapActions, mapGetters, mapMutations} from 'vuex';
+import {mapActions, mapGetters} from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
 import UserRoleButton from '@/components/UserRoleButton';
 import Y from 'core/yui';
@@ -203,10 +203,8 @@ export default {
           .find(element => element._annotation.id === this.annotation.id);
     },
     selectAnnotation() {
-      this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
       scrollIntoView(this.getHighlightHTMLElement(), SCROLL_INTO_VIEW_OPTIONS);
     },
-    ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
     ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION]),
   }
 };
