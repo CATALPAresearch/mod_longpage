@@ -9,9 +9,10 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "1.2.32",
+    "@fortawesome/free-regular-svg-icons": "5.15.2",
     "@fortawesome/free-solid-svg-icons": "5.15.1",
     "@fortawesome/vue-fontawesome": "3.0.0-3",
-    "autosize": "^4.0.2",
+    "autosize": "4.0.2",
     "deep-rename-keys": "0.2.1",
     "dom-anchor-text-position": "5.0.0",
     "dom-anchor-text-quote": "4.0.2",

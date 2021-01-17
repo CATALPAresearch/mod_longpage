@@ -22,9 +22,10 @@ export const HighlightingConfig = Object.freeze({
 
 export const LANGUAGE = 'de';
 
+export const LINE_HEIGHT_IN_PX = 27;
+
 export const LONGPAGE_MAIN_ID = 'longpage-main';
 export const LONGPAGE_TEXT_CONTAINER_ID = 'longpage-text-container';
-export const LONGPAGE_TEXT_OVERLAY_ID = 'longpage-text-overlay';
 
 export const MoodleWSMethods = Object.freeze({
     GET_ANNOTATIONS: 'mod_page_get_annotations',

@@ -10,7 +10,7 @@ module.exports = (env, options) => {
             path: path.resolve(__dirname, '../amd/build'),
             publicPath: '/dist/',
             filename: 'app-lazy.min.js',
-            chunkFilename: "[id].app-lazy.min.js?v=[hash]",
+            chunkFilename: '[id].app-lazy.min.js?v=[hash]',
             libraryTarget: 'amd',
         },
         module: {
@@ -46,7 +46,7 @@ module.exports = (env, options) => {
         resolve: {
             alias: {
                 '@': path.resolve(__dirname, 'src'),
-                'vue$': 'vue/dist/vue.esm-bundler.js',
+                vue$: 'vue/dist/vue.esm-bundler.js',
             },
             extensions: ['*', '.js', '.vue', '.json']
         },
@@ -59,7 +59,7 @@ module.exports = (env, options) => {
             },
             disableHostCheck: true,
             https: true,
-            "public": 'https://127.0.0.1:8080',
+            public: 'https://127.0.0.1:8080',
             hot: true,
         },
         performance: {
@@ -97,7 +97,7 @@ module.exports = (env, options) => {
             'core/notification': {
                 amd: 'core/notification'
             },
-            'jquery': {
+            jquery: {
                 amd: 'jquery'
             }
         }

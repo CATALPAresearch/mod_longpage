@@ -28,4 +28,8 @@ export class Annotation {
         this.timemodified = timemodified;
         this.userId = userId;
     }
+
+    get hasBody() {
+        return Boolean(this.body) || this.tags.length > 0;
+    }
 }

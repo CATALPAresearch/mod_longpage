@@ -85,9 +85,9 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     $content = format_text($content, $page->contentformat, $formatoptions);
 
     // output content
-    echo '<div id="longpage-text-container" class="m-auto longpage-container col" lang="de">';
+    echo '<div id="longpage-text-container" class="m-auto longpage-container col row" lang="de">';
 
-    echo $OUTPUT->box($content, "generalbox center clearfix");
+    echo $OUTPUT->box($content, "generalbox center clearfix col");
     echo '</div></div>';
 
     echo '<div id="top-of-site-pixel-anchor"></div>';

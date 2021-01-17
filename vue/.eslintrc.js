@@ -13,7 +13,8 @@ module.exports = {
     rules: {
         curly: ['error', 'multi-line'],
         'no-console': ['error', {allow: ['warn', 'error']}],
+        'object-shorthand': ['error'],
         'quote-props': ['error', 'as-needed'],
-        quotes: ['error', 'single', {avoidEscape: true}]
+        quotes: ['error', 'single', {avoidEscape: true}],
     }
 };

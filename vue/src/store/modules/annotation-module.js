@@ -105,8 +105,8 @@ export default {
             state.selectedAnnotations = selectedAnnotations;
         },
         [MUTATE.UPDATE_ANNOTATION](state, annotationUpdate) {
-            const annotationIndex = state.annotations.findIndex(annotation => annotation.id === annotationUpdate.id);
-            state.annotations.splice(annotationIndex, 1, annotationUpdate);
+            const annotation = state.annotations.find(annotation => annotation.id === annotationUpdate.id);
+            Object.assign(annotation, annotationUpdate);
         }
     },
 };

@@ -171,6 +171,7 @@ export default {
     },
     data: function() {
       return {
+        eventListeners: [],
         tabContentVisible: false,
       };
     },
@@ -184,10 +185,9 @@ export default {
       ...mapGetters({context: GET.LONGPAGE_CONTEXT}),
     },
     created() {
-      let _this = this;
-      document.addEventListener('keyup', function(evt) {
-        if (evt.keyCode === 27) {
-          _this.hideTabContent();
+      document.addEventListener('keyup', $event => {
+        if ($event.keyCode === 27) {
+          this.hideTabContent();
         }
       });
     },

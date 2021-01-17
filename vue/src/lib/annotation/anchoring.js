@@ -7,12 +7,18 @@
  * Based on Hypothesis client's modules (see https://github.com/hypothesis/client):
  *   - src/annotator/guest.js
  */
-import {anchor} from './hypothesis/anchoring/html';
-import {AnnotationTargetType} from '@/config/constants';
-import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
+import {debounce, remove} from 'lodash';
 import {highlightRange, removeHighlights} from './highlighting';
+import {AnnotationTargetType} from '@/config/constants';
+import {anchor} from './hypothesis/anchoring/html';
+import emitter from 'tiny-emitter/instance';
+import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
 import {MUTATE} from '@/store/types';
 import {sniff} from './hypothesis/anchoring/range';
+
+const emitAnchorsUpdate = debounce((anchors) => {
+    emitter.emit('anchors-updated', anchors);
+}, 500);
 
 export class Anchoring {
     /**
@@ -167,7 +173,7 @@ export class Anchoring {
         const sync = anchors => {
             // Add the anchors for this annotation to instance storage.
             this.anchors = this.anchors.concat(anchors);
-            // TODO: Inform other parts of the application about the results of anchoring.
+            emitAnchorsUpdate(this.anchors);
             return anchors;
         };
 
@@ -211,19 +217,12 @@ export class Anchoring {
      * @param {Annotation} annotation
      */
     detachAnnotation(annotation) {
-        const anchors = [];
-        let unhighlight = [];
-
-        for (let anchor of this.anchors) {
-            if (anchor.annotation.id === annotation.id) {
-                unhighlight.push(...(anchor.highlights || []));
-            } else {
-                anchors.push(anchor);
-            }
-        }
-
-        this.anchors = anchors;
-        this.removeHighlights(unhighlight);
+        const anchorsOfAnnotation = remove(this.anchors, anchor => anchor.annotation.id === annotation.id);
+        emitter.emit('anchors-updated', this.anchors);
+        const highlightsOfAnnotation = anchorsOfAnnotation.reduce(
+            (highlights, anchor) => highlights.concat(anchor.highlights || []), [],
+        );
+        this.removeHighlights(highlightsOfAnnotation);
     }
 
     detachAllAnnotations() {

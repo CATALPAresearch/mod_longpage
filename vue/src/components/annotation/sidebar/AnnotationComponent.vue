@@ -205,8 +205,6 @@ export default {
     selectAnnotation() {
       this[MUTATE.SET_SELECTED_ANNOTATIONS]([this.annotation]);
       scrollIntoView(this.getHighlightHTMLElement(), SCROLL_INTO_VIEW_OPTIONS);
-      // Document.getElementById(LONGPAGE_TEXT_OVERLAY_ID).style.display = 'block';
-      // TODO: Reintroduce and fix overlay (overlays every highlight) or introduce other form of highlighting annotation selected
     },
     ...mapMutations([MUTATE.SET_SELECTED_ANNOTATIONS]),
     ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION]),
