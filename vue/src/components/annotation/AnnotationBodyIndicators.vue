@@ -10,8 +10,9 @@
 <script>
 import AnnotationBodyIndicator from '@/components/annotation/AnnotationBodyIndicator';
 import emitter from 'tiny-emitter/instance';
-import {LINE_HEIGHT_IN_PX} from '@/config/constants';
+import {LINE_HEIGHT_IN_PX, LONGPAGE_TEXT_CONTAINER_ID} from '@/config/constants';
 import {MUTATE} from '@/store/types';
+import {ResizeObserver} from '@juggle/resize-observer';
 
   // TODO: Recalculate only new, updated or deleted indicators on update of annotations or anchors
   //         (currently all; key can be removed/simplified then)
@@ -31,6 +32,7 @@ import {MUTATE} from '@/store/types';
       };
     },
     mounted() {
+      this.updateOnResize(document.getElementById(LONGPAGE_TEXT_CONTAINER_ID));
       this.updateOnAnchorUpdates();
       this.updateOnAnnotationUpdates();
     },
@@ -66,6 +68,12 @@ import {MUTATE} from '@/store/types';
               this.indicatorTopToAnnotationsMap = this.updateIndicatorTopToAnnotationsMap(this.anchors);
           }
         });
+      },
+      updateOnResize(container) {
+        const ro = new ResizeObserver(() => {
+          this.indicatorTopToAnnotationsMap = this.updateIndicatorTopToAnnotationsMap(this.anchors);
+        });
+        ro.observe(container);
       }
     }
   };

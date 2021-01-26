@@ -33,7 +33,7 @@ const useAnnotationToolbarPopover = (store) => {
 
 const useAnnotationBodyIndicatorSidebar = (store) => {
     const id = 'annotation-body-indicator-sidebar';
-    const root = createDiv({id, class: 'col col-auto'});
+    const root = createDiv({id, class: 'col col-auto p-0 mx-1', style: 'width: 1.5em;'});
     document.querySelector(toIdSelector(LONGPAGE_TEXT_CONTAINER_ID)).appendChild(root);
     createApp(AnnotationBodyIndicators, {parentElement: root})
         .component('font-awesome-icon', FontAwesomeIcon)

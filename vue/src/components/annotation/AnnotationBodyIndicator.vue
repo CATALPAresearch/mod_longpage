@@ -1,12 +1,13 @@
 <template>
   <a
     role="button"
+    :style="style"
+    class="position-absolute"
     @click.stop="filterAnnotations"
   >
     <font-awesome-layers
       full-width
-      :style="style"
-      class="annotation-body-indicator fa-1-5x position-absolute text-secondary"
+      class="annotation-body-indicator fa-1-5x text-secondary"
     >
       <font-awesome-icon :icon="['far', 'comment']" />
       <font-awesome-layers-text
