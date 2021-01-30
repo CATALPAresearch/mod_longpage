@@ -8,6 +8,8 @@
  * - language support / language detection
  */
 import $ from 'jquery';
+import {LONGPAGE_TEXT_CONTAINER_ID} from '@/config/constants';
+import {toIdSelector} from '@/util/style';
 
 export default {
     name: 'ReadingTime',
@@ -15,7 +17,7 @@ export default {
 
     data() {
         return {
-            parentSelector: '.longpage-container',
+            parentSelector: toIdSelector(LONGPAGE_TEXT_CONTAINER_ID),
             language: 'de',
             readingSpeedPerLanguage: {
                 // 200 word per Minute https://de.wikipedia.org/wiki/Lesegeschwindigkeit
@@ -37,16 +39,14 @@ export default {
 
     methods: {
         calcH2() {
-
-
-            let numerOfHeadings = $(this.parentSelector + ' h2').length;
+            let numberOfHeadings = $(this.parentSelector + ' h2').length;
             // Add a dummy heading at the end.
             $(this.parentSelector).append('<h2 style="display:inline;" class="dummy-heading">dummy</h2>');
             // Iterate over all headings and determine the text length and number of images
-            for (var i = 0; i < numerOfHeadings; i++) {
+            for (var i = 0; i < numberOfHeadings; i++) {
                 let numberOfImages = 0;
-                var from = $('h2:nth(' + i + ')');
-                var to = $('h2:nth(' + (i + 1) + ')');
+                var from = $(this.parentSelector + ' h2:nth(' + i + ')');
+                var to = $(this.parentSelector + ' h2:nth(' + (i + 1) + ')');
                 var a = $(from).nextUntil(to);
                 a.addClass('tmp-marked');
                 // Concat text from DOM
@@ -78,14 +78,14 @@ export default {
         },
 
         calcH3() {
-            let numerOfHeadings = $(this.parentSelector + ' h3').length;
+            let numberOfHeadings = $(this.parentSelector + ' h3').length;
             // Add a dummy heading at the end.
             $(this.parentSelector).append('<h3 style="display:inline;color:#fff;" class="dummy-heading-3">ENDE</h3>');
             // Iterate over all headings and determine the text length and number of images
-            for (var i = 0; i < numerOfHeadings; i++) {
+            for (var i = 0; i < numberOfHeadings; i++) {
                 let numberOfImages = 0;
-                var fromm = $('h3:nth(' + i + ')');
-                var to = $('h3:nth(' + (i + 1) + ')');
+                var fromm = $(this.parentSelector + ' h3:nth(' + i + ')');
+                var to = $(this.parentSelector + ' h3:nth(' + (i + 1) + ')');
                 var a = $(fromm).nextUntil(to);
                 a.addClass('tmp-marked-h3');
                 // Concat text from DOM
