@@ -18,41 +18,17 @@ export default {
     name: 'ReadingProgress',
     props: ['log', 'context'],
 
-    data: function() {
+    data() {
         return {
         };
     },
-
-    mounted: function() {
-        // This.enableScrollLogging();
-
-        // this.visualizeReadingProgress();
-
-        if (
-            "IntersectionObserver" in window &&
-            "IntersectionObserverEntry" in window &&
-            "intersectionRatio" in window.IntersectionObserverEntry.prototype
-        ) {
-            var observer = new IntersectionObserver(entries => {
-                if (entries[0].boundingClientRect.y < 0) {
-                    document.getElementById('longpage-navbar').classList.add("header-not-at-top");
-                    // Document.getElementById('table-of-content').classList.add("header-not-at-top");
-                } else {
-                    document.getElementById('longpage-navbar').classList.remove("header-not-at-top");
-                    // Document.getElementById('table-of-content').classList.remove("header-not-at-top");
-                }
-            });
-            observer.observe(document.querySelector("#top-of-site-pixel-anchor"));
-        }
-    },
-
     methods: {
-        enableScrollLogging: function() {
+        enableScrollLogging() {
             let _this = this;
             if (
-                "IntersectionObserver" in window &&
-                "IntersectionObserverEntry" in window &&
-                "intersectionRatio" in window.IntersectionObserverEntry.prototype &&
+                'IntersectionObserver' in window &&
+                'IntersectionObserverEntry' in window &&
+                'intersectionRatio' in window.IntersectionObserverEntry.prototype &&
                 document.querySelector('.longpage-container')
             ) {
                 var measuredElement = document.querySelector('.longpage-container');
@@ -109,10 +85,10 @@ export default {
                                 targetWordCount: word_count,
                                 scrollXDistance: scrollXDistance === undefined ? 0 : scrollXDistance,
                                 scrollYDistance: scrollYDistance === undefined ? 0 : scrollYDistance,
-                                scrollHeight: scrollHeight,
-                                scrollWidth: scrollWidth,
-                                containerHeight: containerHeight,
-                                containerWidth: containerWidth,
+                                scrollHeight,
+                                scrollWidth,
+                                containerHeight,
+                                containerWidth,
                                 behavior: null, // Read, scroll, inactive
                             };
 
@@ -139,7 +115,7 @@ export default {
 
                 var options = {
                     root: null,
-                    rootMargin: "0px",
+                    rootMargin: '0px',
                     threshold: [1.0],
                     trackVisibility: true,
                     delay: 100
@@ -168,21 +144,21 @@ export default {
                         $(this).attr('id', 'paragraph-' + pCounter).addClass('longpage-paragraph');
                         pCounter++;
                     }
-                    observer.observe(document.querySelector("#" + $(this).attr('id')));
+                    observer.observe(document.querySelector('#' + $(this).attr('id')));
                 });
             }
         },
 
         /** Detailed but slow method to estimate the portion of an element that is visble with the viewport. */
-        get: function(element) {
-            if (typeof element !== "object" || !(element instanceof HTMLElement)) {
- throw new Error("No valid HTMLElement.");
+        get(element) {
+            if (typeof element !== 'object' || !(element instanceof HTMLElement)) {
+ throw new Error('No valid HTMLElement.');
 }
             const b = element.getBoundingClientRect();
             const vpw = (window.innerWidth || document.documentElement.clientWidth);
             const vph = (window.innerHeight || document.documentElement.clientHeight);
             let e = {
-                element: element,
+                element,
                 dimensions: {
                     height: b.height,
                     width: b.width
@@ -224,11 +200,11 @@ export default {
             return e;
         },
 
-        visualizeReadingProgress: function() {
+        visualizeReadingProgress() {
             ajax.call([{
                 methodname: 'mod_page_getreadingprogress',
                 args: {data: {courseId: this.context.courseId, pageId: this.context.pageId}},
-                done: function(reads) {
+                done(reads) {
                     try {
                         let data = Object.values(JSON.parse(reads.response));
                         let max = data.reduce((a, b) => a.count > b.count ? a : b).count;
@@ -243,7 +219,7 @@ export default {
  console.log(e);
 }
                 },
-                fail: function(e) {
+                fail(e) {
  console.error('fail', e);
 }
             }]);

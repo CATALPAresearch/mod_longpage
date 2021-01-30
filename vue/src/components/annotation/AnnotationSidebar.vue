@@ -67,9 +67,9 @@ export default {
     #annotation-sidebar {
       position: -webkit-sticky;
       position: sticky;
-      top: calc(#{$moodle-navbar-height} + #{$longpage-navbar-height});
+      top: $moodle-navbar-height;
       overflow-y: auto;
-      height: calc(100vh - #{$moodle-navbar-height} - #{$longpage-navbar-height});
+      height: calc(100vh - #{$moodle-navbar-height});
 
       #annotation-sidebar-heading {
         font-weight: bold;

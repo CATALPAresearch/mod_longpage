@@ -88,14 +88,10 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     $formatoptions->noclean = true;
     $formatoptions->context = $context;
     $content = format_text($content, $page->contentformat, $formatoptions);
-
-    // output content
     echo '<div id="longpage-text-container" class="m-auto longpage-container col row" lang="de">';
-
     echo $OUTPUT->box($content, "generalbox center clearfix col");
     echo '</div></div></div>';
 
-    echo '<div id="top-of-site-pixel-anchor"></div>';
     $PAGE->requires->js_call_amd('mod_page/app-lazy', 'init', array($course->id, $page->id, format_string($page->name), $USER->id));
 
 } else {
