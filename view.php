@@ -72,12 +72,17 @@ if ($inpopup and $page->display == RESOURCELIB_DISPLAY_POPUP) {
 echo $OUTPUT->header();
 
 if (mod_page\blocking::tool_policy_accepted() == true) {
-
     if (!isset($options['printheading']) || !empty($options['printheading'])) {
-        echo '<longpage-app-container></longpage-app-container>';
+        echo $OUTPUT->heading(format_string($page->name));
     }
 
-    echo '<div id="longpage-main" class="row w-100 no-gutters">';
+    if (!isset($options['printintro']) || !empty($options['printintro'])) {
+        echo $OUTPUT->box(format_module_intro('page', $page, $cm->id), 'generalbox', 'intro');
+    }
+
+    echo '<div id="longpage-app-container">';
+    echo '<div id="longpage-header"></div>';
+    echo '<div id="longpage-main" class="row w-100 no-gutters border-top">';
     $content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_page', 'content', $page->revision);
     $formatoptions = new stdClass;
     $formatoptions->noclean = true;
@@ -88,7 +93,7 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     echo '<div id="longpage-text-container" class="m-auto longpage-container col row" lang="de">';
 
     echo $OUTPUT->box($content, "generalbox center clearfix col");
-    echo '</div></div>';
+    echo '</div></div></div>';
 
     echo '<div id="top-of-site-pixel-anchor"></div>';
     $PAGE->requires->js_call_amd('mod_page/app-lazy', 'init', array($course->id, $page->id, format_string($page->name), $USER->id));

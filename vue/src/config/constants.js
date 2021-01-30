@@ -24,6 +24,7 @@ export const LANGUAGE = 'de';
 
 export const LINE_HEIGHT_IN_PX = 27;
 
+export const LONGPAGE_HEADER_ID = 'longpage-header';
 export const LONGPAGE_MAIN_ID = 'longpage-main';
 export const LONGPAGE_TEXT_CONTAINER_ID = 'longpage-text-container';
 

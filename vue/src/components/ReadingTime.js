@@ -13,9 +13,9 @@ export default {
     name: 'ReadingTime',
     props: [],
 
-    data: function() {
+    data() {
         return {
-            parantSelector: '.longpage-container',
+            parentSelector: '.longpage-container',
             language: 'de',
             readingSpeedPerLanguage: {
                 // 200 word per Minute https://de.wikipedia.org/wiki/Lesegeschwindigkeit
@@ -29,31 +29,31 @@ export default {
         };
     },
 
-    mounted: function() {
+    mounted() {
         this.calcH3();
         this.calcH2();
 
     },
 
     methods: {
-        calcH2: function() {
+        calcH2() {
 
 
-            let numerOfHeadings = $(this.parantSelector + ' h2').length;
+            let numerOfHeadings = $(this.parentSelector + ' h2').length;
             // Add a dummy heading at the end.
-            $(this.parantSelector).append('<h2 style="display:inline;" class="dummy-heading">dummy</h2>');
+            $(this.parentSelector).append('<h2 style="display:inline;" class="dummy-heading">dummy</h2>');
             // Iterate over all headings and determine the text length and number of images
             for (var i = 0; i < numerOfHeadings; i++) {
                 let numberOfImages = 0;
-                var fromm = $('h2:nth(' + i + ')');
+                var from = $('h2:nth(' + i + ')');
                 var to = $('h2:nth(' + (i + 1) + ')');
-                var a = $(fromm).nextUntil(to);
+                var a = $(from).nextUntil(to);
                 a.addClass('tmp-marked');
                 // Concat text from DOM
                 var out = '';
                 $('.tmp-marked').each(() => {
                     out = out + ' ' + $(this).text();
-                    if ($(this).prop("tagName") === 'IMG') {
+                    if ($(this).prop('tagName') === 'IMG') {
                         numberOfImages++;
                     }
                     $(this).removeClass('tmp-marked');
@@ -62,7 +62,7 @@ export default {
                     .addClass('mx-0 my-1 p-0')
                     .attr('style', ' font-size: 0.8em; color: #333333;')
                     .html(this.estimateTime(out, numberOfImages));
-                fromm.after(output);
+                from.after(output);
                 // Console.log('h2', numerOfHeadings, out.length, numberOfImages)
                 $('.dummy-heading').remove();
             }
@@ -72,15 +72,15 @@ export default {
                 .addClass('mx-0 my-1 p-0')
                 .attr('style', ' font-size: 0.8em; color: #333333;')
                 .text('Geschätzte Lesezeit ' + this.convertToReadableTime(this.fastSum) + ' - ' + this.convertToReadableTime(this.slowSum) + ' Stunden');
-            $(this.parantSelector + ' h2').after(output);
+            $(this.parentSelector + ' h2').after(output);
             */
 
         },
 
-        calcH3: function() {
-            let numerOfHeadings = $(this.parantSelector + ' h3').length;
+        calcH3() {
+            let numerOfHeadings = $(this.parentSelector + ' h3').length;
             // Add a dummy heading at the end.
-            $(this.parantSelector).append('<h3 style="display:inline;color:#fff;" class="dummy-heading-3">ENDE</h3>');
+            $(this.parentSelector).append('<h3 style="display:inline;color:#fff;" class="dummy-heading-3">ENDE</h3>');
             // Iterate over all headings and determine the text length and number of images
             for (var i = 0; i < numerOfHeadings; i++) {
                 let numberOfImages = 0;
@@ -92,7 +92,7 @@ export default {
                 var out = '';
                 $('.tmp-marked-h3').each(function(d) {
                     out = out + ' ' + $(this).text();
-                    if ($(this).prop("tagName") === 'IMG') {
+                    if ($(this).prop('tagName') === 'IMG') {
                         numberOfImages++;
                     }
                     $(this).removeClass('tmp-marked-h3');
@@ -107,7 +107,7 @@ export default {
             }
         },
 
-        estimateTime: function(text, numImg) {
+        estimateTime(text, numImg) {
             let textlength = text.match(/([\s]+)/g).length;
             numImg = parseInt(numImg, 10) === 0 || typeof (numImg) !== 'number' ? 1 : numImg;
             let readingSpeed = this.readingSpeedPerLanguage[this.language];
@@ -118,7 +118,7 @@ export default {
             return 'Geschätzte Lesezeit ' + this.convertToReadableTime(readingTimeFast, readingTimeSlow);// + ' (' + textlength+' Wörter)';
         },
 
-        convertToReadableTime: function(fasttime, slowtime) {
+        convertToReadableTime(fasttime, slowtime) {
             // Return time;
             let time = slowtime;
             if (slowtime < 60) {
@@ -135,5 +135,5 @@ export default {
 
         }
     },
-    template: `<div></div>`
+    template: '<div></div>'
 };
