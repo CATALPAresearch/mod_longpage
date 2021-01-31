@@ -1,144 +1,54 @@
 <template>
-  <div>
-    <!--    <nav-->
-    <!--      id="longpage-navbar"-->
-    <!--      class="navbar-expand navbar-light bg-light py-2 mx-0 pl-1 pr-2"-->
-    <!--    >-->
-    <!--      <div class="row w-100 px-0 mx-0">-->
-    <!--        <span class="title-toc col-4 col-sm-4 col-xs-12">-->
-    <!--          <a class="navbar-brand">{{ context.pageName }}</a>-->
-    <!--        </span>-->
-    <!--        <div class="col-8 col-md-8 col-xs-12">-->
-    <!--          <ul-->
-    <!--            id="longpage-features"-->
-    <!--            class="nav nav-tabs"-->
-    <!--            role="tablist"-->
-    <!--          >-->
-    <!--            <li class="nav-item">-->
-    <!--              <a-->
-    <!--                id="toc-tab"-->
-    <!--                class="nav-link"-->
-    <!--                title="Inhaltsverzeichnis"-->
-    <!--                data-toggle="tab"-->
-    <!--                href="#tableofcontent"-->
-    <!--                role="tab"-->
-    <!--                aria-controls="tableofcontents"-->
-    <!--                aria-selected="false"-->
-    <!--                @click="showTabContent()"-->
-    <!--              >-->
-    <!--                <i class="fa fa-list" /><span class="ml-1 d-none d-md-inline">Inhaltsverzeichnis</span>-->
-    <!--              </a>-->
-    <!--            </li>-->
-    <!--            <li-->
-    <!--              hidden-->
-    <!--              class="nav-item"-->
-    <!--            >-->
-    <!--              <a-->
-    <!--                id="concepts-tab"-->
-    <!--                class="nav-link"-->
-    <!--                title="Concept Map"-->
-    <!--                data-toggle="tab"-->
-    <!--                href="#concepts"-->
-    <!--                role="tab"-->
-    <!--                aria-controls="concepts"-->
-    <!--                aria-selected="false"-->
-    <!--                @click="showTabContent()"-->
-    <!--              >-->
-    <!--                <i class="fa fa-map" /><span class="ml-1 d-none d-md-inline">Concept Map</span>-->
-    <!--              </a>-->
-    <!--            </li>-->
-    <!--            <li-->
-    <!--              hidden-->
-    <!--              class="nav-item"-->
-    <!--            >-->
-    <!--              <a-->
-    <!--                id="tests-tab"-->
-    <!--                class="nav-link"-->
-    <!--                title="Selbsttests"-->
-    <!--                data-toggle="tab"-->
-    <!--                href="#tests"-->
-    <!--                role="tab"-->
-    <!--                aria-controls="tests"-->
-    <!--                aria-selected="false"-->
-    <!--                @click="showTabContent()"-->
-    <!--              >-->
-    <!--                <i class="fa fa-check" /> <span class="ml-1 d-none d-md-inline">Selbsttestaufgaben</span>-->
-    <!--              </a>-->
-    <!--            </li>-->
-    <!--            <li class="nav-item">-->
-    <!--              <a-->
-    <!--                id="search-tab"-->
-    <!--                class="nav-link"-->
-    <!--                data-toggle="tab"-->
-    <!--                href="#search"-->
-    <!--                role="tab"-->
-    <!--                aria-controls="search"-->
-    <!--                aria-selected="false"-->
-    <!--                @click="showTabContent()"-->
-    <!--              >-->
-    <!--                <i class="fa fa-search" /> <span class="ml-1 d-none d-md-inline">Suche</span>-->
-    <!--              </a>-->
-    <!--            </li>-->
-    <!--          </ul>-->
-    <!--        </div>-->
-    <!--      </div>-->
-
-    <!--      &lt;!&ndash; Longpage Feature Tabs &ndash;&gt;-->
-    <!--      <div-->
-    <!--        id="myTabContent"-->
-    <!--        :style="{display: tabContentVisible ? 'block' : 'none'}"-->
-    <!--        class="tab-content"-->
-    <!--      >-->
-    <!--        <div-->
-    <!--          id="tableofcontent"-->
-    <!--          class="tab-pane fade p-3"-->
-    <!--          role="tabpanel"-->
-    <!--          aria-labelledby="toc-tab"-->
-    <!--        >-->
-    <!--          <TableOfContent-->
-    <!--            @hideTabContent="hideTabContent"-->
-    <!--            @log="log"-->
-    <!--          />-->
-    <!--        </div>-->
-    <!--        <div-->
-    <!--          id="search"-->
-    <!--          class="tab-pane fade p-3"-->
-    <!--          role="tabpanel"-->
-    <!--          aria-labelledby="search-tab"-->
-    <!--        >-->
-    <!--          <Search-->
-    <!--            @hideTabContent="hideTabContent"-->
-    <!--            @log="log"-->
-    <!--          />-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </nav>-->
-
-    <ReadingTime />
-    <ReadingProgress
-      :context="context"
-      @log="log"
-    />
+  <div
+    id="longpage-app"
+    class="row no-gutters w-100"
+  >
+    <div
+      id="longpage-main"
+      class="col vh-100-wo-nav overflow-y-auto row no-gutters justify-content-center p-3"
+    >
+      <div
+        id="longpage-content"
+        ref="contentRef"
+        class="generalbox center clearfix col"
+        lang="de"
+        v-html="content"
+      />
+      <div
+        class="col col-auto p-0 mx-1"
+        style="width: 1.5em;"
+      >
+        <!--        <note-indicators />-->
+      </div>
+    </div>
+    <longpage-sidebar class="col-auto" />
   </div>
 </template>
 
 <script>
 import {ACT, GET} from './store/types';
-import Log from './lib/Logging';
 import {mapActions, mapGetters} from 'vuex';
-import ReadingProgress from './components/ReadingProgress';
-import ReadingTime from './components/ReadingTime';
+import AnnotationBodyIndicators from '@/components/annotation/AnnotationBodyIndicators';
+import Log from './lib/Logging';
+import {LONGPAGE_CONTENT_ID} from '@/config/constants';
+import LongpageSidebar from '@/components/longpage-sidebar';
+import {ReadingTimeEstimator} from '@/lib/reading-time-estimator';
+import {toIdSelector} from '@/util/style';
 import Utils from './util/utils';
 
 export default {
     name: 'App',
     components: {
-      ReadingProgress,
-      ReadingTime,
+      NoteIndicators: AnnotationBodyIndicators,
+      LongpageSidebar,
+    },
+    props: {
+      content: {type: String, required: true},
     },
     data() {
       return {
         eventListeners: [],
+        readingTimeEstimator: new ReadingTimeEstimator(toIdSelector(LONGPAGE_CONTENT_ID)),
         tabContentVisible: false,
       };
     },
@@ -159,6 +69,9 @@ export default {
       });
     },
     mounted() {
+      Y.use('mathjax', () => {
+        MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
+      });
       this[ACT.FETCH_ENROLLED_USERS]();
       var _this = this;
       // Log bootstrap interactions
@@ -181,6 +94,9 @@ export default {
       $('.longpage-assignment-link').click(function() {
         _this.log('assignment_open', {target: $(this).attr('href')});
       });
+      ['h2', 'h3'].forEach(hTag => {
+        this.readingTimeEstimator.calcAndDisplay(hTag);
+      });
     },
     methods: {
       log(key, values) {
@@ -199,3 +115,9 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+#longpage-main {
+
+}
+</style>

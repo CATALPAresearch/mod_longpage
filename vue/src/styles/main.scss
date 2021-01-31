@@ -2,6 +2,7 @@
 @import 'table-of-contents.scss';
 @import 'variables.scss';
 @import './annotation/highlights.scss';
+@import './scroll-snapping.scss';
 @import 'utils.scss';
 
 html {
@@ -10,18 +11,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.last-modified {
-  margin-top: 30px;
-  text-align: center;
-  font-size: 0.8em;
-}
-
-#top-of-site-pixel-anchor {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  top: 500px;
-  left: 0;
+#longpage-sidebar {
+  border-left: 1px solid #dee2e6;
 }
 
 .justify-text {
@@ -62,7 +53,7 @@ html {
   font-size: 1em;
 }
 
-.longpage-container {
+#longpage-content {
   color: #333333;
   font-family: Helvetica, Arial, sans-serif;
   font-size: 18px;
@@ -73,14 +64,14 @@ html {
   padding-right: 0 !important;
 }
 
-.longpage-container>p {
+#longpage-content>p {
   margin: 0px 0px 10px 0px;
   padding: 0 10px;
   line-height: 1.6em;
   font-size: 1em;
 }
 
-.longpage-container h2 {
+#longpage-content h2 {
   font-size: 1.6em;
   line-height: 1.25em;
   width: 100%;
@@ -89,7 +80,7 @@ html {
   font-weight: bold;
 }
 
-.longpage-container h3 {
+#longpage-content h3 {
   font-size: 1.2em;
   line-height: 1.51em;
   margin: 20px 0px 15px 0px;
@@ -97,7 +88,7 @@ html {
   padding: 0 0 0 0px;
 }
 
-.longpage-container h4 {
+#longpage-content h4 {
   font-size: 1.1em;
   line-height: 1.41em;
   margin: 10px 0px 10px 0px;
@@ -105,7 +96,7 @@ html {
   padding: 0 0 0 0px;
 }
 
-.longpage-container h5 {
+#longpage-content h5 {
   font-size: 1.0em;
   line-height: 1.41em;
   margin: 10px 0px 10px 0px;
@@ -113,39 +104,39 @@ html {
   padding: 0 0 0 0px;
 }
 
-.longpage-container .longpage-image-block, .longpage-container .longpage-table-block {
+#longpage-content .longpage-image-block, #longpage-content .longpage-table-block {
   margin: 1em 0;
 }
 
-.longpage-container .longpage-image-block table {
+#longpage-content .longpage-image-block table {
   margin: 1em 0;
   border-bottom: solid 1px #333;
 }
 
-.longpage-container .longpage-image-block table tr:nth-child(1) {
+#longpage-content .longpage-image-block table tr:nth-child(1) {
   border-top: solid 1px #333;
   border-bottom: solid 1px #333;
 }
 
-.longpage-container .longpage-image-block table tr td {
+#longpage-content .longpage-image-block table tr td {
   vertical-align: top;
   padding: 4px 8px 4px 0;
 }
 
 /* bad hack for 1D */
 
-.longpage-container table {
+#longpage-content table {
   border-top: 2px solid #333;
   border-bottom: 2px solid #333;
   margin: 0 8px;
   width: 100%;
 }
 
-.longpage-container table thead {
+#longpage-content table thead {
   border-bottom: 2px solid #333;
 }
 
-.longpage-container table tbody tr td {
+#longpage-content table tbody tr td {
   border-bottom: 1px solid #ccc;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
@@ -156,12 +147,12 @@ html {
 
 /* END bad hack for 1D */
 
-.longpage-container .longpage-image-block img {
+#longpage-content .longpage-image-block img {
   max-height: 80vh;
   align-content: center;
 }
 
-.longpage-container .longpage-image-caption, .longpage-container .longpage-table-caption {
+#longpage-content .longpage-image-caption, #longpage-content .longpage-table-caption {
   font-size: 0.9em;
   font-weight: normal;
   margin-top: 0;
@@ -174,12 +165,12 @@ html {
   font-weight: bold;
 }
 
-.longpage-container ul, .longpage-container ol {
+#longpage-content ul, #longpage-content ol {
   margin: 1em 0em 2em 0.2em;
   padding-left: 1.2em;
 }
 
-.longpage-container ul li, .longpage-container ol li {
+#longpage-content ul li, #longpage-content ol li {
   padding-left: 0.3em;
 }
 
@@ -251,7 +242,7 @@ code {
   position: relative;
 }
 
-.longpage-container .reading-progress {
+#longpage-content .reading-progress {
   z-index: 40;
   display: block;
   height: 100%;
@@ -263,32 +254,32 @@ code {
   opacity: 0.3;
 }
 
-.longpage-container .progress-0 {
+#longpage-content .progress-0 {
   width: 1px;
   right: -10px;
 }
 
-.longpage-container .progress-1 {
+#longpage-content .progress-1 {
   width: 4px;
   right: -12px;
 }
 
-.longpage-container .progress-2 {
+#longpage-content .progress-2 {
   width: 8px;
   right: -14px;
 }
 
-.longpage-container .progress-3 {
+#longpage-content .progress-3 {
   width: 12px;
   right: -16px;
 }
 
-.longpage-container .progress-4 {
+#longpage-content .progress-4 {
   width: 16px;
   right: -18px;
 }
 
-.longpage-container .progress-5 {
+#longpage-content .progress-5 {
   width: 20px;
   right: -20px;
 }
@@ -353,10 +344,6 @@ code {
   width: 100%;
 }
 
-.header-not-at-top {
-  background-color: #28a745;
-}
-
 .longpage-marginal {
   align-content: flex-start;
   font-weight: bold;
@@ -417,7 +404,7 @@ code {
   #page-navbar .breadcrumb {
     display: none;
   }
-  .longpage-container {
+  #longpage-content {
     font-size: 14px;
   }
   h1, .h1 {
@@ -437,7 +424,7 @@ code {
   }
 }
 
-.longpage-container p, .longpage-container .longpage-assignment, .longpage-container ol, .longpage-container ul, .longpage-container h2, .longpage-container h3, .longpage-container h4 {
+#longpage-content p, #longpage-content .longpage-assignment, #longpage-content ol, #longpage-content ul, #longpage-content h2, #longpage-content h3, #longpage-content h4 {
   /*color: #28a745 !important;*/
 }
 

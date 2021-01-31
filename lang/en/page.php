@@ -37,6 +37,7 @@ $string['indicator:socialbreadth_help'] = 'This indicator is based on the social
 $string['legacyfiles'] = 'Migration of old course file';
 $string['legacyfilesactive'] = 'Active';
 $string['legacyfilesdone'] = 'Finished';
+$string['loading'] = 'Loading...';
 $string['modulename'] = 'Page';
 $string['modulename_help'] = 'The page module enables a teacher to create a web page resource using the text editor. A page can display text, images, sound, video, web links and embedded code, such as Google maps.
 

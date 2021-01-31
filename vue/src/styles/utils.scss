@@ -6,10 +6,18 @@
   font-weight: bold;
 }
 
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
 .text-small {
   font-size: 0.75rem;
 }
 
 .text-x-small {
   font-size: 0.5rem;
+}
+
+.vh-100-wo-nav {
+  height: calc(100vh - #{$moodle-navbar-height});
 }

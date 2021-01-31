@@ -37,6 +37,7 @@ $string['indicator:socialbreadth_help'] = 'This indicator is based on the social
 $string['legacyfiles'] = 'Migration of old course file';
 $string['legacyfilesactive'] = 'Aktive';
 $string['legacyfilesdone'] = 'Abgeschlossen';
+$string['loading'] = 'Wird geladen...';
 $string['modulename'] = 'Longpage';
 $string['modulename_help'] = 'Longpage ermöglocht Lehrenden länge Tetxte in Form von HTML abzulegen.';
 

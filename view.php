@@ -56,6 +56,7 @@ require_capability('mod/page:view', $context);
 page_view($page, $course, $cm, $context);
 
 $PAGE->set_url('/mod/page/view.php', array('id' => $cm->id));
+$PAGE->requires->css('/mod/page/styles.css', true);
 
 $options = empty($page->displayoptions) ? array() : unserialize($page->displayoptions);
 
@@ -71,39 +72,45 @@ if ($inpopup and $page->display == RESOURCELIB_DISPLAY_POPUP) {
 
 echo $OUTPUT->header();
 
-if (mod_page\blocking::tool_policy_accepted() == true) {
-    if (!isset($options['printheading']) || !empty($options['printheading'])) {
-        echo $OUTPUT->heading(format_string($page->name));
-    }
-
-    if (!isset($options['printintro']) || !empty($options['printintro'])) {
-        echo $OUTPUT->box(format_module_intro('page', $page, $cm->id), 'generalbox', 'intro');
-    }
-
-    echo '<div id="longpage-app-container">';
-    echo '<div id="longpage-header"></div>';
-    echo '<div id="longpage-main" class="row w-100 no-gutters border-top">';
+/**
+ * @param $page
+ * @param $context
+ * @return content
+ */
+function get_formatted_page_content($page, $context) {
     $content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_page', 'content', $page->revision);
     $formatoptions = new stdClass;
     $formatoptions->noclean = true;
     $formatoptions->context = $context;
-    $content = format_text($content, $page->contentformat, $formatoptions);
-    echo '<div id="longpage-text-container" class="m-auto longpage-container col row" lang="de">';
-    echo $OUTPUT->box($content, "generalbox center clearfix col");
-    echo '</div></div></div>';
+    return format_text($content, $page->contentformat, $formatoptions);
+}
 
-    $PAGE->requires->js_call_amd('mod_page/app-lazy', 'init', array($course->id, $page->id, format_string($page->name), $USER->id));
+if (mod_page\blocking::tool_policy_accepted() == true) {
+    $content = get_formatted_page_content($page, $context);
 
+    if (!isset($options['printheading']) || !empty($options['printheading'])) {
+        echo $OUTPUT->heading(format_string($page->name));
+    }
+    if (!isset($options['printintro']) || !empty($options['printintro'])) {
+        echo $OUTPUT->box(format_module_intro('page', $page, $cm->id), 'generalbox', 'intro');
+    }
+    echo '<div id="longpage-app-container" class="border-top border-bottom">';
+    echo '<div class="row no-gutters vh-50">';
+    echo '<div class="spinner-border m-auto " role="status"><span class="sr-only">'.get_string('loading').'</span></div>';
+    echo '</div></div>';
+
+    $PAGE->requires->js_call_amd(
+        'mod_page/app-lazy',
+        'init',
+        [$course->id, $page->id, format_string($page->name), $USER->id, $content]
+    );
 } else {
     echo "Umleitung";
     $url = new moodle_url('/mod/page/blocking-redirect.php');
     redirect($url);
 }
 
-
-
-
-$strlastmodified = get_string("lastmodified");
-echo "<div class=\"col-12\" lang=\"de\"><div class=\"last-modified modified\">$strlastmodified: ".userdate($page->timemodified)."</div></div>";
+echo '<p class="mt-3 text-center text-xs" lang="de">'.get_string('lastmodified').': '.userdate($page->timemodified).'</p>';
 
 echo $OUTPUT->footer();
+

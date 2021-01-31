@@ -6,6 +6,7 @@
  * - see works of Andreas Dengel
  *
  * TODO
+ * - Enable reading progress
  * - label fast scrolling and reading in data base
  * - contineously load read progress data
  * - visualize course progress
@@ -50,7 +51,7 @@ export default {
                 let last_entry = {};
                 var handleScrolling = function(entries) {
                     if (entries[0].boundingClientRect.y < topPadding) {
-                        // Document.getElementById('table-of-content').classList.add("scrollDown");//header-not-at-top
+                        // Document.getElementById('table-of-content').classList.add("scrollDown");//snapped-to-app-container
                     } else {
                         // Document.getElementById('table-of-content').classList.remove("scrollDown");
                     }

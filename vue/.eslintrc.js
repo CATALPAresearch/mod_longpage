@@ -8,6 +8,7 @@ module.exports = {
         'plugin:vue/vue3-recommended',
     ],
     globals: {
+        '$': 'readonly',
         MathJax: 'readonly',
     },
     rules: {

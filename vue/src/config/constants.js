@@ -24,6 +24,8 @@ export const LANGUAGE = 'de';
 
 export const LINE_HEIGHT_IN_PX = 27;
 
+export const LONGPAGE_APP_CONTAINER_ID = 'longpage-app-container';
+export const LONGPAGE_CONTENT_ID = 'longpage-content';
 export const LONGPAGE_HEADER_ID = 'longpage-header';
 export const LONGPAGE_MAIN_ID = 'longpage-main';
 export const LONGPAGE_TEXT_CONTAINER_ID = 'longpage-text-container';
@@ -46,3 +48,5 @@ export const SelectorType = Object.freeze({
     TEXT_QUOTE_SELECTOR: 'TextQuoteSelector',
     RANGE_SELECTOR: 'RangeSelector',
 });
+
+export const MOODLE_NAVBAR_HEIGHT_IN_PX = 50;

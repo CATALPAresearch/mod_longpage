@@ -9,10 +9,10 @@ import {i18n} from '@/config/i18n';
 import {toIdSelector} from '@/util/style';
 
 const useAnnotationSidebar = (store) => {
-    const rootContainerId = 'annotation-sidebar-wrapper';
+    const rootContainerId = 'longpage-sidebar';
     document
         .querySelector(toIdSelector(LONGPAGE_MAIN_ID))
-        .appendChild(createDiv({class: 'col col-4', id: rootContainerId}));
+        .appendChild(createDiv({class: 'col col-auto', id: rootContainerId}));
     createApp(AnnotationSidebar)
         .component('font-awesome-icon', FontAwesomeIcon)
         .component('font-awesome-layers', FontAwesomeLayers)
@@ -31,21 +31,7 @@ const useAnnotationToolbarPopover = (store) => {
         .mount(toIdSelector(rootContainerId));
 };
 
-const useAnnotationBodyIndicatorSidebar = (store) => {
-    const id = 'annotation-body-indicator-sidebar';
-    const root = createDiv({id, class: 'col col-auto p-0 mx-1', style: 'width: 1.5em;'});
-    document.querySelector(toIdSelector(LONGPAGE_TEXT_CONTAINER_ID)).appendChild(root);
-    createApp(AnnotationBodyIndicators, {parentElement: root})
-        .component('font-awesome-icon', FontAwesomeIcon)
-        .component('font-awesome-layers', FontAwesomeLayers)
-        .component('font-awesome-layers-text', FontAwesomeLayersText)
-        .use(i18n)
-        .use(store)
-        .mount(toIdSelector(id));
-};
-
 export const useAnnotations = (store) => {
     useAnnotationToolbarPopover(store);
     useAnnotationSidebar(store);
-    useAnnotationBodyIndicatorSidebar(store);
 };

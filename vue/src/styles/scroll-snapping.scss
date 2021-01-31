@@ -1,0 +1,33 @@
+@import './variables.scss';
+
+html {
+  scroll-snap-type: y proximity;
+  scroll-padding: $moodle-navbar-height 0 0 0;
+}
+
+#longpage-app {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+
+#longpage-text-container-wrapper {
+  height: calc(100vh - #{$moodle-navbar-height});
+  overflow: hidden;
+}
+
+.snapped-to-app-container #longpage-sidebar-main,
+.snapped-to-app-container #longpage-text-container-wrapper {
+  overflow-y: auto;
+}
+
+.snapped-to-app-container::-webkit-scrollbar {
+  overflow-y: hidden;
+}
+
+//#longpage-sidebar-main,
+//#longpage-text-container-wrapper {
+//  height: calc(100vh - #{$moodle-navbar-height});
+//}
+
+
