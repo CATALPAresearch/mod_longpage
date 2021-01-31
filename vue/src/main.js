@@ -30,7 +30,7 @@ export const init = (courseId, pageId, pageName, userId, content) => {
           .component('font-awesome-layers', FontAwesomeLayers)
           .component('font-awesome-layers-text', FontAwesomeLayersText)
           .mount(toIdSelector(LONGPAGE_APP_CONTAINER_ID));
-      // UseAnnotations(store);
+      useAnnotations(store);
   } catch (e) {
     /* eslint-disable no-console */
     console.error(e);

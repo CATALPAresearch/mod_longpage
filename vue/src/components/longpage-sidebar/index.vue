@@ -1,21 +1,20 @@
 <template>
   <div
     id="longpage-sidebar"
-    class="h-100 row"
+    class="row no-gutters vh-100-wo-nav mw-75"
   >
     <div
       id="longpage-sidebar-tab-content"
-      class="tab-content col"
+      class="tab-content col h-100"
     >
-      <div
+      <component
+        :is="components[item.key]"
         v-for="item in items"
         :id="item.id"
         :key="item.key"
         class="tab-pane fade show"
         role="tabpanel"
-      >
-        Tab content
-      </div>
+      />
     </div>
     <div
       id="lonpage-sidebar-tab"
@@ -39,6 +38,7 @@
 
 <script>
 // Aria-labelledby, active
+import AnnotationSidebar from '@/components/annotation/AnnotationSidebar';
 
 export default {
   name: 'LongpageSidebar',
@@ -48,7 +48,10 @@ export default {
         {key: 'annotations', id: 'tab-annotations', icon: ['fa', 'fa-comment']},
         {key: 'tableOfContent', id: 'tab-table-of-contents', icon: ['fa', 'fa-list']},
         {key: 'search', id: 'tab-search', icon: ['fa', 'fa-search']},
-      ]
+      ],
+      components: {
+        annotations: AnnotationSidebar,
+      },
     };
   }
 };

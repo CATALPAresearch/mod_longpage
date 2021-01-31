@@ -18,7 +18,7 @@
         class="col col-auto p-0 mx-1"
         style="width: 1.5em;"
       >
-        <!--        <note-indicators />-->
+        <note-indicators />
       </div>
     </div>
     <longpage-sidebar class="col-auto" />

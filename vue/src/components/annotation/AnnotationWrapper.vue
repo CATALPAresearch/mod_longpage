@@ -9,7 +9,7 @@
 
 <script>
 import {ACT, GET} from '@/store/types';
-import {ArrowDirection, LONGPAGE_MAIN_ID, LONGPAGE_TEXT_CONTAINER_ID, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
+import {ArrowDirection, LONGPAGE_APP_ID, LONGPAGE_CONTENT_ID} from '@/config/constants';
 import AnnotationToolbarPopover from './AnnotationToolbarPopover.vue';
 import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-toolbar-popover-positioner';
 import {SelectionListener} from '@/lib/annotation/selection-listener';
@@ -20,9 +20,6 @@ import {mapActions, mapGetters} from 'vuex';
 import {setHighlightsVisible} from '@/lib/annotation/highlighting';
 import {addAnnotationSelectionListener} from '@/lib/annotation/highlight-selection-listener';
 import {PageSegment} from '@/lib/annotation/types/page-segment';
-import scrollIntoView from 'scroll-into-view-if-needed';
-
-const getAnnotationCardId = annotationId => `annotation-card-${annotationId}`;
 
 export default {
   name: 'AnnotationWrapper',
@@ -71,13 +68,13 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.targetRoot = document.getElementById(LONGPAGE_TEXT_CONTAINER_ID);
+      this.targetRoot = document.getElementById(LONGPAGE_CONTENT_ID);
       this.selectionListener.subscribe(
           this.onSelection.bind(this),
           this.onClearSelection.bind(this),
       );
       this.anchoring = new Anchoring(this.targetRoot, this.$store);
-      setHighlightsVisible(document.getElementById(LONGPAGE_MAIN_ID), true);
+      setHighlightsVisible(document.getElementById(LONGPAGE_APP_ID), true);
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
       addAnnotationSelectionListener(annotations => {
         if (annotations.length > 0) this[ACT.FILTER_ANNOTATIONS]({ids: annotations.map(annotation => annotation.id)});

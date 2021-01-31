@@ -1,16 +1,18 @@
 <template>
-  <annotation-body-indicator
-    v-for="(annotations, top) in indicatorTopToAnnotationsMap"
-    :key="`${top}-${annotations.length}-${annotations.reduce((sum, annotation) => sum + (annotation.hasBody ? 1 : 0))}`"
-    :annotations="annotations"
-    :top="Number(top)"
-  />
+  <div ref="annotationBodyIndicators">
+    <annotation-body-indicator
+      v-for="(annotations, top) in indicatorTopToAnnotationsMap"
+      :key="`${top}-${annotations.length}-${annotations.reduce((sum, annotation) => sum + (annotation.hasBody ? 1 : 0))}`"
+      :annotations="annotations"
+      :top="Number(top)"
+    />
+  </div>
 </template>
 
 <script>
 import AnnotationBodyIndicator from '@/components/annotation/AnnotationBodyIndicator';
 import emitter from 'tiny-emitter/instance';
-import {LINE_HEIGHT_IN_PX, LONGPAGE_TEXT_CONTAINER_ID} from '@/config/constants';
+import {LINE_HEIGHT_IN_PX, LONGPAGE_CONTENT_ID} from '@/config/constants';
 import {MUTATE} from '@/store/types';
 import {ResizeObserver} from '@juggle/resize-observer';
 
@@ -22,17 +24,16 @@ import {ResizeObserver} from '@juggle/resize-observer';
     components: {
       AnnotationBodyIndicator
     },
-    props: {
-      parentElement: {type: Element, required: true},
-    },
     data() {
       return {
         anchors: [],
         indicatorTopToAnnotationsMap: {},
+        parentElement: null,
       };
     },
     mounted() {
-      this.updateOnResize(document.getElementById(LONGPAGE_TEXT_CONTAINER_ID));
+      this.parentElement = this.$refs.annotationBodyIndicators;
+      this.updateOnResize(document.getElementById(LONGPAGE_CONTENT_ID));
       this.updateOnAnchorUpdates();
       this.updateOnAnnotationUpdates();
     },

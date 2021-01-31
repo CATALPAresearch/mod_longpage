@@ -25,10 +25,9 @@ export const LANGUAGE = 'de';
 export const LINE_HEIGHT_IN_PX = 27;
 
 export const LONGPAGE_APP_CONTAINER_ID = 'longpage-app-container';
+export const LONGPAGE_APP_ID = 'longpage-app';
 export const LONGPAGE_CONTENT_ID = 'longpage-content';
-export const LONGPAGE_HEADER_ID = 'longpage-header';
 export const LONGPAGE_MAIN_ID = 'longpage-main';
-export const LONGPAGE_TEXT_CONTAINER_ID = 'longpage-text-container';
 
 export const MoodleWSMethods = Object.freeze({
     GET_ANNOTATIONS: 'mod_page_get_annotations',
