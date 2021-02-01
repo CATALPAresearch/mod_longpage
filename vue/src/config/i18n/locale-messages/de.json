@@ -13,7 +13,6 @@
   "annotationSidebar": {
     "filter": "Filter",
     "filterByTextSelection": "Zu Textauswahl und Filtern passsende Annotationen angezeigt",
-    "heading": "Annotationen",
     "notYetCreatedAnnotations": "Es wurden bisher noch keine Annotationen erstellt. Wählen Sie eine Textpassage aus, um eine Annotation zu erstellen.",
     "showAll": "Zeige alle"
   },
@@ -22,5 +21,15 @@
   },
   "responseForm": {
     "placeholder": "Antworte"
+  },
+  "sidebar": {
+    "tabs": {
+      "annotations": {
+        "heading": "Annotationen"
+      },
+      "tableOfContents": {
+        "heading": "Inhaltsverzeichnis"
+      }
+    }
   }
 }

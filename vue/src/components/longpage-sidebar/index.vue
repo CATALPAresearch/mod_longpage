@@ -12,7 +12,7 @@
         v-for="item in items"
         :id="item.id"
         :key="item.key"
-        class="tab-pane fade show"
+        class="tab-pane fade show h-100 overflow-y-auto overflow-x-hidden"
         role="tabpanel"
       />
     </div>
@@ -38,7 +38,8 @@
 
 <script>
 // Aria-labelledby, active
-import AnnotationSidebar from '@/components/annotation/AnnotationSidebar';
+import AnnotationSidebar from '@/components/longpage-sidebar/AnnotationSidebar';
+import TableOfContents from '@/components/longpage-sidebar/TableOfContents';
 
 export default {
   name: 'LongpageSidebar',
@@ -46,11 +47,12 @@ export default {
     return {
       items: [
         {key: 'annotations', id: 'tab-annotations', icon: ['fa', 'fa-comment']},
-        {key: 'tableOfContent', id: 'tab-table-of-contents', icon: ['fa', 'fa-list']},
+        {key: 'tableOfContents', id: 'tab-table-of-contents', icon: ['fa', 'fa-list']},
         {key: 'search', id: 'tab-search', icon: ['fa', 'fa-search']},
       ],
       components: {
         annotations: AnnotationSidebar,
+        tableOfContents: TableOfContents,
       },
     };
   }

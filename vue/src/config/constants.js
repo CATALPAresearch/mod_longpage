@@ -38,8 +38,8 @@ export const MoodleWSMethods = Object.freeze({
 });
 
 export const SCROLL_INTO_VIEW_OPTIONS = {
-    block: 'center',
-    scrollMode: 'if-needed'
+    behavior: 'smooth',
+    block: 'start',
 };
 
 export const SelectorType = Object.freeze({
