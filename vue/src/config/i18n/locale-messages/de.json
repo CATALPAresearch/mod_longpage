@@ -27,6 +27,9 @@
       "annotations": {
         "heading": "Annotationen"
       },
+      "search": {
+        "heading": "Volltextsuche"
+      },
       "tableOfContents": {
         "heading": "Inhaltsverzeichnis"
       }

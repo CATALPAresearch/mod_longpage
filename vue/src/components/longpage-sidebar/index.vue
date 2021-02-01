@@ -48,7 +48,6 @@ export default {
       items: [
         {key: 'annotations', id: 'tab-annotations', icon: ['fa', 'fa-comment']},
         {key: 'tableOfContents', id: 'tab-table-of-contents', icon: ['fa', 'fa-list']},
-        {key: 'search', id: 'tab-search', icon: ['fa', 'fa-search']},
       ],
       components: {
         annotations: AnnotationSidebar,
