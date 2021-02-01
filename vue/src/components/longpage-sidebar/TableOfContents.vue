@@ -32,6 +32,7 @@
 import {LONGPAGE_CONTENT_ID, LONGPAGE_MAIN_ID, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
 import scrollIntoView from 'scroll-into-view-if-needed';
 import {toIdSelector} from '@/util/style';
+import {findLast} from 'lodash';
 
 export default {
     name: 'TableOfContents',
@@ -49,7 +50,7 @@ export default {
         return {
             hClass: 'in-toc',
             tocEntries: [],
-            activeTOCEntryIndex: -1,
+            activeTOCEntryIndex: 0,
         };
     },
     computed: {
@@ -65,10 +66,15 @@ export default {
         initHIntersectionObserver() {
           const root = document.getElementById(LONGPAGE_MAIN_ID);
           const intersectionObserver = new IntersectionObserver(entries => {
-            const tocEntryIndex = this.tocEntries.findIndex(entry => entry.hId === entries[0].target.id);
-            if (entries[0].isIntersecting) this.activeTOCEntryIndex = tocEntryIndex;
-            else if (entries[0].boundingClientRect.y > root.getBoundingClientRect().y) {
-              this.activeTOCEntryIndex = tocEntryIndex - 1;
+            const lastIntersectingEntry = findLast(entries, e => e.isIntersecting);
+            if (lastIntersectingEntry) {
+             this.activeTOCEntryIndex = this.tocEntries.findIndex(e => e.hId === lastIntersectingEntry.target.id);
+             return;
+            }
+
+            const lastEntry = entries[entries.length - 1];
+            if (lastEntry.boundingClientRect.y > root.getBoundingClientRect().y) {
+              this.activeTOCEntryIndex = this.tocEntries.findIndex(e => e.hId === lastEntry.target.id) - 1;
             }
           }, {root});
           this.tocEntries.map(entry => entry.hEl).forEach(targetEl => intersectionObserver.observe(targetEl));
@@ -83,7 +89,7 @@ export default {
             });
         },
         scrollIntoView(el) {
-          scrollIntoView(el, SCROLL_INTO_VIEW_OPTIONS);
+          scrollIntoView(el, {...SCROLL_INTO_VIEW_OPTIONS, boundary: document.getElementById(LONGPAGE_MAIN_ID)});
         },
     },
 };
