@@ -1,9 +1,9 @@
-import ajax from 'core/ajax';
 import {AnnotationTargetType, MoodleWSMethods} from '@/config/constants';
-import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
 import {GET, ACT, MUTATE} from '../types';
+import {Annotation} from '@/lib/annotation/types/annotation';
+import ajax from 'core/ajax';
+import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
 import MappingService from '@/services/mapping-service';
-
 
 export default {
     state: {
@@ -12,6 +12,13 @@ export default {
     },
     getters: {
         [GET.ANNOTATION_FILTER]: ({annotationFilter}) => annotationFilter,
+        [GET.ANNOTATION_WITH_CONTEXT]: (_, getters) => annotation => {
+            return new Annotation({
+                ...annotation,
+                pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
+                userId: getters[GET.LONGPAGE_CONTEXT].userId,
+            });
+        },
         [GET.ANNOTATIONS]: ({annotations}) => annotations,
         [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT]: (_, getters) => {
             return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.PAGE_SEGMENT);
@@ -34,14 +41,15 @@ export default {
         },
     },
     actions: {
-        [ACT.CREATE_ANNOTATION]({commit}, annotation) {
+        [ACT.CREATE_ANNOTATION]({commit, getters}, annotation) {
             const methodname = MoodleWSMethods.CREATE_ANNOTATION;
+            const annotationWithContext = getters[GET.ANNOTATION_WITH_CONTEXT](annotation);
             ajax.call([{
                 methodname,
-                args: MappingService[methodname](annotation),
+                args: MappingService[methodname](annotationWithContext),
                 done: ({id}) => {
-                    annotation.id = id;
-                    commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
+                    annotationWithContext.id = id;
+                    commit(MUTATE.ADD_ANNOTATIONS, [annotationWithContext]);
                 },
                 fail: (e) => {
                     console.error(`"${methodname}" failed`, e);
