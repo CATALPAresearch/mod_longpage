@@ -32,4 +32,8 @@ export class Annotation {
     get hasBody() {
         return Boolean(this.body) || this.tags.length > 0;
     }
+
+    get created() {
+        return typeof this.id === 'number';
+    }
 }

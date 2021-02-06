@@ -22,7 +22,7 @@ const MappingService = {
                 target: annotation.target.map(target => (target instanceof PageSegment ? {
                     type: AnnotationTargetType.PAGE_SEGMENT,
                     selector: this._mapSelectorsClientToServer(target.selector),
-                    styleclass: target.styleclass,
+                    styleclass: target.styleClass,
                 } : {
                     type: AnnotationTargetType.ANNOTATION,
                     annotationid: target.annotationId,
@@ -40,7 +40,6 @@ const MappingService = {
                 switch (t.type) {
                     case AnnotationTargetType.PAGE_SEGMENT:
                         return new PageSegment({
-                            ...pick(t, ['styleclass']),
                             selector: t.selector.map(s => {
                                 const type = this._mapSelectorTypeServerToClient(s.type);
                                 switch (type) {
@@ -61,6 +60,7 @@ const MappingService = {
                                     default: return {...s, type};
                                 }
                             }),
+                            styleClass: t.styleclass,
                         });
                     case AnnotationTargetType.ANNOTATION:
                         return new TargetAnnotationReference({annotationId: t.annotationid});
@@ -82,7 +82,7 @@ const MappingService = {
             },
         });
     },
-    _mapSelectorsClientToServer: function(selectors) {
+    _mapSelectorsClientToServer(selectors) {
         return selectors.map(selector => {
             const type = this._mapSelectorTypeClientToServer(selector.type);
             if (selector.type === SelectorType.TEXT_POSITION_SELECTOR) {

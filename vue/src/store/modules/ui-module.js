@@ -2,14 +2,14 @@ import {GET, MUTATE} from '../types';
 
 export default {
     state: {
-        sidebarTabOpened: undefined
+        sidebarTabOpenedKey: undefined
     },
     getters: {
-        [GET.SIDEBAR_TAB_OPENED]: ({sidebarTabOpened}) => sidebarTabOpened
+        [GET.SIDEBAR_TAB_OPENED_KEY]: ({sidebarTabOpenedKey}) => sidebarTabOpenedKey
     },
     mutations: {
-        [MUTATE.SET_SIDEBAR_TAB_OPENED](state, sidebarTabOpened) {
-            state.sidebarTabOpened = sidebarTabOpened;
+        [MUTATE.SET_SIDEBAR_TAB_OPENED_KEY](state, sidebarTabOpenedKey) {
+            state.sidebarTabOpenedKey = sidebarTabOpenedKey;
         },
     },
 };

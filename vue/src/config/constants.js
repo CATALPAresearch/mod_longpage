@@ -37,6 +37,11 @@ export const MoodleWSMethods = Object.freeze({
     UPDATE_ANNOTATION: 'mod_page_update_annotation',
 });
 
+export const SidebarTabKeys = Object.freeze({
+    ANNOTATIONS: 'annotations',
+    TOC: 'toc'
+});
+
 export const SCROLL_INTO_VIEW_OPTIONS = {
     behavior: 'smooth',
     block: 'start',

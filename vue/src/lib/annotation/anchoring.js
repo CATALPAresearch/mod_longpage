@@ -130,7 +130,7 @@ export class Anchoring {
             const normedRange = range.normalize(this.root);
             const highlights = /** @type {AnnotationHighlight[]} */ (highlightRange(
                 normedRange,
-                anchor.target.styleclass
+                anchor.target.styleClass
             ));
             // You need to put some information on the highlight so when it is clicked later on we can identify the annotation
             highlights.forEach(h => {

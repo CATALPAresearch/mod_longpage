@@ -3,7 +3,8 @@
     ref="annotationToolbarPopover"
     v-bind="annotationToolbarPopoverProps"
     class="longpage-highlights-always-on"
-    @highlight="createAnnotation"
+    @note-clicked="createNote"
+    @highlight-clicked="createHighlight"
   />
 </template>
 
@@ -14,8 +15,8 @@ import AnnotationToolbarPopover from './AnnotationToolbarPopover.vue';
 import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-toolbar-popover-positioner';
 import {SelectionListener} from '@/lib/annotation/selection-listener';
 import {describe} from '@/lib/annotation/hypothesis/anchoring/html';
-import {Annotation} from '@/lib/annotation/types/annotation';
 import {Anchoring} from '@/lib/annotation/anchoring';
+import {Annotation} from '@/lib/annotation/types/annotation';
 import {mapActions, mapGetters} from 'vuex';
 import {setHighlightsVisible} from '@/lib/annotation/highlighting';
 import {addAnnotationSelectionListener} from '@/lib/annotation/highlight-selection-listener';
@@ -86,19 +87,24 @@ export default {
     this.selectionListener.unsubscribe();
   },
   methods: {
-    ...mapActions([ACT.FILTER_ANNOTATIONS]),
-    createAnnotation(styleClass) {
-      Promise.all(this.selectedRanges.map(this.getSelectors)).then(selectorsInSelectors => {
-        const annotation = new Annotation({
-          userId: this.$store.getters[GET.LONGPAGE_CONTEXT].userId,
-          pageId: this.$store.getters[GET.LONGPAGE_CONTEXT].pageId,
-          target: selectorsInSelectors.map(selectors => new PageSegment({
-            selector: selectors,
-            styleclass: styleClass,
-          })),
-        });
-        this.$store.dispatch(ACT.CREATE_ANNOTATION, annotation);
+    ...mapActions([ACT.CREATE_ANNOTATION, ACT.FILTER_ANNOTATIONS]),
+    async createHighlight(styleClass) {
+      this[ACT.CREATE_ANNOTATION](await this.getAnnotation(styleClass));
+    },
+    async createNote() {
+
+    },
+    async getAnnotation(styleClass) {
+      return new Annotation({
+        target: await this.getAnnotationTarget(styleClass)
       });
+    },
+    async getAnnotationTarget(styleClass) {
+      const selectorsInSelectors = await Promise.all(this.selectedRanges.map(this.getSelectors));
+      return selectorsInSelectors.map(selectors => new PageSegment({
+        selector: selectors,
+        styleClass,
+      }));
     },
     getSelectors(range) {
       return describe(this.targetRoot, range);

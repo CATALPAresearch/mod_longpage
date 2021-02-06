@@ -22,17 +22,16 @@
         :key="index"
         class="annotation-toolbar-item dot"
         :class="[option]"
-        @click.prevent="$emit('highlight', option)"
+        @click.prevent="$emit('highlight-clicked', option)"
       >
         A
       </div>
       <div
-        v-show="showDelete"
-        class="annotation-toolbar-item"
+        class="annotation-toolbar-item dot"
       >
         <i
-          class="fa fa-trash"
-          @click.prevent="$emit('delete')"
+          class="fa fa-comment"
+          @click.prevent="$emit('note-clicked')"
         />
       </div>
     </div>
@@ -59,7 +58,7 @@
       visible: {type: Boolean, default: false},
       zIndex: {type: Number, default: 999999},
     },
-    emits: ['highlight'],
+    emits: ['highlight-clicked', 'note-clicked'],
     data() {
       return {
         ArrowDirection,
@@ -127,7 +126,6 @@
 .dot {
   height: 20px;
   width: 20px;
-  background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
   line-height: 20px;
