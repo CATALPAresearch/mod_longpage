@@ -64,7 +64,7 @@
         <div class="col col-auto p-0">
           <expandable-highlight-excerpt
             :highlighted-text="highlightedText"
-            :highlight-style-class="annotationTarget.styleclass"
+            :highlight-style-class="annotationTarget.styleClass"
             @highlight-clicked="selectAnnotation"
           />
         </div>
