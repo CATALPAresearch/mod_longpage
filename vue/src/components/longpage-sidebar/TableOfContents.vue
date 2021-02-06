@@ -1,29 +1,31 @@
 <template>
-  <div>
-    <div class="pt-3 px-3 bg-white sticky-top">
-      <h3>
-        {{ $t('sidebar.tabs.tableOfContents.heading') }}
-      </h3>
-      <hr>
-    </div>
-    <div
-      class="pb-3 px-3"
-    >
-      <nav
-        class="nav flex-column nav-pills"
-        aria-orientation="vertical"
+  <div class="h-100">
+    <div class="h-100 d-flex flex-column">
+      <div class="p-3 bg-white">
+        <h3 class="m-0">
+          {{ $t('sidebar.tabs.tableOfContents.heading') }}
+        </h3>
+      </div>
+      <hr class="my-0 mx-3">
+      <div
+        class="p-3 flex-shrink-1 flex-grow-1 overflow-y-auto overflow-x-hidden"
       >
-        <a
-          v-for="(entry, index) in tocEntries"
-          :key="entry.hId"
-          class="nav-link"
-          :class="{active: index === activeTOCEntryIndex}"
-          :href="`#${entry.hId}`"
-          data-toggle="pill"
-          :style="`margin-left: ${entry.hLvl*2}rem`"
-          @click="scrollIntoView(entry.hEl)"
-        >{{ entry.text }}</a>
-      </nav>
+        <nav
+          class="nav flex-column nav-pills"
+          aria-orientation="vertical"
+        >
+          <a
+            v-for="(entry, index) in tocEntries"
+            :key="entry.hId"
+            class="nav-link"
+            :class="{active: index === activeTOCEntryIndex}"
+            :href="`#${entry.hId}`"
+            data-toggle="pill"
+            :style="`margin-left: ${entry.hLvl*2}rem`"
+            @click="scrollIntoView(entry.hEl)"
+          >{{ entry.text }}</a>
+        </nav>
+      </div>
     </div>
   </div>
 </template>

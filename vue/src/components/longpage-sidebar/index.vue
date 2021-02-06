@@ -14,7 +14,7 @@
         v-show="tab.key === tabOpenedKey"
         :id="tab.id"
         :key="tab.key"
-        class="fade show h-100 overflow-y-auto overflow-x-hidden"
+        class="fade show h-100"
       />
     </div>
     <div
