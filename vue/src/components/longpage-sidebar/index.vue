@@ -8,7 +8,7 @@
       class="tab-content col h-100"
     >
       <component
-        :is="components[item.key]"
+        :is="item.key"
         v-for="item in items"
         :id="item.id"
         :key="item.key"
@@ -43,16 +43,16 @@ import TableOfContents from '@/components/longpage-sidebar/TableOfContents';
 
 export default {
   name: 'LongpageSidebar',
+  components: {
+    annotations: AnnotationSidebar,
+    tableOfContents: TableOfContents,
+  },
   data() {
     return {
       items: [
         {key: 'annotations', id: 'tab-annotations', icon: ['fa', 'fa-comment']},
         {key: 'tableOfContents', id: 'tab-table-of-contents', icon: ['fa', 'fa-list']},
       ],
-      components: {
-        annotations: AnnotationSidebar,
-        tableOfContents: TableOfContents,
-      },
     };
   }
 };

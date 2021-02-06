@@ -25,7 +25,7 @@ export default {
   name: 'ExpandableHighlightExcerpt',
   props: {
     highlightedText: {type: String, required: true},
-    highlightStyleClass: {type: String, required: true},
+    highlightStyleClass: {type: String},
   },
   data() {
     return {
