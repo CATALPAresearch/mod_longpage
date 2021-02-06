@@ -15,8 +15,8 @@
         id="annotation-card-container"
       >
         <annotation-card
-          v-for="annotation in annotationsOrderedByTextPosition"
-          :key="annotation.id"
+          v-for="(annotation, index) in annotationsOrderedByTextPosition"
+          :key="annotation.id || `annotation-card-${index}`"
           :annotation="annotation"
           class="my-3"
         />
@@ -58,6 +58,7 @@ export default {
     ...mapGetters({
       annotations: GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT_FILTERED,
     }),
+    ...mapGetters([GET.ANNOTATION_EDITS]),
   },
 };
 </script>
