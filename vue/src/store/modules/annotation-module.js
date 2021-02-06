@@ -4,9 +4,11 @@ import {Annotation} from '@/lib/annotation/types/annotation';
 import ajax from 'core/ajax';
 import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
 import MappingService from '@/services/mapping-service';
+import {cloneDeep} from 'lodash';
 
 export default {
     state: {
+        annotationsInEdit: [],
         annotations: [],
         annotationFilter: {},
     },
@@ -20,6 +22,7 @@ export default {
             });
         },
         [GET.ANNOTATIONS]: ({annotations}) => annotations,
+        [GET.ANNOTATIONS_IN_EDIT]: ({annotationsInEdit}) => annotationsInEdit,
         [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT]: (_, getters) => {
             return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.PAGE_SEGMENT);
         },
@@ -32,6 +35,7 @@ export default {
         [GET.ANNOTATIONS_TARGETING_ANNOTATION]: (_, getters) => {
             return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.ANNOTATION);
         },
+        [GET.PROVISIONAL_ANNOTATION_ID]: ({annotationsInEdit}) => `new-${annotationsInEdit.length}`,
         [GET.RESPONSES_TO]: (_, getters) => (annotationId) => {
             return getters[GET.ANNOTATIONS_TARGETING_ANNOTATION].filter(
                 annotation => annotation.target.some(
@@ -41,20 +45,34 @@ export default {
         },
     },
     actions: {
+        [ACT.START_EDITING_ANNOTATION]({commit, getters}, annotation) {
+            if (!annotation.created) {
+                annotation.id = getters[GET.PROVISIONAL_ANNOTATION_ID];
+                commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
+            }
+            commit(MUTATE.ADD_ANNOTATION_IN_EDIT, cloneDeep(annotation));
+        },
+        [ACT.STOP_EDITING_ANNOTATION]({commit}, annotation) {
+            if (!annotation.created) commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
+            commit(MUTATE.REMOVE_ANNOTATION_IN_EDIT_BY_ID, annotation.id);
+        },
         [ACT.CREATE_ANNOTATION]({commit, getters}, annotation) {
             const methodname = MoodleWSMethods.CREATE_ANNOTATION;
             const annotationWithContext = getters[GET.ANNOTATION_WITH_CONTEXT](annotation);
-            ajax.call([{
-                methodname,
-                args: MappingService[methodname](annotationWithContext),
-                done: ({id}) => {
-                    annotationWithContext.id = id;
-                    commit(MUTATE.ADD_ANNOTATIONS, [annotationWithContext]);
-                },
-                fail: (e) => {
-                    console.error(`"${methodname}" failed`, e);
-                }
-            }]);
+            return new Promise((resolve) => {
+                ajax.call([{
+                    methodname,
+                    args: MappingService[methodname](annotationWithContext),
+                    done: ({id}) => {
+                        annotationWithContext.id = id;
+                        commit(MUTATE.ADD_ANNOTATIONS, [annotationWithContext]);
+                        resolve(id);
+                    },
+                    fail: (e) => {
+                        console.error(`"${methodname}" failed`, e);
+                    }
+                }]);
+            });
         },
         [ACT.DELETE_ANNOTATION]({commit}, annotation) {
             const methodname = MoodleWSMethods.DELETE_ANNOTATION;
@@ -89,13 +107,18 @@ export default {
         [ACT.FILTER_ANNOTATIONS]({commit}, filter) {
            commit(MUTATE.SET_ANNOTATION_FILTER, filter);
         },
-        [ACT.UPDATE_ANNOTATION]({commit}, annotationUpdate) {
+        [ACT.UPDATE_ANNOTATION]({commit, dispatch}, annotationUpdated) {
+            if (!annotationUpdated.created) {
+                dispatch(ACT.CREATE_ANNOTATION, annotationUpdated);
+                return;
+            }
+
             const methodname = MoodleWSMethods.UPDATE_ANNOTATION;
             ajax.call([{
                 methodname,
-                args: MappingService[methodname](annotationUpdate),
+                args: MappingService[methodname](annotationUpdated),
                 done: () => {
-                    commit(MUTATE.UPDATE_ANNOTATION, annotationUpdate);
+                    commit(MUTATE.UPDATE_ANNOTATION, annotationUpdated);
                 },
                 fail: (e) => {
                     console.error(`"${methodname}" failed`, e);
@@ -106,6 +129,15 @@ export default {
     mutations: {
         [MUTATE.ADD_ANNOTATIONS](state, annotations) {
             state.annotations.push(...annotations);
+        },
+        [MUTATE.ADD_ANNOTATION_IN_EDIT](state, annotationsInEdit) {
+            state.annotationsInEdit.push(annotationsInEdit);
+        },
+        [MUTATE.REMOVE_ANNOTATION_BY_ID](state, id) {
+            state.annotations = state.annotations.filter(annotation => annotation.id !== id);
+        },
+        [MUTATE.REMOVE_ANNOTATION_IN_EDIT_BY_ID](state, id) {
+            state.annotationsInEdit = state.annotationsInEdit.filter(annotation => annotation.id !== id);
         },
         [MUTATE.REMOVE_ANNOTATIONS](state, annotations) {
             state.annotations = state.annotations.filter(annotation => !annotations.includes(annotation));

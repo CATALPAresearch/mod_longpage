@@ -24,7 +24,7 @@
           <!--          <font-awesome-icon icon="ellipsis-v" />-->
           <div class="annotation-actions text-right">
             <div
-              v-if="!isBeingEdited"
+              v-if="!annotationUpdate"
               class="d-flex justify-content-between"
             >
               <font-awesome-icon
@@ -72,11 +72,12 @@
       <div class="row no-gutters my-1">
         <div class="col col-12 p-0">
           <span
-            v-if="!isBeingEdited"
+            v-show="!annotationUpdate"
             ref="annotationBody"
+            class="annotation-body"
           >{{ annotation.body }}</span>
           <div
-            v-else
+            v-if="annotationUpdate"
             class="text-right"
           >
             <textarea
@@ -119,23 +120,13 @@
 <script>
 import {ACT, GET} from '@/store/types';
 import {Annotation} from '@/lib/annotation/types/annotation';
-import {cloneDeep} from 'lodash';
 import DateTimeText from '@/components/DateTimeText';
 import {AnnotationTargetType, HighlightingConfig, SCROLL_INTO_VIEW_OPTIONS, SelectorType} from '@/config/constants';
 import {mapActions, mapGetters} from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
 import UserRoleButton from '@/components/UserRoleButton';
-import Y from 'core/yui';
 import scrollIntoView from 'scroll-into-view-if-needed';
 import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/annotation-sidebar/ExpandableHighlightExcerpt';
-
-/*
-  TODO:
-    - Add to user info:
-      - profile,
-      - role,
-      - roleOverview.
- */
 
 export default {
   name: 'AnnotationCard',
@@ -148,13 +139,10 @@ export default {
   props: {
     annotation: {type: Annotation, required: true},
   },
-  data() {
-    return {
-      annotationUpdate: null,
-      isBeingEdited: false,
-    };
-  },
   computed: {
+    annotationUpdate() {
+      return this[GET.ANNOTATIONS_IN_EDIT].find(annotation => annotation.id === this.annotation.id);
+    },
     annotationTarget() {
       return this.annotation.target[0];
     },
@@ -169,29 +157,32 @@ export default {
 
       return this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
     },
-    ...mapGetters([GET.USER]),
+    ...mapGetters([GET.ANNOTATIONS_IN_EDIT, GET.USER]),
+  },
+  watch: {
+    'annotation.body'() {
+      this.applyMathjaxFilterToBody();
+    },
   },
   mounted() {
     this.applyMathjaxFilterToBody();
   },
   methods: {
     applyMathjaxFilterToBody() {
-      Y.use('mathjax', () => {
-        MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.annotationBody]);
+      this.$nextTick(() => {
+        Y.use('mathjax', () => {
+          MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.annotationBody]);
+        });
       });
     },
     closeEditor() {
-      this.isBeingEdited = false;
-      this.$nextTick(() => {
-       this.applyMathjaxFilterToBody();
-      });
+      this[ACT.STOP_EDITING_ANNOTATION](this.annotation);
     },
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
     },
     openEditor() {
-      this.isBeingEdited = true;
-      this.annotationUpdate = cloneDeep(this.annotation);
+      this[ACT.START_EDITING_ANNOTATION](this.annotation);
     },
     updateAnnotation() {
       this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
@@ -205,7 +196,12 @@ export default {
     selectAnnotation() {
       scrollIntoView(this.getHighlightHTMLElement(), SCROLL_INTO_VIEW_OPTIONS);
     },
-    ...mapActions([ACT.DELETE_ANNOTATION, ACT.UPDATE_ANNOTATION]),
+    ...mapActions([
+        ACT.DELETE_ANNOTATION,
+        ACT.START_EDITING_ANNOTATION,
+        ACT.STOP_EDITING_ANNOTATION,
+        ACT.UPDATE_ANNOTATION
+    ]),
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div
-    :id="`annotation-card-${annotation.id}`"
+    :id="id"
     class="annotation-card border-secondary card"
   >
     <div class="card-body text-dark">
@@ -26,6 +26,7 @@ import AnnotationComponent from './AnnotationComponent';
 import {GET} from '@/store/types';
 import {mapGetters} from 'vuex';
 import ResponseForm from '@/components/longpage-sidebar/annotation-sidebar/ResponseForm';
+import {getAnnotationCardId} from '@/lib/annotation/utils';
 
 export default {
   name: 'AnnotationCard',
@@ -37,9 +38,6 @@ export default {
     annotation: {type: Annotation, required: true},
   },
   computed: {
-    responses() {
-      return this[GET.RESPONSES_TO](this.annotation.id);
-    },
     ...mapGetters([GET.RESPONSES_TO]),
     author() {
       return {
@@ -49,6 +47,12 @@ export default {
         role: 'Betreuer/in',
         roleOverview: 'https://moodle-wrm.fernuni-hagen.de/user/index.php?contextid=195391&roleid=3',
       };
+    },
+    id() {
+      return getAnnotationCardId(this.annotation.id);
+    },
+    responses() {
+      return this[GET.RESPONSES_TO](this.annotation.id);
     },
   },
 };

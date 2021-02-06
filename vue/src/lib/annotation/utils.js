@@ -3,3 +3,5 @@ export const filterAnnotationsByTargetType = (annotations, targetType) => {
         annotation => annotation.target.some(target => target.type === targetType)
     );
 };
+
+export const getAnnotationCardId = annotationId => `annotation-${annotationId}`;
