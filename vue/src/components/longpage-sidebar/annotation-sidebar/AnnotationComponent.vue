@@ -24,7 +24,7 @@
           <!--          <font-awesome-icon icon="ellipsis-v" />-->
           <div class="annotation-actions text-right">
             <div
-              v-if="!annotationUpdate"
+              v-if="!editorOpened"
               class="d-flex justify-content-between"
             >
               <font-awesome-icon
@@ -71,47 +71,14 @@
       <div class="row no-gutters my-1">
         <div class="col col-12 p-0">
           <span
-            v-show="!annotationUpdate"
+            v-show="!editorOpened"
             ref="annotationBody"
             class="annotation-body"
           >{{ annotation.body }}</span>
-          <div
-            v-if="annotationUpdate"
-            class="text-right"
-          >
-            <textarea
-              ref="annotationEditor"
-              v-model="annotationUpdate.body"
-              class="form-control"
-              :placeholder="$t('annotationCard.editor.bodyTextareaPlaceholder')"
-              rows="3"
-              @click.stop=""
-              @keydown.enter.meta.exact="updateAnnotation"
-              @keydown.esc.exact="closeEditor"
-            />
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary ml-2 my-2"
-              @click="closeEditor"
-            >
-              <font-awesome-icon
-                class="ml-1"
-                icon="times"
-              />
-              {{ $t('annotationCard.editor.cancel') }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-sm btn-primary ml-2 my-2"
-              @click="updateAnnotation"
-            >
-              <font-awesome-icon
-                class="ml-1"
-                icon="save"
-              />
-              {{ $t('annotationCard.editor.save') }}
-            </button>
-          </div>
+          <annotation-editor
+            v-if="editorOpened"
+            :annotation="annotation"
+          />
         </div>
       </div>
     </div>
@@ -128,10 +95,12 @@ import UserAvatar from '@/components/UserAvatar';
 import UserRoleButton from '@/components/UserRoleButton';
 import scrollIntoView from 'scroll-into-view-if-needed';
 import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/annotation-sidebar/ExpandableHighlightExcerpt';
+import AnnotationEditor from '@/components/longpage-sidebar/annotation-sidebar/AnnotationEditor';
 
 export default {
-  name: 'AnnotationCard',
+  name: 'AnnotationComponent',
   components: {
+    AnnotationEditor,
     DateTimeText,
     ExpandableHighlightExcerpt,
     UserAvatar,
@@ -141,8 +110,8 @@ export default {
     annotation: {type: Annotation, required: true},
   },
   computed: {
-    annotationUpdate() {
-      return this[GET.ANNOTATIONS_IN_EDIT].find(annotation => annotation.id === this.annotation.id);
+    editorOpened() {
+      return this[GET.ANNOTATIONS_IN_EDIT].findIndex(annotation => annotation.id === this.annotation.id) > -1;
     },
     annotationTarget() {
       return this.annotation.target[0];
@@ -167,16 +136,6 @@ export default {
       },
       immediate: true,
     },
-    annotationUpdate: {
-      handler(value) {
-        if (value) {
-          this.$nextTick(
-              () => this.$refs.annotationEditor.focus()
-          );
-        }
-      },
-      immediate: true,
-    },
   },
   methods: {
     applyMathjaxFilterToBody() {
@@ -186,18 +145,11 @@ export default {
         });
       });
     },
-    closeEditor() {
-      this[ACT.STOP_EDITING_ANNOTATION](this.annotation);
-    },
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
     },
     openEditor() {
       this[ACT.START_EDITING_ANNOTATION](this.annotation);
-    },
-    async updateAnnotation() {
-      await this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
-      this.closeEditor();
     },
     getHighlightHTMLElement() {
       return Array
@@ -210,8 +162,6 @@ export default {
     ...mapActions([
         ACT.DELETE_ANNOTATION,
         ACT.START_EDITING_ANNOTATION,
-        ACT.STOP_EDITING_ANNOTATION,
-        ACT.UPDATE_ANNOTATION
     ]),
   }
 };

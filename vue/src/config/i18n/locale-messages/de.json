@@ -3,7 +3,11 @@
     "editor": {
       "bodyTextareaPlaceholder": "Erstellen Sie eine Anmerkung",
       "cancel": "Abbrechen",
-      "save": "Speichern"
+      "saveActions": {
+        "publish": "Veröffentlichen",
+        "publishAnonymously": "Anonym veröffentlichen",
+        "save": "Speichern ohne Veröffentlichen"
+      }
     },
     "created": "erstellt",
     "less": "Weniger",
@@ -18,6 +22,9 @@
   },
   "avatar": {
     "pictureAlt": "Profilbild von {name}"
+  },
+  "generic": {
+    "toggleDropdown": "Menü ausklappen"
   },
   "responseForm": {
     "placeholder": "Antworte"
