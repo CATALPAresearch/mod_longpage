@@ -1,12 +1,15 @@
 <template>
   <div
     :id="id"
-    class="annotation-card border-secondary card"
+    class="annotation-card border-secondary card d-block"
   >
     <div class="card-body text-dark">
       <annotation-component :annotation="annotation" />
     </div>
-    <div class="card-footer">
+    <div
+      v-if="annotation.created"
+      class="card-footer"
+    >
       <annotation-component
         v-for="response in responses"
         :key="response.id"
@@ -57,9 +60,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-  .card {
-    display: block;
-  }
-</style>
