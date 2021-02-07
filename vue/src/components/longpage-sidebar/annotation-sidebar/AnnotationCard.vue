@@ -42,15 +42,6 @@ export default {
   },
   computed: {
     ...mapGetters([GET.RESPONSES_TO]),
-    author() {
-      return {
-        name: 'Jens-Christian Dobbert',
-        picture: 'https://moodle-wrm.fernuni-hagen.de/pluginfile.php/4462/user/icon/feu_clean/f2?rev=577610',
-        profile: 'https://moodle-wrm.fernuni-hagen.de/user/view.php?id=92&amp;course=2435',
-        role: 'Betreuer/in',
-        roleOverview: 'https://moodle-wrm.fernuni-hagen.de/user/index.php?contextid=195391&roleid=3',
-      };
-    },
     id() {
       return getAnnotationCardId(this.annotation.id);
     },

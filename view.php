@@ -102,7 +102,13 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     $PAGE->requires->js_call_amd(
         'mod_page/app-lazy',
         'init',
-        [$course->id, $page->id, format_string($page->name), $USER->id, $content]
+        [
+            $course->id,
+            $page->id,
+            format_string($page->name),
+            $USER->id,
+            $content,
+        ]
     );
 } else {
     echo "Umleitung";

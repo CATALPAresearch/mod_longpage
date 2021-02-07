@@ -43,6 +43,7 @@ export default {
                 )
             );
         },
+        [GET.USER_IS_AUTHOR]: (_, getters) => annotation => annotation.userId === getters[GET.LONGPAGE_CONTEXT].userId,
     },
     actions: {
         [ACT.START_EDITING_ANNOTATION]({commit, getters}, annotation) {

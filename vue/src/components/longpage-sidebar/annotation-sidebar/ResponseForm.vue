@@ -2,8 +2,7 @@
   <div class="row no-gutters align-items-center">
     <div class="col col-auto p-0">
       <user-avatar
-        :fullname="respondent.fullname"
-        :profile-image="respondent.profileimage"
+        :user="respondent"
       />
     </div>
     <div class="col p-0">

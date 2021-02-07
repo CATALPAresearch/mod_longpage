@@ -12,6 +12,7 @@ export const GET = Object.freeze({
   RESPONSES_TO: 'RESPONSES_TO',
   SIDEBAR_TAB_OPENED_KEY: 'SIDEBAR_TAB_OPENED_KEY',
   USER: 'USER',
+  USER_IS_AUTHOR: 'USER_IS_AUTHOR',
 });
 
 export const ACT = Object.freeze({

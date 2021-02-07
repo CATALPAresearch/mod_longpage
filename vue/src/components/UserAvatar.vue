@@ -1,25 +1,38 @@
 <template>
-  <a
-    :href="profile"
-  >
+  <a>
     <img
-      :src="profileImage"
-      class="userpicture"
-      width="35"
+      :src="avatar.src"
+      class="userpicture avatar"
       height="35"
-      :alt="$t('annotationCard.authorPictureAlt', {fullname})"
-      :title="$t('annotationCard.authorPictureAlt', {fullname})"
+      width="35"
+      :alt="avatar.alt"
+      :title="avatar.alt"
     >
   </a>
 </template>
 
 <script>
   export default {
-  name: 'Avatar',
+  name: 'UserAvatar',
     props: {
-      profile: {type: String, default: '#'},
-      profileImage: {type: String, required: true},
-      fullname: {type: String, required: true},
+      user: {type: Object},
+    },
+    computed: {
+      avatar() {
+        return this.avatarUser || this.avatarAnonymous;
+      },
+      avatarAnonymous() {
+        return {
+          alt: this.$i18n.tc('avatar.alt', 1),
+          src: M.util.image_url('user-secret-avatar', 'mod_page'),
+        };
+      },
+      avatarUser() {
+        return this.user ? {
+          src: this.user.profileimage,
+          alt: this.$i18n.tc('avatar.alt', 2, {fullName: this.user.fullname})
+        } : null;
+      },
     }
   };
 </script>

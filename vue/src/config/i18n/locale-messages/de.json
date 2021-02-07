@@ -21,7 +21,8 @@
     "showAll": "Zeige alle"
   },
   "avatar": {
-    "pictureAlt": "Profilbild von {name}"
+    "nameAnonymous": "Anonym",
+    "alt": "Profilbild von anonymem Nutzer | Profilbild von {fullName}"
   },
   "generic": {
     "toggleDropdown": "Menü ausklappen"

@@ -2,26 +2,28 @@
   <div class="row no-gutters">
     <div class="col col-auto p-0">
       <user-avatar
-        :fullname="author.fullname"
-        :profile-image="author.profileimage"
+        :user="author"
       />
     </div>
     <div class="col p-0">
       <div class="row no-gutters mb-1 align-items-center">
-        <div class="col p-0">
+        <div
+          class="col p-0"
+        >
           <a
+            v-if="author"
             class="mr-1 align-middle"
             href="#"
           >{{ author.fullname }}</a>
+          <span v-else>{{ $t('avatar.nameAnonymous') }}</span>
           <user-role-button
-            v-if="author.role"
+            v-if="author && author.role"
             :role="author.role"
             :href="author.roleOverview"
           />
         </div>
 
         <div class="col col-auto p-0">
-          <!--          <font-awesome-icon icon="ellipsis-v" />-->
           <div class="annotation-actions text-right">
             <div
               v-if="!editorOpened"
@@ -58,9 +60,16 @@
           </span>
         </div>
         <div
+          v-if="userIsAuthor(annotation)"
+          class="col col-auto mx-1 p-0 text-small font-weight-boldest"
+        >
+          ·
+        </div>
+        <div
+          v-if="userIsAuthor(annotation)"
           class="col col-auto p-0 text-small"
         >
-          <i class="save" />
+          <i :class="AnnotationVisibilityData[annotation.visibility].icon" />
         </div>
       </div>
       <div
@@ -96,7 +105,14 @@
 import {ACT, GET} from '@/store/types';
 import {Annotation} from '@/lib/annotation/types/annotation';
 import DateTimeText from '@/components/DateTimeText';
-import {AnnotationTargetType, HighlightingConfig, SCROLL_INTO_VIEW_OPTIONS, SelectorType} from '@/config/constants';
+import {
+  AnnotationTargetType,
+  AnnotationVisibility,
+  AnnotationVisibilityData,
+  HighlightingConfig,
+  SCROLL_INTO_VIEW_OPTIONS,
+  SelectorType
+} from '@/config/constants';
 import {mapActions, mapGetters} from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
 import UserRoleButton from '@/components/UserRoleButton';
@@ -122,6 +138,11 @@ export default {
   props: {
     annotation: {type: Annotation, required: true},
   },
+  data() {
+    return {
+      AnnotationVisibilityData,
+    };
+  },
   computed: {
     editorOpened() {
       return this[GET.ANNOTATIONS_IN_EDIT].findIndex(annotation => annotation.id === this.annotation.id) > -1;
@@ -130,7 +151,10 @@ export default {
       return this.annotation.target[0];
     },
     author() {
-      return this[GET.USER](this.annotation.userId);
+      return this.authorAnonymous ? null : this[GET.USER](this.annotation.userId);
+    },
+    authorAnonymous() {
+      return this.annotation.visibility === AnnotationVisibility.ANONYMOUS && !this.userIsAuthor(this.annotation);
     },
     highlightedText() {
       return this.textQuoteSelector && this.textQuoteSelector.exact;
@@ -141,6 +165,7 @@ export default {
       return this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
     },
     ...mapGetters([GET.ANNOTATIONS_IN_EDIT, GET.USER]),
+    ...mapGetters({userIsAuthor: GET.USER_IS_AUTHOR}),
   },
   watch: {
     'annotation.body': {
