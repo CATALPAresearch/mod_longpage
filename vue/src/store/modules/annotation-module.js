@@ -51,6 +51,7 @@ export default {
                 commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
             }
             commit(MUTATE.ADD_ANNOTATION_IN_EDIT, cloneDeep(annotation));
+            return annotation.id;
         },
         [ACT.STOP_EDITING_ANNOTATION]({commit}, annotation) {
             if (!annotation.created) commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
@@ -105,12 +106,11 @@ export default {
             }]);
         },
         [ACT.FILTER_ANNOTATIONS]({commit}, filter) {
-           commit(MUTATE.SET_ANNOTATION_FILTER, filter);
+           commit(MUTATE.RESET_ANNOTATION_FILTER, filter);
         },
         [ACT.UPDATE_ANNOTATION]({commit, dispatch}, annotationUpdated) {
             if (!annotationUpdated.created) {
-                dispatch(ACT.CREATE_ANNOTATION, annotationUpdated);
-                return;
+                return dispatch(ACT.CREATE_ANNOTATION, annotationUpdated);
             }
 
             const methodname = MoodleWSMethods.UPDATE_ANNOTATION;
@@ -142,8 +142,8 @@ export default {
         [MUTATE.REMOVE_ANNOTATIONS](state, annotations) {
             state.annotations = state.annotations.filter(annotation => !annotations.includes(annotation));
         },
-        [MUTATE.SET_ANNOTATION_FILTER](state, filter) {
-            state.annotationFilter = filter;
+        [MUTATE.RESET_ANNOTATION_FILTER](state, filter) {
+            state.annotationFilter = filter || {};
         },
         [MUTATE.SET_ANNOTATIONS](state, annotations) {
             state.annotations = annotations;

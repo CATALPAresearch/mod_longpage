@@ -178,7 +178,10 @@ class mod_page_external extends external_api {
         global $DB;
 
         $segmentid =
-            $DB->insert_record('page_segments', ['annotationtargetid' => $targetid, 'styleclass' => $segment['styleclass']]);
+            $DB->insert_record('page_segments', [
+                'annotationtargetid' => $targetid,
+                'styleclass' => $segment['styleclass'] ?? null,
+            ]);
         self::create_selectors($segment['selector'], $segmentid);
     }
 

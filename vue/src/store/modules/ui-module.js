@@ -8,7 +8,7 @@ export default {
         [GET.SIDEBAR_TAB_OPENED_KEY]: ({sidebarTabOpenedKey}) => sidebarTabOpenedKey
     },
     mutations: {
-        [MUTATE.SET_SIDEBAR_TAB_OPENED_KEY](state, sidebarTabOpenedKey) {
+        [MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY](state, sidebarTabOpenedKey) {
             state.sidebarTabOpenedKey = sidebarTabOpenedKey;
         },
     },

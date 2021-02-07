@@ -3,24 +3,26 @@
     ref="annotationToolbarPopover"
     v-bind="annotationToolbarPopoverProps"
     class="longpage-highlights-always-on"
-    @note-clicked="createNote"
-    @highlight-clicked="createHighlight"
+    @note-clicked="startEditingAnnotation"
+    @highlight-clicked="createAnnotation"
   />
 </template>
 
 <script>
-import {ACT, GET} from '@/store/types';
-import {ArrowDirection, LONGPAGE_APP_ID, LONGPAGE_CONTENT_ID} from '@/config/constants';
+import {ACT, GET, MUTATE} from '@/store/types';
+import {ANNOTATION_CARD_CONTAINER_ID, ArrowDirection, LONGPAGE_APP_ID, LONGPAGE_CONTENT_ID, SCROLL_INTO_VIEW_OPTIONS, SidebarTabKeys} from '@/config/constants';
 import AnnotationToolbarPopover from './AnnotationToolbarPopover.vue';
 import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-toolbar-popover-positioner';
 import {SelectionListener} from '@/lib/annotation/selection-listener';
 import {describe} from '@/lib/annotation/hypothesis/anchoring/html';
 import {Anchoring} from '@/lib/annotation/anchoring';
 import {Annotation} from '@/lib/annotation/types/annotation';
-import {mapActions, mapGetters} from 'vuex';
+import {mapActions, mapGetters, mapMutations} from 'vuex';
 import {setHighlightsVisible} from '@/lib/annotation/highlighting';
 import {addAnnotationSelectionListener} from '@/lib/annotation/highlight-selection-listener';
 import {PageSegment} from '@/lib/annotation/types/page-segment';
+import scrollIntoView from 'scroll-into-view-if-needed';
+import {getAnnotationCardId} from '@/lib/annotation/utils';
 
 export default {
   name: 'AnnotationWrapper',
@@ -87,12 +89,25 @@ export default {
     this.selectionListener.unsubscribe();
   },
   methods: {
-    ...mapActions([ACT.CREATE_ANNOTATION, ACT.FILTER_ANNOTATIONS]),
-    async createHighlight(styleClass) {
-      this[ACT.CREATE_ANNOTATION](await this.getAnnotation(styleClass));
+    ...mapActions([ACT.CREATE_ANNOTATION, ACT.FILTER_ANNOTATIONS, ACT.START_EDITING_ANNOTATION]),
+    ...mapMutations([MUTATE.RESET_ANNOTATION_FILTER, MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY]),
+    async startEditingAnnotation() {
+      this[MUTATE.RESET_ANNOTATION_FILTER]();
+      this[MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY](SidebarTabKeys.ANNOTATIONS);
+      const id = await this[ACT.START_EDITING_ANNOTATION](await this.getAnnotation());
+      const cardId = getAnnotationCardId(id);
+      const boundary = document.getElementById(ANNOTATION_CARD_CONTAINER_ID);
+      const observer = new MutationObserver(() => {
+        const annotationCard = document.getElementById(cardId);
+        if (annotationCard) {
+          scrollIntoView(annotationCard, {...SCROLL_INTO_VIEW_OPTIONS, boundary});
+          observer.disconnect();
+        }
+      });
+      observer.observe(boundary, {attributes: false, childList: true, characterData: false, subtree: true});
     },
-    async createNote() {
-
+    async createAnnotation(styleClass) {
+      this[ACT.CREATE_ANNOTATION](await this.getAnnotation(styleClass));
     },
     async getAnnotation(styleClass) {
       return new Annotation({

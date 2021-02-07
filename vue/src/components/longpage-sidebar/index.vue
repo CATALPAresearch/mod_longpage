@@ -65,7 +65,7 @@ export default {
       if (tab === this.tabOpenedKey) this.setTabOpened(undefined);
       else this.setTabOpened(tab);
     },
-    ...mapMutations({setTabOpened: MUTATE.SET_SIDEBAR_TAB_OPENED_KEY})
+    ...mapMutations({setTabOpened: MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY})
   },
 };
 </script>

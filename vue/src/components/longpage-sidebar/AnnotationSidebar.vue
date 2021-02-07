@@ -11,24 +11,24 @@
         <annotation-filter />
       </div>
       <hr class="my-0 mx-3">
-      <div class="p-3 flex-shrink-1 flex-grow-1 overflow-y-auto overflow-x-hidden">
-        <div
-          v-if="annotationsOrderedByTextPosition.length"
-          id="annotation-card-container"
-        >
-          <annotation-card
-            v-for="annotation in annotationsOrderedByTextPosition"
-            :key="annotation.id"
-            :annotation="annotation"
-            class="mb-3"
-          />
-        </div>
-        <p
-          v-else
-        >
-          {{ $t('annotationSidebar.notYetCreatedAnnotations') }}
-        </p>
+      <div
+        v-if="annotationsOrderedByTextPosition.length"
+        :id="ANNOTATION_CARD_CONTAINER_ID"
+        class="p-3 flex-shrink-1 flex-grow-1 overflow-y-auto overflow-x-hidden"
+      >
+        <annotation-card
+          v-for="annotation in annotationsOrderedByTextPosition"
+          :key="annotation.id"
+          :annotation="annotation"
+          class="mb-3"
+        />
       </div>
+      <p
+        v-else
+        class="p-3"
+      >
+        {{ $t('annotationSidebar.notYetCreatedAnnotations') }}
+      </p>
     </div>
   </div>
 </template>
@@ -37,7 +37,7 @@
 import AnnotationCard from './annotation-sidebar/AnnotationCard.vue';
 import {mapGetters} from 'vuex';
 import {GET} from '@/store/types';
-import {SelectorType} from '@/config/constants';
+import {ANNOTATION_CARD_CONTAINER_ID, SelectorType} from '@/config/constants';
 import AnnotationFilter from '@/components/longpage-sidebar/annotation-sidebar/AnnotationFilter';
 
 const AnnotationSortingFunction = Object.freeze({
@@ -53,6 +53,11 @@ export default {
   components: {
     AnnotationFilter,
     AnnotationCard
+  },
+  data() {
+    return {
+      ANNOTATION_CARD_CONTAINER_ID,
+    };
   },
   computed: {
     annotationsOrderedByTextPosition() {

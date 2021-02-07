@@ -81,12 +81,14 @@
             class="text-right"
           >
             <textarea
+              ref="annotationEditor"
               v-model="annotationUpdate.body"
               class="form-control"
               :placeholder="$t('annotationCard.editor.bodyTextareaPlaceholder')"
               rows="3"
               @click.stop=""
               @keydown.enter.meta.exact="updateAnnotation"
+              @keydown.esc.exact="closeEditor"
             />
             <button
               type="button"
@@ -160,12 +162,22 @@ export default {
     ...mapGetters([GET.ANNOTATIONS_IN_EDIT, GET.USER]),
   },
   watch: {
-    'annotation.body'() {
-      this.applyMathjaxFilterToBody();
+    'annotation.body': {
+      handler() {
+       this.applyMathjaxFilterToBody();
+      },
+      immediate: true,
     },
-  },
-  mounted() {
-    this.applyMathjaxFilterToBody();
+    annotationUpdate: {
+      handler(value) {
+        if (value) {
+          this.$nextTick(
+              () => this.$refs.annotationEditor.focus()
+          );
+        }
+      },
+      immediate: true,
+    },
   },
   methods: {
     applyMathjaxFilterToBody() {
@@ -184,8 +196,8 @@ export default {
     openEditor() {
       this[ACT.START_EDITING_ANNOTATION](this.annotation);
     },
-    updateAnnotation() {
-      this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
+    async updateAnnotation() {
+      await this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
       this.closeEditor();
     },
     getHighlightHTMLElement() {
