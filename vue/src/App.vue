@@ -61,13 +61,6 @@ export default {
       },
       ...mapGetters({context: GET.LONGPAGE_CONTEXT}),
     },
-    created() {
-      document.addEventListener('keyup', $event => {
-        if ($event.keyCode === 27) {
-          this.hideTabContent();
-        }
-      });
-    },
     mounted() {
       Y.use('mathjax', () => {
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
@@ -102,22 +95,7 @@ export default {
       log(key, values) {
         this.logger.add(key, values);
       },
-      showTabContent() {
-        this.tabContentVisible = true;
-      },
-      hideTabContent() {
-        this.tabContentVisible = false;
-        if (document.querySelector('#longpage-features').querySelector('a.active.show')) {
-          document.querySelector('#longpage-features').querySelector('a.active.show').classList.remove('active');
-        }
-      },
       ...mapActions([ACT.FETCH_ENROLLED_USERS]),
     },
 };
 </script>
-
-<style lang="scss">
-#longpage-main {
-
-}
-</style>
