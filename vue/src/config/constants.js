@@ -3,6 +3,18 @@ export const AnnotationTargetType = {
     ANNOTATION: 1,
 };
 
+export const AnnotationVisibility = Object.freeze({
+    PRIVATE: 0,
+    PUBLIC: 1,
+    ANONYMOUS: 2,
+});
+
+export const AnnotationVisibilityData = Object.freeze({
+    [AnnotationVisibility.PRIVATE]: {icon: ['fa', 'fa-lock']},
+    [AnnotationVisibility.PUBLIC]: {icon: ['fa', 'fa-users']},
+    [AnnotationVisibility.ANONYMOUS]: {icon: ['fa', 'fa-user-secret']},
+});
+
 /**
  * The preferred gap between the end of the text selection and the
  * arrow position of the annotation toolbar popover.
@@ -36,18 +48,6 @@ export const MoodleWSMethods = Object.freeze({
     CREATE_ANNOTATION: 'mod_page_create_annotation',
     DELETE_ANNOTATION: 'mod_page_delete_annotation',
     UPDATE_ANNOTATION: 'mod_page_update_annotation',
-});
-
-export const SaveActions = Object.freeze({
-    PUBLISH: 'publish',
-    PUBLISH_ANONYMOUSLY: 'publishAnonymously',
-    SAVE: 'save',
-});
-
-export const SaveActionData = Object.freeze({
-    [SaveActions.PUBLISH]: {icon: ['fa', 'fa-users']},
-    [SaveActions.PUBLISH_ANONYMOUSLY]: {icon: ['fa', 'fa-user-secret']},
-    [SaveActions.SAVE]: {icon: ['fa', 'fa-lock']},
 });
 
 export const SidebarTabKeys = Object.freeze({

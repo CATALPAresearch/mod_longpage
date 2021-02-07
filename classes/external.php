@@ -87,6 +87,12 @@ abstract class mod_page_selector {
     }
 }
 
+abstract class Visibility {
+    public const PRIVATE = 0;
+    public const PUBLIC = 1;
+    public const ANONYMOUS = 2;
+}
+
 /**
  * Page external functions
  *
@@ -749,9 +755,8 @@ class mod_page_external extends external_api {
 
     private static function page_annotation_parameters($required = false) {
         return [
-            'anonymous' => new external_value(PARAM_BOOL, '', $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
+            'visibility' => new external_value(PARAM_INT, '', $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
             'body' => new external_value(PARAM_TEXT, '', $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
-            'private' => new external_value(PARAM_BOOL, '', $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
             'tags' => new external_multiple_structure(new external_single_structure([
                 'value' => new external_value(PARAM_TEXT),
                 'type' => new external_value(PARAM_TEXT, '', $required ? VALUE_REQUIRED : VALUE_OPTIONAL),
@@ -797,8 +802,10 @@ class mod_page_external extends external_api {
     private static function get_annotations_visible_to_user($pageid, $userid) {
         global $DB;
 
-        $select = 'pageid = ? AND (userid = ? OR private = 0)';
-        $params = ['pageid' => $pageid, 'userid' => $userid];
+        $publicvisibilities = [Visibility::PUBLIC, Visibility::ANONYMOUS];
+        list($insql, $inparams) = $DB->get_in_or_equal($publicvisibilities);
+        $select = "pageid = ? AND (userid = ? OR visibility $insql)";
+        $params = array_merge(['pageid' => $pageid, 'userid' => $userid], $inparams);
         return $DB->get_records_select('page_annotations', $select, $params);
     }
 
@@ -817,7 +824,7 @@ class mod_page_external extends external_api {
 
         $annotation->target = self::get_annotation_targets($annotation->id);
         $annotation->tags = $DB->get_records('page_annotation_tags', ['annotationid' => $annotation->id], '', 'value, type');
-        if ((bool) $annotation->anonymous) {
+        if ($annotation->visibility === Visibility::ANONYMOUS) {
             self::anonymize_annotation($annotation);
         }
     }

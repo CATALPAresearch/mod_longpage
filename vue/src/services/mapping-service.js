@@ -17,8 +17,7 @@ const MappingService = {
     [MoodleWSMethods.CREATE_ANNOTATION](annotation) {
         return deepLowerCaseKeys({
             annotation: {
-                ...omit(annotation, ['$orphan', 'id', 'isPrivate', 'ratingByUser', 'timecreated', 'timemodified']),
-                private: annotation.isPrivate,
+                ...omit(annotation, ['$orphan', 'id', 'ratingByUser', 'timecreated', 'timemodified']),
                 target: annotation.target.map(target => (target instanceof PageSegment ? {
                     type: AnnotationTargetType.PAGE_SEGMENT,
                     selector: this._mapSelectorsClientToServer(target.selector),
@@ -32,9 +31,8 @@ const MappingService = {
     },
     [MoodleWSMethods.GET_ANNOTATIONS](annotations) {
         return annotations.map(annotation => new Annotation({
-            ...pick(annotation, ['anonymous', 'body', 'id', 'rating', 'tags']),
+            ...pick(annotation, ['body', 'id', 'rating', 'tags', 'visibility']),
             ratingByUser: 1, // TODO: Replace mock with api
-            isPrivate: annotation.private,
             pageId: annotation.pageid,
             target: annotation.target.map(t => {
                 switch (t.type) {
@@ -76,9 +74,8 @@ const MappingService = {
         return deepLowerCaseKeys({
             annotation: {
                 ...omit(annotation, [
-                    '$orphan', 'isPrivate', 'pageId', 'ratingByUser', 'target', 'timecreated', 'timemodified', 'userId'
+                    '$orphan', 'pageId', 'ratingByUser', 'target', 'timecreated', 'timemodified', 'userId'
                 ]),
-                private: annotation.isPrivate,
             },
         });
     },

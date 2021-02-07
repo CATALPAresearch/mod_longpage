@@ -24,8 +24,6 @@
       />
       {{ $t('annotationCard.editor.cancel') }}
     </button>
-
-
     <div
       class="btn-group ml-2 my-2"
       role="group"
@@ -40,7 +38,7 @@
       </button>
       <button
         type="button"
-        class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split"
+        class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split"
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
@@ -67,7 +65,20 @@
 import {ACT, GET} from '@/store/types';
 import {mapActions, mapGetters} from 'vuex';
 import {Annotation} from '@/lib/annotation/types/annotation';
-import {SaveActionData, SaveActions} from '@/config/constants';
+import {AnnotationVisibility, AnnotationVisibilityData} from '@/config/constants';
+import {invert, mapKeys} from 'lodash';
+
+const SaveActions = Object.freeze({PUBLISH: 'publish', PUBLISH_ANONYMOUSLY: 'publishAnonymously', SAVE: 'save'});
+
+export const VisibilityToSaveActionMapping = Object.freeze({
+  [AnnotationVisibility.PRIVATE]: SaveActions.SAVE,
+  [AnnotationVisibility.PUBLIC]: SaveActions.PUBLISH,
+  [AnnotationVisibility.ANONYMOUS]: SaveActions.PUBLISH_ANONYMOUSLY,
+});
+
+const SaveActionToVisibilityMapping = Object.freeze(invert(VisibilityToSaveActionMapping));
+
+const SaveActionData = mapKeys(AnnotationVisibilityData, (_, key) => VisibilityToSaveActionMapping[key]);
 
 export default {
   name: 'AnnotationEditor',
@@ -88,13 +99,10 @@ export default {
     },
     selectedSaveAction: {
       get() {
-        if (this.annotationUpdate.isPrivate) return SaveActions.SAVE;
-
-        return this.annotationUpdate.anonymous ? SaveActions.PUBLISH_ANONYMOUSLY : SaveActions.PUBLISH;
+        return VisibilityToSaveActionMapping[this.annotationUpdate.visibility];
       },
       set(selectedSaveAction) {
-        this.annotationUpdate.isPrivate = selectedSaveAction === SaveActions.SAVE;
-        this.annotationUpdate.anonymous = selectedSaveAction === SaveActions.PUBLISH_ANONYMOUSLY;
+        this.annotationUpdate.visibility = SaveActionToVisibilityMapping[selectedSaveAction];
       }
     },
     ...mapGetters([GET.ANNOTATIONS_IN_EDIT]),

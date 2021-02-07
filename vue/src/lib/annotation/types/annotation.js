@@ -1,10 +1,10 @@
+import {AnnotationVisibility} from '@/config/constants';
+
 export class Annotation {
     constructor({
         $orphan = false,
-        anonymous = false,
         body = '',
         id,
-        isPrivate = false,
         pageId,
         rating,
         ratingByUser,
@@ -12,13 +12,12 @@ export class Annotation {
         target = [],
         timecreated = new Date(),
         timemodified = new Date(),
-        userId
+        userId,
+        visibility = AnnotationVisibility.PRIVATE,
     }) {
         this.$orphan = $orphan;
-        this.anonymous = anonymous;
         this.body = body;
         this.id = id;
-        this.isPrivate = isPrivate;
         this.pageId = pageId;
         this.rating = rating;
         this.ratingByUser = ratingByUser;
@@ -27,6 +26,7 @@ export class Annotation {
         this.timecreated = timecreated;
         this.timemodified = timemodified;
         this.userId = userId;
+        this.visibility = visibility;
     }
 
     get hasBody() {

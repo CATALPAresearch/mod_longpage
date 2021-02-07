@@ -57,6 +57,11 @@
             </span>
           </span>
         </div>
+        <div
+          class="col col-auto p-0 text-small"
+        >
+          <i class="save" />
+        </div>
       </div>
       <div
         v-if="highlightedText"
