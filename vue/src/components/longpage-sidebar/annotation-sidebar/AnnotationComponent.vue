@@ -42,19 +42,18 @@
         </div>
       </div>
       <div class="row no-gutters my-1">
-        <div class="col col-auto p-0">
-          <div>
-            <div class="text-small">
-              {{ $t('annotationCard.created') }}
-              <date-time-text :date-time="annotation.timecreated" />
-              <span v-if="annotation.timecreated.getTime() !== annotation.timemodified.getTime()">
-                <span class="font-italic">
-                  ({{ $t('annotationCard.modified') }}
-                  <date-time-text :date-time="annotation.timemodified" />)
-                </span>
-              </span>
-            </div>
-          </div>
+        <div
+          v-if="annotation.created"
+          class="col col-auto p-0 text-small"
+        >
+          {{ $t('annotationCard.created') }}
+          <date-time-text :date-time="annotation.timecreated" />
+          <span v-if="annotation.timecreated.getTime() !== annotation.timemodified.getTime()">
+            <span class="font-italic">
+              ({{ $t('annotationCard.modified') }}
+              <date-time-text :date-time="annotation.timemodified" />)
+            </span>
+          </span>
         </div>
       </div>
       <div
