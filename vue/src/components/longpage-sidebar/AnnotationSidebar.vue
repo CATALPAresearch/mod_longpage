@@ -1,5 +1,5 @@
 <template>
-  <div class="h-100">
+  <div class="h-100 bg-light">
     <div class="h-100 d-flex flex-column">
       <div class="p-3 bg-white">
         <h3
