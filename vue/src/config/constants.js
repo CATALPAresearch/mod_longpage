@@ -38,6 +38,18 @@ export const MoodleWSMethods = Object.freeze({
     UPDATE_ANNOTATION: 'mod_page_update_annotation',
 });
 
+export const SaveActions = Object.freeze({
+    PUBLISH: 'publish',
+    PUBLISH_ANONYMOUSLY: 'publishAnonymously',
+    SAVE: 'save',
+});
+
+export const SaveActionData = Object.freeze({
+    [SaveActions.PUBLISH]: {icon: ['fa', 'fa-users']},
+    [SaveActions.PUBLISH_ANONYMOUSLY]: {icon: ['fa', 'fa-user-secret']},
+    [SaveActions.SAVE]: {icon: ['fa', 'fa-lock']},
+});
+
 export const SidebarTabKeys = Object.freeze({
     ANNOTATIONS: 'annotations',
     TOC: 'toc'

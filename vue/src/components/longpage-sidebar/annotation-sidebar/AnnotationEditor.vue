@@ -35,7 +35,7 @@
         class="btn btn-primary btn-sm"
         @click="updateAnnotation"
       >
-        <i :class="saveActionOptions.find(({value}) => value === selectedSaveAction).icon" />
+        <i :class="SaveActionData[selectedSaveAction].icon" />
         {{ $t(`annotationCard.editor.saveActions.${selectedSaveAction}`) }}
       </button>
       <button
@@ -49,14 +49,14 @@
       </button>
       <div class="dropdown-menu">
         <a
-          v-for="saveActionOpt in saveActionOptions"
-          :key="saveActionOpt.value"
+          v-for="action in saveActions"
+          :key="action"
           class="dropdown-item"
           href="javascript:void(0)"
-          @click="selectedSaveAction = saveActionOpt.value"
+          @click="selectedSaveAction = action"
         >
-          <i :class="saveActionOpt.icon" />
-          {{ $t(`annotationCard.editor.saveActions.${saveActionOpt.value}`) }}
+          <i :class="SaveActionData[action].icon" />
+          {{ $t(`annotationCard.editor.saveActions.${action}`) }}
         </a>
       </div>
     </div>
@@ -67,32 +67,34 @@
 import {ACT, GET} from '@/store/types';
 import {mapActions, mapGetters} from 'vuex';
 import {Annotation} from '@/lib/annotation/types/annotation';
+import {SaveActionData, SaveActions} from '@/config/constants';
 
 export default {
   name: 'AnnotationEditor',
   props: {
     annotation: {type: Annotation, required: true},
   },
+  data() {
+    return {
+      SaveActionData,
+    };
+  },
   computed: {
     annotationUpdate() {
       return this[GET.ANNOTATIONS_IN_EDIT].find(annotation => annotation.id === this.annotation.id);
     },
-    saveActionOptions() {
-      return [
-        {value: 'publish', icon: ['fa', 'fa-users']},
-        {value: 'publishAnonymously', icon: ['fa', 'fa-user-secret']},
-        {value: 'save', icon: ['fa', 'fa-lock']},
-      ];
+    saveActions() {
+      return Object.values(SaveActions);
     },
     selectedSaveAction: {
       get() {
-        if (this.annotationUpdate.isPrivate) return 'save';
+        if (this.annotationUpdate.isPrivate) return SaveActions.SAVE;
 
-        return this.annotationUpdate.anonymous ? 'publishAnonymously' : 'publish';
+        return this.annotationUpdate.anonymous ? SaveActions.PUBLISH_ANONYMOUSLY : SaveActions.PUBLISH;
       },
       set(selectedSaveAction) {
-        this.annotationUpdate.isPrivate = selectedSaveAction === 'save';
-        this.annotationUpdate.anonymous = selectedSaveAction === 'publishAnonymously';
+        this.annotationUpdate.isPrivate = selectedSaveAction === SaveActions.SAVE;
+        this.annotationUpdate.anonymous = selectedSaveAction === SaveActions.PUBLISH_ANONYMOUSLY;
       }
     },
     ...mapGetters([GET.ANNOTATIONS_IN_EDIT]),

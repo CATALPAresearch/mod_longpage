@@ -41,9 +41,11 @@
           </div>
         </div>
       </div>
-      <div class="row no-gutters my-1">
+      <div
+        v-if="annotation.created"
+        class="row no-gutters my-1"
+      >
         <div
-          v-if="annotation.created"
           class="col col-auto p-0 text-small"
         >
           {{ $t('annotationCard.created') }}
@@ -96,6 +98,12 @@ import UserRoleButton from '@/components/UserRoleButton';
 import scrollIntoView from 'scroll-into-view-if-needed';
 import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/annotation-sidebar/ExpandableHighlightExcerpt';
 import AnnotationEditor from '@/components/longpage-sidebar/annotation-sidebar/AnnotationEditor';
+
+// Anonymous for others: no link to profile, show anonymous icon instead of avatar, leave name and role out or show default for name
+// Anonymous for myself: icon on the avatar or there where visibility is shown
+
+// Private, only shown to the user: Lock presented with tooltip
+// Public: Symbol only shown to user, not other users
 
 export default {
   name: 'AnnotationComponent',
