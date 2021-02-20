@@ -103,6 +103,140 @@ abstract class Visibility {
  * @since      Moodle 3.0
  */
 class mod_page_external extends external_api {
+    public static function create_post_like($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->insert_record('page_post_likes', array_merge($parameters, ['timecreated' => time()]));
+        $transaction->allow_commit();
+    }
+
+    public static function create_post_like_parameters() {
+        return new external_function_parameters([
+            'postid' => new external_value(PARAM_INT),
+            'userid' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function create_post_like_returns() {
+        return null;
+    }
+
+    public static function delete_post_like($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_post_likes', $parameters);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_post_like_parameters() {
+        return self::create_post_like_parameters();
+    }
+
+    public static function delete_post_like_returns() {
+        return null;
+    }
+
+    public static function create_post_mark($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->insert_record('page_post_marks', array_merge($parameters, ['timecreated' => time()]));
+        $transaction->allow_commit();
+    }
+
+    public static function create_post_mark_parameters() {
+        return self::create_post_like_parameters();
+    }
+
+    public static function create_post_mark_returns() {
+        return null;
+    }
+
+    public static function delete_post_mark($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_post_marks', $parameters);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_post_mark_parameters() {
+        return self::create_post_like_parameters();
+    }
+
+    public static function delete_post_mark_returns() {
+        return null;
+    }
+
+    public static function create_post_reading($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->insert_record('page_post_readings', array_merge($parameters, ['timecreated' => time()]));
+        $transaction->allow_commit();
+    }
+
+    public static function create_post_reading_parameters() {
+        return self::create_post_like_parameters();
+    }
+
+    public static function create_post_reading_returns() {
+        return null;
+    }
+
+    public static function delete_post_reading($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_post_readings', $parameters);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_post_reading_parameters() {
+        return self::create_post_like_parameters();
+    }
+
+    public static function delete_post_reading_returns() {
+        return null;
+    }
+
+    public static function create_thread_subscription($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->insert_record('page_thread_subscriptions', array_merge($parameters, ['timecreated' => time()]));
+        $transaction->allow_commit();
+    }
+
+    public static function create_thread_subscription_parameters() {
+        return new external_function_parameters([
+            'threadid' => new external_value(PARAM_INT),
+            'userid' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function create_thread_subscription_returns() {
+        return null;
+    }
+
+    public static function delete_thread_subscription($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_thread_subscriptions', $parameters);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_thread_subscription_parameters() {
+        return self::create_thread_subscription_parameters();
+    }
+
+    public static function delete_thread_subscription_returns() {
+        return null;
+    }
+
     /**
      * Creates page annotation
      *
