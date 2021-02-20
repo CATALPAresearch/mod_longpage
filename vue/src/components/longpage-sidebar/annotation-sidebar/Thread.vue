@@ -3,9 +3,10 @@
     :id="id"
     class="annotation-card border-secondary card d-block"
   >
-    <div class="card-body text-dark">
-      <post :annotation="annotation" />
-    </div>
+    <post
+      :annotation="annotation"
+      class="card-body text-dark thread-root"
+    />
     <div
       v-if="replies.length"
       class="card-footer"
