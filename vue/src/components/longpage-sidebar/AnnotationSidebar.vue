@@ -16,7 +16,7 @@
         :id="ANNOTATION_CARD_CONTAINER_ID"
         class="p-3 flex-shrink-1 flex-grow-1 overflow-y-auto overflow-x-hidden"
       >
-        <annotation-card
+        <thread
           v-for="annotation in annotationsOrderedByTextPosition"
           :key="annotation.id"
           :annotation="annotation"
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import AnnotationCard from './annotation-sidebar/AnnotationCard.vue';
+import Thread from './annotation-sidebar/Thread.vue';
 import {mapGetters} from 'vuex';
 import {GET} from '@/store/types';
 import {ANNOTATION_CARD_CONTAINER_ID, SelectorType} from '@/config/constants';
@@ -52,7 +52,7 @@ export default {
   name: 'AnnotationSidebar',
   components: {
     AnnotationFilter,
-    AnnotationCard
+    Thread
   },
   data() {
     return {

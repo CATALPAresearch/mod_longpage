@@ -1,0 +1,53 @@
+<template>
+  <div
+    :id="id"
+    class="annotation-card border-secondary card d-block"
+  >
+    <div class="card-body text-dark">
+      <post :annotation="annotation" />
+    </div>
+    <div
+      v-if="annotation.created"
+      class="card-footer"
+    >
+      <post
+        v-for="response in responses"
+        :key="response.id"
+        class="my-2"
+        :annotation="response"
+      />
+      <reply-form
+        :annotation-id="annotation.id"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import {Annotation} from '@/lib/annotation/types/annotation';
+import Post from './Post';
+import {GET} from '@/store/types';
+import {mapGetters} from 'vuex';
+import ReplyForm from '@/components/longpage-sidebar/annotation-sidebar/ReplyForm';
+import {getAnnotationCardId} from '@/lib/annotation/utils';
+
+export default {
+  name: 'Thread',
+  components: {
+    ReplyForm,
+    Post,
+  },
+  props: {
+    annotation: {type: Annotation, required: true},
+  },
+  computed: {
+    ...mapGetters([GET.RESPONSES_TO]),
+    id() {
+      return getAnnotationCardId(this.annotation.id);
+    },
+    responses() {
+      return this[GET.RESPONSES_TO](this.annotation.id);
+    },
+  },
+};
+</script>
