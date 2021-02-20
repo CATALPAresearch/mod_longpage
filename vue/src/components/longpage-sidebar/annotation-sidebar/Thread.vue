@@ -7,14 +7,14 @@
       <post :annotation="annotation" />
     </div>
     <div
-      v-if="annotation.created"
+      v-if="replies.length"
       class="card-footer"
     >
       <post
-        v-for="response in responses"
-        :key="response.id"
+        v-for="reply in replies"
+        :key="reply.id"
         class="my-2"
-        :annotation="response"
+        :annotation="reply"
       />
       <reply-form
         :annotation-id="annotation.id"
@@ -45,7 +45,7 @@ export default {
     id() {
       return getAnnotationCardId(this.annotation.id);
     },
-    responses() {
+    replies() {
       return this[GET.RESPONSES_TO](this.annotation.id);
     },
   },
