@@ -12,7 +12,7 @@
 <script>
 import AnnotationBodyIndicator from '@/components/annotation/AnnotationBodyIndicator';
 import emitter from 'tiny-emitter/instance';
-import {LINE_HEIGHT_IN_PX, LONGPAGE_CONTENT_ID} from '@/config/constants';
+import {LONGPAGE_CONTENT_ID} from '@/config/constants';
 import {MUTATE} from '@/store/types';
 import {ResizeObserver} from '@juggle/resize-observer';
 
@@ -40,11 +40,11 @@ import {ResizeObserver} from '@juggle/resize-observer';
     methods: {
       getIndicatorTop(highlights, offset = 0) {
         return highlights
-          .map(highlight => highlight.getBoundingClientRect().bottom)
-          .reduce((maxBottom, bottom) => Math.max(maxBottom, bottom)) - offset;
+          .map(highlight => highlight.getBoundingClientRect().top)
+          .reduce((minTop, top) => Math.min(minTop, top)) - offset;
       },
       getTopOffset() {
-        return this.parentElement.getBoundingClientRect().top + LINE_HEIGHT_IN_PX;
+        return this.parentElement.getBoundingClientRect().top;
       },
       updateIndicatorTopToAnnotationsMap(anchors, map = {}) {
         return anchors
