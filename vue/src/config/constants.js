@@ -34,8 +34,6 @@ export const HighlightingConfig = Object.freeze({
 
 export const LANGUAGE = 'de';
 
-export const LINE_HEIGHT_IN_PX = 27;
-
 export const ANNOTATION_CARD_CONTAINER_ID = 'annotation-card-container';
 export const LONGPAGE_APP_CONTAINER_ID = 'longpage-app-container';
 export const LONGPAGE_APP_ID = 'longpage-app';
