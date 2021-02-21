@@ -127,25 +127,24 @@ class mod_page_external extends external_api {
         self::validate_parameters(self::create_annotation_parameters(), ['annotation' => $annotation]);
         self::validate_cm_context($annotation['pageid']);
 
-        $public = isset($annotation['body']) && $annotation['body']['public'];
-
         $transaction = $DB->start_delegated_transaction();
         $id = $DB->insert_record('page_annotations', array_merge(
-            omit_keys($annotation, ['target', 'body']),
+            pick_keys($annotation, ['pageid', 'public', 'type']),
             [
                 'timecreated' => time(),
                 'timemodified' => time(),
                 'creatorid' => $USER->id,
-                'public' => $public
             ]
         ));
         self::create_annotation_target($annotation['target'], $id);
         if(isset($annotation['body'])) {
-            self::create_annotation_body($annotation['body'], $id, $annotation['pageid']);
+            self::create_thread($annotation['body'], $id);
         }
         $transaction->allow_commit();
 
-        return (array) get_annotation($id);
+        return [
+            'annotation' => self::get_annotations(['pageid' => $annotation['pageid'], 'annotationid' => $id])['annotations'][0]
+        ];
     }
 
     /**
@@ -158,14 +157,21 @@ class mod_page_external extends external_api {
         return new external_function_parameters([
             'annotation' => new external_single_structure([
                 'pageid' => new external_value(PARAM_INT),
-                'target' => self::page_annotation_target_parameters(),
+                'target' => self::create_annotation_target_parameters(),
                 'type' => new external_value(PARAM_INT),
-                'body' => new external_single_structure(array_merge([
-                    omit_keys(self::post_parameters(), ['threadid', 'creatorid']),
-                    ['replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL)],
-                ]), '', VALUE_OPTIONAL),
+                'body' => new external_single_structure(self::create_thread_parameters_base(), '', VALUE_OPTIONAL),
+                'public' => new external_value(PARAM_BOOL),
             ]),
         ]);
+    }
+
+    private static function create_thread_parameters_base() {
+        return [
+            'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'content' => new external_value(PARAM_TEXT, ''),
+            'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+        ];
     }
 
     /**
@@ -175,20 +181,27 @@ class mod_page_external extends external_api {
      * @since Moodle 3.0
      */
     public static function create_annotation_returns() {
-        return new external_single_structure(
-            array('id' => new external_value(PARAM_RAW))
-        );
+        return new external_single_structure(['annotation' => self::get_annotation_returns()]);
     }
 
     private static function create_annotation_target($target, $annotationid) {
-        self::create_segment(pick_keys($target, ['selector', 'styleclass']), $annotationid);
+        global $DB;
+
+        $targetid = $DB->insert_record(
+            'page_annotation_targets',
+            ['annotationid' => $annotationid, 'styleclass' => $target['styleclass'] ?? null]
+        );
+        self::create_selectors($target['selectors'], $targetid);
     }
 
     public static function create_post($parameters) {
-        global $DB;
+        global $DB, $USER;
 
         $transaction = $DB->start_delegated_transaction();
-        $id = $DB->insert_record('page_posts', array_merge($parameters, ['timecreated' => time(), 'timemodified' => time()]));
+        $id = $DB->insert_record(
+            'page_posts',
+            array_merge($parameters, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()]),
+        );
         $transaction->allow_commit();
 
         return (array) $DB->get_record('page_posts', ['id' => $id]);
@@ -260,34 +273,20 @@ class mod_page_external extends external_api {
     }
 
     /**
-     * @param $segment
-     * @param $annotationid
+     * @param $selectors
+     * @param $annotationtargetid
      */
-    private static function create_segment($segment, $annotationid) {
-        global $DB;
-
-        $segmentid = $DB->insert_record(
-            'page_segments',
-            ['annotationid' => $annotationid, 'styleclass' => $segment['styleclass'] ?? null]
-        );
-        self::create_selectors($segment['selector'], $segmentid);
-    }
-
-    /**
-     * @param $selectors // TODO: Correct and complete documentations of external functions
-     * @param $segmentid
-     */
-    private static function create_selectors($selectors, $segmentid): void {
+    private static function create_selectors($selectors, $annotationtargetid): void {
         global $DB;
 
         foreach ($selectors as $selector) {
-            $selectorid = $DB->insert_record('page_selectors', ['segmentid' => $segmentid, 'type' => $selector['type']]);
+            $selectorid = $DB->insert_record('page_selectors', ['annotationtargetid' => $annotationtargetid, 'type' => $selector['type']]);
             $DB->insert_record(mod_page_selector::map_type_to_table_name($selector['type']),
                 array_merge(omit_keys($selector, ['type']), ['selectorid' => $selectorid]));
         }
     }
 
-    public static function create_thread($body, $annotationid, $pageid) {
+    public static function create_thread($threadparameters, $annotationid) {
         global $DB, $USER;
 
         $id = $DB->insert_record(
@@ -295,18 +294,12 @@ class mod_page_external extends external_api {
             [
                 'annotationid' => $annotationid,
                 'creatorid' => $USER->id,
-                'pageid' => $pageid,
-                'replyrequested' => isset($body['replyrequested']) && $body['replyrequested'],
-                'public' => $body['public']
+                'replyrequested' => isset($threadparameters['replyrequested']) && $threadparameters['replyrequested'],
             ],
         );
-        $rootid = self::create_post(
-            array_merge(
-                omit_keys($body, ['replyrequested']),
-                ['threadid' => $id, 'creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()],
-            ),
-        );
-        $DB->update_record('page_threads', ['id' => $id, 'rootid' => $rootid]);
+        $postparameters = omit_keys($threadparameters, ['replyrequested']);
+        $postparameters['threadid'] = $id;
+        self::create_post($postparameters);
     }
 
     public static function create_thread_parameters() {
@@ -517,71 +510,6 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    public static function get_annotations($pageid) {
-        global $DB, $USER;
-
-        self::validate_parameters(self::get_annotations_parameters(), ['pageid' => $pageid]);
-        self::validate_cm_context($pageid);
-
-        $annotations = $DB->get_records_select(
-            'page_annotations',
-            'pageid = ? AND (creatorid = ? OR public = 1)',
-            ['pageid' => $pageid, 'creatorid' => $USER->id],
-        );
-
-        foreach ($annotations as $annotation) {
-            $annotation->target = self::get_annotation_target($annotation->id);
-            $annotation->body = self::get_thread($annotation->id);
-            omit_keys($annotation, ['pageid', 'creatorid', 'public'], true);
-        }
-
-        return ['annotations' => array_values($annotations)];
-    }
-
-    /**
-     * Describes the parameters for get_annotations.
-     *
-     * @return external_function_parameters
-     * @since Moodle 3.3
-     */
-    public static function get_annotations_parameters() {
-        return new external_function_parameters([
-            'pageid' => new external_value(PARAM_INT)
-        ]);
-    }
-
-    /**
-     * Returns description of method result value
-     *
-     * @return external_function_parameters
-     * @since Moodle 3.0
-     */
-    public static function get_annotations_returns() {
-        return new external_function_parameters([
-            'annotations' => new external_multiple_structure(
-                new external_single_structure(array_merge(
-                    [
-                        'id' => new external_value(PARAM_INT),
-                        'body' => self::get_thread_returns(),
-                        'target' => self::page_annotation_target_parameters(),
-                        'type' => new external_value(PARAM_INT),
-                    ],
-                    self::timestamp_parameters(),
-                )),
-            ),
-        ]);
-    }
-
-    public static function get_thread_returns() {
-        return new external_single_structure([
-            'id' => new external_value(PARAM_INT),
-            'annotationid' => new external_value(PARAM_INT),
-            'posts' => new external_multiple_structure(self::get_post_returns()),
-            'replyid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-            'replyrequested' => new external_value(PARAM_BOOL),
-        ], '', VALUE_OPTIONAL);
-    }
-
     /**
      * @param object $targetid
      * @return array
@@ -593,6 +521,84 @@ class mod_page_external extends external_api {
         $target->selectors = self::get_selectors($target->id);
 
         return omit_keys($target, ['annotationid']);
+    }
+
+    public static function get_annotations($parameters) {
+        self::validate_parameters(self::get_annotations_parameters(), ['parameters' => $parameters]);
+        self::validate_cm_context($parameters['pageid']);
+
+        $annotations =
+            isset($parameters['annotationid']) ?
+                self::get_annotations_by_annotation($parameters['annotationid']) :
+                self::get_annotations_by_page($parameters['pageid']);
+
+        foreach ($annotations as $annotation) {
+            $annotation->target = self::get_annotation_target($annotation->id);
+            $annotation->body = self::get_thread($annotation->id);
+            omit_keys($annotation, ['pageid', 'creatorid', 'public'], true);
+        }
+
+        return ['annotations' => array_values($annotations)];
+    }
+
+
+    private static function get_annotations_by_page($pageid) {
+        global $DB, $USER;
+
+        return $DB->get_records_select(
+            'page_annotations',
+            'pageid = ? AND (creatorid = ? OR public = 1)',
+            ['pageid' => $pageid, 'creatorid' => $USER->id],
+        );
+    }
+
+    private static function get_annotations_by_annotation($annotationid) {
+        global $DB, $USER;
+
+        return $DB->get_records_select(
+            'page_annotations',
+            'annotationid = ? AND (creatorid = ? OR public = 1)',
+            ['annotationid' => $annotationid, 'creatorid' => $USER->id],
+        );
+    }
+
+    /**
+     * Describes the parameters for get_annotations.
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.3
+     */
+    public static function get_annotations_parameters() {
+        return new external_function_parameters([
+            'parameters' => new external_single_structure([
+                'pageid' => new external_value(PARAM_INT),
+                'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+            ]),
+        ]);
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function get_annotations_returns() {
+        return new external_function_parameters([
+            'annotations' => new external_multiple_structure(self::get_annotation_returns()),
+        ]);
+    }
+
+    private static function get_annotation_returns() {
+        return new external_single_structure(array_merge(
+            [
+                'id' => new external_value(PARAM_INT),
+                'body' => self::get_thread_returns(),
+                'target' => self::get_annotation_target_parameters(),
+                'type' => new external_value(PARAM_INT),
+            ],
+            self::timestamp_parameters(),
+        ));
     }
 
     /**
@@ -775,6 +781,16 @@ class mod_page_external extends external_api {
         return $thread;
     }
 
+    public static function get_thread_returns() {
+        return new external_single_structure([
+            'id' => new external_value(PARAM_INT),
+            'annotationid' => new external_value(PARAM_INT),
+            'posts' => new external_multiple_structure(self::get_post_returns()),
+            'replyid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+            'replyrequested' => new external_value(PARAM_BOOL),
+        ], '', VALUE_OPTIONAL);
+    }
+
     public static function getreadingprogress($data) {
         global $CFG, $DB, $USER;
 
@@ -906,9 +922,19 @@ class mod_page_external extends external_api {
         );
     }
 
-    public static function page_annotation_target_parameters() {
-        return new external_single_structure([
-            'id' => new external_value(PARAM_INT),
+    public static function create_annotation_target_parameters() {
+        return new external_single_structure(self::annotation_target_parameters_base());
+    }
+
+    public static function get_annotation_target_parameters() {
+        return new external_single_structure(array_merge(
+            ['id' => new external_value(PARAM_INT)],
+            self::annotation_target_parameters_base(),
+        ));
+    }
+
+    private static function annotation_target_parameters_base() {
+        return [
             'selectors' => new external_multiple_structure(
                 new external_single_structure([
                     'type' => new external_value(PARAM_INT),
@@ -924,7 +950,7 @@ class mod_page_external extends external_api {
                 ]), '', VALUE_OPTIONAL
             ),
             'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-        ]);
+        ];
     }
 
     private static function post_parameters() {
