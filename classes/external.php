@@ -99,15 +99,15 @@ abstract class mod_page_selector {
 
     private static $TABLE_NAME_TO_TYPE_MAPPING;
 
-    static function map_type_to_table_name($type) {
-        return self::$TYPE_TO_TABLE_NAME_MAPPING[$type];
-    }
-
     static function map_table_name_to_type($table_name) {
         if (!isset(self::$TABLE_NAME_TO_TYPE_MAPPING)) {
             self::$TABLE_NAME_TO_TYPE_MAPPING = array_flip(self::$TYPE_TO_TABLE_NAME_MAPPING);
         }
         return self::$TABLE_NAME_TO_TYPE_MAPPING[$table_name];
+    }
+
+    static function map_type_to_table_name($type) {
+        return self::$TYPE_TO_TABLE_NAME_MAPPING[$type];
     }
 }
 
@@ -121,335 +121,77 @@ abstract class mod_page_selector {
  * @since      Moodle 3.0
  */
 class mod_page_external extends external_api {
-    public static function get_threads($pageid) {
+    public static function create_annotation($annotation) {
         global $DB, $USER;
 
-        self::validate_parameters(self::get_posts_parameters(), ['pageid'=>$pageid]);
-        self::validate_cm_context();
+        self::validate_parameters(self::create_annotation_parameters(), ['annotation' => $annotation]);
+        self::validate_cm_context($annotation['pageid']);
 
-        $threads = $DB->get_records_select(
-            'page_threads',
-            'pageid = ? AND (public = 1 OR creatorid = ?)',
-            ['pageid' => $pageid, 'creatorid' => $USER->id],
-        );
-
-        foreach ($threads as $thread) {
-            $thread->posts = self::get_posts($thread);
-            omit_keys($thread, ['creatorid', 'pageid', 'public', 'rootid'], true);
-        }
-
-        return ['threads' => array_values($threads)];
-    }
-
-    private static function validate_cm_context($pageid) {
-        global $DB;
-
-        $page = $DB->get_record('page', ['id' => $pageid], '*', MUST_EXIST);
-        $cm = get_course_and_cm_from_instance($page, 'page');
-        $modcontext = context_module::instance($cm->id);
-        self::validate_context($modcontext);
-    }
-
-    private static function get_posts($thread) {
-        global $DB, $USER;
-
-        $posts = $DB->get_records_select(
-            'page_posts',
-            'threadid = ? AND (public = 1 OR creatorid = ?)',
-            ['threadid' => $thread->id, 'creatorid' => $USER->id],
-            'timemodified'
-        );
-
-        return array_map(function ($post) {
-           if ($post->anonymous) {
-               unset($post->creatorid);
-           }
-           return omit_keys($post, ['anonymous']);
-        }, $posts);
-    }
-
-    public static function get_threads_parameters() {
-        return new external_function_parameters([
-            'pageid' => new external_value(PARAM_INT),
-        ]);
-    }
-
-    public static function get_threads_returns() {
-        return new external_function_parameters([
-           'threads' => new external_multiple_structure(self::get_thread_returns())
-        ]);
-    }
-
-    /**
-     * @return external_single_structure
-     */
-    private static function get_thread_returns(): external_single_structure {
-        return new external_single_structure([
-            'id' => new external_value(PARAM_INT),
-            'annotationid' => new external_value(PARAM_INT),
-            'posts' => new external_multiple_structure(self::get_post_returns()),
-            'replyid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-            'replyrequested' => new external_value(PARAM_BOOL),
-        ]);
-    }
-
-    /**
-     * @return external_single_structure
-     */
-    private static function get_post_returns(): external_single_structure {
-        return new external_single_structure(array_merge(
-            ['id' => new external_value(PARAM_INT)],
-            omit_keys(self::post_parameters(), ['creatorid']),
-            ['creatorid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)],
-            self::timestamp_parameters()
-        ));
-    }
-
-    private static function post_parameters() {
-        return [
-            'threadid' => new external_value(PARAM_INT),
-            'creatorid' => new external_value(PARAM_INT),
-            'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-            'content' => new external_value(PARAM_TEXT, ''),
-            'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-        ];
-    }
-
-    private static function timestamp_parameters() {
-        return ['timecreated' => new external_value(PARAM_INT), 'timemodified' => new external_value(PARAM_INT)];
-    }
-
-    public static function create_post_parameters() {
-        return new external_function_parameters(self::post_parameters());
-    }
-
-    public static function delete_post($parameters) {
-        global $DB;
+        $public = isset($annotation['body']) && $annotation['body']['public'];
 
         $transaction = $DB->start_delegated_transaction();
-
-        $post = $DB->get_record('page_posts', $parameters);
-        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
-        $postisthreadroot = $post->threadid === $thread->rootid;
-
-        self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
-
-        $DB->delete_records('page_post_likes', ['postid' => $post->postid]);
-        $DB->delete_records('page_post_readings', ['postid' => $post->postid]);
-        $DB->delete_records('page_post_marks', ['postid' => $post->postid]);
-        $DB->delete_records('page_posts', ['id' => $post->id]);
-
-        if ($postisthreadroot) {
-            $DB->delete_records('page_thread_subscriptions', ['threadid' => $thread->id]);
-            $DB->delete_records('page_threads', ['id' => $thread->id]);
-            self::delete_annotation($thread->annotationid);
+        $id = $DB->insert_record('page_annotations', array_merge(
+            omit_keys($annotation, ['target', 'body']),
+            [
+                'timecreated' => time(),
+                'timemodified' => time(),
+                'creatorid' => $USER->id,
+                'public' => $public
+            ]
+        ));
+        self::create_annotation_target($annotation['target'], $id);
+        if(isset($annotation['body'])) {
+            self::create_annotation_body($annotation['body'], $id, $annotation['pageid']);
         }
-
         $transaction->allow_commit();
-    }
 
-    private static function validate_post_can_be_deleted_and_udpated($post, $postisthreadroot) {
-        global $DB;
-
-        // TODO: Check if user has capability to delete post without validation and return if so
-        // TODO: Check if user has capability for deleting/updating post
-
-        if ($post->markedasrequestedreply) {
-            throw new invalid_parameter_exception('Post is marked as the reply requested. 
-                It cannot be deleted/updated since others might depend on it.');
-        }
-
-        self::validate_post_not_referenced_by_other_post();
-
-        $isliked = $DB->record_exists('page_post_likes', ['postid' => $post->id]);
-        if ($isliked) {
-            throw new invalid_parameter_exception('Post is liked by others. 
-                It cannot be deleted/updated since others might depend on it.');
-        }
-
-        $ismarked = $DB->record_exists_select(
-            'page_post_marks',
-            'postid = ? AND userid != ?',
-            ['postid' => $post->id, 'userid' => $post->creatorid]
-        );
-        if ($ismarked) {
-            throw new invalid_parameter_exception('Post is marked by others. 
-                It cannot be deleted/updated since others might depend on it.');
-        }
-
-        $threadhassubscription = $DB->record_exists_select(
-            'page_thread_subscriptions',
-            'threadid = ? AND userid != ?',
-            ['threadid' => $post->threadid, 'userid' => $post->creatorid]
-        );
-        if ($threadhassubscription && $postisthreadroot) {
-            throw new invalid_parameter_exception('Thread that post belongs to is subscribed to by others. 
-                The post cannot be deleted/updated since it is the root of the thread and others might depend on the thread and, 
-                therefore, the post.');
-        }
+        return (array) get_annotation($id);
     }
 
     /**
-     * @param $post
-     */
-    private static function validate_post_not_referenced_by_other_post($post) {
-        global $DB;
-
-        $islastpost = $DB->record_exists_select(
-            'page_posts',
-            'threadid = ? AND timecreated > ?',
-            ['threadid' => $post->threadid, 'timecreated' => $post->timecreated]
-        );
-        if (!$islastpost) {
-            throw new invalid_parameter_exception('Only the last post in a thread can be deleted/updated as post could be referenced
-                by other posts.');
-        }
-    }
-
-    /**
-     * Delete page annotation
+     * Returns description of method parameters
      *
-     * @param integer id
-     * @return void
+     * @return external_function_parameters
      * @since Moodle 3.0
      */
-    public static function delete_annotation($id) {
-        global $DB;
-        $assocconditions = ['annotationid' => $id];
-
-        $transaction = $DB->start_delegated_transaction();
-        self::delete_annotation_targets($assocconditions);
-        $DB->delete_records('page_annotation_tags', $assocconditions);
-        $DB->delete_records('page_annotation_ratings', $assocconditions);
-        $DB->delete_records('page_annotation_views', $assocconditions);
-        $DB->delete_records('page_annotations', ['id' => $id]);
-        $transaction->allow_commit();
-    }
-
-    private static function delete_annotation_targets($conditions) {
-        global $DB;
-
-        $targets = $DB->get_records('page_annotation_targets', $conditions);
-        foreach ($targets as $target) {
-            self::delete_annotation_target($target, $conditions, $DB);
-        }
-        $DB->delete_records('page_annotation_targets', $conditions);
+    public static function create_annotation_parameters() {
+        return new external_function_parameters([
+            'annotation' => new external_single_structure([
+                'pageid' => new external_value(PARAM_INT),
+                'target' => self::page_annotation_target_parameters(),
+                'type' => new external_value(PARAM_INT),
+                'body' => new external_single_structure(array_merge([
+                    omit_keys(self::post_parameters(), ['threadid', 'creatorid']),
+                    ['replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL)],
+                ]), '', VALUE_OPTIONAL),
+            ]),
+        ]);
     }
 
     /**
-     * @param $target
+     * Returns description of method parameters
+     *
+     * @return external_single_structure
+     * @since Moodle 3.0
      */
-    private static function delete_annotation_target($target): void {
-        global $DB;
-
-        $conditions = ['annotationtargetid' => $target->id];
-        switch ($target->type) {
-            case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
-                self::delete_segments($conditions);
-                break;
-            case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
-                $DB->delete_records('page_annot_annot_targets', $conditions);
-                break;
-        }
+    public static function create_annotation_returns() {
+        return new external_single_structure(
+            array('id' => new external_value(PARAM_RAW))
+        );
     }
 
-    private static function delete_segments($conditions) {
-        global $DB;
-
-        $pagesegments = $DB->get_records('page_segments', $conditions);
-        foreach ($pagesegments as $pagesegment) {
-            self::delete_selectors(['segmentid' => $pagesegment->id]);
-        }
-        $DB->delete_records('page_segments', $conditions);
+    private static function create_annotation_target($target, $annotationid) {
+        self::create_segment(pick_keys($target, ['selector', 'styleclass']), $annotationid);
     }
 
-    private static function delete_selectors($conditions) {
-        global $DB;
-
-        $pageselectors = $DB->get_records('page_selectors', $conditions);
-        foreach ($pageselectors as $pageselector) {
-            $tablename = mod_page_selector::map_type_to_table_name($pageselector->type);
-            $DB->delete_records($tablename, ['selectorid' => $pageselector->id]);
-        }
-        $DB->delete_records('page_selectors', $conditions);
-    }
-
-    public static function delete_post_parameters() {
-        return new external_function_parameters(self::id_parameters());
-    }
-
-    private static function id_parameters() {
-        return ['id' => new external_value(PARAM_INT)];
-    }
-
-    public static function delete_post_returns() {
-        return null;
-    }
-
-    public static function update_post($parameters) {
+    public static function create_post($parameters) {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        self::validate_post_can_be_updated((object) $parameters);
-        $DB->update_record('page_posts', array_merge($parameters, ['timemodified' => time()]));
-
+        $id = $DB->insert_record('page_posts', array_merge($parameters, ['timecreated' => time(), 'timemodified' => time()]));
         $transaction->allow_commit();
 
-        return (array) $DB->get_record('page_posts', pick_keys($parameters, ['id']));
-    }
-
-    private static function validate_post_can_be_updated($postupdate) {
-        global $DB, $USER;
-
-        // TODO: Check if user has capability to update post without validation and return if so
-        // TODO: Check if user has capability for updating post
-
-        $post = $DB->get_record('page_posts', ['id' => $postupdate->id]);
-        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
-        $rootpost = $DB->get_record('page_posts', ['id' => $thread->rootid]);
-        $postisthreadroot = $post->threadid === $thread->rootid;
-        if (($post->public && !$postupdate->public) || $post->content !== $postupdate->content) {
-            self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
-        }
-        if ($postupdate->markedasrequestedreply) {
-            if ($rootpost->creatorid !== $USER->id) {
-                throw new invalid_parameter_exception('The post can only be marked as the reply requested by the user who requested
-                    the reply.');
-            }
-            if (!$thread->requestedreply) {
-                throw new invalid_parameter_exception('The post cannot be marked as the reply requested since no reply was requested 
-                for thread.');
-            }
-            if ($thread->rootid === $postupdate->id) {
-                throw new invalid_parameter_exception('The post cannot be marked as the reply requested since it is the root of the 
-                thread were the reply has been requested.');
-            }
-        }
-    }
-
-    public static function update_post_parameters() {
-        return new external_function_parameters(array_merge(
-            self::id_parameters(),
-            omit_keys(self::post_parameters(), ['threadid', 'creatorid', 'content']),
-            [
-                'content' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                'markedasrequestedreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-            ],
-        ));
-    }
-
-    public static function update_post_returns() {
-        return self::create_post_returns();
-    }
-
-    public static function create_post_returns() {
-        return new external_function_parameters(
-            array_merge(
-                self::post_parameters(),
-                self::id_parameters(),
-                self::timestamp_parameters(),
-            )
-        );
+        return (array) $DB->get_record('page_posts', ['id' => $id]);
     }
 
     public static function create_post_like($parameters) {
@@ -460,22 +202,6 @@ class mod_page_external extends external_api {
         $transaction->allow_commit();
     }
 
-    public static function create_post_like_returns() {
-        return null;
-    }
-
-    public static function delete_post_like($parameters) {
-        global $DB;
-
-        $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_likes', $parameters);
-        $transaction->allow_commit();
-    }
-
-    public static function delete_post_like_parameters() {
-        return self::create_post_like_parameters();
-    }
-
     public static function create_post_like_parameters() {
         return new external_function_parameters([
             'postid' => new external_value(PARAM_INT),
@@ -483,7 +209,7 @@ class mod_page_external extends external_api {
         ]);
     }
 
-    public static function delete_post_like_returns() {
+    public static function create_post_like_returns() {
         return null;
     }
 
@@ -503,20 +229,8 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    public static function delete_post_mark($parameters) {
-        global $DB;
-
-        $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_marks', $parameters);
-        $transaction->allow_commit();
-    }
-
-    public static function delete_post_mark_parameters() {
-        return self::create_post_like_parameters();
-    }
-
-    public static function delete_post_mark_returns() {
-        return null;
+    public static function create_post_parameters() {
+        return new external_function_parameters(self::post_parameters());
     }
 
     public static function create_post_reading($parameters) {
@@ -535,74 +249,14 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    public static function delete_post_reading($parameters) {
-        global $DB;
-
-        $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_readings', $parameters);
-        $transaction->allow_commit();
-    }
-
-    public static function delete_post_reading_parameters() {
-        return self::create_post_like_parameters();
-    }
-
-    public static function delete_post_reading_returns() {
-        return null;
-    }
-
-    public static function create_thread_subscription($parameters) {
-        global $DB;
-
-        $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_thread_subscriptions', array_merge($parameters, ['timecreated' => time()]));
-        $transaction->allow_commit();
-    }
-
-    public static function create_thread_subscription_returns() {
-        return null;
-    }
-
-    public static function delete_thread_subscription($parameters) {
-        global $DB;
-
-        $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_thread_subscriptions', $parameters);
-        $transaction->allow_commit();
-    }
-
-    public static function delete_thread_subscription_parameters() {
-        return self::create_thread_subscription_parameters();
-    }
-
-    public static function create_thread_subscription_parameters() {
-        return new external_function_parameters([
-            'threadid' => new external_value(PARAM_INT),
-            'userid' => new external_value(PARAM_INT),
-        ]);
-    }
-
-    public static function delete_thread_subscription_returns() {
-        return null;
-    }
-
-    public static function create_annotation($annotation) {
-        global $DB;
-
-        // Validate
-        $transaction = $DB->start_delegated_transaction();
-        $annotation['timecreated'] = time();
-        $annotation['timemodified'] = time();
-        $annotationid = $DB->insert_record('page_annotations', omit_keys($annotation, ['target', 'body']));
-        self::create_annotation_target($annotation['target'], $annotationid);
-        self::create_annotation_body($annotation['body'], $annotationid, $annotation['creatorid']);
-        $transaction->allow_commit();
-
-        return (array) get_annotation($annotationid);
-    }
-
-    private static function create_annotation_target($target, $annotationid) {
-        self::create_segment(pick_keys($target, ['selector', 'styleclass']), $annotationid);
+    public static function create_post_returns() {
+        return new external_function_parameters(
+            array_merge(
+                self::post_parameters(),
+                self::id_parameters(),
+                self::timestamp_parameters(),
+            )
+        );
     }
 
     /**
@@ -633,88 +287,73 @@ class mod_page_external extends external_api {
         }
     }
 
-    private static function create_annotation_body($body, $annotationid, $creatorid) {
-        self::create_thread($body, $annotationid, $creatorid);
-    }
+    public static function create_thread($body, $annotationid, $pageid) {
+        global $DB, $USER;
 
-    private static function create_thread($body, $annotationid, $creatorid) {
-        global $DB;
-
-        $threadid = $DB->insert_record(
+        $id = $DB->insert_record(
             'page_threads',
-            array_merge(pick_keys($body, ['replyrequested']), ['annotationid' => $annotationid]),
+            [
+                'annotationid' => $annotationid,
+                'creatorid' => $USER->id,
+                'pageid' => $pageid,
+                'replyrequested' => isset($body['replyrequested']) && $body['replyrequested'],
+                'public' => $body['public']
+            ],
         );
         $rootid = self::create_post(
-            array_merge(omit_keys($body ['replyrequested']), ['threadid' => $threadid, 'creatorid' => $creatorid]),
+            array_merge(
+                omit_keys($body, ['replyrequested']),
+                ['threadid' => $id, 'creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()],
+            ),
         );
-        $DB->update_record('page_threads', ['id' => $threadid, 'rootid' => $rootid]);
+        $DB->update_record('page_threads', ['id' => $id, 'rootid' => $rootid]);
     }
 
-    public static function create_post($parameters) {
+    public static function create_thread_parameters() {
+
+    }
+
+    public static function create_thread_returns() {
+
+    }
+
+    public static function create_thread_subscription($parameters) {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $id = $DB->insert_record('page_posts', array_merge($parameters, ['timecreated' => time(), 'timemodified' => time()]));
+        $DB->insert_record('page_thread_subscriptions', array_merge($parameters, ['timecreated' => time()]));
         $transaction->allow_commit();
-
-        return (array) $DB->get_record('page_posts', ['id' => $id]);
     }
 
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     * @since Moodle 3.0
-     */
-    public static function create_annotation_parameters() {
+    public static function create_thread_subscription_parameters() {
         return new external_function_parameters([
-            'pageid' => new external_value(PARAM_INT),
-            'creatorid' => new external_value(PARAM_INT),
-            'target' => self::page_annotation_target_parameters(),
-            'type' => new external_value(PARAM_INT),
-            'body' => new external_single_structure(
-                array_merge(
-                    omit_keys(self::post_parameters(), ['threadid']),
-                    [
-                        'replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-                    ]
-                ),
-                '',
-                VALUE_OPTIONAL
-            )
+            'threadid' => new external_value(PARAM_INT),
+            'userid' => new external_value(PARAM_INT),
         ]);
     }
 
-    public static function page_annotation_target_parameters() {
-        return new external_single_structure([
-            'selector' => new external_multiple_structure(
-                new external_single_structure([
-                    'type' => new external_value(PARAM_INT),
-                    'startposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                    'startcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                    'startoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                    'endposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                    'endcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                    'endoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                    'exact' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                    'prefix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                    'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                ]), '', VALUE_OPTIONAL
-            ),
-            'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-        ]);
+    public static function create_thread_subscription_returns() {
+        return null;
     }
 
     /**
-     * Returns description of method parameters
+     * Delete page annotation
      *
-     * @return external_single_structure
+     * @param integer id
+     * @return void
      * @since Moodle 3.0
      */
-    public static function create_annotation_returns() {
-        return new external_single_structure(
-            array('id' => new external_value(PARAM_RAW))
-        );
+    public static function delete_annotation($id) {
+        global $DB;
+        $assocconditions = ['annotationid' => $id];
+
+        $transaction = $DB->start_delegated_transaction();
+        self::delete_annotation_targets($assocconditions);
+        $DB->delete_records('page_annotation_tags', $assocconditions);
+        $DB->delete_records('page_annotation_ratings', $assocconditions);
+        $DB->delete_records('page_annotation_views', $assocconditions);
+        $DB->delete_records('page_annotations', ['id' => $id]);
+        $transaction->allow_commit();
     }
 
     /**
@@ -734,72 +373,148 @@ class mod_page_external extends external_api {
     }
 
     /**
-     * Simulate the page/view.php web interface page: trigger events, completion, etc...
-     *
-     * @param int $pageid the page instance id
-     * @return array of warnings and status result
-     * @throws moodle_exception
-     * @since Moodle 3.0
+     * @param $target
      */
-    public static function view_page($pageid) {
-        global $DB, $CFG;
-        require_once($CFG->dirroot . "/mod/page/lib.php");
+    private static function delete_annotation_target($target): void {
+        global $DB;
 
-        $params = self::validate_parameters(
-            self::view_page_parameters(),
-            array(
-                'pageid' => $pageid
-            )
-        );
-        $warnings = array();
-
-        // Request and permission validation.
-        $page = $DB->get_record('page', array('id' => $params['pageid']), '*', MUST_EXIST);
-        list($course, $cm) = get_course_and_cm_from_instance($page, 'page');
-
-        $context = context_module::instance($cm->id);
-        self::validate_context($context);
-
-        require_capability('mod/page:view', $context);
-
-        // Call the page/lib API.
-        page_view($page, $course, $cm, $context);
-
-        $result = array();
-        $result['status'] = true;
-        $result['warnings'] = $warnings;
-        return $result;
+        $conditions = ['annotationtargetid' => $target->id];
+        switch ($target->type) {
+            case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
+                self::delete_segments($conditions);
+                break;
+            case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
+                $DB->delete_records('page_annot_annot_targets', $conditions);
+                break;
+        }
     }
 
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     * @since Moodle 3.0
-     */
-    public static function view_page_parameters() {
-        return new external_function_parameters(
-            array(
-                'pageid' => new external_value(PARAM_INT, 'page instance id')
-            )
-        );
+    private static function delete_annotation_targets($conditions) {
+        global $DB;
+
+        $targets = $DB->get_records('page_annotation_targets', $conditions);
+        foreach ($targets as $target) {
+            self::delete_annotation_target($target, $conditions, $DB);
+        }
+        $DB->delete_records('page_annotation_targets', $conditions);
     }
 
-    // TODO: Add returns for create and update
+    public static function delete_post($parameters) {
+        global $DB;
 
-    /**
-     * Returns description of method result value
-     *
-     * @return external_description
-     * @since Moodle 3.0
-     */
-    public static function view_page_returns() {
-        return new external_single_structure(
-            array(
-                'status' => new external_value(PARAM_BOOL, 'status: true if success'),
-                'warnings' => new external_warnings()
-            )
-        );
+        $transaction = $DB->start_delegated_transaction();
+
+        $post = $DB->get_record('page_posts', $parameters);
+        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
+        $postisthreadroot = $post->threadid === $thread->rootid;
+
+        self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
+
+        $DB->delete_records('page_post_likes', ['postid' => $post->postid]);
+        $DB->delete_records('page_post_readings', ['postid' => $post->postid]);
+        $DB->delete_records('page_post_marks', ['postid' => $post->postid]);
+        $DB->delete_records('page_posts', ['id' => $post->id]);
+
+        if ($postisthreadroot) {
+            $DB->delete_records('page_thread_subscriptions', ['threadid' => $thread->id]);
+            $DB->delete_records('page_threads', ['id' => $thread->id]);
+            self::delete_annotation($thread->annotationid);
+        }
+
+        $transaction->allow_commit();
+    }
+
+    public static function delete_post_like($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_post_likes', $parameters);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_post_like_parameters() {
+        return self::create_post_like_parameters();
+    }
+
+    public static function delete_post_like_returns() {
+        return null;
+    }
+
+    public static function delete_post_mark($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_post_marks', $parameters);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_post_mark_parameters() {
+        return self::create_post_like_parameters();
+    }
+
+    public static function delete_post_mark_returns() {
+        return null;
+    }
+
+    public static function delete_post_parameters() {
+        return new external_function_parameters(self::id_parameters());
+    }
+
+    public static function delete_post_reading($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_post_readings', $parameters);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_post_reading_parameters() {
+        return self::create_post_like_parameters();
+    }
+
+    public static function delete_post_reading_returns() {
+        return null;
+    }
+
+    public static function delete_post_returns() {
+        return null;
+    }
+
+    private static function delete_segments($conditions) {
+        global $DB;
+
+        $pagesegments = $DB->get_records('page_segments', $conditions);
+        foreach ($pagesegments as $pagesegment) {
+            self::delete_selectors(['segmentid' => $pagesegment->id]);
+        }
+        $DB->delete_records('page_segments', $conditions);
+    }
+
+    private static function delete_selectors($conditions) {
+        global $DB;
+
+        $pageselectors = $DB->get_records('page_selectors', $conditions);
+        foreach ($pageselectors as $pageselector) {
+            $tablename = mod_page_selector::map_type_to_table_name($pageselector->type);
+            $DB->delete_records($tablename, ['selectorid' => $pageselector->id]);
+        }
+        $DB->delete_records('page_selectors', $conditions);
+    }
+
+    public static function delete_thread_subscription($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_thread_subscriptions', $parameters);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_thread_subscription_parameters() {
+        return self::create_thread_subscription_parameters();
+    }
+
+    public static function delete_thread_subscription_returns() {
+        return null;
     }
 
     public static function get_annotations($pageid) {
@@ -815,7 +530,8 @@ class mod_page_external extends external_api {
         );
 
         foreach ($annotations as $annotation) {
-            $annotation->target = self::get_annotation_targets($annotation->id);
+            $annotation->target = self::get_annotation_target($annotation->id);
+            $annotation->body = self::get_thread($annotation->id);
             omit_keys($annotation, ['pageid', 'creatorid', 'public'], true);
         }
 
@@ -834,52 +550,6 @@ class mod_page_external extends external_api {
         ]);
     }
 
-    private static function get_annotation_targets($annotationid) {
-        global $DB;
-
-        $targets = $DB->get_records('page_annotation_targets', ['annotationid' => $annotationid]);
-        return array_values(array_map(function($target) use ($DB) {
-            $targetid = $target->id;
-            $result = omit_keys($target, ['annotationid', 'id']);
-            switch ($target->type) {
-                case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
-                    return object_merge(self::get_page_segment($targetid), $result);
-                case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
-                    return object_merge(
-                        $DB->get_record('page_annot_annot_targets', ['annotationtargetid' => $targetid], 'annotationid'),
-                        $result
-                    );
-            }
-        }, $targets));
-    }
-
-    /**
-     * @param object $targetid
-     * @return array
-     */
-    private static function get_page_segment($targetid) {
-        global $DB;
-
-        $segment = $DB->get_record('page_segments', ['annotationtargetid' => $targetid]);
-        $segment->selector = self::get_selectors($segment->id);
-
-        return omit_keys($segment, ['id', 'annotationtargetid']);
-    }
-
-    private static function get_selectors($segmentid) {
-        global $DB;
-
-        $selectors = $DB->get_records('page_selectors', ['segmentid' => $segmentid]);
-        return array_values(array_map(function($selector) use ($DB) {
-            $result = $DB->get_record(
-                mod_page_selector::map_type_to_table_name($selector->type),
-                ['selectorid' => $selector->id]
-            );
-            $result->type = $selector->type;
-            return omit_keys($result, ['id', 'selectorid']);
-        }, $selectors));
-    }
-
     /**
      * Returns description of method result value
      *
@@ -892,6 +562,7 @@ class mod_page_external extends external_api {
                 new external_single_structure(array_merge(
                     [
                         'id' => new external_value(PARAM_INT),
+                        'body' => self::get_thread_returns(),
                         'target' => self::page_annotation_target_parameters(),
                         'type' => new external_value(PARAM_INT),
                     ],
@@ -901,8 +572,27 @@ class mod_page_external extends external_api {
         ]);
     }
 
-    public static function get_annotations_is_allowed_from_ajax() {
-        return true;
+    public static function get_thread_returns() {
+        return new external_single_structure([
+            'id' => new external_value(PARAM_INT),
+            'annotationid' => new external_value(PARAM_INT),
+            'posts' => new external_multiple_structure(self::get_post_returns()),
+            'replyid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+            'replyrequested' => new external_value(PARAM_BOOL),
+        ], '', VALUE_OPTIONAL);
+    }
+
+    /**
+     * @param object $targetid
+     * @return array
+     */
+    private static function get_annotation_target($annotationid) {
+        global $DB;
+
+        $target = $DB->get_record('page_annotation_targets', ['annotationid' => $annotationid]);
+        $target->selectors = self::get_selectors($target->id);
+
+        return omit_keys($target, ['annotationid']);
     }
 
     /**
@@ -1033,29 +723,111 @@ class mod_page_external extends external_api {
     }
 
     /**
-     * Takes Longpage log data form the client
+     * @return external_single_structure
      */
-    public static function log_parameters() {
+    private static function get_post_returns(): external_single_structure {
+        return new external_single_structure(array_merge(
+            ['id' => new external_value(PARAM_INT)],
+            omit_keys(self::post_parameters(), ['creatorid']),
+            ['creatorid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)],
+            self::timestamp_parameters()
+        ));
+    }
+
+    private static function get_posts($threadid) {
+        global $DB, $USER;
+
+        $posts = $DB->get_records_select(
+            'page_posts',
+            'threadid = ? AND (public = 1 OR creatorid = ?)',
+            ['threadid' => $threadid, 'creatorid' => $USER->id],
+            'timemodified'
+        );
+
+        return array_map(function ($post) {
+           if ($post->anonymous) {
+               unset($post->creatorid);
+           }
+           return omit_keys($post, ['anonymous']);
+        }, $posts);
+    }
+
+    private static function get_selectors($annotationtargetid) {
+        global $DB;
+
+        $selectors = $DB->get_records('page_selectors', ['annotationtargetid' => $annotationtargetid]);
+        return array_values(array_map(function ($selector) use ($DB) {
+            $result = $DB->get_record(
+                mod_page_selector::map_type_to_table_name($selector->type),
+                ['selectorid' => $selector->id]
+            );
+            $result->type = $selector->type;
+            return omit_keys($result, ['id', 'selectorid']);
+        }, $selectors));
+    }
+
+    public static function get_thread($annotationid) {
+        global $DB;
+
+        $thread = $DB->get_record('page_threads', ['annotationid' => $annotationid]);
+        $thread->posts = self::get_posts($thread->id);
+
+        return $thread;
+    }
+
+    public static function getreadingprogress($data) {
+        global $CFG, $DB, $USER;
+
+        $r = new stdClass();
+        $r->userid = $USER->id;
+        $r->courseid = $data['courseid'];
+        $r->pageid = $data['pageid'];
+
+        $query = '
+            SELECT section, count(section) as count
+            FROM (SELECT * FROM ' . $CFG->prefix . 'page_reading AS m WHERE userid=? AND courseid=? AND pageid=?) as mm
+            GROUP by section
+            ';
+
+        $transaction = $DB->start_delegated_transaction();
+        $res = $DB->get_records_sql($query, array($USER->id, $data['courseid'], $data['pageid']));
+        $transaction->allow_commit();
+
+        return array('response' => json_encode($res));
+    }
+
+    public static function getreadingprogress_is_allowed_from_ajax() {
+        return true;
+    }
+
+    /**
+     * Get readingprogress
+     */
+    public static function getreadingprogress_parameters() {
         return new external_function_parameters(
             array(
                 'data' =>
                     new external_single_structure(
                         array(
-                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                            'utc' => new external_value(PARAM_INT, '...utc time', VALUE_OPTIONAL),
-                            'action' => new external_value(PARAM_TEXT, '..action', VALUE_OPTIONAL),
-                            'entry' => new external_value(PARAM_RAW, 'log data', VALUE_OPTIONAL)
+                            'courseid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                            'pageid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
                         )
                     )
             )
         );
     }
 
-    public static function log_returns() {
+    public static function getreadingprogress_returns() {
         return new external_single_structure(
-            array('response' => new external_value(PARAM_RAW, 'Server respons to the incomming log'))
+            array('response' => new external_value(PARAM_RAW, 'All bookmarks of an user'))
         );
     }
+
+    private static function id_parameters() {
+        return ['id' => new external_value(PARAM_INT)];
+    }
+
+    // TODO: Add returns for create and update
 
     public static function log($data) {
         global $CFG, $DB, $USER;
@@ -1110,51 +882,63 @@ class mod_page_external extends external_api {
     }
 
     /**
-     * Get readingprogress
+     * Takes Longpage log data form the client
      */
-    public static function getreadingprogress_parameters() {
+    public static function log_parameters() {
         return new external_function_parameters(
             array(
                 'data' =>
                     new external_single_structure(
                         array(
-                            'courseid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                            'pageid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
+                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'utc' => new external_value(PARAM_INT, '...utc time', VALUE_OPTIONAL),
+                            'action' => new external_value(PARAM_TEXT, '..action', VALUE_OPTIONAL),
+                            'entry' => new external_value(PARAM_RAW, 'log data', VALUE_OPTIONAL)
                         )
                     )
             )
         );
     }
 
-    public static function getreadingprogress_returns() {
+    public static function log_returns() {
         return new external_single_structure(
-            array('response' => new external_value(PARAM_RAW, 'All bookmarks of an user'))
+            array('response' => new external_value(PARAM_RAW, 'Server respons to the incomming log'))
         );
     }
 
-    public static function getreadingprogress($data) {
-        global $CFG, $DB, $USER;
-
-        $r = new stdClass();
-        $r->userid = $USER->id;
-        $r->courseid = $data['courseid'];
-        $r->pageid = $data['pageid'];
-
-        $query = '
-            SELECT section, count(section) as count
-            FROM (SELECT * FROM ' . $CFG->prefix . 'page_reading AS m WHERE userid=? AND courseid=? AND pageid=?) as mm
-            GROUP by section
-            ';
-
-        $transaction = $DB->start_delegated_transaction();
-        $res = $DB->get_records_sql($query, array($USER->id, $data['courseid'], $data['pageid']));
-        $transaction->allow_commit();
-
-        return array('response' => json_encode($res));
+    public static function page_annotation_target_parameters() {
+        return new external_single_structure([
+            'id' => new external_value(PARAM_INT),
+            'selectors' => new external_multiple_structure(
+                new external_single_structure([
+                    'type' => new external_value(PARAM_INT),
+                    'startposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'startcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'startoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'endposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'endcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'endoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'exact' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'prefix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                ]), '', VALUE_OPTIONAL
+            ),
+            'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+        ]);
     }
 
-    public static function getreadingprogress_is_allowed_from_ajax() {
-        return true;
+    private static function post_parameters() {
+        return [
+            'threadid' => new external_value(PARAM_INT),
+            'creatorid' => new external_value(PARAM_INT),
+            'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'content' => new external_value(PARAM_TEXT, ''),
+            'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+        ];
+    }
+
+    private static function timestamp_parameters() {
+        return ['timecreated' => new external_value(PARAM_INT), 'timemodified' => new external_value(PARAM_INT)];
     }
 
     /**
@@ -1175,13 +959,6 @@ class mod_page_external extends external_api {
             self::update_annotation_tags($annotation['tags'], $annotation['id']);
         }
         $transaction->allow_commit();
-    }
-
-    private static function update_annotation_tags($tags, $annotationid) {
-        global $DB;
-
-        $DB->delete_records('page_annotation_tags', ['annotationid' => $annotationid]);
-        $DB->insert_records('page_annotation_tags', array_map_merge($tags, ['annotationid' => $annotationid]));
     }
 
     /**
@@ -1206,5 +983,202 @@ class mod_page_external extends external_api {
      */
     public static function update_annotation_returns() {
         return null;
+    }
+
+    private static function update_annotation_tags($tags, $annotationid) {
+        global $DB;
+
+        $DB->delete_records('page_annotation_tags', ['annotationid' => $annotationid]);
+        $DB->insert_records('page_annotation_tags', array_map_merge($tags, ['annotationid' => $annotationid]));
+    }
+
+    public static function update_post($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        self::validate_post_can_be_updated((object) $parameters);
+        $DB->update_record('page_posts', array_merge($parameters, ['timemodified' => time()]));
+
+        $transaction->allow_commit();
+
+        return (array) $DB->get_record('page_posts', pick_keys($parameters, ['id']));
+    }
+
+    public static function update_post_parameters() {
+        return new external_function_parameters(array_merge(
+            self::id_parameters(),
+            omit_keys(self::post_parameters(), ['threadid', 'creatorid', 'content']),
+            [
+                'content' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                'markedasrequestedreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            ],
+        ));
+    }
+
+    public static function update_post_returns() {
+        return self::create_post_returns();
+    }
+
+    private static function validate_cm_context($pageid) {
+        global $DB;
+
+        $page = $DB->get_record('page', ['id' => $pageid], '*', MUST_EXIST);
+        $cm = get_course_and_cm_from_instance($page, 'page');
+        $modcontext = context_module::instance($cm->id);
+        self::validate_context($modcontext);
+    }
+
+    private static function validate_post_can_be_deleted_and_udpated($post, $postisthreadroot) {
+        global $DB;
+
+        // TODO: Check if user has capability to delete post without validation and return if so
+        // TODO: Check if user has capability for deleting/updating post
+
+        if ($post->markedasrequestedreply) {
+            throw new invalid_parameter_exception('Post is marked as the reply requested. 
+                It cannot be deleted/updated since others might depend on it.');
+        }
+
+        self::validate_post_not_referenced_by_other_post();
+
+        $isliked = $DB->record_exists('page_post_likes', ['postid' => $post->id]);
+        if ($isliked) {
+            throw new invalid_parameter_exception('Post is liked by others. 
+                It cannot be deleted/updated since others might depend on it.');
+        }
+
+        $ismarked = $DB->record_exists_select(
+            'page_post_marks',
+            'postid = ? AND userid != ?',
+            ['postid' => $post->id, 'userid' => $post->creatorid]
+        );
+        if ($ismarked) {
+            throw new invalid_parameter_exception('Post is marked by others. 
+                It cannot be deleted/updated since others might depend on it.');
+        }
+
+        $threadhassubscription = $DB->record_exists_select(
+            'page_thread_subscriptions',
+            'threadid = ? AND userid != ?',
+            ['threadid' => $post->threadid, 'userid' => $post->creatorid]
+        );
+        if ($threadhassubscription && $postisthreadroot) {
+            throw new invalid_parameter_exception('Thread that post belongs to is subscribed to by others. 
+                The post cannot be deleted/updated since it is the root of the thread and others might depend on the thread and, 
+                therefore, the post.');
+        }
+    }
+
+    private static function validate_post_can_be_updated($postupdate) {
+        global $DB, $USER;
+
+        // TODO: Check if user has capability to update post without validation and return if so
+        // TODO: Check if user has capability for updating post
+
+        $post = $DB->get_record('page_posts', ['id' => $postupdate->id]);
+        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
+        $rootpost = $DB->get_record('page_posts', ['id' => $thread->rootid]);
+        $postisthreadroot = $post->threadid === $thread->rootid;
+        if (($post->public && !$postupdate->public) || $post->content !== $postupdate->content) {
+            self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
+        }
+        if ($postupdate->markedasrequestedreply) {
+            if ($rootpost->creatorid !== $USER->id) {
+                throw new invalid_parameter_exception('The post can only be marked as the reply requested by the user who requested
+                    the reply.');
+            }
+            if (!$thread->requestedreply) {
+                throw new invalid_parameter_exception('The post cannot be marked as the reply requested since no reply was requested 
+                for thread.');
+            }
+            if ($thread->rootid === $postupdate->id) {
+                throw new invalid_parameter_exception('The post cannot be marked as the reply requested since it is the root of the 
+                thread were the reply has been requested.');
+            }
+        }
+    }
+
+    /**
+     * @param $post
+     */
+    private static function validate_post_not_referenced_by_other_post($post) {
+        global $DB;
+
+        $islastpost = $DB->record_exists_select(
+            'page_posts',
+            'threadid = ? AND timecreated > ?',
+            ['threadid' => $post->threadid, 'timecreated' => $post->timecreated]
+        );
+        if (!$islastpost) {
+            throw new invalid_parameter_exception('Only the last post in a thread can be deleted/updated as post could be referenced
+                by other posts.');
+        }
+    }
+
+    /**
+     * Simulate the page/view.php web interface page: trigger events, completion, etc...
+     *
+     * @param int $pageid the page instance id
+     * @return array of warnings and status result
+     * @throws moodle_exception
+     * @since Moodle 3.0
+     */
+    public static function view_page($pageid) {
+        global $DB, $CFG;
+        require_once($CFG->dirroot . "/mod/page/lib.php");
+
+        $params = self::validate_parameters(
+            self::view_page_parameters(),
+            array(
+                'pageid' => $pageid
+            )
+        );
+        $warnings = array();
+
+        // Request and permission validation.
+        $page = $DB->get_record('page', array('id' => $params['pageid']), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'page');
+
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+
+        require_capability('mod/page:view', $context);
+
+        // Call the page/lib API.
+        page_view($page, $course, $cm, $context);
+
+        $result = array();
+        $result['status'] = true;
+        $result['warnings'] = $warnings;
+        return $result;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function view_page_parameters() {
+        return new external_function_parameters(
+            array(
+                'pageid' => new external_value(PARAM_INT, 'page instance id')
+            )
+        );
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_description
+     * @since Moodle 3.0
+     */
+    public static function view_page_returns() {
+        return new external_single_structure(
+            array(
+                'status' => new external_value(PARAM_BOOL, 'status: true if success'),
+                'warnings' => new external_warnings()
+            )
+        );
     }
 }

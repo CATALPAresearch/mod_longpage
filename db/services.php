@@ -37,14 +37,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-    'mod_page_delete_annotation' => array(
-        'classname'     => 'mod_page_external',
-        'methodname'    => 'delete_annotation',
-        'description'   => 'Delete an annotation',
-        'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
-        'ajax'          => true
-    ),
     'mod_page_get_annotations' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_annotations',
@@ -53,22 +45,32 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-    'mod_page_get_threads' => array(
+    'mod_page_delete_annotation' => array(
         'classname'     => 'mod_page_external',
-        'methodname'    => 'get_threads',
-        'description'   => 'Get threads by page',
-        'type'          => 'read',
+        'methodname'    => 'delete_annotation',
+        'description'   => 'Delete an annotation',
+        'type'          => 'write',
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-    'mod_page_update_annotation' => array(
+
+    'mod_page_update_annotation_target' => array(
         'classname'     => 'mod_page_external',
-        'methodname'    => 'update_annotation',
-        'description'   => 'Update an annotation',
+        'methodname'    => 'update_annotation_target',
+        'description'   => 'Update an annotation target',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view', // TODO: Update and add capabilities for annotations
         'ajax'          => true
     ),
+
+    //'mod_page_get_threads' => array(
+    //    'classname'     => 'mod_page_external',
+    //    'methodname'    => 'get_threads',
+    //    'description'   => 'Get threads by page',
+    //    'type'          => 'read',
+    //    'capabilities'  => 'mod/page:view',
+    //    'ajax'          => true
+    //),
     'mod_page_create_post' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_post',
@@ -93,6 +95,7 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
+
     'mod_page_create_post_like' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_post_like',
@@ -141,6 +144,7 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
+
     'mod_page_create_thread_subscription' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_thread_subscription',
@@ -157,6 +161,7 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
+
     'mod_page_get_pages_by_courses' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_pages_by_courses',

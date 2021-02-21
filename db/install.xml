@@ -43,7 +43,7 @@
         <KEY NAME="context" TYPE="foreign" FIELDS="pageid" REFTABLE="page" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="page_segments" COMMENT="">
+    <TABLE NAME="annotation_targets" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -57,12 +57,12 @@
     <TABLE NAME="page_selectors" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="segmentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="annotationtargetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="type" TYPE="char" LENGTH="28" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="segmentid" TYPE="foreign" FIELDS="segmentid" REFTABLE="page_segments" REFFIELDS="id"/>
+        <KEY NAME="annotationtarget" TYPE="foreign" FIELDS="annotationtargetid" REFTABLE="page_annotation_targets" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_text_quote_selectors" COMMENT="">
@@ -118,6 +118,19 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="page_threads" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="replyid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="replyrequested" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
+        <KEY NAME="reply" TYPE="foreign" FIELDS="replyid" REFTABLE="page_posts" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
     <TABLE NAME="page_posts" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -133,26 +146,6 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="creator" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id"/>
         <KEY NAME="thread" TYPE="foreign" FIELDS="threadid" REFTABLE="page_thread" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="page_threads" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="replyid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="rootid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="replyrequested" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="public" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
-        <KEY NAME="reply" TYPE="foreign" FIELDS="replyid" REFTABLE="page_posts" REFFIELDS="id"/>
-        <KEY NAME="root" TYPE="foreign" FIELDS="rootid" REFTABLE="page_posts" REFFIELDS="id"/>
-        <KEY NAME="creator" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="context" TYPE="foreign" FIELDS="pageid" REFTABLE="page" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_post_likes" COMMENT="">
