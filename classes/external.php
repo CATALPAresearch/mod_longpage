@@ -670,9 +670,7 @@ class mod_page_external extends external_api {
         return new external_function_parameters([
             'pageid' => new external_value(PARAM_INT),
             'creatorid' => new external_value(PARAM_INT),
-            'target' => new external_single_structure(
-                self::page_annotation_target_parameters(),
-            ),
+            'target' => self::page_annotation_target_parameters(),
             'type' => new external_value(PARAM_INT),
             'body' => new external_single_structure(
                 array_merge(
@@ -688,7 +686,7 @@ class mod_page_external extends external_api {
     }
 
     public static function page_annotation_target_parameters() {
-        return new external_function_parameters([
+        return new external_single_structure([
             'selector' => new external_multiple_structure(
                 new external_single_structure([
                     'type' => new external_value(PARAM_INT),
@@ -818,9 +816,10 @@ class mod_page_external extends external_api {
 
         foreach ($annotations as $annotation) {
             $annotation->target = self::get_annotation_targets($annotation->id);
+            omit_keys($annotation, ['pageid', 'creatorid', 'public'], true);
         }
 
-        return array_values($annotations);
+        return ['annotations' => array_values($annotations)];
     }
 
     /**
@@ -888,18 +887,18 @@ class mod_page_external extends external_api {
      * @since Moodle 3.0
      */
     public static function get_annotations_returns() {
-        return new external_multiple_structure(
-            new external_single_structure(array_merge([
-                'id' => new external_value(PARAM_INT),
-                'pageid' => new external_value(PARAM_INT),
-                'target' => new external_multiple_structure(
-                    self::page_annotation_target_parameters()
-                ),
-                'timecreated' => new external_value(PARAM_INT),
-                'timemodified' => new external_value(PARAM_INT),
-                'userid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-            ], self::page_annotation_parameters())),
-        );
+        return new external_function_parameters([
+            'annotations' => new external_multiple_structure(
+                new external_single_structure(array_merge(
+                    [
+                        'id' => new external_value(PARAM_INT),
+                        'target' => self::page_annotation_target_parameters(),
+                        'type' => new external_value(PARAM_INT),
+                    ],
+                    self::timestamp_parameters(),
+                )),
+            ),
+        ]);
     }
 
     public static function get_annotations_is_allowed_from_ajax() {
