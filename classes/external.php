@@ -135,11 +135,7 @@ class mod_page_external extends external_api {
 
         foreach ($threads as $thread) {
             $thread->posts = self::get_posts($thread);
-
-                omit_keys($thread, ['creatorid', 'pageid', 'public', 'rootid']),
-                ['posts' => $posts]
-            );
-            array_push($result, [$result_item]);
+            omit_keys($thread, ['creatorid', 'pageid', 'public', 'rootid'], true);
         }
 
         return ['threads' => array_values($threads)];
