@@ -116,10 +116,8 @@ class mod_page_external extends external_api {
             'threadid' => new external_value(PARAM_INT),
             'creatorid' => new external_value(PARAM_INT),
             'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-            'content' => new external_value(PARAM_TEXT),
+            'content' => new external_value(PARAM_TEXT, ''),
             'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-            'markedasreplyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-            'replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
         ];
     }
 
@@ -156,7 +154,7 @@ class mod_page_external extends external_api {
         $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
         $postisthreadroot = $post->threadid === $thread->rootid;
 
-        self::validate_post_can_be_deleted($post, $postisthreadroot);
+        self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
 
         $DB->delete_records('page_post_likes', ['postid' => $post->postid]);
         $DB->delete_records('page_post_readings', ['postid' => $post->postid]);
@@ -178,6 +176,33 @@ class mod_page_external extends external_api {
 
     public static function delete_post_returns() {
         return null;
+    }
+
+    public static function update_post($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        self::validate_post_can_be_updated((object) $parameters);
+        $DB->update_record('page_posts', array_merge($parameters, ['timemodified' => time()]));
+
+        $transaction->allow_commit();
+
+        return (array) $DB->get_record('page_posts', pick_keys($parameters, ['id']));
+    }
+
+    public static function update_post_parameters() {
+        return new external_function_parameters(array_merge(
+            self::id_parameters(),
+            omit_keys(self::post_parameters(), ['threadid', 'creatorid', 'content']),
+            [
+                'content' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                'markedasrequestedreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            ],
+        ));
+    }
+
+    public static function update_post_returns() {
+        return self::create_post_returns();
     }
 
     public static function create_post_like($parameters) {
@@ -1039,14 +1064,15 @@ class mod_page_external extends external_api {
         }
     }
 
-    private static function validate_post_can_be_deleted($post, $postisthreadroot) {
+    private static function validate_post_can_be_deleted_and_udpated($post, $postisthreadroot) {
         global $DB;
 
         // TODO: Check if user has capability to delete post without validation and return if so
+        // TODO: Check if user has capability for deleting/updating post
 
-        if ($post->markedasreplyrequested) {
+        if ($post->markedasrequestedreply) {
             throw new invalid_parameter_exception('Post is marked as the reply requested. 
-                It cannot be deleted since others might depend on it.');
+                It cannot be deleted/updated since others might depend on it.');
         }
 
         self::validate_post_not_referenced_by_other_post();
@@ -1054,7 +1080,7 @@ class mod_page_external extends external_api {
         $isliked = $DB->record_exists('page_post_likes', ['postid' => $post->id]);
         if ($isliked) {
             throw new invalid_parameter_exception('Post is liked by others. 
-                It cannot be deleted since others might depend on it.');
+                It cannot be deleted/updated since others might depend on it.');
         }
 
         $ismarked = $DB->record_exists_select(
@@ -1064,7 +1090,7 @@ class mod_page_external extends external_api {
         );
         if ($ismarked) {
             throw new invalid_parameter_exception('Post is marked by others. 
-                It cannot be deleted since others might depend on it.');
+                It cannot be deleted/updated since others might depend on it.');
         }
 
         $threadhassubscription = $DB->record_exists_select(
@@ -1074,8 +1100,37 @@ class mod_page_external extends external_api {
         );
         if ($threadhassubscription && $postisthreadroot) {
             throw new invalid_parameter_exception('Thread that post belongs to is subscribed to by others. 
-                The post cannot be deleted since it is the root of the thread and others might depend on the thread and, therefore, 
-                the post.');
+                The post cannot be deleted/updated since it is the root of the thread and others might depend on the thread and, 
+                therefore, the post.');
+        }
+    }
+
+    private static function validate_post_can_be_updated($postupdate) {
+        global $DB, $USER;
+
+        // TODO: Check if user has capability to update post without validation and return if so
+        // TODO: Check if user has capability for updating post
+
+        $post = $DB->get_record('page_posts', ['id' => $postupdate->id]);
+        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
+        $rootpost = $DB->get_record('page_posts', ['id' => $thread->rootid]);
+        $postisthreadroot = $post->threadid === $thread->rootid;
+        if (($post->public && !$postupdate->public) || $post->content !== $postupdate->content) {
+            self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
+        }
+        if ($postupdate->markedasrequestedreply) {
+            if ($rootpost->creatorid !== $USER->id) {
+                throw new invalid_parameter_exception('The post can only be marked as the reply requested by the user who requested
+                    the reply.');
+            }
+            if (!$thread->requestedreply) {
+                throw new invalid_parameter_exception('The post cannot be marked as the reply requested since no reply was requested 
+                for thread.');
+            }
+            if ($thread->rootid === $postupdate->id) {
+                throw new invalid_parameter_exception('The post cannot be marked as the reply requested since it is the root of the 
+                thread were the reply has been requested.');
+            }
         }
     }
 
@@ -1091,8 +1146,8 @@ class mod_page_external extends external_api {
             ['threadid' => $post->threadid, 'timecreated' => $post->timecreated]
         );
         if (!$islastpost) {
-            throw new invalid_parameter_exception('Only the last post in a thread can be deleted as post could be referenced by 
-                other posts.');
+            throw new invalid_parameter_exception('Only the last post in a thread can be deleted/updated as post could be referenced
+                by other posts.');
         }
     }
 }
