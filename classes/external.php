@@ -150,12 +150,6 @@ class mod_page_external extends external_api {
     public static function delete_post($parameters) {
         global $DB;
 
-
-        // schauen, ob post geliked, zugehörigen Thread abonniert, markiert oder als antwort markiert wurde
-        // readings löschen
-        // post löschen
-        // falls wurzel des threads, dann thread löschen
-        // dann annotation löschen
         $transaction = $DB->start_delegated_transaction();
 
         $post = $DB->get_record('page_posts', $parameters);
