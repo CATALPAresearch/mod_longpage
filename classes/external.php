@@ -121,6 +121,26 @@ abstract class mod_page_selector {
  * @since      Moodle 3.0
  */
 class mod_page_external extends external_api {
+    private static function annotation_target_parameters_base() {
+        return [
+            'selectors' => new external_multiple_structure(
+                new external_single_structure([
+                    'type' => new external_value(PARAM_INT),
+                    'startposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'startcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'startoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'endposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'endcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'endoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                    'exact' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'prefix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                ]), '', VALUE_OPTIONAL
+            ),
+            'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+        ];
+    }
+
     public static function create_annotation($annotation) {
         global $DB, $USER;
 
@@ -165,15 +185,6 @@ class mod_page_external extends external_api {
         ]);
     }
 
-    private static function create_thread_parameters_base() {
-        return [
-            'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-            'content' => new external_value(PARAM_TEXT, ''),
-            'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-            'replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-        ];
-    }
-
     /**
      * Returns description of method parameters
      *
@@ -192,6 +203,10 @@ class mod_page_external extends external_api {
             ['annotationid' => $annotationid, 'styleclass' => $target['styleclass'] ?? null]
         );
         self::create_selectors($target['selectors'], $targetid);
+    }
+
+    public static function create_annotation_target_parameters() {
+        return new external_single_structure(self::annotation_target_parameters_base());
     }
 
     public static function create_post($parameters) {
@@ -272,10 +287,6 @@ class mod_page_external extends external_api {
         );
     }
 
-    /**
-     * @param $selectors
-     * @param $annotationtargetid
-     */
     private static function create_selectors($selectors, $annotationtargetid): void {
         global $DB;
 
@@ -306,6 +317,15 @@ class mod_page_external extends external_api {
 
     }
 
+    private static function create_thread_parameters_base() {
+        return [
+            'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'content' => new external_value(PARAM_TEXT, ''),
+            'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+        ];
+    }
+
     public static function create_thread_returns() {
 
     }
@@ -329,66 +349,49 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    /**
-     * Delete page annotation
-     *
-     * @param integer id
-     * @return void
-     * @since Moodle 3.0
-     */
-    public static function delete_annotation($id) {
+    private static function delete_annotation($id): void {
         global $DB;
-        $assocconditions = ['annotationid' => $id];
 
         $transaction = $DB->start_delegated_transaction();
-        self::delete_annotation_targets($assocconditions);
-        $DB->delete_records('page_annotation_tags', $assocconditions);
-        $DB->delete_records('page_annotation_ratings', $assocconditions);
-        $DB->delete_records('page_annotation_views', $assocconditions);
+        self::delete_annotation_target($id);
         $DB->delete_records('page_annotations', ['id' => $id]);
         $transaction->allow_commit();
     }
 
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     * @since Moodle 3.0
-     */
-    public static function delete_annotation_parameters() {
+    public static function delete_highlight($id) {
+        global $DB, $USER;
+
+        self::validate_parameters(self::create_annotation_parameters(), ['id' => $id]);
+        $annotation = $DB->get_record('page_annotations', ['id' => $id]);
+        self::validate_cm_context($annotation->pageid);
+
+        if ($USER->id !== $annotation->creatorid) {
+            throw new invalid_parameter_exception('Annotation cannot be deleted by user other than its creator.');
+        }
+        if ($annotation->type !== mod_page_annotation_type::HIGHLIGHT) {
+            throw new invalid_parameter_exception('Annotation is no highlight. 
+                Only highlights can be deleted by using this method.');
+        }
+
+        self::delete_annotation($id);
+    }
+
+    public static function delete_highlight_parameters() {
         return new external_function_parameters([
             'id' => new external_value(PARAM_INT),
         ]);
     }
 
-    public static function delete_annotation_returns() {
+    public static function delete_highlight_returns() {
         return null;
     }
 
-    /**
-     * @param $target
-     */
-    private static function delete_annotation_target($target): void {
+    private static function delete_annotation_target($annotationid): void {
         global $DB;
 
-        $conditions = ['annotationtargetid' => $target->id];
-        switch ($target->type) {
-            case MOD_PAGE_ANNOTATION_TARGET_TYPE_SEGMENT:
-                self::delete_segments($conditions);
-                break;
-            case MOD_PAGE_ANNOTATION_TARGET_TYPE_ANNOTATION:
-                $DB->delete_records('page_annot_annot_targets', $conditions);
-                break;
-        }
-    }
-
-    private static function delete_annotation_targets($conditions) {
-        global $DB;
-
-        $targets = $DB->get_records('page_annotation_targets', $conditions);
-        foreach ($targets as $target) {
-            self::delete_annotation_target($target, $conditions, $DB);
-        }
+        $conditions = ['annotationid' => $annotationid];
+        $target = $DB->get_record('page_annotation_targets', $conditions);
+        self::delete_selectors($target->id);
         $DB->delete_records('page_annotation_targets', $conditions);
     }
 
@@ -473,19 +476,10 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    private static function delete_segments($conditions) {
+    private static function delete_selectors($annotationtargetid) {
         global $DB;
 
-        $pagesegments = $DB->get_records('page_segments', $conditions);
-        foreach ($pagesegments as $pagesegment) {
-            self::delete_selectors(['segmentid' => $pagesegment->id]);
-        }
-        $DB->delete_records('page_segments', $conditions);
-    }
-
-    private static function delete_selectors($conditions) {
-        global $DB;
-
+        $conditions = ['annotationtargetid' => $annotationtargetid];
         $pageselectors = $DB->get_records('page_selectors', $conditions);
         foreach ($pageselectors as $pageselector) {
             $tablename = mod_page_selector::map_type_to_table_name($pageselector->type);
@@ -510,6 +504,18 @@ class mod_page_external extends external_api {
         return null;
     }
 
+    private static function get_annotation_returns() {
+        return new external_single_structure(array_merge(
+            [
+                'id' => new external_value(PARAM_INT),
+                'body' => self::get_thread_returns(),
+                'target' => self::get_annotation_target_parameters(),
+                'type' => new external_value(PARAM_INT),
+            ],
+            self::timestamp_parameters(),
+        ));
+    }
+
     /**
      * @param object $targetid
      * @return array
@@ -521,6 +527,13 @@ class mod_page_external extends external_api {
         $target->selectors = self::get_selectors($target->id);
 
         return omit_keys($target, ['annotationid']);
+    }
+
+    public static function get_annotation_target_parameters() {
+        return new external_single_structure(array_merge(
+            ['id' => new external_value(PARAM_INT)],
+            self::annotation_target_parameters_base(),
+        ));
     }
 
     public static function get_annotations($parameters) {
@@ -541,6 +554,15 @@ class mod_page_external extends external_api {
         return ['annotations' => array_values($annotations)];
     }
 
+    private static function get_annotations_by_annotation($annotationid) {
+        global $DB, $USER;
+
+        return $DB->get_records_select(
+            'page_annotations',
+            'annotationid = ? AND (creatorid = ? OR public = 1)',
+            ['annotationid' => $annotationid, 'creatorid' => $USER->id],
+        );
+    }
 
     private static function get_annotations_by_page($pageid) {
         global $DB, $USER;
@@ -549,16 +571,6 @@ class mod_page_external extends external_api {
             'page_annotations',
             'pageid = ? AND (creatorid = ? OR public = 1)',
             ['pageid' => $pageid, 'creatorid' => $USER->id],
-        );
-    }
-
-    private static function get_annotations_by_annotation($annotationid) {
-        global $DB, $USER;
-
-        return $DB->get_records_select(
-            'page_annotations',
-            'annotationid = ? AND (creatorid = ? OR public = 1)',
-            ['annotationid' => $annotationid, 'creatorid' => $USER->id],
         );
     }
 
@@ -587,18 +599,6 @@ class mod_page_external extends external_api {
         return new external_function_parameters([
             'annotations' => new external_multiple_structure(self::get_annotation_returns()),
         ]);
-    }
-
-    private static function get_annotation_returns() {
-        return new external_single_structure(array_merge(
-            [
-                'id' => new external_value(PARAM_INT),
-                'body' => self::get_thread_returns(),
-                'target' => self::get_annotation_target_parameters(),
-                'type' => new external_value(PARAM_INT),
-            ],
-            self::timestamp_parameters(),
-        ));
     }
 
     /**
@@ -816,6 +816,8 @@ class mod_page_external extends external_api {
         return true;
     }
 
+    // TODO: Add returns for create and update
+
     /**
      * Get readingprogress
      */
@@ -842,8 +844,6 @@ class mod_page_external extends external_api {
     private static function id_parameters() {
         return ['id' => new external_value(PARAM_INT)];
     }
-
-    // TODO: Add returns for create and update
 
     public static function log($data) {
         global $CFG, $DB, $USER;
@@ -920,37 +920,6 @@ class mod_page_external extends external_api {
         return new external_single_structure(
             array('response' => new external_value(PARAM_RAW, 'Server respons to the incomming log'))
         );
-    }
-
-    public static function create_annotation_target_parameters() {
-        return new external_single_structure(self::annotation_target_parameters_base());
-    }
-
-    public static function get_annotation_target_parameters() {
-        return new external_single_structure(array_merge(
-            ['id' => new external_value(PARAM_INT)],
-            self::annotation_target_parameters_base(),
-        ));
-    }
-
-    private static function annotation_target_parameters_base() {
-        return [
-            'selectors' => new external_multiple_structure(
-                new external_single_structure([
-                    'type' => new external_value(PARAM_INT),
-                    'startposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                    'startcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                    'startoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                    'endposition' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                    'endcontainer' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                    'endoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                    'exact' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                    'prefix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                    'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                ]), '', VALUE_OPTIONAL
-            ),
-            'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-        ];
     }
 
     private static function post_parameters() {

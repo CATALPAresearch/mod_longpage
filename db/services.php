@@ -45,32 +45,24 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-    'mod_page_delete_annotation' => array(
+
+    'mod_page_delete_highlight' => array(
         'classname'     => 'mod_page_external',
-        'methodname'    => 'delete_annotation',
-        'description'   => 'Delete an annotation',
+        'methodname'    => 'delete_highlight',
+        'description'   => 'Delete highlight',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
+    'mod_page_update_highlight' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'update_highlight',
+        'description'   => 'Update highlight',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
 
-    'mod_page_update_annotation_target' => array(
-        'classname'     => 'mod_page_external',
-        'methodname'    => 'update_annotation_target',
-        'description'   => 'Update an annotation target',
-        'type'          => 'write',
-        'capabilities'  => 'mod/page:view', // TODO: Update and add capabilities for annotations
-        'ajax'          => true
-    ),
-
-    //'mod_page_get_threads' => array(
-    //    'classname'     => 'mod_page_external',
-    //    'methodname'    => 'get_threads',
-    //    'description'   => 'Get threads by page',
-    //    'type'          => 'read',
-    //    'capabilities'  => 'mod/page:view',
-    //    'ajax'          => true
-    //),
     'mod_page_create_post' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_post',
