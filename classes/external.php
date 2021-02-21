@@ -943,6 +943,10 @@ class mod_page_external extends external_api {
         $DB->update_record('page_annotation_targets', ['annotationid' => $id, 'styleclass' => $styleclass]);
         $DB->update_record('page_annotations', ['id' => $id, 'timemodified' => time()]);
         $transaction->allow_commit();
+
+        return [
+            'annotation' => self::get_annotations(['pageid' => $annotation->pageid, 'annotationid' => $id])['annotations'][0]
+        ];
     }
 
     public static function update_highlight_parameters() {
@@ -953,7 +957,7 @@ class mod_page_external extends external_api {
     }
 
     public static function update_highlight_returns() {
-        return null;
+        return self::create_annotation_returns();
     }
 
     private static function update_annotation_tags($tags, $annotationid) {
