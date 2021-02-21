@@ -61,6 +61,30 @@ $functions = array(
         'capabilities'  => 'mod/page:view', // TODO: Update and add capabilities for annotations
         'ajax'          => true
     ),
+    'mod_page_create_post' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'create_post',
+        'description'   => 'Create post',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
+    'mod_page_delete_post' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'delete_post',
+        'description'   => 'Delete post',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
+    'mod_page_update_post' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'update_post',
+        'description'   => 'Update post',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
     'mod_page_create_post_like' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_post_like',

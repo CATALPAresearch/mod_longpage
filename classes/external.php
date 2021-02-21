@@ -103,6 +103,50 @@ abstract class Visibility {
  * @since      Moodle 3.0
  */
 class mod_page_external extends external_api {
+    private static function timestamp_parameters() {
+        return ['timecreated' => new external_value(PARAM_INT), 'timemodified' => new external_value(PARAM_INT)];
+    }
+
+    private static function id_parameters() {
+        return ['id' => new external_value(PARAM_INT)];
+    }
+
+    private static function post_parameters() {
+        return [
+            'threadid' => new external_value(PARAM_INT),
+            'creatorid' => new external_value(PARAM_INT),
+            'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'content' => new external_value(PARAM_TEXT),
+            'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'markasreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+        ];
+    }
+
+    public static function create_post($parameters) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $id = $DB->insert_record('page_posts', array_merge($parameters, ['timecreated' => time(), 'timemodified' => time()]));
+        $transaction->allow_commit();
+
+        return $DB->get_record('page_posts', ['id' => $id]);
+    }
+
+    public static function create_post_parameters() {
+        return new external_function_parameters(self::post_parameters());
+    }
+
+    public static function create_post_returns() {
+        return new external_function_parameters(
+            array_merge(
+                self::post_parameters(),
+                self::id_parameters(),
+                self::timestamp_parameters(),
+            )
+        );
+    }
+
     public static function create_post_like($parameters) {
         global $DB;
 
