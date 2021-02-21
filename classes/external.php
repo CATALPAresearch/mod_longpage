@@ -358,6 +358,15 @@ class mod_page_external extends external_api {
         $transaction->allow_commit();
     }
 
+    private static function delete_annotation_target($annotationid): void {
+        global $DB;
+
+        $conditions = ['annotationid' => $annotationid];
+        $target = $DB->get_record('page_annotation_targets', $conditions);
+        self::delete_selectors($target->id);
+        $DB->delete_records('page_annotation_targets', $conditions);
+    }
+
     public static function delete_highlight($id) {
         global $DB;
 
@@ -378,15 +387,6 @@ class mod_page_external extends external_api {
 
     public static function delete_highlight_returns() {
         return null;
-    }
-
-    private static function delete_annotation_target($annotationid): void {
-        global $DB;
-
-        $conditions = ['annotationid' => $annotationid];
-        $target = $DB->get_record('page_annotation_targets', $conditions);
-        self::delete_selectors($target->id);
-        $DB->delete_records('page_annotation_targets', $conditions);
     }
 
     public static function delete_post($parameters) {
@@ -930,6 +930,13 @@ class mod_page_external extends external_api {
         return ['timecreated' => new external_value(PARAM_INT), 'timemodified' => new external_value(PARAM_INT)];
     }
 
+    private static function update_annotation_tags($tags, $annotationid) {
+        global $DB;
+
+        $DB->delete_records('page_annotation_tags', ['annotationid' => $annotationid]);
+        $DB->insert_records('page_annotation_tags', array_map_merge($tags, ['annotationid' => $annotationid]));
+    }
+
     public static function update_highlight($id, $styleclass) {
         global $DB;
 
@@ -958,13 +965,6 @@ class mod_page_external extends external_api {
 
     public static function update_highlight_returns() {
         return self::create_annotation_returns();
-    }
-
-    private static function update_annotation_tags($tags, $annotationid) {
-        global $DB;
-
-        $DB->delete_records('page_annotation_tags', ['annotationid' => $annotationid]);
-        $DB->insert_records('page_annotation_tags', array_map_merge($tags, ['annotationid' => $annotationid]));
     }
 
     public static function update_post($parameters) {
@@ -1016,11 +1016,12 @@ class mod_page_external extends external_api {
     }
 
     private static function validate_post_can_be_deleted_and_udpated($post, $postisthreadroot) {
-        global $DB;
+        global $DB, $USER;
 
-        // TODO: Check if user has capability to delete post without validation and return if so
-        // TODO: Check if user has capability for deleting/updating post
-
+        // TODO: markasrequestedreply
+        //if ($post->creatorid !== $USER->id) {
+        //    throw new invalid_parameter_exception('Post can only be deleted or updated by user that created it.');
+        //}
         if ($post->markedasrequestedreply) {
             throw new invalid_parameter_exception('Post is marked as the reply requested. 
                 It cannot be deleted/updated since others might depend on it.');
