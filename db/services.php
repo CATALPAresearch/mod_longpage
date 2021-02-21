@@ -48,7 +48,15 @@ $functions = array(
     'mod_page_get_annotations' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_annotations',
-        'description'   => 'Get annotations by page and user',
+        'description'   => 'Get annotations by page',
+        'type'          => 'read',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
+    'mod_page_get_threads' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'get_threads',
+        'description'   => 'Get threads by page',
         'type'          => 'read',
         'capabilities'  => 'mod/page:view',
         'ajax'          => true

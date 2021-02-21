@@ -30,92 +30,28 @@
     <TABLE NAME="page_annotations" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="body" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="rating" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="creator" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="context" TYPE="foreign" FIELDS="pageid" REFTABLE="page" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="page_annotation_tags" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="value" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="type" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="page_annotation_views" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="viewer" TYPE="foreign" FIELDS="userid" REFTABLE="page" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="page_annotation_ratings" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="value" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
-        <KEY NAME="rater" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="page_annotation_targets" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="type" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="public" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotation" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="page_annot_annot_targets" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="annotationtargetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
-        <KEY NAME="annotationtarget" TYPE="foreign" FIELDS="annotationtargetid" REFTABLE="page_annotation_targets" REFFIELDS="id"/>
+        <KEY NAME="creator" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="context" TYPE="foreign" FIELDS="pageid" REFTABLE="page" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_segments" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="annotationtargetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="styleclass" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="annotationtarget" TYPE="foreign" FIELDS="annotationtargetid" REFTABLE="page_annotation_targets" REFFIELDS="id"/>
+        <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_selectors" COMMENT="">
@@ -190,7 +126,6 @@
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="anonymous" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="markedasrequestedreply" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="public" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
@@ -204,13 +139,20 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="annotationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="replyid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="rootid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="replyrequested" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="public" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="annotation" TYPE="foreign" FIELDS="annotationid" REFTABLE="page_annotations" REFFIELDS="id"/>
+        <KEY NAME="reply" TYPE="foreign" FIELDS="replyid" REFTABLE="page_posts" REFFIELDS="id"/>
         <KEY NAME="root" TYPE="foreign" FIELDS="rootid" REFTABLE="page_posts" REFFIELDS="id"/>
+        <KEY NAME="creator" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="context" TYPE="foreign" FIELDS="pageid" REFTABLE="page" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_post_likes" COMMENT="">
