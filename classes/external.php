@@ -359,19 +359,13 @@ class mod_page_external extends external_api {
     }
 
     public static function delete_highlight($id) {
-        global $DB, $USER;
+        global $DB;
 
         self::validate_parameters(self::create_annotation_parameters(), ['id' => $id]);
         $annotation = $DB->get_record('page_annotations', ['id' => $id]);
         self::validate_cm_context($annotation->pageid);
 
-        if ($USER->id !== $annotation->creatorid) {
-            throw new invalid_parameter_exception('Annotation cannot be deleted by user other than its creator.');
-        }
-        if ($annotation->type !== mod_page_annotation_type::HIGHLIGHT) {
-            throw new invalid_parameter_exception('Annotation is no highlight. 
-                Only highlights can be deleted by using this method.');
-        }
+        self::validate_highlight_can_be_deleted_and_updated($annotation);
 
         self::delete_annotation($id);
     }
@@ -936,47 +930,29 @@ class mod_page_external extends external_api {
         return ['timecreated' => new external_value(PARAM_INT), 'timemodified' => new external_value(PARAM_INT)];
     }
 
-    /**
-     * Updates page annotation body
-     *
-     * @param integer annotation_id
-     * @param string value
-     * @return null //TODO: What are the correct types? How do I correctly document methods?
-     * @since Moodle 3.0
-     */
-    public static function update_annotation($annotation) {
+    public static function update_highlight($id, $styleclass) {
         global $DB;
 
+        self::validate_parameters(self::create_annotation_parameters(), ['id' => $id, 'styleclass' => $styleclass]);
+        $annotation = $DB->get_record('page_annotations', ['id' => $id]);
+        self::validate_cm_context($annotation->pageid);
+
+        self::validate_highlight_can_be_deleted_and_updated($annotation);
+
         $transaction = $DB->start_delegated_transaction();
-        $annotation['timemodified'] = time();
-        $DB->update_record('page_annotations', omit_keys($annotation, ['tags']));
-        if (!empty($annotation['tags'])) {
-            self::update_annotation_tags($annotation['tags'], $annotation['id']);
-        }
+        $DB->update_record('page_annotation_targets', ['annotationid' => $id, 'styleclass' => $styleclass]);
+        $DB->update_record('page_annotations', ['id' => $id, 'timemodified' => time()]);
         $transaction->allow_commit();
     }
 
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     * @since Moodle 3.0
-     */
-    public static function update_annotation_parameters() {
+    public static function update_highlight_parameters() {
         return new external_function_parameters([
-            'annotation' => new external_single_structure(array_merge([
-                'id' => new external_value(PARAM_INT),
-            ], self::page_annotation_parameters())),
+            'id' => new external_value(PARAM_INT),
+            'styleclass' => new external_value(PARAM_TEXT),
         ]);
     }
 
-    /**
-     * Returns description of method parameters
-     *
-     * @return null
-     * @since Moodle 3.0
-     */
-    public static function update_annotation_returns() {
+    public static function update_highlight_returns() {
         return null;
     }
 
@@ -1021,6 +997,18 @@ class mod_page_external extends external_api {
         $cm = get_course_and_cm_from_instance($page, 'page');
         $modcontext = context_module::instance($cm->id);
         self::validate_context($modcontext);
+    }
+
+    private static function validate_highlight_can_be_deleted_and_updated($highlight): void {
+        global $USER;
+
+        if ($USER->id !== $highlight->creatorid) {
+            throw new invalid_parameter_exception('Highlight cannot be updated by user other than its creator.');
+        }
+        if ($highlight->type !== mod_page_annotation_type::HIGHLIGHT) {
+            throw new invalid_parameter_exception('Annotation is no highlight. 
+                Only highlights can be updated by using this method.');
+        }
     }
 
     private static function validate_post_can_be_deleted_and_udpated($post, $postisthreadroot) {
