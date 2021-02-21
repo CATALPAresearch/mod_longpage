@@ -118,8 +118,8 @@ class mod_page_external extends external_api {
             'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
             'content' => new external_value(PARAM_TEXT),
             'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'markedasreplyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
             'replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-            'markasreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
         ];
     }
 
@@ -130,7 +130,7 @@ class mod_page_external extends external_api {
         $id = $DB->insert_record('page_posts', array_merge($parameters, ['timecreated' => time(), 'timemodified' => time()]));
         $transaction->allow_commit();
 
-        return $DB->get_record('page_posts', ['id' => $id]);
+        return (array) $DB->get_record('page_posts', ['id' => $id]);
     }
 
     public static function create_post_parameters() {
@@ -145,6 +145,45 @@ class mod_page_external extends external_api {
                 self::timestamp_parameters(),
             )
         );
+    }
+
+    public static function delete_post($parameters) {
+        global $DB;
+
+
+        // schauen, ob post geliked, zugehörigen Thread abonniert, markiert oder als antwort markiert wurde
+        // readings löschen
+        // post löschen
+        // falls wurzel des threads, dann thread löschen
+        // dann annotation löschen
+        $transaction = $DB->start_delegated_transaction();
+
+        $post = $DB->get_record('page_posts', $parameters);
+        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
+        $postisthreadroot = $post->threadid === $thread->rootid;
+
+        self::validate_post_can_be_deleted($post, $postisthreadroot);
+
+        $DB->delete_records('page_post_likes', ['postid' => $post->postid]);
+        $DB->delete_records('page_post_readings', ['postid' => $post->postid]);
+        $DB->delete_records('page_post_marks', ['postid' => $post->postid]);
+        $DB->delete_records('page_posts', ['id' => $post->id]);
+
+        if ($postisthreadroot) {
+            $DB->delete_records('page_thread_subscriptions', ['threadid' => $thread->id]);
+            $DB->delete_records('page_threads', ['id' => $thread->id]);
+            self::delete_annotation($thread->annotationid);
+        }
+
+        $transaction->allow_commit();
+    }
+
+    public static function delete_post_parameters() {
+        return new external_function_parameters(self::id_parameters());
+    }
+
+    public static function delete_post_returns() {
+        return null;
     }
 
     public static function create_post_like($parameters) {
@@ -424,7 +463,6 @@ class mod_page_external extends external_api {
         $DB->delete_records('page_annotation_views', $assocconditions);
         $DB->delete_records('page_annotations', ['id' => $id]);
         $transaction->allow_commit();
-
     }
 
     /**
@@ -1004,6 +1042,63 @@ class mod_page_external extends external_api {
         $annotation->tags = $DB->get_records('page_annotation_tags', ['annotationid' => $annotation->id], '', 'value, type');
         if ($annotation->visibility === Visibility::ANONYMOUS) {
             self::anonymize_annotation($annotation);
+        }
+    }
+
+    private static function validate_post_can_be_deleted($post, $postisthreadroot) {
+        global $DB;
+
+        // TODO: Check if user has capability to delete post without validation and return if so
+
+        if ($post->markedasreplyrequested) {
+            throw new invalid_parameter_exception('Post is marked as the reply requested. 
+                It cannot be deleted since others might depend on it.');
+        }
+
+        self::validate_post_not_referenced_by_other_post();
+
+        $isliked = $DB->record_exists('page_post_likes', ['postid' => $post->id]);
+        if ($isliked) {
+            throw new invalid_parameter_exception('Post is liked by others. 
+                It cannot be deleted since others might depend on it.');
+        }
+
+        $ismarked = $DB->record_exists_select(
+            'page_post_marks',
+            'postid = ? AND userid != ?',
+            ['postid' => $post->id, 'userid' => $post->creatorid]
+        );
+        if ($ismarked) {
+            throw new invalid_parameter_exception('Post is marked by others. 
+                It cannot be deleted since others might depend on it.');
+        }
+
+        $threadhassubscription = $DB->record_exists_select(
+            'page_thread_subscriptions',
+            'threadid = ? AND userid != ?',
+            ['threadid' => $post->threadid, 'userid' => $post->creatorid]
+        );
+        if ($threadhassubscription && $postisthreadroot) {
+            throw new invalid_parameter_exception('Thread that post belongs to is subscribed to by others. 
+                The post cannot be deleted since it is the root of the thread and others might depend on the thread and, therefore, 
+                the post.');
+        }
+    }
+
+    /**
+     * @param $post
+     */
+    private static function validate_post_not_referenced_by_other_post($post) {
+        global $DB;
+
+        $islastpost = $DB->record_exists_select(
+            'page_posts',
+            'threadid = ? AND timecreated > ?',
+            ['threadid' => $post->threadid, 'timecreated' => $post->timecreated]
+        );
+        if (!$islastpost) {
+            throw new invalid_parameter_exception('Only the last post in a thread can be deleted as post could be referenced by 
+                other posts.');
         }
     }
 }
