@@ -24,4 +24,8 @@ export class Post {
         this.timeCreated = timeCreated;
         this.timeModified = timeModified;
     }
+
+    get created() {
+        return Boolean(this.timeCreated);
+    }
 }
