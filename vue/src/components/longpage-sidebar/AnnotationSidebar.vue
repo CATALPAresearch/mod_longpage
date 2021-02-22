@@ -42,8 +42,8 @@ import AnnotationFilter from '@/components/longpage-sidebar/annotation-sidebar/A
 
 const AnnotationSortingFunction = Object.freeze({
   BY_POSITION: (annotationA, annotationB) => {
-    const {start: startA = 0} = annotationA.target[0].selector.find(s => s.type === SelectorType.TEXT_POSITION_SELECTOR) || {};
-    const {start: startB = 0} = annotationB.target[0].selector.find(s => s.type === SelectorType.TEXT_POSITION_SELECTOR) || {};
+    const {start: startA = 0} = annotationA.target.selectors.find(s => s.type === SelectorType.TEXT_POSITION_SELECTOR) || {};
+    const {start: startB = 0} = annotationB.target.selectors.find(s => s.type === SelectorType.TEXT_POSITION_SELECTOR) || {};
     return startA - startB;
   }
 });

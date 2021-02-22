@@ -1,8 +1,6 @@
 import {AnnotationTargetType, MoodleWSMethods} from '@/config/constants';
 import {GET, ACT, MUTATE} from '../types';
-import {Annotation} from '@/lib/annotation/types/annotation';
 import ajax from 'core/ajax';
-import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
 import MappingService from '@/services/mapping-service';
 import {cloneDeep} from 'lodash';
 
@@ -14,34 +12,33 @@ export default {
     },
     getters: {
         [GET.ANNOTATION_FILTER]: ({annotationFilter}) => annotationFilter,
-        [GET.ANNOTATION_WITH_CONTEXT]: (_, getters) => annotation => {
-            return new Annotation({
-                ...annotation,
-                pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
-                userId: getters[GET.LONGPAGE_CONTEXT].userId,
-            });
-        },
+        [GET.ANNOTATION_WITH_CONTEXT]: (_, getters) => annotation => ({
+            ...annotation,
+            pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
+        }),
         [GET.ANNOTATIONS]: ({annotations}) => annotations,
         [GET.ANNOTATIONS_IN_EDIT]: ({annotationsInEdit}) => annotationsInEdit,
         [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT]: (_, getters) => {
-            return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.PAGE_SEGMENT);
+            return getters[GET.ANNOTATIONS];
         },
         [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT_FILTERED]: (_, getters) => {
-            return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.PAGE_SEGMENT)
+            return getters[GET.ANNOTATIONS]
                 .filter(annotation => !getters[GET.ANNOTATION_FILTER].ids ||
                     getters[GET.ANNOTATION_FILTER].ids.includes(annotation.id)
                 );
         },
         [GET.ANNOTATIONS_TARGETING_ANNOTATION]: (_, getters) => {
-            return filterAnnotationsByTargetType(getters[GET.ANNOTATIONS], AnnotationTargetType.ANNOTATION);
+            return getters[GET.ANNOTATIONS];
         },
         [GET.PROVISIONAL_ANNOTATION_ID]: ({annotationsInEdit}) => `new-${annotationsInEdit.length}`,
         [GET.RESPONSES_TO]: (_, getters) => (annotationId) => {
-            return getters[GET.ANNOTATIONS_TARGETING_ANNOTATION].filter(
+            // TODO
+            return [];
+/*            Return getters[GET.ANNOTATIONS_TARGETING_ANNOTATION].filter(
                 annotation => annotation.target.some(
                     ({annotationId: otherAnnotationId}) => otherAnnotationId === annotationId
                 )
-            );
+            );*/
         },
         [GET.USER_IS_AUTHOR]: (_, getters) => annotation => annotation.userId === getters[GET.LONGPAGE_CONTEXT].userId,
     },
@@ -64,11 +61,11 @@ export default {
             return new Promise((resolve) => {
                 ajax.call([{
                     methodname,
-                    args: MappingService[methodname](annotationWithContext),
-                    done: ({id}) => {
-                        annotationWithContext.id = id;
-                        commit(MUTATE.ADD_ANNOTATIONS, [annotationWithContext]);
-                        resolve(id);
+                    args: MappingService.mapCreateAnnotationArgs(annotationWithContext),
+                    done: ({annotation}) => {
+                        console.log(annotation);
+                        // Commit(MUTATE.ADD_ANNOTATIONS, [MappingService[MoodleWSMethods.GET_ANNOTATIONS](annotation)]);
+                        resolve(annotation.id);
                     },
                     fail: (e) => {
                         console.error(`"${methodname}" failed`, e);
@@ -91,15 +88,15 @@ export default {
         },
         [ACT.FETCH_ANNOTATIONS]({commit, getters}) {
             const methodname = MoodleWSMethods.GET_ANNOTATIONS;
-            const context = getters[GET.LONGPAGE_CONTEXT];
             ajax.call([{
                 methodname,
                 args: {
-                    pageid: context.pageId,
-                    userid: context.userId,
+                    parameters: {
+                        pageid: getters[GET.LONGPAGE_CONTEXT].pageId,
+                    },
                 },
-                done: (annotations) => {
-                    commit(MUTATE.SET_ANNOTATIONS, MappingService[methodname](annotations));
+                done: (response) => {
+                    commit(MUTATE.SET_ANNOTATIONS, MappingService.mapFetchAnnotationsResponse(response));
                 },
                 fail: (e) => {
                     console.error(`"${methodname}" failed`, e);

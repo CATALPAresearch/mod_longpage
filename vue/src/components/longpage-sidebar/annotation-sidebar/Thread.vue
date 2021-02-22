@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import {Annotation} from '@/lib/annotation/types/annotation';
+import {Annotation} from '@/types/annotation';
 import Post from './Post';
 import {GET} from '@/store/types';
 import {mapGetters} from 'vuex';

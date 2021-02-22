@@ -1,74 +1,78 @@
-import {Annotation} from '@/lib/annotation/types/annotation';
+import {Annotation} from '@/types/annotation';
 import {deepLowerCaseKeys} from '@/util/misc';
-import {AnnotationTargetType, MoodleWSMethods, SelectorType} from '@/config/constants';
+import {MoodleWSMethods, SelectorType} from '@/config/constants';
 import {invert, omit, pick} from 'lodash';
-import {PageSegment} from '@/lib/annotation/types/page-segment';
-import {TargetAnnotationReference} from '@/lib/annotation/types/target-annotation-reference';
+import {AnnotationTarget} from '@/types/annotation-target';
 
-const SELECTOR_TYPE_MAPPING_CLIENT_TO_SERVER = {
+const SELECTOR_TYPE_ARGS_MAPPING = {
     [SelectorType.TEXT_QUOTE_SELECTOR]: 0,
     [SelectorType.TEXT_POSITION_SELECTOR]: 1,
     [SelectorType.RANGE_SELECTOR]: 2,
 };
 
-const SELECTOR_TYPE_MAPPING_SERVER_TO_CLIENT = invert(SELECTOR_TYPE_MAPPING_CLIENT_TO_SERVER);
+const SELECTOR_TYPE_RESPONSE_MAPPING = invert(SELECTOR_TYPE_ARGS_MAPPING);
 
 const MappingService = {
+    mapAnnotationResponse(annotation) {
+        return new Annotation({
+            ...annotation,
+            target: this.mapAnnotationTargetResponse(annotation.target),
+            timecreated: this._mapTimeResponse(annotation.timecreated),
+            timemodified: this._mapTimeResponse(annotation.timemodified),
+        });
+    },
+    mapAnnotationTargetResponse(target) {
+        return new AnnotationTarget({
+            selectors: target.selectors.map(s => {
+                const type = this._mapSelectorTypeResponse(s.type);
+                switch (type) {
+                    case SelectorType.RANGE_SELECTOR:
+                        return {
+                            type,
+                            endContainer: s.endcontainer,
+                            endOffset: s.endoffset,
+                            startContainer: s.startcontainer,
+                            startOffset: s.startoffset,
+                        };
+                    case SelectorType.TEXT_POSITION_SELECTOR:
+                        return {
+                            type,
+                            end: s.endposition,
+                            start: s.startposition,
+                        };
+                    default: return {...s, type};
+                }
+            }),
+            styleClass: target.styleclass,
+        });
+    },
+    mapCreateAnnotationArgs(annotation) {
+        return deepLowerCaseKeys({
+            annotation: {
+                ...omit(annotation, ['$orphan', 'id', 'timecreated', 'timemodified']),
+                target: {
+                    selectors: this._mapSelectorsResponse(annotation.target.selectors),
+                    styleClass: annotation.target.styleClass,
+                }
+            },
+        });
+    },
+    mapFetchAnnotationsResponse(response) {
+        return response.annotations.map(this.mapAnnotationResponse.bind(this));
+    },
     [MoodleWSMethods.CREATE_ANNOTATION](annotation) {
         return deepLowerCaseKeys({
             annotation: {
-                ...omit(annotation, ['$orphan', 'id', 'ratingByUser', 'timecreated', 'timemodified']),
-                target: annotation.target.map(target => (target instanceof PageSegment ? {
-                    type: AnnotationTargetType.PAGE_SEGMENT,
-                    selector: this._mapSelectorsClientToServer(target.selector),
-                    styleclass: target.styleClass,
-                } : {
-                    type: AnnotationTargetType.ANNOTATION,
-                    annotationid: target.annotationId,
-                })),
+                ...omit(annotation, ['$orphan', 'id', 'timecreated', 'timemodified']),
+                target: {
+                    selectors: this._mapSelectorsResponse(annotation.target.selectors),
+                    styleClass: annotation.target.styleClass,
+                }
             },
         });
     },
     [MoodleWSMethods.GET_ANNOTATIONS](annotations) {
-        return annotations.map(annotation => new Annotation({
-            ...pick(annotation, ['body', 'id', 'rating', 'tags', 'visibility']),
-            ratingByUser: 1, // TODO: Replace mock with api
-            pageId: annotation.pageid,
-            target: annotation.target.map(t => {
-                switch (t.type) {
-                    case AnnotationTargetType.PAGE_SEGMENT:
-                        return new PageSegment({
-                            selector: t.selector.map(s => {
-                                const type = this._mapSelectorTypeServerToClient(s.type);
-                                switch (type) {
-                                    case SelectorType.RANGE_SELECTOR:
-                                        return {
-                                            type,
-                                            endContainer: s.endcontainer,
-                                            endOffset: s.endoffset,
-                                            startContainer: s.startcontainer,
-                                            startOffset: s.startoffset,
-                                        };
-                                    case SelectorType.TEXT_POSITION_SELECTOR:
-                                        return {
-                                            type,
-                                            end: s.endposition,
-                                            start: s.startposition,
-                                        };
-                                    default: return {...s, type};
-                                }
-                            }),
-                            styleClass: t.styleclass,
-                        });
-                    case AnnotationTargetType.ANNOTATION:
-                        return new TargetAnnotationReference({annotationId: t.annotationid});
-                }
-            }),
-            timecreated: this._mapTimeServerToClient(annotation.timecreated),
-            timemodified: this._mapTimeServerToClient(annotation.timemodified),
-            userId: annotation.userid,
-            views: 120, // TODO: Replace mock with api; Number of users who viewed it vs. number of views, what counts as a view?
-        }));
+        return annotations.map(annotation => this.mapAnnotationServerToClient(annotation));
     },
     [MoodleWSMethods.UPDATE_ANNOTATION](annotation) {
         return deepLowerCaseKeys({
@@ -79,9 +83,9 @@ const MappingService = {
             },
         });
     },
-    _mapSelectorsClientToServer(selectors) {
+    _mapSelectorsResponse(selectors) {
         return selectors.map(selector => {
-            const type = this._mapSelectorTypeClientToServer(selector.type);
+            const type = this._mapSelectorTypeResponse(selector.type);
             if (selector.type === SelectorType.TEXT_POSITION_SELECTOR) {
                 return {
                     endposition: selector.end,
@@ -92,13 +96,13 @@ const MappingService = {
             return {...selector, type};
         });
     },
-    _mapSelectorTypeClientToServer(selectorType) {
-        return SELECTOR_TYPE_MAPPING_CLIENT_TO_SERVER[selectorType];
+    _mapSelectorTypeArgs(selectorType) {
+        return SELECTOR_TYPE_ARGS_MAPPING[selectorType];
     },
-    _mapSelectorTypeServerToClient(selectorType) {
-        return SELECTOR_TYPE_MAPPING_SERVER_TO_CLIENT[selectorType];
+    _mapSelectorTypeResponse(selectorType) {
+        return SELECTOR_TYPE_RESPONSE_MAPPING[selectorType];
     },
-    _mapTimeServerToClient(timeInS) {
+    _mapTimeResponse(timeInS) {
         const timeInMs = timeInS * 1000;
         return new Date(timeInMs);
     }

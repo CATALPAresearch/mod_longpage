@@ -9,12 +9,11 @@
       />
     </div>
     <div class="col p-0">
-      <textarea
+      <input
         class="form-control"
         :placeholder="$t('responseForm.placeholder')"
-        rows="1"
         @focus="startEditingAnnotation"
-      />
+      >
     </div>
   </div>
 </template>
@@ -22,8 +21,7 @@
 <script>
 import {ACT, GET} from '@/store/types';
 import {mapActions, mapGetters} from 'vuex';
-import {Annotation} from '@/lib/annotation/types/annotation';
-import {TargetAnnotationReference} from '@/lib/annotation/types/target-annotation-reference';
+// Import {Annotation} from '@/lib/annotation/types/annotation';
 import UserAvatar from '@/components/UserAvatar';
 
 export default {
@@ -36,7 +34,7 @@ export default {
   },
   computed: {
     editing() {
-      return this[GET.ANNOTATIONS_IN_EDIT].find(annotation => annotation.target[0].annotationId === this.annotationId);
+      return this[GET.ANNOTATIONS_IN_EDIT].find(annotation => annotation.target.annotationId === this.annotationId);
     },
     respondent() {
       return this[GET.USER]();
@@ -44,11 +42,11 @@ export default {
     ...mapGetters([GET.ANNOTATIONS_IN_EDIT, GET.USER]),
   },
   methods: {
-    startEditingAnnotation() {
-      this.provisionalAnnotationId = this[ACT.START_EDITING_ANNOTATION](new Annotation({
-        target: [new TargetAnnotationReference({annotationId: this.annotationId})],
-      }));
-    },
+    // StartEditingAnnotation() {
+    //   this.provisionalAnnotationId = this[ACT.START_EDITING_ANNOTATION](new Annotation({
+    //     target: [new TargetAnnotationReference({annotationId: this.annotationId})],
+    //   }));
+    // },
     ...mapActions([ACT.CREATE_ANNOTATION, ACT.START_EDITING_ANNOTATION]),
   }
 };

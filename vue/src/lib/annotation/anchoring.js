@@ -9,10 +9,8 @@
  */
 import {debounce, remove} from 'lodash';
 import {highlightRange, removeHighlights} from './highlighting';
-import {AnnotationTargetType} from '@/config/constants';
 import {anchor} from './hypothesis/anchoring/html';
 import emitter from 'tiny-emitter/instance';
-import {filterAnnotationsByTargetType} from '@/lib/annotation/utils';
 import {MUTATE} from '@/store/types';
 import {sniff} from './hypothesis/anchoring/range';
 
@@ -34,13 +32,10 @@ export class Anchoring {
                 case MUTATE.SET_ANNOTATIONS:
                     this.detachAllAnnotations();
                 case MUTATE.ADD_ANNOTATIONS:
-                    const annotationsToAnchor = filterAnnotationsByTargetType(mutation.payload, AnnotationTargetType.PAGE_SEGMENT);
-                    this.anchorAnnotations(annotationsToAnchor);
+                    this.anchorAnnotations(mutation.payload);
                     break;
                 case MUTATE.REMOVE_ANNOTATIONS:
-                    filterAnnotationsByTargetType(
-                        mutation.payload, AnnotationTargetType.PAGE_SEGMENT
-                    ).forEach(annotation => {
+                    mutation.payload.forEach(annotation => {
                          this.detachAnnotation(annotation);
                     });
             }
@@ -80,11 +75,6 @@ export class Anchoring {
         // be removed by this function.
         let deadHighlights = [];
 
-        // Initialize the target array.
-        if (!annotation.target) {
-            annotation.target = [];
-        }
-
         /**
          * Locate the region of the current document that the annotation refers to.
          *
@@ -98,14 +88,14 @@ export class Anchoring {
             // Returning an anchor without a range will result in this annotation being
             // treated as an orphan (assuming no other targets anchor).
             if (
-                !target.selector ||
-                !target.selector.some(s => s.type === 'TextQuoteSelector')
+                !target.selectors ||
+                !target.selectors.some(s => s.type === 'TextQuoteSelector')
             ) {
                 return Promise.resolve({annotation, target});
             }
 
             // Find a target using the anchoring module.
-            return this.anchoring.anchor(this.root, target.selector)
+            return this.anchoring.anchor(this.root, target.selectors)
                 .then(range => ({
                     annotation,
                     target,
@@ -144,7 +134,7 @@ export class Anchoring {
             let hasAnchorableTargets = false;
             let hasAnchoredTargets = false;
             for (let anchor of anchors) {
-                if (anchor.target.selector) {
+                if (anchor.target.selectors) {
                     hasAnchorableTargets = true;
                     if (anchor.range) {
                         hasAnchoredTargets = true;
@@ -182,7 +172,7 @@ export class Anchoring {
             if (anchor.annotation === annotation) {
                 // Anchors are valid as long as they still have a range and their target
                 // is still in the list of targets for this annotation.
-                if (anchor.range && annotation.target.includes(anchor.target)) {
+                if (anchor.range && annotation.target === anchor.target) {
                     anchors.push(anchor);
                     anchoredTargets.push(anchor.target);
                 } else if (anchor.highlights) {
@@ -201,12 +191,10 @@ export class Anchoring {
         requestAnimationFrame(() => removeHighlights(deadHighlights));
 
         // Actual work going on
-        // Anchor any targets of this annotation that are not anchored already.
-        for (let target of annotation.target) {
-            if (!anchoredTargets.includes(target)) {
-                anchor = locate(target).then(highlight);
-                anchors.push(anchor);
-            }
+        // Anchor the target of this annotation that is not anchored already.
+        if (!anchoredTargets.includes(annotation.target)) {
+            anchor = locate(annotation.target).then(highlight);
+            anchors.push(anchor);
         }
         return Promise.all(anchors).then(markOrphans).then(sync);
     }

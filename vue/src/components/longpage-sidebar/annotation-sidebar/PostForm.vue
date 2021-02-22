@@ -64,7 +64,7 @@
 <script>
 import {ACT, GET} from '@/store/types';
 import {mapActions, mapGetters} from 'vuex';
-import {Annotation} from '@/lib/annotation/types/annotation';
+import {Annotation} from '@/types/annotation';
 import {AnnotationVisibility, AnnotationVisibilityData} from '@/config/constants';
 import autosize from 'autosize';
 import {invert, mapKeys} from 'lodash';

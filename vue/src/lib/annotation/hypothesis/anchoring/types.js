@@ -17,16 +17,16 @@ import {
   toTextPosition,
 } from 'dom-anchor-text-quote';
 
-import { SerializedRange, sniff } from './range';
+import {SerializedRange, sniff} from './range';
 
 /**
  * @typedef {import("./range").BrowserRange} BrowserRange}
  * @typedef {import("./range").NormalizedRange} NormalizedRange}
  * @typedef {Range|BrowserRange|NormalizedRange|SerializedRange} AnyRangeType
  *
- * @typedef {import('../../types/api').RangeSelector} RangeSelector
- * @typedef {import('../../types/api').TextPositionSelector} TextPositionSelector
- * @typedef {import('../../types/api').TextQuoteSelector} TextQuoteSelector
+ * @typedef {import('../../../../types/api').RangeSelector} RangeSelector
+ * @typedef {import('../../../../types/api').TextPositionSelector} TextPositionSelector
+ * @typedef {import('../../../../types/api').TextQuoteSelector} TextQuoteSelector
  *
  * @typedef TextContentNode
  * @prop {string} textContent
@@ -132,7 +132,7 @@ export class TextPositionAnchor {
   }
 
   toRange() {
-    return posToRange(this.root, { start: this.start, end: this.end });
+    return posToRange(this.root, {start: this.start, end: this.end});
   }
 }
 
@@ -166,8 +166,8 @@ export class TextQuoteAnchor {
    * @param {TextQuoteSelector} selector
    */
   static fromSelector(root, selector) {
-    const { prefix, suffix } = selector;
-    return new TextQuoteAnchor(root, selector.exact, { prefix, suffix });
+    const {prefix, suffix} = selector;
+    return new TextQuoteAnchor(root, selector.exact, {prefix, suffix});
   }
 
   /**

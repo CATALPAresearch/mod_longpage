@@ -7,7 +7,7 @@
     </div>
     <div class="col p-0">
       <div
-        v-if="annotation.created || !annotation.target[0].annotationId"
+        v-if="annotation.created || !annotation.target.annotationId"
         class="row no-gutters mb-1 align-items-center"
       >
         <div
@@ -25,25 +25,15 @@
             :href="author.roleOverview"
           />
         </div>
-
-        <div class="col col-auto p-0">
-          <div class="annotation-actions text-right">
-            <div
-              v-if="!editorOpened"
-              class="d-flex justify-content-between"
-            >
-              <font-awesome-icon
-                class="link ml-2"
-                icon="trash"
-                @click="deleteAnnotation"
-              />
-              <font-awesome-icon
-                class="link ml-2"
-                icon="pen"
-                @click="openEditor"
-              />
-            </div>
-          </div>
+        <div class="col text-right">
+          <i class="icon fa fa-question-circle-o fa-fw" />
+          <i
+            class="icon fa fa-star-o fa-fw"
+          />
+          <i
+            class="icon fa fa-bell-o fa-fw"
+          />
+          <i class="icon fa fa-eye-slash fa-fw" />
         </div>
       </div>
       <div
@@ -75,7 +65,6 @@
           <i :class="AnnotationVisibilityData[annotation.visibility].icon" />
         </div>
       </div>
-
       <div
         v-if="highlightedText"
         class="row no-gutters my-1"
@@ -88,7 +77,6 @@
           />
         </div>
       </div>
-
       <div class="row no-gutters my-1">
         <div class="col col-12 p-0">
           <span
@@ -102,16 +90,22 @@
           />
         </div>
       </div>
+      <div class="my-1 text-muted text-small">
+        Von Ihnen und 124 Personen gelesen
+      </div>
+      <post-actions
+        :annotation="annotation"
+        class="my-1"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import {ACT, GET} from '@/store/types';
-import {Annotation} from '@/lib/annotation/types/annotation';
+import {Annotation} from '@/types/annotation';
 import DateTimeText from '@/components/DateTimeText';
 import {
-  AnnotationTargetType,
   AnnotationVisibility,
   AnnotationVisibilityData,
   HighlightingConfig,
@@ -124,16 +118,12 @@ import UserRoleButton from '@/components/UserRoleButton';
 import scrollIntoView from 'scroll-into-view-if-needed';
 import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/annotation-sidebar/ExpandableHighlightExcerpt';
 import PostForm from '@/components/longpage-sidebar/annotation-sidebar/PostForm';
-
-// Anonymous for others: no link to profile, show anonymous icon instead of avatar, leave name and role out or show default for name
-// Anonymous for myself: icon on the avatar or there where visibility is shown
-
-// Private, only shown to the user: Lock presented with tooltip
-// Public: Symbol only shown to user, not other users
+import PostActions from '@/components/longpage-sidebar/annotation-sidebar/PostActions';
 
 export default {
   name: 'Post',
   components: {
+    PostActions,
     PostForm,
     DateTimeText,
     ExpandableHighlightExcerpt,
@@ -153,7 +143,7 @@ export default {
       return this[GET.ANNOTATIONS_IN_EDIT].findIndex(annotation => annotation.id === this.annotation.id) > -1;
     },
     annotationTarget() {
-      return this.annotation.target[0];
+      return this.annotation.target;
     },
     author() {
       return this.authorAnonymous ? null : this[GET.USER](this.annotation.userId);
@@ -165,9 +155,7 @@ export default {
       return this.textQuoteSelector && this.textQuoteSelector.exact;
     },
     textQuoteSelector() {
-      if (this.annotationTarget.type !== AnnotationTargetType.PAGE_SEGMENT) return;
-
-      return this.annotationTarget.selector.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
+      return this.annotationTarget.selectors.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
     },
     ...mapGetters([GET.ANNOTATIONS_IN_EDIT, GET.USER]),
     ...mapGetters({userIsAuthor: GET.USER_IS_AUTHOR}),

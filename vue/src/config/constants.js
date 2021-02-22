@@ -1,3 +1,8 @@
+export const AnnotationType = Object.freeze({
+    HIGHLIGHT: 0,
+    POST: 1,
+});
+
 export const AnnotationTargetType = {
     PAGE_SEGMENT: 0,
     ANNOTATION: 1,
