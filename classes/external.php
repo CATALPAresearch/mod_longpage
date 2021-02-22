@@ -210,17 +210,28 @@ class mod_page_external extends external_api {
         return new external_single_structure(self::annotation_target_parameters_base());
     }
 
-    public static function create_post($parameters) {
+    private static function get_annotation_by_post($post) {
+        global $DB;
+
+        $thread = $DB->get_record('page_threads', ['id' => $post['threadid']]);
+        return $DB->get_record('page_annotations', ['id' => $thread->annotationid]);
+    }
+
+    public static function create_post($post) {
         global $DB, $USER;
+
+        self::validate_parameters(self::create_post_parameters(), ['post' => $post]);
+        $annotation = self::get_annotation_by_post($post);
+        self::validate_cm_context($annotation->pageid);
 
         $transaction = $DB->start_delegated_transaction();
         $id = $DB->insert_record(
             'page_posts',
-            array_merge($parameters, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()]),
+            array_merge($post, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()]),
         );
         $transaction->allow_commit();
 
-        return (array) $DB->get_record('page_posts', ['id' => $id]);
+        return ['post' => $DB->get_record('page_posts', ['id' => $id])];
     }
 
     public static function create_post_like($parameters) {
@@ -259,7 +270,9 @@ class mod_page_external extends external_api {
     }
 
     public static function create_post_parameters() {
-        return new external_function_parameters(self::post_parameters());
+        return new external_function_parameters([
+            'post' => new external_single_structure(omit_keys(self::post_parameters(), ['creatorid'])),
+        ]);
     }
 
     public static function create_post_reading($parameters) {
@@ -279,13 +292,13 @@ class mod_page_external extends external_api {
     }
 
     public static function create_post_returns() {
-        return new external_function_parameters(
-            array_merge(
+        return new external_function_parameters([
+            'post' => new external_single_structure(array_merge(
                 self::post_parameters(),
                 self::id_parameters(),
                 self::timestamp_parameters(),
-            )
-        );
+            )),
+        ]);
     }
 
     private static function create_selectors($selectors, $annotationtargetid): void {
@@ -371,11 +384,8 @@ class mod_page_external extends external_api {
     public static function delete_highlight($id) {
         global $DB;
 
-        self::validate_parameters(self::create_annotation_parameters(), ['id' => $id]);
-        $annotation = $DB->get_record('page_annotations', ['id' => $id]);
-        self::validate_cm_context($annotation->pageid);
 
-        self::validate_highlight_can_be_deleted_and_updated($annotation);
+
 
         self::delete_annotation($id);
     }
@@ -981,7 +991,7 @@ class mod_page_external extends external_api {
 
         $transaction->allow_commit();
 
-        return (array) $DB->get_record('page_posts', pick_keys($parameters, ['id']));
+        return ['post' => $DB->get_record('page_posts', pick_keys($parameters, ['id']))];
     }
 
     public static function update_post_parameters() {

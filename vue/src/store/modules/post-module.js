@@ -1,7 +1,10 @@
 import {ACT, GET, MUTATE} from '../types';
 import {AnnotationCompareFunction} from '@/util/comparing';
+import ajax from 'core/ajax';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
+import {AnnotationType, MoodleWSMethods} from '@/config/constants';
+import MappingService from '@/services/mapping-service';
 
 export default {
     state: {
@@ -47,7 +50,7 @@ export default {
                 commit(MUTATE.UPDATE_THREAD, {id: thread.id, threadUpdate: thread});
             } else commit(MUTATE.ADD_THREADS, [thread]);
         },
-        [ACT.CREATE_POST]({dispatch, getters}, params = {}) {
+        [ACT.CREATE_POST]({commit, dispatch, getters}, params = {}) {
             const post = getters[GET.POST](params.id) || getters[GET.NEW_POST](params);
             dispatch(ACT.REPLACE_OR_ADD_POST, post);
             if (!post.content) return;
@@ -56,12 +59,23 @@ export default {
                 dispatch(ACT.CREATE_ANNOTATION, getters[GET.ANNOTATION](thread.annotationId));
                 return;
             }
+
+            ajax.call([{
+                methodname: MoodleWSMethods.CREATE_POST,
+                args: MappingService.mapPostToArgs(post),
+                done: (response) => {
+                    const postUpdate = MappingService.mapResponseToPost(response.post);
+                    commit(MUTATE.UPDATE_POST, {threadId: thread.id, postId: post.id, postUpdate});
+                },
+                fail: (e) => {
+                    commit(MUTATE.REMOVE_POSTS_FROM_THREAD, {threadId: thread.id, posts: [post]});
+                    console.error(`"${MoodleWSMethods.CREATE_POST}" failed`, e);
+                }
+            }]);
         },
         [ACT.DELETE_POST]({commit}, post) {
-            commit(MUTATE.REMOVE_POST, post);
         },
         [ACT.UPDATE_POST]({commit}, postUpdate) {
-            commit(MUTATE.REPLACE_POST, postUpdate);
         },
     },
     mutations: {
@@ -72,9 +86,9 @@ export default {
         [MUTATE.ADD_THREADS](state, threads) {
             state.threads.push(...threads);
         },
-        [MUTATE.REMOVE_POST](state, post) {
-            const thread = state.threads.find(thread => thread.id === post.threadId);
-            thread.posts = thread.posts.filter(p => p.id !== post.id);
+        [MUTATE.REMOVE_POSTS_FROM_THREAD](state, {threadId, posts}) {
+            const thread = state.threads.find(thread => thread.id === threadId);
+            thread.posts = thread.posts.filter(p => !posts.find(post => post.id === p.id));
         },
         [MUTATE.REMOVE_THREADS](state, threadsToRemove) {
             state.threads = state.threads.filter(t => !threadsToRemove.find(ttr => ttr.id === t.id));

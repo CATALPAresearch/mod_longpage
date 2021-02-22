@@ -64,7 +64,6 @@
 
 <script>
 import {ACT, GET, MUTATE} from '@/store/types';
-import autosize from 'autosize';
 import {cloneDeep} from 'lodash';
 import {mapActions, mapGetters, mapMutations} from 'vuex';
 import {Post} from '@/types/post';

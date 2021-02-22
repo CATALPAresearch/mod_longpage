@@ -29,10 +29,11 @@ export const LONGPAGE_CONTENT_ID = 'longpage-content';
 export const LONGPAGE_MAIN_ID = 'longpage-main';
 
 export const MoodleWSMethods = Object.freeze({
+    CREATE_ANNOTATION: 'mod_page_create_annotation',
+    CREATE_POST: 'mod_page_create_post',
+    DELETE_ANNOTATION: 'mod_page_delete_annotation',
     GET_ANNOTATIONS: 'mod_page_get_annotations',
     GET_ENROLLED_USERS: 'core_course_get_enrolled_users_by_cmid',
-    CREATE_ANNOTATION: 'mod_page_create_annotation',
-    DELETE_ANNOTATION: 'mod_page_delete_annotation',
     UPDATE_ANNOTATION: 'mod_page_update_annotation',
 });
 

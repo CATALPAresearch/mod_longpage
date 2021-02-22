@@ -6,7 +6,7 @@
     :placeholder="$t('post.form.bodyTextareaPlaceholder')"
     rows="3"
     @click.stop=""
-    @input="$emit('update:modelValue', modelValue)"
+    @input="$emit('update:modelValue', $event.target.value)"
     v-on="$attrs"
   />
 </template>

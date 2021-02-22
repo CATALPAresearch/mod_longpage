@@ -22,7 +22,7 @@
       />
       <reply-form
         v-if="thread.lastReply.created"
-        :thread-id="thread.id"
+        :thread="thread"
       />
     </div>
   </div>

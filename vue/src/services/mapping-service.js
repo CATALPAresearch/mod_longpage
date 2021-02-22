@@ -57,6 +57,18 @@ const MappingService = {
             },
         });
     },
+    mapPostToArgs(post) {
+      return deepLowerCaseKeys({
+          post: {
+              ...pick(post, [
+                  'threadId',
+                  'anonymous',
+                  'content',
+                  'isPublic',
+              ])
+          }
+      });
+    },
     mapResponseToAnnotation(response) {
         return new Annotation({
             ...pick(response, ['id', 'type']),
@@ -98,15 +110,18 @@ const MappingService = {
             styleClass: response.styleclass,
         });
     },
+    mapResponseToPost(response) {
+        return new Post({
+            ...pick(response, ['id', 'anonymous', 'content']),
+            creatorId: response.creatorid,
+            isPublic: response.ispublic,
+            threadId: response.threadid,
+            timeCreated: this._mapTimeResponse(response.timecreated),
+            timeModified: this._mapTimeResponse(response.timemodified),
+        });
+    },
     mapResponseToPosts(response) {
-        return response.map(post => new Post({
-            ...pick(post, ['id', 'anonymous', 'content']),
-            creatorId: post.creatorid,
-            isPublic: post.ispublic,
-            threadId: post.threadid,
-            timeCreated: this._mapTimeResponse(post.timecreated),
-            timeModified: this._mapTimeResponse(post.timemodified),
-        }));
+        return response.map(post => this.mapResponseToPost(post));
     },
     mapResponseToThread(response) {
         return new Thread({
