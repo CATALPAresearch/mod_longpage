@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!editorOpened"
+    v-if="show"
     class="post-actions"
   >
     <div class="float-left">
@@ -10,17 +10,17 @@
         @click="togglePostLike"
       >
         <i
-          v-show="!post.likedByUser"
+          v-show="!postIntern.likedByUser"
           class="icon fa fa-thumbs-o-up fa-fw mr-1"
         />
         <i
-          v-show="post.likedByUser"
+          v-show="postIntern.likedByUser"
           class="icon fa fa-thumbs-up fa-fw mr-1"
         />
       </a>
       <span
-        :class="{'font-weight-bold': post.likedByUser}"
-      >{{ post.likeCount }}</span>
+        :class="{'font-weight-bold': postIntern.likedByUser}"
+      >{{ postIntern.likeCount }}</span>
     </div>
     <div
       class="float-left ml-3"
@@ -33,7 +33,7 @@
       >
         <i class="icon fa fa-comment-o fa-fw mr-1" />
       </a>
-      <span>{{ post.replyCount }}</span>
+      <span>{{ postIntern.replyCount }}</span>
     </div>
     <div
       class="float-left ml-3"
@@ -45,12 +45,8 @@
         @click="toggleMark"
       >
         <i
-          v-if="post.markedByUser"
+          v-if="postIntern.markedByUser"
           class="icon fa fa-star fa-fw m-0"
-        />
-        <i
-          v-else
-          class="icon fa fa-star-o fa-fw m-0"
         />
         <i
           v-else
@@ -68,7 +64,7 @@
         @click="toggleSubscription"
       >
         <i
-          v-if="post.subscribedByUser"
+          v-if="postIntern.subscribedByUser"
           class="icon fa fa-bell fa-fw m-0"
         />
         <i
@@ -114,13 +110,14 @@
 
 <script>
 import {ACT, GET} from '@/store/types';
-import {Annotation} from '@/types/annotation';
 import {mapActions, mapGetters} from 'vuex';
+import {Post} from '@/types/post';
 
 export default {
   name: 'PostActions',
   props: {
-    annotation: {type: Annotation, required: true},
+    post: {type: Post, required: true},
+    show: {type: Boolean, default: true},
   },
   data() {
     return {
@@ -152,24 +149,24 @@ export default {
         {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deleteAnnotation, text: this.$i18n.t('post.action.delete')},
       ];
     },
-    editorOpened() {
-      return this[GET.ANNOTATIONS_IN_EDIT].findIndex(annotation => annotation.id === this.annotation.id) > -1;
-    },
-    post() {
+    postIntern() {
       return {
-        ...this.annotation,
+        ...this.post,
         ...this.ipost,
       };
     },
     ...mapGetters([GET.ANNOTATIONS_IN_EDIT]),
   },
-  emits: ['toggle-replies'],
+  emits: ['edit-clicked', 'toggle-replies-clicked'],
   methods: {
+    ...mapActions([
+      ACT.DELETE_ANNOTATION,
+    ]),
     deleteAnnotation() {
       this[ACT.DELETE_ANNOTATION](this.annotation);
     },
     openEditor() {
-      this[ACT.START_EDITING_ANNOTATION](this.annotation);
+      this.$emit('edit-clicked');
     },
     toggleMark() {
       this.ipost.markedByUser = !this.ipost.markedByUser;
@@ -179,15 +176,11 @@ export default {
       this.ipost.likeCount -= 1;
     },
     toggleReplies() {
-      this.$emit('toggle-replies');
+      this.$emit('toggle-replies-clicked');
     },
     toggleSubscription() {
       this.ipost.subscribedByUser = !this.ipost.subscribedByUser;
     },
-    ...mapActions([
-      ACT.DELETE_ANNOTATION,
-      ACT.START_EDITING_ANNOTATION,
-    ]),
   }
 };
 </script>

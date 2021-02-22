@@ -13,7 +13,7 @@
       role="button"
       class="badge badge-light"
       @click.stop="isExpanded = !isExpanded"
-    >{{ isExpanded ? $t('annotationCard.less') : $t('annotationCard.more') }}</a>
+    >{{ isExpanded ? $t('expandable.less') : $t('expandable.more') }}</a>
   </div>
 </template>
 

@@ -99,14 +99,14 @@ const MappingService = {
         });
     },
     mapResponseToPosts(response) {
-        return new Post({
-            ...pick(response, ['id', 'anonymous', 'content']),
-            creatorId: response.creatorid,
-            isPublic: response.ispublic,
-            threadId: response.threadid,
-            timeCreated: this._mapTimeResponse(response.timecreated),
-            timeModified: this._mapTimeResponse(response.timemodified),
-        });
+        return response.map(post => new Post({
+            ...pick(post, ['id', 'anonymous', 'content']),
+            creatorId: post.creatorid,
+            isPublic: post.ispublic,
+            threadId: post.threadid,
+            timeCreated: this._mapTimeResponse(post.timecreated),
+            timeModified: this._mapTimeResponse(post.timemodified),
+        }));
     },
     mapResponseToThread(response) {
         return new Thread({

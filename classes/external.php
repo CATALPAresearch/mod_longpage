@@ -545,7 +545,7 @@ class mod_page_external extends external_api {
 
         foreach ($annotations as $annotation) {
             $annotation->target = self::get_annotation_target($annotation->id);
-            if ($annotation->type === mod_page_annotation_type::POST) {
+            if ($annotation->type == mod_page_annotation_type::POST) {
                 $annotation->body = self::get_thread($annotation->id);
             }
         }
@@ -1024,7 +1024,7 @@ class mod_page_external extends external_api {
         global $DB, $USER;
 
         // TODO: markasrequestedreply
-        //if ($post->creatorid !== $USER->id) {
+        //if ($postIntern->creatorid !== $USER->id) {
         //    throw new invalid_parameter_exception('Post can only be deleted or updated by user that created it.');
         //}
         if ($post->markedasrequestedreply) {
@@ -1056,17 +1056,17 @@ class mod_page_external extends external_api {
             ['threadid' => $post->threadid, 'userid' => $post->creatorid]
         );
         if ($threadhassubscription && $postisthreadroot) {
-            throw new invalid_parameter_exception('Thread that post belongs to is subscribed to by others. 
-                The post cannot be deleted/updated since it is the root of the thread and others might depend on the thread and, 
-                therefore, the post.');
+            throw new invalid_parameter_exception('Thread that postIntern belongs to is subscribed to by others. 
+                The postIntern cannot be deleted/updated since it is the root of the thread and others might depend on the thread and, 
+                therefore, the postIntern.');
         }
     }
 
     private static function validate_post_can_be_updated($postupdate) {
         global $DB, $USER;
 
-        // TODO: Check if user has capability to update post without validation and return if so
-        // TODO: Check if user has capability for updating post
+        // TODO: Check if user has capability to update postIntern without validation and return if so
+        // TODO: Check if user has capability for updating postIntern
 
         $post = $DB->get_record('page_posts', ['id' => $postupdate->id]);
         $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
@@ -1077,15 +1077,15 @@ class mod_page_external extends external_api {
         }
         if ($postupdate->markedasrequestedreply) {
             if ($rootpost->creatorid !== $USER->id) {
-                throw new invalid_parameter_exception('The post can only be marked as the reply requested by the user who requested
+                throw new invalid_parameter_exception('The postIntern can only be marked as the reply requested by the user who requested
                     the reply.');
             }
             if (!$thread->requestedreply) {
-                throw new invalid_parameter_exception('The post cannot be marked as the reply requested since no reply was requested 
+                throw new invalid_parameter_exception('The postIntern cannot be marked as the reply requested since no reply was requested 
                 for thread.');
             }
             if ($thread->rootid === $postupdate->id) {
-                throw new invalid_parameter_exception('The post cannot be marked as the reply requested since it is the root of the 
+                throw new invalid_parameter_exception('The postIntern cannot be marked as the reply requested since it is the root of the 
                 thread were the reply has been requested.');
             }
         }
@@ -1103,7 +1103,7 @@ class mod_page_external extends external_api {
             ['threadid' => $post->threadid, 'timecreated' => $post->timecreated]
         );
         if (!$islastpost) {
-            throw new invalid_parameter_exception('Only the last post in a thread can be deleted/updated as post could be referenced
+            throw new invalid_parameter_exception('Only the last postIntern in a thread can be deleted/updated as postIntern could be referenced
                 by other posts.');
         }
     }

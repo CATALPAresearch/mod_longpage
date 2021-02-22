@@ -1,17 +1,6 @@
 {
-  "annotationCard": {
-    "editor": {
-      "bodyTextareaPlaceholder": "Erstellen Sie eine Anmerkung",
-      "cancel": "Abbrechen",
-      "saveActions": {
-        "publish": "Veröffentlichen",
-        "publishAnonymously": "Anonym veröffentlichen",
-        "save": "Speichern ohne Veröffentlichen"
-      }
-    },
-    "created": "erstellt",
+  "expandable": {
     "less": "Weniger",
-    "modified": "bearbeitet",
     "more": "Mehr"
   },
   "post": {
@@ -25,6 +14,15 @@
       "markAsUnread": "Beitrag als ungelesen markieren",
       "markWithStar": "Beitrag mit Stern markieren",
       "subscribe": "Thread abonnieren"
+    },
+    "form": {
+      "bodyTextareaPlaceholder": "Erstellen Sie eine Anmerkung",
+      "action": {
+        "cancel": "Abbrechen",
+        "publish": "Veröffentlichen",
+        "publishAnonymously": "Anonym veröffentlichen",
+        "save": "Speichern ohne Veröffentlichen"
+      }
     }
   },
   "annotationSidebar": {
@@ -55,5 +53,9 @@
         "heading": "Inhaltsverzeichnis"
       }
     }
+  },
+  "timestamps": {
+    "created": "erstellt",
+    "modified": "bearbeitet"
   }
 }

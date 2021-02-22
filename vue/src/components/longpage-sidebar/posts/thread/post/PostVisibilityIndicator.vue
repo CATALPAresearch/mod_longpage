@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     iconClasses() {
-      if (!this.post.ispublic) return ['fa-lock'];
+      if (!this.post.isPublic) return ['fa-lock'];
       if (this.post.anonymous) return ['fa-user-secret'];
       return ['fa-users'];
     }

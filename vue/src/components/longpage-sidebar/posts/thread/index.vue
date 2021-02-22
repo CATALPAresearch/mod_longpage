@@ -4,15 +4,16 @@
     class="thread border-secondary card d-block"
   >
     <post
-      :post="root"
+      :post="thread.root"
+      :thread="thread"
       class="card-body text-dark thread-root"
     />
     <div
-      v-if="replies.length"
+      v-if="thread.replies.length"
       class="card-footer"
     >
       <post
-        v-for="reply in replies"
+        v-for="reply in thread.replies"
         :key="reply.id"
         class="my-2"
         :thread="thread"
@@ -42,13 +43,7 @@ export default {
   },
   computed: {
     id() {
-      return getThreadElementId(this.annotation.id);
-    },
-    replies() {
-      return this.thread.posts.slice(1);
-    },
-    root() {
-      return this.thread.posts[0];
+      return getThreadElementId(this.thread.id);
     },
   },
 };

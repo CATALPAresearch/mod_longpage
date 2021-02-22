@@ -2,7 +2,6 @@ import {AnnotationType, MoodleWSMethods} from '@/config/constants';
 import {GET, ACT, MUTATE} from '../types';
 import ajax from 'core/ajax';
 import MappingService from '@/services/mapping-service';
-import {cloneDeep} from 'lodash';
 import {Annotation} from '@/types/annotation';
 
 export default {
@@ -18,7 +17,6 @@ export default {
             pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
         }),
         [GET.ANNOTATIONS]: ({annotations}) => annotations,
-        [GET.ANNOTATIONS_IN_EDIT]: ({annotationsInEdit}) => annotationsInEdit,
         [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT]: (_, getters) => {
             return getters[GET.ANNOTATIONS];
         },
@@ -32,36 +30,40 @@ export default {
             return getters[GET.ANNOTATIONS];
         },
         [GET.NEW_ANNOTATION]: (_, getters) => (params = {}) => {
-            const body = params.type === AnnotationType.POST ? getters[GET.NEW_THREAD] : undefined;
-            return new Annotation({
-                body,
+            const annotation = new Annotation({
                 creatorId: getters[GET.LONGPAGE_CONTEXT].userId,
                 pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
                 ...params,
             });
+            annotation.body =
+                params.type === AnnotationType.POST && !params.body
+                    ? getters[GET.NEW_THREAD]({annotationId: annotation.id}) : undefined;
+            return annotation;
         },
-        [GET.PROVISIONAL_ANNOTATION_ID]: ({annotationsInEdit}) => `new-${annotationsInEdit.length}`,
     },
     actions: {
-        [ACT.START_EDITING_ANNOTATION]({commit, getters}, annotation) {
-            if (!annotation.created) {
-                annotation.id = getters[GET.PROVISIONAL_ANNOTATION_ID];
-                commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
-            }
-            commit(MUTATE.ADD_ANNOTATION_IN_EDIT, cloneDeep(annotation));
-            return annotation.id;
+        [ACT.REPLACE_OR_ADD_ANNOTATION]({commit, getters}, annotation) {
+            if (getters[GET.ANNOTATION](annotation.id)) {
+                commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, annotationUpdate: annotation});
+            } else commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
         },
-        [ACT.STOP_EDITING_ANNOTATION]({commit}, annotation) {
-            if (!annotation.created) commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
-            commit(MUTATE.REMOVE_ANNOTATION_IN_EDIT_BY_ID, annotation.id);
-        },
-        [ACT.CREATE_ANNOTATION]({commit, getters}, params) {
-            const annotation = getters[GET.NEW_ANNOTATION](params);
-            if (!getters[GET.ANNOTATION](annotation.id)) commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
+        [ACT.CREATE_ANNOTATION]({commit, dispatch, getters}, params) {
+            const annotation = getters[GET.ANNOTATION](params.id) || getters[GET.NEW_ANNOTATION](params);
+            dispatch(ACT.REPLACE_OR_ADD_ANNOTATION, annotation);
             if (annotation.type === AnnotationType.POST) {
-                if (!getters[GET.THREAD](annotation.body.id)) commit(MUTATE.ADD_THREADS, [annotation.body]);
+                dispatch(ACT.REPLACE_OR_ADD_THREAD, annotation.body);
+                commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, isPublic: annotation.body.isPublic});
                 if (!annotation.body.root.content) return;
             }
+
+            // Const annotation = getters[GET.NEW_ANNOTATION](params);
+            // if (!getters[GET.ANNOTATION](annotation.id)) commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
+            // if (annotation.type === AnnotationType.POST) {
+            //     const thread = getters[GET.THREAD](annotation.body.id);
+            //     if (!thread) commit(MUTATE.ADD_THREADS, [annotation.body]);
+            //     else commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, isPublic: thread.isPublic});
+            //     if (!annotation.body.root.content) return;
+            // }
 
             ajax.call([{
                 methodname: MoodleWSMethods.CREATE_ANNOTATION,

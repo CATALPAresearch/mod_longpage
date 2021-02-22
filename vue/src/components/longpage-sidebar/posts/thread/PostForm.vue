@@ -1,28 +1,28 @@
 <template>
   <div
-    v-if="annotationUpdate"
+    v-if="show"
     class="text-right"
   >
     <textarea
-      ref="annotationEditor"
-      v-model="annotationUpdate.body"
+      ref="contentInput"
+      v-model="postUpdate.content"
       class="form-control"
-      :placeholder="$t('annotationCard.editor.bodyTextareaPlaceholder')"
+      :placeholder="$t('post.form.bodyTextareaPlaceholder')"
       rows="3"
       @click.stop=""
-      @keydown.enter.meta.exact="updateAnnotation"
-      @keydown.esc.exact="closeEditor"
+      @keydown.enter.meta.exact="createOrUpdatePost"
+      @keydown.esc.exact="cancel"
     />
     <button
       type="button"
       class="btn btn-sm btn-secondary ml-2 my-2"
-      @click="closeEditor"
+      @click="cancel"
     >
       <font-awesome-icon
         class="ml-1"
         icon="times"
       />
-      {{ $t('annotationCard.editor.cancel') }}
+      {{ $t('post.form.action.cancel') }}
     </button>
     <div
       class="btn-group ml-2 my-2"
@@ -31,10 +31,13 @@
       <button
         type="button"
         class="btn btn-primary btn-sm"
-        @click="updateAnnotation"
+        @click="createOrUpdatePost"
       >
-        <i :class="SaveActionData[selectedSaveAction].icon" />
-        {{ $t(`annotationCard.editor.saveActions.${selectedSaveAction}`) }}
+        <i
+          class="icon fa fa-fw m-0"
+          :class="selectedSaveAction.iconClasses"
+        />
+        {{ $t(`post.form.action.${selectedSaveAction.key}`) }}
       </button>
       <button
         type="button"
@@ -48,13 +51,16 @@
       <div class="dropdown-menu">
         <a
           v-for="action in saveActions"
-          :key="action"
+          :key="action.key"
           class="dropdown-item"
           href="javascript:void(0)"
-          @click="selectedSaveAction = action"
+          @click="selectedSaveAction = action; createOrUpdatePost"
         >
-          <i :class="SaveActionData[action].icon" />
-          {{ $t(`annotationCard.editor.saveActions.${action}`) }}
+          <i
+            class="icon fa fa-fw"
+            :class="action.iconClasses"
+          />
+          {{ $t(`post.form.action.${action.key}`) }}
         </a>
       </div>
     </div>
@@ -62,97 +68,82 @@
 </template>
 
 <script>
-import {ACT, GET} from '@/store/types';
-import {mapActions, mapGetters} from 'vuex';
+import {ACT, GET, MUTATE} from '@/store/types';
 import autosize from 'autosize';
-import {invert, mapKeys} from 'lodash';
+import {cloneDeep} from 'lodash';
+import {mapActions, mapGetters, mapMutations} from 'vuex';
 import {Post} from '@/types/post';
+import {Thread} from '@/types/thread';
 
-export const AnnotationVisibility = Object.freeze({
-  PRIVATE: 0,
-  PUBLIC: 1,
-  ANONYMOUS: 2,
-});
-
-export const AnnotationVisibilityData = Object.freeze({
-  [AnnotationVisibility.PRIVATE]: {icon: ['fa', 'fa-lock']},
-  [AnnotationVisibility.PUBLIC]: {icon: ['fa', 'fa-users']},
-  [AnnotationVisibility.ANONYMOUS]: {icon: ['fa', 'fa-user-secret']},
-});
-
-const SaveActions = Object.freeze({PUBLISH: 'publish', PUBLISH_ANONYMOUSLY: 'publishAnonymously', SAVE: 'save'});
-
-export const VisibilityToSaveActionMapping = Object.freeze({
-  [AnnotationVisibility.PRIVATE]: SaveActions.SAVE,
-  [AnnotationVisibility.PUBLIC]: SaveActions.PUBLISH,
-  [AnnotationVisibility.ANONYMOUS]: SaveActions.PUBLISH_ANONYMOUSLY,
-});
-
-const SaveActionToVisibilityMapping = Object.freeze(invert(VisibilityToSaveActionMapping));
-
-const SaveActionData = mapKeys(AnnotationVisibilityData, (_, key) => VisibilityToSaveActionMapping[key]);
-
-// TODO Emit saved & canceled
+const SAVE_ACTIONS = [
+  {key: 'publish', iconClasses: ['fa-users']},
+  {key: 'publishAnonymously', iconClasses: ['fa-user-secret']},
+  {key: 'save', iconClasses: ['fa-lock']},
+];
 
 export default {
   name: 'PostForm',
   props: {
-    post: {type: Post, required: true}, // TODO Replace with "annotation" with "post"
+    show: {type: Boolean, default: false},
+    post: {type: Post, required: true},
+    thread: {type: Thread, required: true},
   },
   data() {
     return {
-      SaveActionData,
+      postUpdate: null,
+      saveActions: SAVE_ACTIONS,
+      selectedSaveActionInternal: SAVE_ACTIONS[0],
     };
   },
+  emit: ['update:show'],
   computed: {
-    ...mapGetters([GET.ANNOTATIONS_IN_EDIT]),
-    annotationUpdate() {
-      return this[GET.ANNOTATIONS_IN_EDIT].find(annotation => annotation.id === this.annotation.id);
-    },
-    saveActions() {
-      return Object.values(SaveActions);
-    },
+    ...mapGetters([GET.ANNOTATION]),
     selectedSaveAction: {
       get() {
-        return VisibilityToSaveActionMapping[this.annotationUpdate.visibility];
+        return this.selectedSaveActionInternal;
       },
-      set(selectedSaveAction) {
-        this.annotationUpdate.visibility = SaveActionToVisibilityMapping[selectedSaveAction];
+      set(action) {
+        this.postUpdate.anonymous = action.key === 'publishAnonymously';
+        this.postUpdate.isPublic = action.key !== 'save';
+        this.selectedSaveActionInternal = action;
       }
     },
   },
-  watch: {
-    annotationUpdate: {
-      handler(value) {
-        if (value) {
-          this.$nextTick(
-              () => this.$refs.annotationEditor.focus()
-          );
-        }
-      },
-      immediate: true,
-    },
-  },
   mounted() {
+    this.postUpdate = cloneDeep(this.post);
     this.$nextTick(
-        () => autosize(this.$refs.annotationEditor)
+        () => {
+          this.$refs.contentInput.focus();
+          autosize(this.$refs.contentInput);
+        }
     );
   },
   beforeUnmount() {
-    autosize.destroy(this.$refs.annotationEditor);
+    autosize.destroy(this.$refs.contentInput);
   },
   methods: {
-    closeEditor() {
-      this[ACT.STOP_EDITING_ANNOTATION](this.annotation);
-    },
-    async updateAnnotation() {
-      await this[ACT.UPDATE_ANNOTATION](this.annotationUpdate);
-      this.closeEditor();
-    },
     ...mapActions([
-      ACT.STOP_EDITING_ANNOTATION,
-      ACT.UPDATE_ANNOTATION
+      ACT.CREATE_ANNOTATION,
+      ACT.CREATE_POST,
+      ACT.UPDATE_POST,
     ]),
+    ...mapMutations([
+      MUTATE.REMOVE_ANNOTATIONS,
+      MUTATE.REMOVE_THREADS,
+    ]),
+    cancel() {
+      this[MUTATE.REMOVE_THREADS]([this.thread]);
+      this[MUTATE.REMOVE_ANNOTATIONS]([this[GET.ANNOTATION](this.thread.annotationId)]);
+      this.closeForm();
+    },
+    closeForm() {
+      this.$emit('update:show');
+    },
+    async createOrUpdatePost() {
+      if (this.post.created) this[ACT.UPDATE_POST](this.postUpdate);
+      this[ACT.CREATE_POST](this.postUpdate);
+      this.closeForm();
+    },
   }
 };
 </script>

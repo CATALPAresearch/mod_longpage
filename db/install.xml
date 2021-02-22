@@ -159,7 +159,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
+        <KEY NAME="postIntern" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_post_marks" COMMENT="">
@@ -172,7 +172,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
+        <KEY NAME="postIntern" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_post_readings" COMMENT="">
@@ -185,7 +185,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
+        <KEY NAME="postIntern" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_thread_subscriptions" COMMENT="">

@@ -16,11 +16,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Page module post install function
+ * Page module postIntern install function
  *
  * This file replaces:
  *  - STATEMENTS section in db/install.xml
- *  - lib.php/modulename_install() post installation hook
+ *  - lib.php/modulename_install() postIntern installation hook
  *  - partially defaults.php
  *
  * @package mod_page

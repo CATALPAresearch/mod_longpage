@@ -27,7 +27,11 @@ export class Thread {
         return this.root.isPublic;
     }
 
-    get reply() {
+    get replies() {
+        return this.posts.slice(1);
+    }
+
+    get requestedReply() {
         return this.posts.find(({id}) => id === this.replyId);
     }
 

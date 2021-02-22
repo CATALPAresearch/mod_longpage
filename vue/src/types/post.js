@@ -2,7 +2,7 @@ export class Post {
     static preliminaryIdsAssignedCount = 0;
 
     static _getPreliminaryId() {
-        return `new-post-${Annotation.preliminaryIdsAssignedCount++}`
+        return `new-post-${Post.preliminaryIdsAssignedCount++}`
     }
 
     constructor({

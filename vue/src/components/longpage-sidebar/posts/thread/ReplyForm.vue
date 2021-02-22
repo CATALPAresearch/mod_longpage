@@ -11,15 +11,14 @@
     </div>
     <div class="col p-0">
       <post-form
-        v-if="postFormShown"
-        @canceled="postFormShown = false"
-        @saved="postFormShown = false"
+        v-model:show="showPostForm"
+        :thread="thread"
       />
       <input
-        v-else
+        v-if="!showPostForm"
         class="form-control"
         :placeholder="$t('responseForm.placeholder')"
-        @focus="postFormShown = true"
+        @focus="showPostForm = true"
       >
     </div>
   </div>
@@ -29,6 +28,7 @@
 import {GET} from '@/store/types';
 import {mapGetters} from 'vuex';
 import PostForm from '@/components/longpage-sidebar/posts/thread/PostForm';
+import {Thread} from '@/types/thread';
 import UserAvatar from '@/components/UserAvatar';
 
 export default {
@@ -38,11 +38,11 @@ export default {
     UserAvatar,
   },
   props: {
-    threadId: {type: Number, required: true},
+    thread: {type: Thread, required: true},
   },
   data() {
     return {
-      postFormShown: false,
+      showPostForm: false, // TODO: add post to postform and create new post and add it to thread
     };
   },
   computed: {

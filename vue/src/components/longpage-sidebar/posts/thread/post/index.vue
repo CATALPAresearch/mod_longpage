@@ -7,7 +7,6 @@
     </div>
     <div class="col p-0">
       <div
-        v-if="annotation.created || !annotation.target.annotationId"
         class="row no-gutters mb-1 align-items-center"
       >
         <div
@@ -19,11 +18,11 @@
             href="#"
           >{{ creator.fullname }}</a>
           <span v-else>{{ $t('avatar.nameAnonymous') }}</span>
-          <user-role-button
-            v-if="creator && creator.role"
-            :role="creator.role"
-            :href="creator.roleOverview"
-          />
+          <!--          <user-role-button-->
+          <!--            v-if="creator && creator.role"-->
+          <!--            :role="creator.role"-->
+          <!--            :href="creator.roleOverview"-->
+          <!--          />-->
         </div>
         <div class="col text-right">
           <i class="icon fa fa-question-circle-o fa-fw" />
@@ -37,29 +36,25 @@
         </div>
       </div>
       <div
-        v-if="annotation.created"
+        v-if="post.created"
         class="row no-gutters my-1"
       >
         <div
           class="col col-auto p-0 text-small"
         >
-          {{ $t('annotationCard.created') }}
-          <date-time-text :date-time="annotation.timecreated" />
-          <span v-if="annotation.timecreated.getTime() !== annotation.timemodified.getTime()">
-            <span class="font-italic">
-              ({{ $t('annotationCard.modified') }}
-              <date-time-text :date-time="annotation.timemodified" />)
-            </span>
-          </span>
+          <post-date-times
+            :time-created="post.timeCreated"
+            :time-modified="post.timeModified"
+          />
         </div>
         <div
-          v-if="creator === user"
+          v-if="showPostVisibilityIndicator"
           class="col col-auto mx-1 p-0 text-small font-weight-boldest"
         >
           ·
         </div>
         <div
-          v-if="creator === user"
+          v-if="showPostVisibilityIndicator"
           class="col col-auto p-0 text-small"
         >
           <post-visibility-indicator :post="post" />
@@ -79,39 +74,40 @@
       <div class="row no-gutters my-1">
         <div class="col col-12 p-0">
           <span
-            v-show="!editorOpened"
+            v-show="!showForm"
             ref="annotationBody"
             class="annotation-body"
-          >{{ annotation.body }}</span>
+          >{{ post.content }}</span>
           <post-form
-            v-if="editorOpened"
-            :annotation="annotation"
+            v-model:show="showForm"
+            :post="post"
+            :thread="thread"
           />
         </div>
       </div>
-      <div class="my-1 text-muted text-small">
+      <!--      <div class="my-1 text-muted text-small">
         Von Ihnen und 124 Personen gelesen
-      </div>
+      </div>-->
       <post-actions
-        :annotation="annotation"
+        :show="!showForm"
+        :post="post"
         class="my-1"
+        @edit-clicked="showForm = true"
       />
     </div>
   </div>
 </template>
 
 <script>
-import {ACT, GET} from '@/store/types';
-import DateTimeText from '@/components/DateTimeText';
+import {GET} from '@/store/types';
 import {
   SCROLL_INTO_VIEW_OPTIONS,
   SelectorType
 } from '@/config/constants';
-import {mapActions, mapGetters} from 'vuex';
+import {mapGetters} from 'vuex';
 import {applyMathjaxFilterToNodes} from '@/util/moodle';
 import {getHighlightByAnnotationId} from '@/util/annotation';
 import UserAvatar from '@/components/UserAvatar';
-import UserRoleButton from '@/components/UserRoleButton';
 import scrollIntoView from 'scroll-into-view-if-needed';
 import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/posts/thread/post/ExpandableHighlightExcerpt';
 import PostForm from '@/components/longpage-sidebar/posts/thread/PostForm';
@@ -119,44 +115,48 @@ import PostActions from '@/components/longpage-sidebar/posts/thread/post/PostAct
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
 import PostVisibilityIndicator from '@/components/longpage-sidebar/posts/thread/post/PostVisibilityIndicator';
+import PostDateTimes from '@/components/longpage-sidebar/posts/thread/post/PostDateTimes';
 
 export default {
   name: 'Post',
   components: {
+    PostDateTimes,
     PostVisibilityIndicator,
     PostActions,
     PostForm,
-    DateTimeText,
     ExpandableHighlightExcerpt,
     UserAvatar,
-    UserRoleButton,
   },
   props: {
     thread: {type: Thread, required: true},
-    post: {type: Post, required: true}, // TODO Rename to "annotation" to "post"
+    post: {type: Post, required: true},
+  },
+  data() {
+    return {
+      showForm: false,
+    };
   },
   computed: {
-    ...mapGetters([GET.ANNOTATION, GET.ANNOTATIONS_IN_EDIT, GET.USER]),
+    ...mapGetters([GET.ANNOTATION, GET.USER]),
     annotation() {
       return this[GET.ANNOTATION](this.thread.annotationId);
     },
     creator() {
       return this[GET.USER](this.post.creatorId);
     },
-    editorOpened() {
-      return this[GET.ANNOTATIONS_IN_EDIT].findIndex(annotation => annotation.id === this.annotation.id) > -1;
-    },
     highlightedText() {
       const textQuoteSelector = this.annotation.target.selectors.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
       return textQuoteSelector && textQuoteSelector.exact;
     },
+    showPostVisibilityIndicator() {
+      return this.user === this.creator;
+    },
     user() {
       return this[GET.USER]();
     },
-
   },
   watch: {
-    'annotation.body': {
+    'post.content': {
       handler() {
         this.$nextTick(() => {
           applyMathjaxFilterToNodes(this.$refs.annotationBody);
@@ -165,20 +165,13 @@ export default {
       immediate: true,
     },
   },
+  mounted() {
+    if (!this.post.created) this.showForm = true;
+  },
   methods: {
-    deleteAnnotation() {
-      this[ACT.DELETE_ANNOTATION](this.annotation);
-    },
-    openEditor() {
-      this[ACT.START_EDITING_ANNOTATION](this.annotation);
-    },
     selectAnnotation() {
-      scrollIntoView(getHighlightByAnnotationId(this.annotation.id), SCROLL_INTO_VIEW_OPTIONS);
+      scrollIntoView(getHighlightByAnnotationId(this.annotation.annotationId), SCROLL_INTO_VIEW_OPTIONS);
     },
-    ...mapActions([
-        ACT.DELETE_ANNOTATION,
-        ACT.START_EDITING_ANNOTATION,
-    ]),
   }
 };
 </script>
