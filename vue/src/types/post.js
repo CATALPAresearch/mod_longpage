@@ -12,7 +12,6 @@ export class Post {
         anonymous = false,
         content = '',
         isPublic = false,
-        replyRequested = false,
         timeCreated,
         timeModified,
     }) {
@@ -22,7 +21,6 @@ export class Post {
         this.anonymous = anonymous;
         this.content = content;
         this.isPublic = isPublic;
-        this.replyRequested = replyRequested;
         this.timeCreated = timeCreated;
         this.timeModified = timeModified;
     }

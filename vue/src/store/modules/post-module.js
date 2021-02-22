@@ -5,21 +5,24 @@ import {Thread} from '@/types/thread';
 
 export default {
     state: {
-        newThreads: [],
         threads: [],
     },
     getters: {
         [GET.NEW_POST]: (_, getters) => (params = {}) => {
-            return new Post({...params, creatorId: getters[GET.USER()]});
+            return new Post({
+                creatorId: getters[GET.LONGPAGE_CONTEXT].userId,
+                ...params,
+            });
         },
         [GET.NEW_THREAD]: (_, getters) => (params = {}) => {
-            return new Thread({...params, posts: getters[GET.NEW_POST]});
+            return new Thread({posts: getters[GET.NEW_POST], ...params});
         },
+        [GET.THREAD]: ({threads}) => id => threads.find(t => t.id === id),
         [GET.THREADS]: (_, getters) => {
             return getters[GET.THREADS_SORTED_BY_ANNOTATION_POSITION];
         },
-        [GET.THREADS_SORTED_BY_ANNOTATION_POSITION]: ({newThreads, threads}, getters) => {
-            return [...newThreads, ...threads].sort(
+        [GET.THREADS_SORTED_BY_ANNOTATION_POSITION]: ({threads}, getters) => {
+            return threads.sort(
                 (threadA, threadB) => {
                     const [annotationA, annotationB] = [threadA, threadB].map(t => getters[GET.ANNOTATION](t.annotationId));
                     return AnnotationCompareFunction.BY_POSITION(annotationA, annotationB);
@@ -62,5 +65,10 @@ export default {
         [MUTATE.SET_THREADS](state, threads) {
             state.threads = threads;
         },
+        [MUTATE.UPDATE_THREAD](state, {id, threadUpdate}) {
+            const thread = state.threads.find(thread => thread.id === id);
+            Object.assign(thread, threadUpdate);
+            console.log(thread); // TODO RM
+        }
     },
 };

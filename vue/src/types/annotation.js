@@ -12,18 +12,22 @@ export class Annotation {
         $orphan = false,
         id = Annotation._getPreliminaryId(),
         body,
+        creatorId,
+        isPublic = false,
         pageId,
         target = new AnnotationTarget({}),
-        timeCreate,
+        timeCreated,
         timeModified,
         type = AnnotationType.HIGHLIGHT,
     }) {
         this.$orphan = $orphan;
         this.id = id;
         this.body = body;
+        this.creatorId = creatorId;
+        this.isPublic = isPublic;
         this.pageId = pageId;
         this.target = target;
-        this.timeCreate = timeCreate;
+        this.timeCreated = timeCreated;
         this.timeModified = timeModified;
         this.type = type;
     }

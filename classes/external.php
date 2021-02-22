@@ -320,7 +320,7 @@ class mod_page_external extends external_api {
 
     private static function create_thread_parameters_base() {
         return [
-            'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'anonymous' => new external_value(PARAM_BOOL),
             'content' => new external_value(PARAM_TEXT, ''),
             'ispublic' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
             'replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
@@ -504,6 +504,9 @@ class mod_page_external extends external_api {
             [
                 'id' => new external_value(PARAM_INT),
                 'body' => self::get_thread_returns(),
+                'creatorid' => new external_value(PARAM_INT),
+                'ispublic' => new external_value(PARAM_INT),
+                'pageid' => new external_value(PARAM_INT),
                 'target' => self::get_annotation_target_parameters(),
                 'type' => new external_value(PARAM_INT),
             ],
@@ -545,7 +548,6 @@ class mod_page_external extends external_api {
             if ($annotation->type === mod_page_annotation_type::POST) {
                 $annotation->body = self::get_thread($annotation->id);
             }
-            omit_keys($annotation, ['pageid', 'creatorid', 'ispublic'], true);
         }
 
         return ['annotations' => array_values($annotations)];
@@ -747,11 +749,11 @@ class mod_page_external extends external_api {
             'timemodified'
         );
 
-        return array_map(function ($post) {
-           if ($post->anonymous) {
-               unset($post->creatorid);
-           }
-           return omit_keys($post, ['anonymous']);
+        return array_map(function ($post) use ($USER) {
+            if ($post->anonymous && $USER->id !== $post->creatorid) {
+                unset($post->creatorid);
+            }
+            return $post;
         }, $posts);
     }
 
@@ -923,7 +925,7 @@ class mod_page_external extends external_api {
         return [
             'threadid' => new external_value(PARAM_INT),
             'creatorid' => new external_value(PARAM_INT),
-            'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'anonymous' => new external_value(PARAM_BOOL),
             'content' => new external_value(PARAM_TEXT, ''),
             'ispublic' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
         ];

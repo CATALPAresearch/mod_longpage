@@ -23,6 +23,10 @@ export class Thread {
         return this.root.created;
     }
 
+    get isPublic() {
+        return this.root.isPublic;
+    }
+
     get reply() {
         return this.posts.find(({id}) => id === this.replyId);
     }

@@ -31,9 +31,15 @@ export default {
         [GET.ANNOTATIONS_TARGETING_ANNOTATION]: (_, getters) => {
             return getters[GET.ANNOTATIONS];
         },
-        [GET.NEW_ANNOTATION]: (_, getters) => (params = {}) => new Annotation(
-            {pageId: getters[GET.LONGPAGE_CONTEXT].pageId, ...params}
-        ),
+        [GET.NEW_ANNOTATION]: (_, getters) => (params = {}) => {
+            const body = params.type === AnnotationType.POST ? getters[GET.NEW_THREAD] : undefined;
+            return new Annotation({
+                body,
+                creatorId: getters[GET.LONGPAGE_CONTEXT].userId,
+                pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
+                ...params,
+            });
+        },
         [GET.PROVISIONAL_ANNOTATION_ID]: ({annotationsInEdit}) => `new-${annotationsInEdit.length}`,
     },
     actions: {
@@ -51,9 +57,11 @@ export default {
         },
         [ACT.CREATE_ANNOTATION]({commit, getters}, params) {
             const annotation = getters[GET.NEW_ANNOTATION](params);
-            commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
-            commit(MUTATE.ADD_THREADS, [annotation.body]);
-            if (annotation.type === AnnotationType.POST && !annotation.body.root.content) return;
+            if (!getters[GET.ANNOTATION](annotation.id)) commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
+            if (annotation.type === AnnotationType.POST) {
+                if (!getters[GET.THREAD](annotation.body.id)) commit(MUTATE.ADD_THREADS, [annotation.body]);
+                if (!annotation.body.root.content) return;
+            }
 
             ajax.call([{
                 methodname: MoodleWSMethods.CREATE_ANNOTATION,
@@ -61,6 +69,9 @@ export default {
                 done: (response) => {
                     const annotationUpdate = MappingService.mapResponseToAnnotation(response.annotation);
                     commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, annotationUpdate});
+                    if (annotationUpdate.type === AnnotationType.POST) {
+                        commit(MUTATE.UPDATE_THREAD, {id: annotation.body.id, threadUpdate: annotationUpdate.body});
+                    }
                 },
                 fail: (e) => {
                     commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
