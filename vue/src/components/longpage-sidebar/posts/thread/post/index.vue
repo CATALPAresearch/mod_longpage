@@ -173,7 +173,7 @@ export default {
   },
   methods: {
     selectAnnotation() {
-      scrollIntoView(getHighlightByAnnotationId(this.annotation.annotationId), SCROLL_INTO_VIEW_OPTIONS);
+      scrollIntoView(getHighlightByAnnotationId(this.annotation.id), SCROLL_INTO_VIEW_OPTIONS);
     },
   }
 };
