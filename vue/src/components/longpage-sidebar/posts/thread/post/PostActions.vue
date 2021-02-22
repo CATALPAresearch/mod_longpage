@@ -23,9 +23,10 @@
       >{{ postIntern.likeCount }}</span>
     </div>
     <div
+      v-if="post === thread.root"
       class="float-left ml-3"
       role="button"
-      @click="toggleReplies"
+      @click="toggleRepliesOrReply"
     >
       <a
         href="javascript:void(0)"
@@ -33,7 +34,7 @@
       >
         <i class="icon fa fa-comment-o fa-fw mr-1" />
       </a>
-      <span>{{ postIntern.replyCount }}</span>
+      <span v-if="thread.replyCount">{{ thread.replyCount }}</span>
     </div>
     <div
       class="float-left ml-3"
@@ -112,13 +113,16 @@
 import {ACT, GET} from '@/store/types';
 import {mapActions, mapGetters} from 'vuex';
 import {Post} from '@/types/post';
+import {Thread} from '@/types/thread';
 
 export default {
   name: 'PostActions',
   props: {
     post: {type: Post, required: true},
+    thread: {type: Thread, required: true},
     show: {type: Boolean, default: true},
   },
+  emits: ['edit-clicked', 'toggle-replies'],
   data() {
     return {
       ipost: {
@@ -155,11 +159,10 @@ export default {
         ...this.ipost,
       };
     },
-    ...mapGetters([GET.ANNOTATIONS_IN_EDIT]),
   },
-  emits: ['edit-clicked', 'toggle-replies-clicked'],
   methods: {
     ...mapActions([
+      ACT.CREATE_POST,
       ACT.DELETE_ANNOTATION,
     ]),
     deleteAnnotation() {
@@ -175,8 +178,9 @@ export default {
       this.ipost.likedByUser = !this.ipost.likedByUser;
       this.ipost.likeCount -= 1;
     },
-    toggleReplies() {
-      this.$emit('toggle-replies-clicked');
+    toggleRepliesOrReply() {
+      this.$emit('toggle-replies');
+      if (!this.thread.replyCount) this[ACT.CREATE_POST]({threadId: this.thread.id});
     },
     toggleSubscription() {
       this.ipost.subscribedByUser = !this.ipost.subscribedByUser;

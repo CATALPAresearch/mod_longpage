@@ -91,8 +91,10 @@
       <post-actions
         :show="!showForm"
         :post="post"
+        :thread="thread"
         class="my-1"
         @edit-clicked="showForm = true"
+        @toggle-replies="$emit('toggle-replies')"
       />
     </div>
   </div>
@@ -110,7 +112,7 @@ import {getHighlightByAnnotationId} from '@/util/annotation';
 import UserAvatar from '@/components/UserAvatar';
 import scrollIntoView from 'scroll-into-view-if-needed';
 import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/posts/thread/post/ExpandableHighlightExcerpt';
-import PostForm from '@/components/longpage-sidebar/posts/thread/PostForm';
+import PostForm from '@/components/longpage-sidebar/posts/thread/post_form';
 import PostActions from '@/components/longpage-sidebar/posts/thread/post/PostActions';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
@@ -131,6 +133,7 @@ export default {
     thread: {type: Thread, required: true},
     post: {type: Post, required: true},
   },
+  emits: ['toggle-replies'],
   data() {
     return {
       showForm: false,

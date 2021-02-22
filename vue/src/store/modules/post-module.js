@@ -2,7 +2,6 @@ import {ACT, GET, MUTATE} from '../types';
 import {AnnotationCompareFunction} from '@/util/comparing';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
-import {AnnotationType} from '@/config/constants';
 
 export default {
     state: {
@@ -48,24 +47,15 @@ export default {
                 commit(MUTATE.UPDATE_THREAD, {id: thread.id, threadUpdate: thread});
             } else commit(MUTATE.ADD_THREADS, [thread]);
         },
-        [ACT.CREATE_POST]({dispatch, getters}, params) {
+        [ACT.CREATE_POST]({dispatch, getters}, params = {}) {
             const post = getters[GET.POST](params.id) || getters[GET.NEW_POST](params);
             dispatch(ACT.REPLACE_OR_ADD_POST, post);
+            if (!post.content) return;
             const thread = getters[GET.THREAD](post.threadId);
             if (!thread.created) {
                 dispatch(ACT.CREATE_ANNOTATION, getters[GET.ANNOTATION](thread.annotationId));
                 return;
             }
-
-            // If (post.type === AnnotationType.POST) {
-            //     dispatch(ACT.REPLACE_OR_ADD_THREAD, post.body);
-            //     commit(MUTATE.UPDATE_ANNOTATION, {id: post.id, isPublic: post.body.isPublic});
-            //     if (!post.body.root.content) return;
-            // }
-            //
-            // const preliminaryPost = getters[GET.POST](post.id, post.threadId);
-            // if (preliminaryPost) commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, post});
-            // else commit(MUTATE.ADD_POSTS_TO_THREAD({threadId: post.threadId, posts: [post]}));
         },
         [ACT.DELETE_POST]({commit}, post) {
             commit(MUTATE.REMOVE_POST, post);
@@ -77,7 +67,7 @@ export default {
     mutations: {
         [MUTATE.ADD_POSTS_TO_THREAD](state, {threadId, posts}) {
           const thread = state.threads.find(thread => thread.id === threadId);
-          thread.posts = [...thread.posts, posts];
+          thread.posts = [...thread.posts, ...posts];
         },
         [MUTATE.ADD_THREADS](state, threads) {
             state.threads.push(...threads);
@@ -106,7 +96,6 @@ export default {
         [MUTATE.UPDATE_THREAD](state, {id, threadUpdate}) {
             const thread = state.threads.find(thread => thread.id === id);
             Object.assign(thread, threadUpdate);
-            console.log(thread); // TODO RM
         }
     },
 };

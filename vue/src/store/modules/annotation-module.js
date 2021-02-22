@@ -47,7 +47,7 @@ export default {
                 commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, annotationUpdate: annotation});
             } else commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
         },
-        [ACT.CREATE_ANNOTATION]({commit, dispatch, getters}, params) {
+        [ACT.CREATE_ANNOTATION]({commit, dispatch, getters}, params = {}) {
             const annotation = getters[GET.ANNOTATION](params.id) || getters[GET.NEW_ANNOTATION](params);
             dispatch(ACT.REPLACE_OR_ADD_ANNOTATION, annotation);
             if (annotation.type === AnnotationType.POST) {
@@ -55,15 +55,6 @@ export default {
                 commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, isPublic: annotation.body.isPublic});
                 if (!annotation.body.root.content) return;
             }
-
-            // Const annotation = getters[GET.NEW_ANNOTATION](params);
-            // if (!getters[GET.ANNOTATION](annotation.id)) commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
-            // if (annotation.type === AnnotationType.POST) {
-            //     const thread = getters[GET.THREAD](annotation.body.id);
-            //     if (!thread) commit(MUTATE.ADD_THREADS, [annotation.body]);
-            //     else commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, isPublic: thread.isPublic});
-            //     if (!annotation.body.root.content) return;
-            // }
 
             ajax.call([{
                 methodname: MoodleWSMethods.CREATE_ANNOTATION,

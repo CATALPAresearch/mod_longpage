@@ -27,6 +27,14 @@ export class Thread {
         return this.root.isPublic;
     }
 
+    get lastReply() {
+        return this.replies[this.replies.length -1];
+    }
+
+    get replyCount() {
+        return this.replies.length
+    }
+
     get replies() {
         return this.posts.slice(1);
     }

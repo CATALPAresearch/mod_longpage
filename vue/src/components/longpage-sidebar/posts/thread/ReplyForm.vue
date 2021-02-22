@@ -10,12 +10,7 @@
       />
     </div>
     <div class="col p-0">
-      <post-form
-        v-model:show="showPostForm"
-        :thread="thread"
-      />
       <input
-        v-if="!showPostForm"
         class="form-control"
         :placeholder="$t('responseForm.placeholder')"
         @focus="showPostForm = true"
@@ -27,23 +22,16 @@
 <script>
 import {GET} from '@/store/types';
 import {mapGetters} from 'vuex';
-import PostForm from '@/components/longpage-sidebar/posts/thread/PostForm';
 import {Thread} from '@/types/thread';
 import UserAvatar from '@/components/UserAvatar';
 
 export default {
   name: 'ReplyForm',
   components: {
-    PostForm,
     UserAvatar,
   },
   props: {
     thread: {type: Thread, required: true},
-  },
-  data() {
-    return {
-      showPostForm: false, // TODO: add post to postform and create new post and add it to thread
-    };
   },
   computed: {
     ...mapGetters([GET.USER]),

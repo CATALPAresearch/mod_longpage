@@ -7,9 +7,10 @@
       :post="thread.root"
       :thread="thread"
       class="card-body text-dark thread-root"
+      @toggle-replies="showReplies = !showReplies"
     />
     <div
-      v-if="thread.replies.length"
+      v-if="showReplies && thread.replies.length"
       class="card-footer"
     >
       <post
@@ -20,6 +21,7 @@
         :post="reply"
       />
       <reply-form
+        v-if="thread.lastReply.created"
         :thread-id="thread.id"
       />
     </div>
@@ -40,6 +42,11 @@ export default {
   },
   props: {
     thread: {type: Thread, required: true},
+  },
+  data() {
+    return {
+      showReplies: false,
+    };
   },
   computed: {
     id() {
