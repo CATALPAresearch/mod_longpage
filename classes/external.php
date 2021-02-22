@@ -149,11 +149,12 @@ class mod_page_external extends external_api {
 
         $transaction = $DB->start_delegated_transaction();
         $id = $DB->insert_record('page_annotations', array_merge(
-            pick_keys($annotation, ['pageid', 'ispublic', 'type']),
+            pick_keys($annotation, ['pageid', 'type']),
             [
                 'timecreated' => time(),
                 'timemodified' => time(),
                 'creatorid' => $USER->id,
+                'ispublic' => isset($annotation['ispublic']) && $annotation['ispublic'],
             ]
         ));
         self::create_annotation_target($annotation['target'], $id);

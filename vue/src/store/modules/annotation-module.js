@@ -63,8 +63,7 @@ export default {
                     methodname,
                     args: MappingService.mapCreateAnnotationArgs(annotationWithContext),
                     done: ({annotation}) => {
-                        console.log(annotation);
-                        // Commit(MUTATE.ADD_ANNOTATIONS, [MappingService[MoodleWSMethods.GET_ANNOTATIONS](annotation)]);
+                        commit(MUTATE.ADD_ANNOTATIONS, [MappingService.mapAnnotationResponse(annotation)]);
                         resolve(annotation.id);
                     },
                     fail: (e) => {
@@ -95,8 +94,8 @@ export default {
                         pageid: getters[GET.LONGPAGE_CONTEXT].pageId,
                     },
                 },
-                done: (response) => {
-                    commit(MUTATE.SET_ANNOTATIONS, MappingService.mapFetchAnnotationsResponse(response));
+                done: ({annotations}) => {
+                    commit(MUTATE.SET_ANNOTATIONS, MappingService.mapAnnotationsResponse(annotations));
                 },
                 fail: (e) => {
                     console.error(`"${methodname}" failed`, e);

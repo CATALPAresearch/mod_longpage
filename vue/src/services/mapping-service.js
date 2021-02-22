@@ -51,25 +51,14 @@ const MappingService = {
             annotation: {
                 ...omit(annotation, ['$orphan', 'id', 'timecreated', 'timemodified']),
                 target: {
-                    selectors: this._mapSelectorsResponse(annotation.target.selectors),
+                    selectors: this._mapSelectorsArgs(annotation.target.selectors),
                     styleClass: annotation.target.styleClass,
                 }
             },
         });
     },
-    mapFetchAnnotationsResponse(response) {
-        return response.annotations.map(this.mapAnnotationResponse.bind(this));
-    },
-    [MoodleWSMethods.CREATE_ANNOTATION](annotation) {
-        return deepLowerCaseKeys({
-            annotation: {
-                ...omit(annotation, ['$orphan', 'id', 'timecreated', 'timemodified']),
-                target: {
-                    selectors: this._mapSelectorsResponse(annotation.target.selectors),
-                    styleClass: annotation.target.styleClass,
-                }
-            },
-        });
+    mapAnnotationsResponse(annotations) {
+        return annotations.map(this.mapAnnotationResponse.bind(this));
     },
     [MoodleWSMethods.GET_ANNOTATIONS](annotations) {
         return annotations.map(annotation => this.mapAnnotationServerToClient(annotation));
@@ -83,9 +72,9 @@ const MappingService = {
             },
         });
     },
-    _mapSelectorsResponse(selectors) {
+    _mapSelectorsArgs(selectors) {
         return selectors.map(selector => {
-            const type = this._mapSelectorTypeResponse(selector.type);
+            const type = this._mapSelectorTypeArgs(selector.type);
             if (selector.type === SelectorType.TEXT_POSITION_SELECTOR) {
                 return {
                     endposition: selector.end,
