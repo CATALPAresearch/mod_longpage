@@ -149,7 +149,7 @@ class mod_page_external extends external_api {
 
         $transaction = $DB->start_delegated_transaction();
         $id = $DB->insert_record('page_annotations', array_merge(
-            pick_keys($annotation, ['pageid', 'public', 'type']),
+            pick_keys($annotation, ['pageid', 'ispublic', 'type']),
             [
                 'timecreated' => time(),
                 'timemodified' => time(),
@@ -180,7 +180,7 @@ class mod_page_external extends external_api {
                 'target' => self::create_annotation_target_parameters(),
                 'type' => new external_value(PARAM_INT),
                 'body' => new external_single_structure(self::create_thread_parameters_base(), '', VALUE_OPTIONAL),
-                'public' => new external_value(PARAM_BOOL),
+                'ispublic' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT, ),
             ]),
         ]);
     }
@@ -321,7 +321,7 @@ class mod_page_external extends external_api {
         return [
             'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
             'content' => new external_value(PARAM_TEXT, ''),
-            'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'ispublic' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
             'replyrequested' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
         ];
     }
@@ -536,34 +536,36 @@ class mod_page_external extends external_api {
 
         $annotations =
             isset($parameters['annotationid']) ?
-                self::get_annotations_by_annotation($parameters['annotationid']) :
-                self::get_annotations_by_page($parameters['pageid']);
+                self::get_annotations_by_annotation_id($parameters['annotationid']) :
+                self::get_annotations_by_page_id($parameters['pageid']);
 
         foreach ($annotations as $annotation) {
             $annotation->target = self::get_annotation_target($annotation->id);
-            $annotation->body = self::get_thread($annotation->id);
-            omit_keys($annotation, ['pageid', 'creatorid', 'public'], true);
+            if ($annotation->type === mod_page_annotation_type::POST) {
+                $annotation->body = self::get_thread($annotation->id);
+            }
+            omit_keys($annotation, ['pageid', 'creatorid', 'ispublic'], true);
         }
 
         return ['annotations' => array_values($annotations)];
     }
 
-    private static function get_annotations_by_annotation($annotationid) {
+    private static function get_annotations_by_annotation_id($annotationid) {
         global $DB, $USER;
 
         return $DB->get_records_select(
             'page_annotations',
-            'annotationid = ? AND (creatorid = ? OR public = 1)',
-            ['annotationid' => $annotationid, 'creatorid' => $USER->id],
+            'id = ? AND (creatorid = ? OR ispublic = 1)',
+            ['id' => $annotationid, 'creatorid' => $USER->id],
         );
     }
 
-    private static function get_annotations_by_page($pageid) {
+    private static function get_annotations_by_page_id($pageid) {
         global $DB, $USER;
 
         return $DB->get_records_select(
             'page_annotations',
-            'pageid = ? AND (creatorid = ? OR public = 1)',
+            'pageid = ? AND (creatorid = ? OR ispublic = 1)',
             ['pageid' => $pageid, 'creatorid' => $USER->id],
         );
     }
@@ -739,7 +741,7 @@ class mod_page_external extends external_api {
 
         $posts = $DB->get_records_select(
             'page_posts',
-            'threadid = ? AND (public = 1 OR creatorid = ?)',
+            'threadid = ? AND (ispublic = 1 OR creatorid = ?)',
             ['threadid' => $threadid, 'creatorid' => $USER->id],
             'timemodified'
         );
@@ -922,7 +924,7 @@ class mod_page_external extends external_api {
             'creatorid' => new external_value(PARAM_INT),
             'anonymous' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
             'content' => new external_value(PARAM_TEXT, ''),
-            'public' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'ispublic' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
         ];
     }
 
@@ -998,7 +1000,7 @@ class mod_page_external extends external_api {
         global $DB;
 
         $page = $DB->get_record('page', ['id' => $pageid], '*', MUST_EXIST);
-        $cm = get_course_and_cm_from_instance($page, 'page');
+        $cm = get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
         $modcontext = context_module::instance($cm->id);
         self::validate_context($modcontext);
     }
@@ -1067,7 +1069,7 @@ class mod_page_external extends external_api {
         $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
         $rootpost = $DB->get_record('page_posts', ['id' => $thread->rootid]);
         $postisthreadroot = $post->threadid === $thread->rootid;
-        if (($post->public && !$postupdate->public) || $post->content !== $postupdate->content) {
+        if (($post->ispublic && !$postupdate->ispublic) || $post->content !== $postupdate->content) {
             self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
         }
         if ($postupdate->markedasrequestedreply) {
