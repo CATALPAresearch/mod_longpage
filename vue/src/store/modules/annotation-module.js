@@ -93,7 +93,7 @@ export default {
                 done: (response) => {
                     const annotations = MappingService.mapResponseToAnnotations(response.annotations);
                     commit(MUTATE.SET_ANNOTATIONS, annotations);
-                    commit(MUTATE.SET_THREADS, annotations.map(a => a.body));
+                    commit(MUTATE.SET_THREADS, annotations.filter(a => Boolean(a.body)).map(a => a.body));
                 },
                 fail: (e) => {
                     console.error(`"${MoodleWSMethods.GET_ANNOTATIONS}" failed`, e);

@@ -64,12 +64,21 @@
 <script>
 import {ACT, GET} from '@/store/types';
 import {mapActions, mapGetters} from 'vuex';
-import {Annotation} from '@/types/annotation';
-import {AnnotationVisibility, AnnotationVisibilityData} from '@/config/constants';
 import autosize from 'autosize';
 import {invert, mapKeys} from 'lodash';
 import {Post} from '@/types/post';
-import {CreateThreadArgs} from '@/types/webservice_method_args/create-thread-args';
+
+export const AnnotationVisibility = Object.freeze({
+  PRIVATE: 0,
+  PUBLIC: 1,
+  ANONYMOUS: 2,
+});
+
+export const AnnotationVisibilityData = Object.freeze({
+  [AnnotationVisibility.PRIVATE]: {icon: ['fa', 'fa-lock']},
+  [AnnotationVisibility.PUBLIC]: {icon: ['fa', 'fa-users']},
+  [AnnotationVisibility.ANONYMOUS]: {icon: ['fa', 'fa-user-secret']},
+});
 
 const SaveActions = Object.freeze({PUBLISH: 'publish', PUBLISH_ANONYMOUSLY: 'publishAnonymously', SAVE: 'save'});
 
