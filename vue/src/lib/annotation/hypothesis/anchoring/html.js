@@ -2,7 +2,7 @@ import {RangeAnchor, TextPositionAnchor, TextQuoteAnchor} from './types';
 
 /**
  * @typedef {import("./types").AnyRangeType} AnyRangeType
- * @typedef {import('../../../../types/api').Selector} Selector
+ * @typedef {import('../../api').Selector} Selector
  */
 
 /**

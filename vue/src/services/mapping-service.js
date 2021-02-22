@@ -13,7 +13,7 @@ const SELECTOR_TYPE_ARGS_MAPPING = {
 const SELECTOR_TYPE_RESPONSE_MAPPING = invert(SELECTOR_TYPE_ARGS_MAPPING);
 
 const MappingService = {
-    mapAnnotationResponse(annotation) {
+    mapResponseToAnnotation(annotation) {
         return new Annotation({
             ...annotation,
             target: this.mapAnnotationTargetResponse(annotation.target),
@@ -46,19 +46,19 @@ const MappingService = {
             styleClass: target.styleclass,
         });
     },
-    mapCreateAnnotationArgs(annotation) {
+    mapAnnotationToArgs(createAnnotationArgs) {
         return deepLowerCaseKeys({
             annotation: {
-                ...omit(annotation, ['$orphan', 'id', 'timecreated', 'timemodified']),
+                ...createAnnotationArgs,
                 target: {
-                    selectors: this._mapSelectorsArgs(annotation.target.selectors),
-                    styleClass: annotation.target.styleClass,
+                    selectors: this._mapSelectorsArgs(createAnnotationArgs.target.selectors),
+                    styleClass: createAnnotationArgs.target.styleClass,
                 }
             },
         });
     },
-    mapAnnotationsResponse(annotations) {
-        return annotations.map(this.mapAnnotationResponse.bind(this));
+    mapResponseToAnnotations(annotations) {
+        return annotations.map(this.mapResponseToAnnotation.bind(this));
     },
     [MoodleWSMethods.GET_ANNOTATIONS](annotations) {
         return annotations.map(annotation => this.mapAnnotationServerToClient(annotation));

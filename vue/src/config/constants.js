@@ -3,23 +3,6 @@ export const AnnotationType = Object.freeze({
     POST: 1,
 });
 
-export const AnnotationTargetType = {
-    PAGE_SEGMENT: 0,
-    ANNOTATION: 1,
-};
-
-export const AnnotationVisibility = Object.freeze({
-    PRIVATE: 0,
-    PUBLIC: 1,
-    ANONYMOUS: 2,
-});
-
-export const AnnotationVisibilityData = Object.freeze({
-    [AnnotationVisibility.PRIVATE]: {icon: ['fa', 'fa-lock']},
-    [AnnotationVisibility.PUBLIC]: {icon: ['fa', 'fa-users']},
-    [AnnotationVisibility.ANONYMOUS]: {icon: ['fa', 'fa-user-secret']},
-});
-
 /**
  * The preferred gap between the end of the text selection and the
  * arrow position of the annotation toolbar popover.
@@ -39,7 +22,7 @@ export const HighlightingConfig = Object.freeze({
 
 export const LANGUAGE = 'de';
 
-export const ANNOTATION_CARD_CONTAINER_ID = 'annotation-card-container';
+export const THREAD_CONTAINER_ID = 'thread-container';
 export const LONGPAGE_APP_CONTAINER_ID = 'longpage-app-container';
 export const LONGPAGE_APP_ID = 'longpage-app';
 export const LONGPAGE_CONTENT_ID = 'longpage-content';
@@ -54,7 +37,7 @@ export const MoodleWSMethods = Object.freeze({
 });
 
 export const SidebarTabKeys = Object.freeze({
-    ANNOTATIONS: 'annotations',
+    POSTS: 'posts',
     TOC: 'toc'
 });
 

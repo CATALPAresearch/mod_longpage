@@ -3,7 +3,7 @@
  */
 
 /**
- * @typedef {import("./api").Selector} Selector
+ * @typedef {import("../lib/annotation/api").Selector} Selector
  * @typedef {import("./annotation-target").AnnotationTarget} AnnotationTarget
  */
 

@@ -3,7 +3,7 @@
     ref="annotationToolbarPopover"
     v-bind="annotationToolbarPopoverProps"
     class="longpage-highlights-always-on"
-    @note-clicked="startEditingAnnotation"
+    @post-clicked="createPost"
     @highlight-clicked="createHighlight"
   />
 </template>
@@ -17,7 +17,6 @@ import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-to
 import {SelectionListener} from '@/lib/annotation/selection-listener';
 import {describe} from '@/lib/annotation/hypothesis/anchoring/html';
 import {Anchoring} from '@/lib/annotation/anchoring';
-import {Annotation} from '@/types/annotation';
 import {mapActions, mapGetters, mapMutations} from 'vuex';
 import {setHighlightsVisible} from '@/lib/annotation/highlighting';
 import {addAnnotationSelectionListener} from '@/lib/annotation/highlight-selection-listener';
@@ -52,6 +51,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      annotations: GET.ANNOTATIONS,
+    }),
+    ...mapGetters([GET.NEW_ANNOTATION]),
     annotationToolbarPopover() {
       return this.$refs.annotationToolbarPopover;
     },
@@ -63,9 +66,6 @@ export default {
           this.annotationToolbarPopover.arrowHeight.bind(this.annotationToolbarPopover),
       );
     },
-    ...mapGetters({
-      annotations: GET.ANNOTATIONS,
-    }),
   },
   mounted() {
     this.$nextTick(() => {
@@ -89,29 +89,26 @@ export default {
   methods: {
     ...mapActions([ACT.CREATE_ANNOTATION, ACT.FILTER_ANNOTATIONS, ACT.START_EDITING_ANNOTATION]),
     ...mapMutations([MUTATE.RESET_ANNOTATION_FILTER, MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY]),
-    async startEditingAnnotation() {
+    createPost() {
       this[MUTATE.RESET_ANNOTATION_FILTER]();
-      this[MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY](SidebarTabKeys.ANNOTATIONS);
-      this[ACT.START_EDITING_ANNOTATION](await this.getAnnotation());
+      this[MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY](SidebarTabKeys.POSTS);
+      this.$nextTick(async() => {
+        this[ACT.CREATE_ANNOTATION]({
+          target: await this.getAnnotationTarget(), type: AnnotationType.POST,
+        });
+      });
     },
     async createHighlight(styleClass) {
-      await this.createAnnotation(styleClass, AnnotationType.HIGHLIGHT);
-    },
-    async createAnnotation(styleClass, type) {
-      this[ACT.CREATE_ANNOTATION](await this.getAnnotation(styleClass, type));
-    },
-    async getAnnotation(styleClass, type) {
-      return new Annotation({
-        target: await this.getAnnotationTarget(styleClass),
-        type,
+      this[ACT.CREATE_ANNOTATION]({
+        target: await this.getAnnotationTarget(styleClass), styleClass, type: AnnotationType.HIGHLIGHT,
       });
     },
     async getAnnotationTarget(styleClass) {
       const selectorsInSelectors = await Promise.all(this.selectedRanges.map(this.getSelectors));
-      return selectorsInSelectors.map(selectors => new AnnotationTarget({
-        selectors,
+      return new AnnotationTarget({
+        selectors: selectorsInSelectors[0],
         styleClass,
-      }))[0];
+      });
     },
     getSelectors(range) {
       return describe(this.targetRoot, range);

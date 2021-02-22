@@ -45,8 +45,8 @@
   },
   "sidebar": {
     "tabs": {
-      "annotations": {
-        "heading": "Annotationen"
+      "posts": {
+        "heading": "Anmerkungen"
       },
       "search": {
         "heading": "Volltextsuche"

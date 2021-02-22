@@ -1,23 +1,34 @@
 import {AnnotationType} from '@/config/constants';
+import {AnnotationTarget} from '@/types/annotation-target';
 
 export class Annotation {
+    static preliminaryIdsAssignedCount = 0;
+
+    static _getPreliminaryId() {
+        return `new-annotation-${Annotation.preliminaryIdsAssignedCount++}`
+    }
+
     constructor({
         $orphan = false,
-        id,
-        target,
-        timecreated,
-        timemodified,
+        id = Annotation._getPreliminaryId(),
+        body,
+        pageId,
+        target = new AnnotationTarget({}),
+        timeCreate,
+        timeModified,
         type = AnnotationType.HIGHLIGHT,
     }) {
         this.$orphan = $orphan;
         this.id = id;
+        this.body = body;
+        this.pageId = pageId;
         this.target = target;
-        this.timecreated = timecreated;
-        this.timemodified = timemodified;
+        this.timeCreate = timeCreate;
+        this.timeModified = timeModified;
         this.type = type;
     }
 
     get created() {
-        return typeof this.id === 'number';
+        return Boolean(this.timecreated);
     }
 }

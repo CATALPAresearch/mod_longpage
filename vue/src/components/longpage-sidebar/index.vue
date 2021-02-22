@@ -43,7 +43,7 @@
 <script>
 import {GET, MUTATE} from '@/store/types';
 import {mapGetters, mapMutations} from 'vuex';
-import AnnotationSidebar from '@/components/longpage-sidebar/AnnotationSidebar';
+import Posts from '@/components/longpage-sidebar/posts';
 import {debounce} from 'lodash';
 import {LONGPAGE_APP_ID, SidebarTabKeys} from '@/config/constants';
 import TableOfContents from '@/components/longpage-sidebar/TableOfContents';
@@ -89,7 +89,7 @@ $(window).on('mouseup', null, null, () => {
 export default {
   name: 'LongpageSidebar',
   components: {
-    [SidebarTabKeys.ANNOTATIONS]: AnnotationSidebar,
+    [SidebarTabKeys.POSTS]: Posts,
     [SidebarTabKeys.TOC]: TableOfContents,
   },
   data() {
@@ -97,7 +97,7 @@ export default {
       LONGPAGE_SIDEBAR_ID,
       LONGPAGE_SIDEBAR_TAB_CONTENT,
       tabs: [
-        {key: SidebarTabKeys.ANNOTATIONS, id: 'sidebar-tab-annotations', icon: ['fa', 'fa-comment']},
+        {key: SidebarTabKeys.POSTS, id: 'sidebar-tab-posts', icon: ['fa', 'fa-comment']},
         {key: SidebarTabKeys.TOC, id: 'sidebar-tab-table-of-contents', icon: ['fa', 'fa-list']},
       ],
     };

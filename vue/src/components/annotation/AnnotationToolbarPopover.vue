@@ -31,7 +31,7 @@
       >
         <i
           class="fa fa-comment"
-          @click.prevent="$emit('note-clicked')"
+          @click.prevent="$emit('post-clicked')"
         />
       </div>
     </div>
@@ -58,7 +58,7 @@
       visible: {type: Boolean, default: false},
       zIndex: {type: Number, default: 999999},
     },
-    emits: ['highlight-clicked', 'note-clicked'],
+    emits: ['highlight-clicked', 'post-clicked'],
     data() {
       return {
         ArrowDirection,

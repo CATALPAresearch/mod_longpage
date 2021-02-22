@@ -6,7 +6,7 @@
  * Based on Hypothesis client's modules (see https://github.com/hypothesis/client):
  *   - src/annotator/highlighter.js
  */
-import {HighlightingConfig} from "../../config/constants";
+import {HighlightingConfig} from '../../config/constants';
 
 /**
  * Subset of the `NormalizedRange` class defined in `range.js` that this
@@ -46,7 +46,7 @@ export function highlightRange(normedRange, cssClass) {
     prevNode = node;
   });
 
-  // Filter out text node spans that consist only of white space. This avoids
+  // PostFilter out text node spans that consist only of white space. This avoids
   // inserting highlight elements in places that can only contain a restricted
   // subset of nodes such as table rows and lists.
   textNodeSpans = textNodeSpans.filter(span =>

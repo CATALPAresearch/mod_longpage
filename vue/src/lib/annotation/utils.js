@@ -1,1 +1,1 @@
-export const getAnnotationCardId = annotationId => `annotation-${annotationId}`;
+export const getThreadElementId = threadId => `thread-${threadId}`;

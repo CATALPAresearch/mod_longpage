@@ -24,9 +24,9 @@ import {SerializedRange, sniff} from './range';
  * @typedef {import("./range").NormalizedRange} NormalizedRange}
  * @typedef {Range|BrowserRange|NormalizedRange|SerializedRange} AnyRangeType
  *
- * @typedef {import('../../../../types/api').RangeSelector} RangeSelector
- * @typedef {import('../../../../types/api').TextPositionSelector} TextPositionSelector
- * @typedef {import('../../../../types/api').TextQuoteSelector} TextQuoteSelector
+ * @typedef {import('../../api').RangeSelector} RangeSelector
+ * @typedef {import('../../api').TextPositionSelector} TextPositionSelector
+ * @typedef {import('../../api').TextQuoteSelector} TextQuoteSelector
  *
  * @typedef TextContentNode
  * @prop {string} textContent
