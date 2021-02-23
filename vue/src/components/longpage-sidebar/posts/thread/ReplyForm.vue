@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="thread.lastReply.created"
     class="row no-gutters align-items-center reply-form"
   >
     <div
@@ -13,15 +14,15 @@
       <input
         class="form-control"
         :placeholder="$t('responseForm.placeholder')"
-        @focus="showPostForm = true"
+        @focus="createPost"
       >
     </div>
   </div>
 </template>
 
 <script>
-import {GET} from '@/store/types';
-import {mapGetters} from 'vuex';
+import {ACT, GET} from '@/store/types';
+import {mapActions, mapGetters} from 'vuex';
 import {Thread} from '@/types/thread';
 import UserAvatar from '@/components/UserAvatar';
 
@@ -37,6 +38,12 @@ export default {
     ...mapGetters([GET.USER]),
     user() {
       return this[GET.USER]();
+    }
+  },
+  methods: {
+    ...mapActions([ACT.CREATE_POST]),
+    createPost() {
+      this[ACT.CREATE_POST]({threadId: this.thread.id});
     }
   },
 };
