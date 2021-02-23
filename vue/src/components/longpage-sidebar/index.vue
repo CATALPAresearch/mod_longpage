@@ -34,7 +34,9 @@
         :class="{active: tab.key === tabOpenedKey}"
         @click="toggleTab(tab.key)"
       >
-        <i :class="tab.icon" />
+        <i
+          :class="tab.icon"
+        />
       </a>
     </div>
   </div>
@@ -97,8 +99,8 @@ export default {
       LONGPAGE_SIDEBAR_ID,
       LONGPAGE_SIDEBAR_TAB_CONTENT,
       tabs: [
-        {key: SidebarTabKeys.POSTS, id: 'sidebar-tab-posts', icon: ['fa', 'fa-comment']},
-        {key: SidebarTabKeys.TOC, id: 'sidebar-tab-table-of-contents', icon: ['fa', 'fa-list']},
+        {key: SidebarTabKeys.POSTS, id: 'sidebar-tab-posts', icon: ['fa', 'fa-comment', 'fa-fw']},
+        {key: SidebarTabKeys.TOC, id: 'sidebar-tab-table-of-contents', icon: ['fa', 'fa-list', 'fa-fw']},
       ],
     };
   },

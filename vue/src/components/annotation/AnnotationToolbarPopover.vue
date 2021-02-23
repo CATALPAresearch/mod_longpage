@@ -30,7 +30,7 @@
         class="annotation-toolbar-item dot"
       >
         <i
-          class="fa fa-comment"
+          class="fa fa-comment-o fa-fw"
           @click.prevent="$emit('post-clicked')"
         />
       </div>
