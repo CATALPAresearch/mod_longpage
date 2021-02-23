@@ -27,6 +27,7 @@ export class Anchoring {
         this.anchoring = {anchor};
         this.root = root;
         this.anchors = anchors;
+        this.anchoringPromise = Promise.resolve();
         this.unsubscribe = store.subscribe((mutation, state) => {
             switch (mutation.type) {
                 case MUTATE.ADD_ANNOTATIONS:
@@ -40,7 +41,9 @@ export class Anchoring {
                     this.anchorAnnotations(mutation.payload);
                     break;
                 case MUTATE.UPDATE_ANNOTATION: {
-                    const annotation = state.AnnotationModule.annotations.find(a => a.id === mutation.payload.annotationUpdate.id);
+                    const annotation = state.AnnotationModule.annotations.find(
+                        a => a.id === mutation.payload.id || a.id === mutation.payload.annotationUpdate.id
+                    );
                     this.detachAnnotation(annotation);
                     this.anchorAnnotation(annotation);
                     break;
@@ -49,17 +52,10 @@ export class Anchoring {
         });
     }
 
-    detachAnnotations(annotations) {
-        annotations.forEach(annotation => {
-            this.detachAnnotation(annotation);
+    _chainToAnchoringPromise(onFulfilled) {
+        this.anchoringPromise = this.anchoringPromise.then(onFulfilled).then(() => {
+            this.sync();
         });
-    }
-
-    anchorAnnotations(annotations) {
-        annotations.reduce(
-            (anchorPromises, annotation) => anchorPromises.then(() => this.anchorAnnotation(annotation)),
-            Promise.resolve(),
-        );
     }
 
     /**
@@ -70,146 +66,150 @@ export class Anchoring {
      * @return {Promise<Anchor[]>}
      */
     anchorAnnotation(annotation) {
-        let anchor;
+        this._chainToAnchoringPromise(() => {
+            let anchor;
 
-        // Anchors for all annotations are in the `anchors` instance property. These
-        // are anchors for this annotation only. After all the targets have been
-        // processed these will be appended to the list of anchors known to the
-        // instance. Anchors hold an annotation, a target of that annotation, a
-        // document range for that target and an Array of highlights.
-        const anchors = [];
+            // Anchors for all annotations are in the `anchors` instance property. These
+            // are anchors for this annotation only. After all the targets have been
+            // processed these will be appended to the list of anchors known to the
+            // instance. Anchors hold an annotation, a target of that annotation, a
+            // document range for that target and an Array of highlights.
+            const anchors = [];
 
-        // The targets that are already anchored. This function consults this to
-        // determine which targets can be left alone.
-        const anchoredTargets = [];
+            // The targets that are already anchored. This function consults this to
+            // determine which targets can be left alone.
+            const anchoredTargets = [];
 
-        // These are the highlights for existing anchors of this annotation with
-        // targets that have since been removed from the annotation. These will
-        // be removed by this function.
-        let deadHighlights = [];
+            // These are the highlights for existing anchors of this annotation with
+            // targets that have since been removed from the annotation. These will
+            // be removed by this function.
+            let deadHighlights = [];
 
-        /**
-         * Locate the region of the current document that the annotation refers to.
-         *
-         * @param {Target} target
-         */
-        const locate = target => {
-            // Check that the anchor has a TextQuoteSelector -- without a
-            // TextQuoteSelector we have no basis on which to verify that we have
-            // reanchored correctly and so we shouldn't even try.
-            //
-            // Returning an anchor without a range will result in this annotation being
-            // treated as an orphan (assuming no other targets anchor).
-            if (
-                !target.selectors ||
-                !target.selectors.some(s => s.type === 'TextQuoteSelector')
-            ) {
-                return Promise.resolve({annotation, target});
-            }
+            /**
+             * Locate the region of the current document that the annotation refers to.
+             *
+             * @param {Target} target
+             */
+            const locate = target => {
+                // Check that the anchor has a TextQuoteSelector -- without a
+                // TextQuoteSelector we have no basis on which to verify that we have
+                // reanchored correctly and so we shouldn't even try.
+                //
+                // Returning an anchor without a range will result in this annotation being
+                // treated as an orphan (assuming no other targets anchor).
+                if (
+                    !target.selectors ||
+                    !target.selectors.some(s => s.type === 'TextQuoteSelector')
+                ) {
+                    return Promise.resolve({annotation, target});
+                }
 
-            // Find a target using the anchoring module.
-            return this.anchoring.anchor(this.root, target.selectors)
-                .then(range => ({
-                    annotation,
-                    target,
-                    range,
-                }))
-                .catch(() => ({
-                    annotation,
-                    target,
-                }));
-        };
+                // Find a target using the anchoring module.
+                return this.anchoring.anchor(this.root, target.selectors)
+                    .then(range => ({
+                        annotation,
+                        target,
+                        range,
+                    }))
+                    .catch(() => ({
+                        annotation,
+                        target,
+                    }));
+            };
 
-        /**
-         * Highlight the range for an anchor.
-         *
-         * @param {Anchor} anchor
-         */
-        const highlight = anchor => {
-            if (!anchor.range) {
+            /**
+             * Highlight the range for an anchor.
+             *
+             * @param {Anchor} anchor
+             */
+            const highlight = anchor => {
+                if (!anchor.range) {
+                    return anchor;
+                }
+                const range = sniff(anchor.range);
+                const normedRange = range.normalize(this.root);
+                const highlights = /** @type {AnnotationHighlight[]} */ (highlightRange(
+                    normedRange,
+                    anchor.target.styleClass
+                ));
+                // You need to put some information on the highlight so when it is clicked later on we can identify the annotation
+                highlights.forEach(h => {
+                    h._annotation = anchor.annotation;
+                });
+                anchor.highlights = highlights;
                 return anchor;
-            }
-            const range = sniff(anchor.range);
-            const normedRange = range.normalize(this.root);
-            const highlights = /** @type {AnnotationHighlight[]} */ (highlightRange(
-                normedRange,
-                anchor.target.styleClass
-            ));
-            // You need to put some information on the highlight so when it is clicked later on we can identify the annotation
-            highlights.forEach(h => {
-                h._annotation = anchor.annotation;
-            });
-            anchor.highlights = highlights;
-            return anchor;
-        };
+            };
 
-        function getAnnotationsAnchoringState(anchors) {
-            let hasAnchorableTargets = false;
-            let hasAnchoredTargets = false;
-            for (let anchor of anchors) {
-                if (anchor.target.selectors) {
-                    hasAnchorableTargets = true;
-                    if (anchor.range) {
-                        hasAnchoredTargets = true;
-                        break;
+            const getAnnotationsAnchoringState = anchors => {
+                let hasAnchorableTargets = false;
+                let hasAnchoredTargets = false;
+                for (let anchor of anchors) {
+                    if (anchor.target.selectors) {
+                        hasAnchorableTargets = true;
+                        if (anchor.range) {
+                            hasAnchoredTargets = true;
+                            break;
+                        }
                     }
                 }
-            }
-            return {hasAnchorableTargets, hasAnchoredTargets};
-        }
+                return {hasAnchorableTargets, hasAnchoredTargets};
+            };
 
-        const markOrphans = anchors => {
-            // An annotation is considered to be an orphan if it has at least one
-            // target with selectors, and all targets with selectors failed to anchor
-            // (i.e. we didn't find it in the page and thus it has no range).
-            let {hasAnchorableTargets, hasAnchoredTargets} = getAnnotationsAnchoringState(anchors);
-            annotation.$orphan = hasAnchorableTargets && !hasAnchoredTargets;
-            return anchors;
-        };
+            const markOrphans = anchors => {
+                // An annotation is considered to be an orphan if it has at least one
+                // target with selectors, and all targets with selectors failed to anchor
+                // (i.e. we didn't find it in the page and thus it has no range).
+                let {hasAnchorableTargets, hasAnchoredTargets} = getAnnotationsAnchoringState(anchors);
+                annotation.$orphan = hasAnchorableTargets && !hasAnchoredTargets;
+                return anchors;
+            };
 
-        /**
-         * Inform other parts of the application about
-         * the results of anchoring.
-         *
-         * @param {Anchor[]} anchors
-         */
-        const sync = anchors => {
-            // Add the anchors for this annotation to instance storage.
-            this.anchors = this.anchors.concat(anchors);
-            emitAnchorsUpdate(this.anchors);
-            return anchors;
-        };
-
-        // Remove all the anchors for this annotation from the instance storage.
-        for (anchor of this.anchors.splice(0, this.anchors.length)) {
-            if (anchor.annotation === annotation) {
-                // Anchors are valid as long as they still have a range and their target
-                // is still in the list of targets for this annotation.
-                if (anchor.range && annotation.target === anchor.target) {
-                    anchors.push(anchor);
-                    anchoredTargets.push(anchor.target);
-                } else if (anchor.highlights) {
-                    // These highlights are no longer valid and should be removed.
-                    deadHighlights = deadHighlights.concat(anchor.highlights);
-                    delete anchor.highlights;
-                    delete anchor.range;
+            // Remove all the anchors for this annotation from the instance storage.
+            for (anchor of this.anchors.splice(0, this.anchors.length)) {
+                if (anchor.annotation === annotation) {
+                    // Anchors are valid as long as they still have a range and their target
+                    // is still in the list of targets for this annotation.
+                    if (anchor.range && annotation.target === anchor.target) {
+                        anchors.push(anchor);
+                        anchoredTargets.push(anchor.target);
+                    } else if (anchor.highlights) {
+                        // These highlights are no longer valid and should be removed.
+                        deadHighlights = deadHighlights.concat(anchor.highlights);
+                        delete anchor.highlights;
+                        delete anchor.range;
+                    }
+                } else {
+                    // These can be ignored, so push them back onto the new list.
+                    this.anchors.push(anchor);
                 }
-            } else {
-                // These can be ignored, so push them back onto the new list.
-                this.anchors.push(anchor);
             }
-        }
 
-        // Remove all the highlights that have no corresponding target anymore.
-        requestAnimationFrame(() => removeHighlights(deadHighlights));
+            // Remove all the highlights that have no corresponding target anymore.
+            requestAnimationFrame(() => removeHighlights(deadHighlights));
 
-        // Actual work going on
-        // Anchor the target of this annotation that is not anchored already.
-        if (!anchoredTargets.includes(annotation.target)) {
-            anchor = locate(annotation.target).then(highlight);
-            anchors.push(anchor);
-        }
-        return Promise.all(anchors).then(markOrphans).then(sync);
+            // Actual work going on
+            // Anchor the target of this annotation that is not anchored already.
+            if (!anchoredTargets.includes(annotation.target)) {
+                anchor = locate(annotation.target).then(highlight);
+                anchors.push(anchor);
+            }
+            return Promise.all(anchors).then(markOrphans).then(anchors => {
+                this.anchors.push(...anchors);
+            });
+        });
+    }
+
+    anchorAnnotations(annotations) {
+        annotations.forEach(a => {
+            this.anchorAnnotation(a);
+        });
+    }
+
+    detachAllAnnotations() {
+        this._chainToAnchoringPromise(() => {
+            this.removeHighlights(this.getAllHighlights());
+            this.anchors = [];
+        });
     }
 
     /**
@@ -218,17 +218,21 @@ export class Anchoring {
      * @param {Annotation} annotation
      */
     detachAnnotation(annotation) {
-        const anchorsOfAnnotation = remove(this.anchors, anchor => anchor.annotation.id === annotation.id);
-        emitter.emit('anchors-updated', this.anchors);
-        const highlightsOfAnnotation = anchorsOfAnnotation.reduce(
-            (highlights, anchor) => highlights.concat(anchor.highlights || []), [],
-        );
-        this.removeHighlights(highlightsOfAnnotation);
+        this._chainToAnchoringPromise(() => {
+            const anchorsOfAnnotation = remove(this.anchors, anchor => {
+                return anchor.annotation.id === annotation.id;
+            });
+            const highlightsOfAnnotation = anchorsOfAnnotation.reduce(
+                (highlights, anchor) => highlights.concat(anchor.highlights || []), [],
+            );
+            this.removeHighlights(highlightsOfAnnotation);
+        });
     }
 
-    detachAllAnnotations() {
-        this.removeHighlights(this.getAllHighlights());
-        this.anchors = [];
+    detachAnnotations(annotations) {
+        annotations.forEach(annotation => {
+            this.detachAnnotation(annotation);
+        });
     }
 
     getAllHighlights() {
@@ -242,5 +246,13 @@ export class Anchoring {
         requestAnimationFrame(() => {
             removeHighlights(highlights);
         });
+    }
+
+    /**
+     * Inform other parts of the application about
+     * the results of anchoring.
+     */
+    sync() {
+        emitAnchorsUpdate([...this.anchors]);
     }
 }

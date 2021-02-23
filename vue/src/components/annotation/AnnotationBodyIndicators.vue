@@ -10,14 +10,10 @@
 </template>
 
 <script>
-import AnnotationBodyIndicator from '@/components/annotation/AnnotationBodyIndicator';
-import emitter from 'tiny-emitter/instance';
-import {LONGPAGE_CONTENT_ID} from '@/config/constants';
-import {MUTATE} from '@/store/types';
-import {ResizeObserver} from '@juggle/resize-observer';
-
-  // TODO: Recalculate only new, updated or deleted indicators on update of annotations or anchors
-  //         (currently all; key can be removed/simplified then)
+  import AnnotationBodyIndicator from '@/components/annotation/AnnotationBodyIndicator';
+  import emitter from 'tiny-emitter/instance';
+  import {LONGPAGE_CONTENT_ID} from '@/config/constants';
+  import {ResizeObserver} from '@juggle/resize-observer';
 
   export default {
     name: 'AnnotationBodyIndicators',
@@ -33,9 +29,8 @@ import {ResizeObserver} from '@juggle/resize-observer';
     },
     mounted() {
       this.parentElement = this.$refs.annotationBodyIndicators;
-      this.updateOnResize(document.getElementById(LONGPAGE_CONTENT_ID));
       this.updateOnAnchorUpdates();
-      this.updateOnAnnotationUpdates();
+      this.updateOnResize(document.getElementById(LONGPAGE_CONTENT_ID));
     },
     methods: {
       getIndicatorTop(highlights, offset = 0) {
@@ -48,7 +43,7 @@ import {ResizeObserver} from '@juggle/resize-observer';
       },
       updateIndicatorTopToAnnotationsMap(anchors, map = {}) {
         return anchors
-          .filter(anchor => Boolean(anchor.annotation.hasBody))
+          .filter(anchor => Boolean(anchor.annotation.body))
           .map(anchor => [this.getIndicatorTop(anchor.highlights, this.getTopOffset()), anchor.annotation])
           .reduce((result, [top, annotation]) => {
             result[top] = result[top] || [];
@@ -60,14 +55,6 @@ import {ResizeObserver} from '@juggle/resize-observer';
         emitter.on('anchors-updated', anchors => {
           this.anchors = anchors;
           this.indicatorTopToAnnotationsMap = this.updateIndicatorTopToAnnotationsMap(anchors);
-        });
-      },
-      updateOnAnnotationUpdates() {
-        this.$store.subscribe(mutation => {
-          switch (mutation.type) {
-            case MUTATE.UPDATE_ANNOTATION:
-              this.indicatorTopToAnnotationsMap = this.updateIndicatorTopToAnnotationsMap(this.anchors);
-          }
         });
       },
       updateOnResize(container) {
