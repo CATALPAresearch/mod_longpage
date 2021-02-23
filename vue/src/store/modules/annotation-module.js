@@ -61,14 +61,14 @@ export default {
                 args: MappingService.mapAnnotationToArgs(annotation),
                 done: (response) => {
                     const annotationUpdate = MappingService.mapResponseToAnnotation(response.annotation);
-                    commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, annotationUpdate});
                     if (annotationUpdate.type === AnnotationType.POST) {
                         commit(MUTATE.UPDATE_THREAD, {id: annotation.body.id, threadUpdate: annotationUpdate.body});
                     }
+                    commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, annotationUpdate});
                 },
                 fail: (e) => {
-                    commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
                     commit(MUTATE.REMOVE_THREADS, [annotation.body]);
+                    commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
                     console.error(`"${MoodleWSMethods.CREATE_ANNOTATION}" failed`, e);
                 }
             }]);

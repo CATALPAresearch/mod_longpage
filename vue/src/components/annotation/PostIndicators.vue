@@ -1,6 +1,6 @@
 <template>
-  <div ref="annotationBodyIndicators">
-    <annotation-body-indicator
+  <div ref="postIndicators">
+    <post-indicator
       v-for="(annotations, top) in indicatorTopToAnnotationsMap"
       :key="`${top}-${annotations.length}-${annotations.reduce((sum, annotation) => sum + (annotation.hasBody ? 1 : 0))}`"
       :annotations="annotations"
@@ -10,15 +10,15 @@
 </template>
 
 <script>
-  import AnnotationBodyIndicator from '@/components/annotation/AnnotationBodyIndicator';
+  import PostIndicator from '@/components/annotation/PostIndicator';
   import emitter from 'tiny-emitter/instance';
   import {LONGPAGE_CONTENT_ID} from '@/config/constants';
   import {ResizeObserver} from '@juggle/resize-observer';
 
   export default {
-    name: 'AnnotationBodyIndicators',
+    name: 'PostIndicators',
     components: {
-      AnnotationBodyIndicator
+      PostIndicator
     },
     data() {
       return {
@@ -28,7 +28,7 @@
       };
     },
     mounted() {
-      this.parentElement = this.$refs.annotationBodyIndicators;
+      this.parentElement = this.$refs.postIndicators;
       this.updateOnAnchorUpdates();
       this.updateOnResize(document.getElementById(LONGPAGE_CONTENT_ID));
     },

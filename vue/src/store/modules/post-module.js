@@ -3,7 +3,7 @@ import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
-import {AnnotationType, MoodleWSMethods} from '@/config/constants';
+import {MoodleWSMethods} from '@/config/constants';
 import MappingService from '@/services/mapping-service';
 
 export default {

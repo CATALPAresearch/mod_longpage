@@ -18,7 +18,7 @@
         class="col col-auto p-0 mx-1"
         style="width: 1.5em;"
       >
-        <note-indicators />
+        <post-indicators />
       </div>
     </div>
     <longpage-sidebar class="col-auto" />
@@ -28,7 +28,7 @@
 <script>
 import {ACT, GET} from './store/types';
 import {mapActions, mapGetters} from 'vuex';
-import AnnotationBodyIndicators from '@/components/annotation/AnnotationBodyIndicators';
+import PostIndicators from '@/components/annotation/PostIndicators';
 import Log from './lib/Logging';
 import {LONGPAGE_CONTENT_ID} from '@/config/constants';
 import LongpageSidebar from '@/components/longpage-sidebar';
@@ -39,7 +39,7 @@ import Utils from './util/utils';
 export default {
     name: 'App',
     components: {
-      NoteIndicators: AnnotationBodyIndicators,
+      PostIndicators,
       LongpageSidebar,
     },
     props: {

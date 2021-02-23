@@ -27,7 +27,7 @@
   import {toPx} from '@/util/style';
 
   export default {
-    name: 'AnnotationBodyIndicator',
+    name: 'PostIndicator',
     props: {
       annotations: {type: Array, default: () => []},
       top: {type: Number},
