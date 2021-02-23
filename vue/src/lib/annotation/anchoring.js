@@ -27,24 +27,31 @@ export class Anchoring {
         this.anchoring = {anchor};
         this.root = root;
         this.anchors = anchors;
-        this.unsubscribe = store.subscribe((mutation) => {
+        this.unsubscribe = store.subscribe((mutation, state) => {
             switch (mutation.type) {
                 case MUTATE.ADD_ANNOTATIONS:
                     this.anchorAnnotations(mutation.payload);
                     break;
-
                 case MUTATE.REMOVE_ANNOTATIONS:
-                    mutation.payload.forEach(annotation => {
-                         this.detachAnnotation(annotation);
-                    });
+                    this.detachAnnotations(mutation.payload);
                     break;
                 case MUTATE.SET_ANNOTATIONS:
                     this.detachAllAnnotations();
                     this.anchorAnnotations(mutation.payload);
                     break;
-                // TODO: Add all annotation manipulation methods
-
+                case MUTATE.UPDATE_ANNOTATION: {
+                    const annotation = state.AnnotationModule.annotations.find(a => a.id === mutation.payload.annotationUpdate.id);
+                    this.detachAnnotation(annotation);
+                    this.anchorAnnotation(annotation);
+                    break;
+                }
             }
+        });
+    }
+
+    detachAnnotations(annotations) {
+        annotations.forEach(annotation => {
+            this.detachAnnotation(annotation);
         });
     }
 
