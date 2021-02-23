@@ -33,6 +33,6 @@ export class Annotation {
     }
 
     get created() {
-        return Boolean(this.timecreated);
+        return Boolean(this.timeCreated);
     }
 }

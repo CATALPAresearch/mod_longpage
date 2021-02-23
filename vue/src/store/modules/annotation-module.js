@@ -74,15 +74,19 @@ export default {
             }]);
         },
         [ACT.DELETE_ANNOTATION]({commit}, annotation) {
-            const methodname = MoodleWSMethods.DELETE_ANNOTATION;
+            if (!annotation.created) return;
+
+            commit(MUTATE.REMOVE_THREADS, [annotation.body]);
+            commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
+
             ajax.call([{
-                methodname,
+                methodname: MoodleWSMethods.DELETE_ANNOTATION,
                 args: {id: annotation.id},
-                done: () => {
-                    commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
-                },
+                done: () => {},
                 fail: (e) => {
-                    console.error(`"${methodname}" failed`, e);
+                    commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
+                    commit(MUTATE.ADD_THREADS, [annotation.body]);
+                    console.error(`"${MoodleWSMethods.DELETE_ANNOTATION}" failed`, e);
                 }
             }]);
         },

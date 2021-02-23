@@ -210,11 +210,30 @@ class mod_page_external extends external_api {
         return new external_single_structure(self::annotation_target_parameters_base());
     }
 
+    /**
+     * @param $post
+     */
+    private static function delete_post_from_db($id): void {
+        global $DB;
+
+        $DB->delete_records('page_post_likes', ['postid' => $id]);
+        $DB->delete_records('page_post_readings', ['postid' => $id]);
+        $DB->delete_records('page_post_marks', ['postid' => $id]);
+        $DB->delete_records('page_posts', ['id' => $id]);
+    }
+
     private static function get_annotation_by_post($post) {
         global $DB;
 
         $thread = $DB->get_record('page_threads', ['id' => $post['threadid']]);
         return $DB->get_record('page_annotations', ['id' => $thread->annotationid]);
+    }
+
+    private static function get_annotation_by_post_id($id) {
+        global $DB;
+
+        $post = $DB->get_record('page_posts', ['id' => $id]);
+        return self::get_annotation_by_post($post);
     }
 
     public static function create_post($post) {
@@ -363,13 +382,41 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    private static function delete_annotation($id): void {
+    private static function delete_thread($thread) {
         global $DB;
+
+        self::delete_post_from_db(self::get_posts($thread->id));
+        $DB->delete_records('page_thread_subscriptions', ['threadid' => $thread->id]);
+        $DB->delete_records('page_threads', ['id' => $thread->id]);
+    }
+
+    public static function delete_annotation($id): void {
+        global $DB;
+
+        self::validate_parameters(self::delete_annotation_parameters(), ['id' => $id]);
+        $annotation = $DB->get_record('page_annotations', ['id' => $id]);
+        self::validate_cm_context($annotation->pageid);
+
+        // TODO validate that user can delete annotation and that annotation can be deleted (not part of a thread that others depend on), can be merged with validation of highlight & post
 
         $transaction = $DB->start_delegated_transaction();
         self::delete_annotation_target($id);
+        if ($annotation->type == mod_page_annotation_type::POST) {
+            $thread = $DB->get_record('page_threads', ['annotationid' => $annotation->id]);
+            self::delete_thread($thread);
+        }
         $DB->delete_records('page_annotations', ['id' => $id]);
         $transaction->allow_commit();
+    }
+
+    public static function delete_annotation_parameters() {
+        return new external_function_parameters([
+            'id' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function delete_annotation_returns() {
+        return null;
     }
 
     private static function delete_annotation_target($annotationid): void {
@@ -400,28 +447,22 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    public static function delete_post($parameters) {
+    public static function delete_post($id) {
         global $DB;
 
-        $transaction = $DB->start_delegated_transaction();
+        self::validate_parameters(self::delete_post_parameters(), ['id' => $id]);
+        $annotation = self::get_annotation_by_post_id($id);
+        self::validate_cm_context($annotation->pageid);
 
-        $post = $DB->get_record('page_posts', $parameters);
+        $post = $DB->get_record('page_posts', ['id' => $id]);
+        // TODO Move getting the thread into validation
         $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
         $postisthreadroot = $post->threadid === $thread->rootid;
 
         self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
 
-        $DB->delete_records('page_post_likes', ['postid' => $post->postid]);
-        $DB->delete_records('page_post_readings', ['postid' => $post->postid]);
-        $DB->delete_records('page_post_marks', ['postid' => $post->postid]);
-        $DB->delete_records('page_posts', ['id' => $post->id]);
-
-        if ($postisthreadroot) {
-            $DB->delete_records('page_thread_subscriptions', ['threadid' => $thread->id]);
-            $DB->delete_records('page_threads', ['id' => $thread->id]);
-            self::delete_annotation($thread->annotationid);
-        }
-
+        $transaction = $DB->start_delegated_transaction();
+        self::delete_post_from_db($id);
         $transaction->allow_commit();
     }
 
@@ -1031,8 +1072,9 @@ class mod_page_external extends external_api {
     }
 
     private static function validate_post_can_be_deleted_and_udpated($post, $postisthreadroot) {
-        global $DB, $USER;
+        global $DB;
 
+        // TODO: validate that post is not root of thread
         // TODO: markasrequestedreply
         //if ($postIntern->creatorid !== $USER->id) {
         //    throw new invalid_parameter_exception('Post can only be deleted or updated by user that created it.');
@@ -1060,16 +1102,17 @@ class mod_page_external extends external_api {
                 It cannot be deleted/updated since others might depend on it.');
         }
 
-        $threadhassubscription = $DB->record_exists_select(
+        // TODO: Validation
+/*        $threadhassubscription = $DB->record_exists_select(
             'page_thread_subscriptions',
             'threadid = ? AND userid != ?',
             ['threadid' => $post->threadid, 'userid' => $post->creatorid]
         );
         if ($threadhassubscription && $postisthreadroot) {
-            throw new invalid_parameter_exception('Thread that postIntern belongs to is subscribed to by others. 
-                The postIntern cannot be deleted/updated since it is the root of the thread and others might depend on the thread and, 
+            throw new invalid_parameter_exception('Thread that postIntern belongs to is subscribed to by others.
+                The postIntern cannot be deleted/updated since it is the root of the thread and others might depend on the thread and,
                 therefore, the postIntern.');
-        }
+        }*/
     }
 
     private static function validate_post_can_be_updated($postupdate) {

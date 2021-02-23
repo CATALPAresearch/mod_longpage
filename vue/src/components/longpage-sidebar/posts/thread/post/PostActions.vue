@@ -150,7 +150,7 @@ export default {
       return [
         {iconClasses: ['fa', 'fa-eye-slash', 'fa-fw'], handler: () => {}, text: this.$i18n.t('post.action.markAsUnread')},
         {iconClasses: ['fa', 'fa-pencil', 'fa-fw'], handler: this.openEditor, text: this.$i18n.t('post.action.edit')},
-        {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deleteAnnotation, text: this.$i18n.t('post.action.delete')},
+        {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deletePost, text: this.$i18n.t('post.action.delete')},
       ];
     },
     postIntern() {
@@ -163,10 +163,10 @@ export default {
   methods: {
     ...mapActions([
       ACT.CREATE_POST,
-      ACT.DELETE_ANNOTATION,
+      ACT.DELETE_POST,
     ]),
-    deleteAnnotation() {
-      this[ACT.DELETE_ANNOTATION](this.annotation);
+    deletePost() {
+      this[ACT.DELETE_POST](this.post);
     },
     openEditor() {
       this.$emit('edit-clicked');

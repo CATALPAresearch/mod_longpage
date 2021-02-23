@@ -73,7 +73,27 @@ export default {
                 }
             }]);
         },
-        [ACT.DELETE_POST]({commit}, post) {
+        [ACT.DELETE_POST]({commit, dispatch, getters}, post) {
+            if (!post.created) return;
+
+            const thread = getters[GET.THREAD](post.threadId);
+            const postIsThreadRoot = thread.root.id === post.id;
+            if (postIsThreadRoot) {
+                dispatch(ACT.DELETE_ANNOTATION, getters[GET.ANNOTATION](thread.annotationId));
+                return;
+            }
+
+            commit(MUTATE.REMOVE_POSTS_FROM_THREAD, {threadId: thread.id, posts: [post]});
+
+            ajax.call([{
+                methodname: MoodleWSMethods.DELETE_POST,
+                args: {id: post.id},
+                done: () => {},
+                fail: (e) => {
+                    commit(MUTATE.ADD_POSTS_TO_THREAD, {threadId: thread.id, posts: [post]});
+                    console.error(`"${MoodleWSMethods.DELETE_POST}" failed`, e);
+                }
+            }]);
         },
         [ACT.UPDATE_POST]({commit}, postUpdate) {
         },

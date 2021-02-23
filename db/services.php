@@ -37,6 +37,15 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
+    'mod_page_delete_annotation' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'delete_annotation',
+        'description'   => 'Delete annotation',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
+
     'mod_page_get_annotations' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_annotations',

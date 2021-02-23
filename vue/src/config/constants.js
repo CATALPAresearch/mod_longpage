@@ -32,6 +32,7 @@ export const MoodleWSMethods = Object.freeze({
     CREATE_ANNOTATION: 'mod_page_create_annotation',
     CREATE_POST: 'mod_page_create_post',
     DELETE_ANNOTATION: 'mod_page_delete_annotation',
+    DELETE_POST: 'mod_page_delete_post',
     GET_ANNOTATIONS: 'mod_page_get_annotations',
     GET_ENROLLED_USERS: 'core_course_get_enrolled_users_by_cmid',
     UPDATE_ANNOTATION: 'mod_page_update_annotation',
