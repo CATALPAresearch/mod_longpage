@@ -116,12 +116,15 @@ export default {
     ]),
     ...mapMutations([
       MUTATE.REMOVE_ANNOTATIONS,
+      MUTATE.REMOVE_POSTS_FROM_THREAD,
       MUTATE.REMOVE_THREADS,
     ]),
     cancel() {
-      if (!this.post.created) {
+      if (!this.thread.created) {
         this[MUTATE.REMOVE_THREADS]([this.thread]);
         this[MUTATE.REMOVE_ANNOTATIONS]([this[GET.ANNOTATION](this.thread.annotationId)]);
+      } else if (!this.post.created) {
+        this[MUTATE.REMOVE_POSTS_FROM_THREAD]({threadId: this.thread.id, posts: [this.post]});
       }
       this.closeForm();
     },
