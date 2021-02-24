@@ -119,8 +119,10 @@ export default {
       MUTATE.REMOVE_THREADS,
     ]),
     cancel() {
-      this[MUTATE.REMOVE_THREADS]([this.thread]);
-      this[MUTATE.REMOVE_ANNOTATIONS]([this[GET.ANNOTATION](this.thread.annotationId)]);
+      if (!this.post.created) {
+        this[MUTATE.REMOVE_THREADS]([this.thread]);
+        this[MUTATE.REMOVE_ANNOTATIONS]([this[GET.ANNOTATION](this.thread.annotationId)]);
+      }
       this.closeForm();
     },
     closeForm() {
