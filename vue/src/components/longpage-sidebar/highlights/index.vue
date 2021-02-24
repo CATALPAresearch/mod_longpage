@@ -12,7 +12,6 @@
       <hr class="my-0 mx-3">
       <div
         v-if="highlights.length"
-        :id="THREAD_CONTAINER_ID"
         class="p-3 flex-shrink-1 flex-grow-1 overflow-y-auto overflow-x-hidden"
       >
         <div
@@ -24,7 +23,10 @@
             :annotation-target="highlight.target"
             class="mx-1"
           />
-          <div class="text-muted text-small mt-1 mx-1">
+          <div
+            v-if="highlight.created"
+            class="text-muted text-small mt-1 mx-1"
+          >
             <date-times
               :time-created="highlight.timeCreated"
               :time-modified="highlight.timeModified"
