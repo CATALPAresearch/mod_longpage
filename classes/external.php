@@ -225,7 +225,7 @@ class mod_page_external extends external_api {
     private static function get_annotation_by_post($post) {
         global $DB;
 
-        $thread = $DB->get_record('page_threads', ['id' => $post['threadid']]);
+        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
         return $DB->get_record('page_annotations', ['id' => $thread->annotationid]);
     }
 
@@ -447,6 +447,13 @@ class mod_page_external extends external_api {
         return null;
     }
 
+    private static function is_post_thread_root($post) {
+        global $DB;
+
+        $postsinthreadcount = $DB->count_records('page_posts', ['threadid' => $post->threadid]);
+        return $postsinthreadcount === 1;
+    }
+
     public static function delete_post($id) {
         global $DB;
 
@@ -456,8 +463,7 @@ class mod_page_external extends external_api {
 
         $post = $DB->get_record('page_posts', ['id' => $id]);
         // TODO Move getting the thread into validation
-        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
-        $postisthreadroot = $post->threadid === $thread->rootid;
+        $postisthreadroot = self::is_post_thread_root($post);
 
         self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
 
@@ -1084,7 +1090,7 @@ class mod_page_external extends external_api {
                 It cannot be deleted/updated since others might depend on it.');
         }
 
-        self::validate_post_not_referenced_by_other_post();
+        self::validate_post_not_referenced_by_other_post($post);
 
         $isliked = $DB->record_exists('page_post_likes', ['postid' => $post->id]);
         if ($isliked) {
@@ -1150,11 +1156,11 @@ class mod_page_external extends external_api {
     private static function validate_post_not_referenced_by_other_post($post) {
         global $DB;
 
-        $islastpost = $DB->record_exists_select(
+        $islastpost = !($DB->record_exists_select(
             'page_posts',
             'threadid = ? AND timecreated > ?',
             ['threadid' => $post->threadid, 'timecreated' => $post->timecreated]
-        );
+        ));
         if (!$islastpost) {
             throw new invalid_parameter_exception('Only the last postIntern in a thread can be deleted/updated as postIntern could be referenced
                 by other posts.');
