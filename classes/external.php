@@ -236,17 +236,18 @@ class mod_page_external extends external_api {
         return self::get_annotation_by_post($post);
     }
 
-    public static function create_post($post) {
+    public static function create_post($postparameters) {
         global $DB, $USER;
 
-        self::validate_parameters(self::create_post_parameters(), ['post' => $post]);
+        self::validate_parameters(self::create_post_parameters(), ['post' => $postparameters]);
+        $post = (object) $postparameters;
         $annotation = self::get_annotation_by_post($post);
         self::validate_cm_context($annotation->pageid);
 
         $transaction = $DB->start_delegated_transaction();
         $id = $DB->insert_record(
             'page_posts',
-            array_merge($post, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()]),
+            object_merge($post, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()]),
         );
         $transaction->allow_commit();
 
@@ -314,7 +315,7 @@ class mod_page_external extends external_api {
         return new external_function_parameters([
             'post' => new external_single_structure(array_merge(
                 self::post_parameters(),
-                self::id_parameters(),
+                self::id_parameter(),
                 self::timestamp_parameters(),
             )),
         ]);
@@ -505,7 +506,7 @@ class mod_page_external extends external_api {
     }
 
     public static function delete_post_parameters() {
-        return new external_function_parameters(self::id_parameters());
+        return new external_function_parameters(self::id_parameter());
     }
 
     public static function delete_post_reading($parameters) {
@@ -897,7 +898,7 @@ class mod_page_external extends external_api {
         );
     }
 
-    private static function id_parameters() {
+    private static function id_parameter() {
         return ['id' => new external_value(PARAM_INT)];
     }
 
@@ -1029,27 +1030,33 @@ class mod_page_external extends external_api {
         return self::create_annotation_returns();
     }
 
-    public static function update_post($parameters) {
+    public static function update_post($postupdateparams) {
         global $DB;
 
-        $transaction = $DB->start_delegated_transaction();
-        self::validate_post_can_be_updated((object) $parameters);
-        $DB->update_record('page_posts', array_merge($parameters, ['timemodified' => time()]));
+        self::validate_parameters(self::update_post_parameters(), ['postupdate' => $postupdateparams]);
+        $postupdate = (object) $postupdateparams;
+        $annotation = self::get_annotation_by_post_id($postupdate->id);
+        self::validate_cm_context($annotation->pageid);
 
+        $transaction = $DB->start_delegated_transaction();
+        self::validate_post_can_be_updated($postupdate);
+        $DB->update_record('page_posts', array_merge((array) $postupdate, ['timemodified' => time()]));
         $transaction->allow_commit();
 
-        return ['post' => $DB->get_record('page_posts', pick_keys($parameters, ['id']))];
+        return ['post' => $DB->get_record('page_posts', pick_keys((array) $postupdate, ['id']))];
     }
 
     public static function update_post_parameters() {
-        return new external_function_parameters(array_merge(
-            self::id_parameters(),
-            omit_keys(self::post_parameters(), ['threadid', 'creatorid', 'content']),
-            [
-                'content' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                'markedasrequestedreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-            ],
-        ));
+        return new external_function_parameters([
+            'postupdate' =>  new external_single_structure(array_merge(
+                self::id_parameter(),
+                pick_keys(self::post_parameters(), ['anonymous', 'ispublic']),
+                [
+                    'content' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'markedasrequestedreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+                ],
+            )),
+        ]);
     }
 
     public static function update_post_returns() {
@@ -1126,28 +1133,29 @@ class mod_page_external extends external_api {
 
         // TODO: Check if user has capability to update postIntern without validation and return if so
         // TODO: Check if user has capability for updating postIntern
+        // TODO: Enable validation again
 
-        $post = $DB->get_record('page_posts', ['id' => $postupdate->id]);
-        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
-        $rootpost = $DB->get_record('page_posts', ['id' => $thread->rootid]);
-        $postisthreadroot = $post->threadid === $thread->rootid;
-        if (($post->ispublic && !$postupdate->ispublic) || $post->content !== $postupdate->content) {
-            self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
-        }
-        if ($postupdate->markedasrequestedreply) {
-            if ($rootpost->creatorid !== $USER->id) {
-                throw new invalid_parameter_exception('The postIntern can only be marked as the reply requested by the user who requested
-                    the reply.');
-            }
-            if (!$thread->requestedreply) {
-                throw new invalid_parameter_exception('The postIntern cannot be marked as the reply requested since no reply was requested 
-                for thread.');
-            }
-            if ($thread->rootid === $postupdate->id) {
-                throw new invalid_parameter_exception('The postIntern cannot be marked as the reply requested since it is the root of the 
-                thread were the reply has been requested.');
-            }
-        }
+        //$post = $DB->get_record('page_posts', ['id' => $postupdate->id]);
+        //$thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
+        //$rootpost = $DB->get_record('page_posts', ['id' => $thread->rootid]);
+        //$postisthreadroot = $post->threadid === $thread->rootid;
+        //if (($post->ispublic && !$postupdate->ispublic) || $post->content !== $postupdate->content) {
+        //    self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
+        //}
+        //if ($postupdate->markedasrequestedreply) {
+        //    if ($rootpost->creatorid !== $USER->id) {
+        //        throw new invalid_parameter_exception('The postIntern can only be marked as the reply requested by the user who requested
+        //            the reply.');
+        //    }
+        //    if (!$thread->requestedreply) {
+        //        throw new invalid_parameter_exception('The postIntern cannot be marked as the reply requested since no reply was requested
+        //        for thread.');
+        //    }
+        //    if ($thread->rootid === $postupdate->id) {
+        //        throw new invalid_parameter_exception('The postIntern cannot be marked as the reply requested since it is the root of the
+        //        thread were the reply has been requested.');
+        //    }
+        //}
     }
 
     /**

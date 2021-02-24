@@ -95,7 +95,21 @@ export default {
                 }
             }]);
         },
-        [ACT.UPDATE_POST]({commit}, postUpdate) {
+        [ACT.UPDATE_POST]({commit, getters}, postUpdate) {
+            const post = {...getters[GET.POST](postUpdate.id, postUpdate.threadId)};
+            commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, postUpdate});
+            ajax.call([{
+                methodname: MoodleWSMethods.UPDATE_POST,
+                args: MappingService.mapPostUpdateToArgs(postUpdate),
+                done: (response) => {
+                    const postUpdate = MappingService.mapResponseToPost(response.post);
+                    commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, postUpdate});
+                },
+                fail: (e) => {
+                    commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, postUpdate: post});
+                    console.error(`"${MoodleWSMethods.UPDATE_POST}" failed`, e);
+                }
+            }]);
         },
     },
     mutations: {

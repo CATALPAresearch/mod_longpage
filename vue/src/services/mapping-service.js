@@ -69,6 +69,18 @@ const MappingService = {
           }
       });
     },
+    mapPostUpdateToArgs(postUpdate) {
+        return deepLowerCaseKeys({
+            postUpdate: {
+                ...pick(postUpdate, [
+                    'id',
+                    'anonymous',
+                    'content',
+                    'isPublic',
+                ]),
+            }
+        });
+    },
     mapResponseToAnnotation(response) {
         return new Annotation({
             ...pick(response, ['id', 'type']),

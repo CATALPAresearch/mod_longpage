@@ -35,6 +35,7 @@ export const MoodleWSMethods = Object.freeze({
     DELETE_POST: 'mod_page_delete_post',
     GET_ANNOTATIONS: 'mod_page_get_annotations',
     GET_ENROLLED_USERS: 'core_course_get_enrolled_users_by_cmid',
+    UPDATE_POST: 'mod_page_update_post',
     UPDATE_ANNOTATION: 'mod_page_update_annotation',
 });
 

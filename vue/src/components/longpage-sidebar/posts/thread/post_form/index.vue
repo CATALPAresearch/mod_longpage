@@ -130,7 +130,7 @@ export default {
     },
     async createOrUpdatePost() {
       if (this.post.created) this[ACT.UPDATE_POST](this.postUpdate);
-      this[ACT.CREATE_POST](this.postUpdate);
+      else this[ACT.CREATE_POST](this.postUpdate);
       this.closeForm();
     },
   }
