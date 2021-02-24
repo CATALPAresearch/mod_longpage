@@ -1,10 +1,10 @@
-import { ArrowDirection, ARROW_H_MARGIN } from '../../config/constants';
+import {ArrowDirection, ARROW_H_MARGIN} from '../../config/constants';
 
 /**
  * @typedef Target
  * @prop {number} left - Offset from left edge of viewport.
  * @prop {number} top - Offset from top edge of viewport.
- * @prop {ArrowDirection} arrowDirection - Direction of the AnnotationToolbarPopover's arrow.
+ * @prop {ArrowDirection} arrowDirection - Direction of the AnnotationToolbar's arrow.
  */
 
 /**
@@ -27,7 +27,7 @@ function nearestPositionedAncestor(el) {
 }
 
 /**
- * Container for the 'AnnotationToolbarPopover' toolbar which provides controls for the user to
+ * Container for the 'AnnotationToolbar' toolbar which provides controls for the user to
  * annotate and highlight the selected text.
  *
  * The toolbar implementation is split between this class, which is
@@ -39,9 +39,9 @@ export class AnnotationToolbarPopoverPositioner {
   /**
    * Create the toolbar's container and hide it.
    *
-   * The AnnotationToolbarPopover is initially hidden.
+   * The AnnotationToolbar is initially hidden.
    *
-   * @param {HTMLElement} container - The DOM element into which the AnnotationToolbarPopover will be created
+   * @param {HTMLElement} container - The DOM element into which the AnnotationToolbar will be created
    * TODO
    */
   constructor(container, height, width, arrowHeight) {
@@ -53,21 +53,21 @@ export class AnnotationToolbarPopoverPositioner {
   }
 
   calculatePositionProps(selectionRect, isRTLselection) {
-    const { left, top, arrowDirection } = this._calculateTarget(selectionRect, isRTLselection);
+    const {left, top, arrowDirection} = this._calculateTarget(selectionRect, isRTLselection);
     const zIndex = this._findZindex(left, top);
     return {
       ...this._toCoordsRelativeToNPA(left, top),
       arrowDirection,
       zIndex
-    }
+    };
   }
 
   /**
-   *  Determine the best position for the AnnotationToolbarPopover and its pointer-arrow.
+   *  Determine the best position for the AnnotationToolbar and its pointer-arrow.
    * - Position the pointer-arrow near the end of the selection (where the user's
    *   cursor/input is most likely to be)
-   * - Position the AnnotationToolbarPopover to center horizontally on the pointer-arrow
-   * - Position the AnnotationToolbarPopover below the selection (arrow pointing up) for LTR selections
+   * - Position the AnnotationToolbar to center horizontally on the pointer-arrow
+   * - Position the AnnotationToolbar below the selection (arrow pointing up) for LTR selections
    *   and above (arrow down) for RTL selections
    *
    * @param {DOMRect} selectionRect - The rect of text to target, in viewport
@@ -89,7 +89,7 @@ export class AnnotationToolbarPopoverPositioner {
     let top;
     let left;
 
-    // Position the AnnotationToolbarPopover such that the arrow it is above or below the selection
+    // Position the AnnotationToolbar such that the arrow it is above or below the selection
     // and close to the end.
     const hMargin = Math.min(ARROW_H_MARGIN, selectionRect.width);
     if (isRTLselection) {
@@ -99,7 +99,7 @@ export class AnnotationToolbarPopoverPositioner {
         selectionRect.left + selectionRect.width - this._width() / 2 - hMargin;
     }
 
-    // Flip arrow direction if AnnotationToolbarPopover would appear above the top or below the
+    // Flip arrow direction if AnnotationToolbar would appear above the top or below the
     // bottom of the viewport.
     if (
       selectionRect.top - this._height() < 0 &&
@@ -115,8 +115,8 @@ export class AnnotationToolbarPopoverPositioner {
     } else {
       top = selectionRect.top - this._height() - this._arrowHeight();
     }
-    const { left: constrainedLeft, top: constrainedTop } = this.constrainPositionToViewport(left, top);
-    return { left: constrainedLeft, top: constrainedTop, arrowDirection };
+    const {left: constrainedLeft, top: constrainedTop} = this.constrainPositionToViewport(left, top);
+    return {left: constrainedLeft, top: constrainedTop, arrowDirection};
   }
 
   constrainPositionToViewport(left, top) {
@@ -129,8 +129,8 @@ export class AnnotationToolbarPopoverPositioner {
   }
 
   /**
-   * Find a Z index value that will cause the AnnotationToolbarPopover to appear on top of any
-   * content in the document when the AnnotationToolbarPopover is shown at (left, top).
+   * Find a Z index value that will cause the AnnotationToolbar to appear on top of any
+   * content in the document when the AnnotationToolbar is shown at (left, top).
    *
    * @param {number} left - Horizontal offset from left edge of viewport.
    * @param {number} top - Vertical offset from top edge of viewport.
@@ -144,7 +144,7 @@ export class AnnotationToolbarPopoverPositioner {
     }
 
     // Find the Z index of all the elements in the screen for five positions
-    // around the AnnotationToolbarPopover (left-top, left-bottom, middle-center, right-top,
+    // around the AnnotationToolbar (left-top, left-bottom, middle-center, right-top,
     // right-bottom) and use the greatest.
 
     // Unique elements so `getComputedStyle` is called the minimum amount of times.
@@ -160,7 +160,7 @@ export class AnnotationToolbarPopoverPositioner {
     ]);
 
     const zIndexes = [...elements]
-      .map(element => + getComputedStyle(element).zIndex)
+      .map(element => +getComputedStyle(element).zIndex)
       .filter(Number.isInteger);
 
     // Make sure the array contains at least one element,
@@ -172,9 +172,9 @@ export class AnnotationToolbarPopoverPositioner {
 
   /**
    * Translate the (left, top) viewport coordinates into positions relative to
-   * the AnnotationToolbarPopover's nearest positioned ancestor (NPA).
+   * the AnnotationToolbar's nearest positioned ancestor (NPA).
    *
-   * Typically the AnnotationToolbarPopover is a child of the `<body>` and the NPA is the root
+   * Typically the AnnotationToolbar is a child of the `<body>` and the NPA is the root
    * `<html>` element. However page styling may make the `<body>` positioned.
    * See https://github.com/hypothesis/client/issues/487.
    *
@@ -187,6 +187,6 @@ export class AnnotationToolbarPopoverPositioner {
     return {
       left: left - parentRect.left,
       top: top - parentRect.top,
-    }
+    };
   }
 }

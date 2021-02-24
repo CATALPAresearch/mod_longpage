@@ -80,6 +80,7 @@ function object_merge(...$objects) {
 abstract class mod_page_annotation_type {
     const HIGHLIGHT = 0;
     const POST = 1;
+    const BOOKMARK = 2;
 }
 
 abstract class mod_page_selector {

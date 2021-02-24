@@ -45,7 +45,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-
     'mod_page_get_annotations' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_annotations',

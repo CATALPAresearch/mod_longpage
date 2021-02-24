@@ -60,7 +60,10 @@
           <post-visibility-indicator :post="post" />
         </div>
       </div>
-      <div class="row no-gutters my-1">
+      <div
+        v-if="thread.root.id === post.id"
+        class="row no-gutters my-1"
+      >
         <div class="col col-auto p-0">
           <expandable-highlight-excerpt
             :annotation-target="annotation.target"

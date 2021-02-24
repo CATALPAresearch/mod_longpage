@@ -1,27 +1,35 @@
 <template>
   <span>
-    {{ $t('timestamps.created') }}
-    <date-time-text :date-time="timeCreated" />
-    <span v-if="timeCreated.getTime() !== timeModified.getTime()">
-      <span class="font-italic">
-        ({{ $t('timestamps.modified') }}
-        <date-time-text :date-time="timeModified" />)
+    <span v-if="timeCreated && timeModified">
+      {{ $t('timestamps.created') }}
+      <date-time-text :date-time="timeCreated" />
+      <span v-if="timeCreated.getTime() !== timeModified.getTime()">
+        <span class="font-italic">
+          ({{ $t('timestamps.modified') }}
+          <date-time-text :date-time="timeModified" />)
+        </span>
       </span>
     </span>
+    <loading-indicator-dots
+      v-else
+      :text="timeCreated ? $t('generic.loadingIndicator.updating') : $t('generic.loadingIndicator.creating')"
+    />
   </span>
 </template>
 
 <script>
   import DateTimeText from '@/components/DateTimeText';
+  import LoadingIndicatorDots from '@/components/LoadingIndicatorDots';
 
   export default {
     name: 'DateTimes',
     components: {
-      DateTimeText
+      DateTimeText,
+      LoadingIndicatorDots,
     },
     props: {
-      timeCreated: {type: Date, required: true},
-      timeModified: {type: Date, required: true},
+      timeCreated: {type: Date},
+      timeModified: {type: Date},
     },
   };
 </script>

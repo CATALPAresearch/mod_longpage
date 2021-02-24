@@ -1,8 +1,9 @@
 import {AnnotationType, MoodleWSMethods} from '@/config/constants';
 import {GET, ACT, MUTATE} from '../types';
+import {Annotation} from '@/types/annotation';
+import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
 import MappingService from '@/services/mapping-service';
-import {Annotation} from '@/types/annotation';
 
 export default {
     state: {
@@ -16,7 +17,7 @@ export default {
             ...annotation,
             pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
         }),
-        [GET.ANNOTATIONS]: ({annotations}) => annotations,
+        [GET.ANNOTATIONS]: ({annotations}) => annotations.sort(AnnotationCompareFunction.BY_POSITION),
         [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT]: (_, getters) => {
             return getters[GET.ANNOTATIONS];
         },
@@ -25,6 +26,9 @@ export default {
                 .filter(annotation => !getters[GET.ANNOTATION_FILTER].ids ||
                     getters[GET.ANNOTATION_FILTER].ids.includes(annotation.id)
                 );
+        },
+        [GET.BOOKMARKS]: (_, getters) => {
+            return getters[GET.ANNOTATIONS].filter(a => a.type === AnnotationType.BOOKMARK);
         },
         [GET.HIGHLIGHTS]: (_, getters) => {
             return getters[GET.ANNOTATIONS].filter(a => a.type === AnnotationType.HIGHLIGHT);
@@ -76,7 +80,7 @@ export default {
         [ACT.DELETE_ANNOTATION]({commit}, annotation) {
             if (!annotation.created) return;
 
-            commit(MUTATE.REMOVE_THREADS, [annotation.body]);
+            if (annotation.body) commit(MUTATE.REMOVE_THREADS, [annotation.body]);
             commit(MUTATE.REMOVE_ANNOTATIONS, [annotation]);
 
             ajax.call([{
@@ -85,7 +89,7 @@ export default {
                 done: () => {},
                 fail: (e) => {
                     commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
-                    commit(MUTATE.ADD_THREADS, [annotation.body]);
+                    if (annotation.body) commit(MUTATE.ADD_THREADS, [annotation.body]);
                     console.error(`"${MoodleWSMethods.DELETE_ANNOTATION}" failed`, e);
                 }
             }]);

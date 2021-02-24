@@ -16,12 +16,13 @@
       <post
         v-for="reply in thread.replies"
         :key="reply.id"
-        class="my-2"
+        class="my-3"
         :thread="thread"
         :post="reply"
       />
       <reply-form
         v-if="thread.lastReply.created"
+        class="my-3"
         :thread="thread"
       />
     </div>

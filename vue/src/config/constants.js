@@ -1,6 +1,7 @@
 export const AnnotationType = Object.freeze({
     HIGHLIGHT: 0,
     POST: 1,
+    BOOKMARK: 2,
 });
 
 /**
@@ -40,6 +41,7 @@ export const MoodleWSMethods = Object.freeze({
 });
 
 export const SidebarTabKeys = Object.freeze({
+    BOOKMARKS: 'bookmarks',
     HIGHLIGHTS: 'highlights',
     POSTS: 'posts',
     TOC: 'toc'

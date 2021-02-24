@@ -110,8 +110,8 @@
 </template>
 
 <script>
-import {ACT, GET} from '@/store/types';
-import {mapActions, mapGetters} from 'vuex';
+import {ACT} from '@/store/types';
+import {mapActions} from 'vuex';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
 

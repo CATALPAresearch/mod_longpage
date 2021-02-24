@@ -1,18 +1,18 @@
-import AnnotationToolbarPopoverWrapper from './AnnotationToolbarPopoverWrapper';
+import AnnotationToolbarController from './AnnotationToolbarController';
 import {createApp} from 'vue';
 import {createDiv} from '@/util/misc';
 import {i18n} from '@/config/i18n';
 import {toIdSelector} from '@/util/style';
 
-const useAnnotationToolbarPopover = (store) => {
-    const rootContainerId = 'annnotation-toolbar-popover';
+const useAnnotationToolbar = (store) => {
+    const rootContainerId = 'annnotation-toolbar';
     document.body.appendChild(createDiv({id: rootContainerId}));
-    createApp(AnnotationToolbarPopoverWrapper)
+    createApp(AnnotationToolbarController)
         .use(i18n)
         .use(store)
         .mount(toIdSelector(rootContainerId));
 };
 
 export const useAnnotations = (store) => {
-    useAnnotationToolbarPopover(store);
+    useAnnotationToolbar(store);
 };

@@ -7,6 +7,7 @@
 @use 'sass:color';
 
 @mixin colorized-bg-highlight($color) {
+  cursor: pointer;
   background: transparent linear-gradient(
                   to right,
                   rgba($color, 0.3),
@@ -29,8 +30,6 @@
   }
 
   .annotation-toolbar-item, .longpage-highlight {
-    cursor: pointer;
-
     &.bg-yellow {
       @include colorized-bg-highlight($color-highlight-yellow);
     }
@@ -40,14 +39,19 @@
     &.bg-orange {
       @include colorized-bg-highlight($color-highlight-orange);
     }
-    &.bg-violet {
-      @include colorized-bg-highlight($color-highlight-violet);
-    }
-    &.bg-blue {
-      @include colorized-bg-highlight($color-highlight-blue);
-    }
     &.bg-pink {
       @include colorized-bg-highlight($color-highlight-pink);
+    }
+    &.underline {
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-thickness: 0.125rem;
+    }
+    &.underline-red {
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-color: red;
+      text-decoration-thickness: 0.125rem;
     }
     // Make highlights visible to screen readers.
     // See also - https://developer.paciellogroup.com/blog/2017/12/short-note-on-making-your-mark-more-accessible/.

@@ -3,6 +3,16 @@
     "less": "Weniger",
     "more": "Mehr"
   },
+  "bookmark": {
+    "action": {
+      "delete": "Lesezeichen Löschen"
+    }
+  },
+  "highlight": {
+    "action": {
+      "delete": "Markierung Löschen"
+    }
+  },
   "post": {
     "action": {
       "delete": "Beitrag löschen",
@@ -36,13 +46,23 @@
     "alt": "Profilbild von anonymem Nutzer | Profilbild von {fullName}"
   },
   "generic": {
-    "toggleDropdown": "Menü ausklappen"
+    "toggleDropdown": "Menü ausklappen",
+    "loadingIndicator": {
+      "creating": "Wird erstellt",
+      "updating": "Wird aktualisiert"
+    }
   },
   "responseForm": {
     "placeholder": "Antworte"
   },
   "sidebar": {
     "tabs": {
+      "bookmarks": {
+        "heading": "Lesezeichen",
+        "message": {
+          "noneCreated": "Es wurde noch keine Lesezeichen erstellt."
+        }
+      },
       "highlights": {
         "heading": "Markierungen",
         "message": {
