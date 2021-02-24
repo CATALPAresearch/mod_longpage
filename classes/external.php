@@ -385,7 +385,7 @@ class mod_page_external extends external_api {
     private static function delete_thread($thread) {
         global $DB;
 
-        self::delete_post_from_db(self::get_posts($thread->id));
+        self::delete_post_from_db(self::get_posts($thread->id)[0]->id);
         $DB->delete_records('page_thread_subscriptions', ['threadid' => $thread->id]);
         $DB->delete_records('page_threads', ['id' => $thread->id]);
     }
@@ -805,7 +805,7 @@ class mod_page_external extends external_api {
                 unset($post->creatorid);
             }
             return $post;
-        }, $posts);
+        }, array_values($posts));
     }
 
     private static function get_selectors($annotationtargetid) {
