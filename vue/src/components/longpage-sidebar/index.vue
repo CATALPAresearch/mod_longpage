@@ -45,6 +45,7 @@
 <script>
 import {GET, MUTATE} from '@/store/types';
 import {mapGetters, mapMutations} from 'vuex';
+import Highlights from '@/components/longpage-sidebar/highlights';
 import Posts from '@/components/longpage-sidebar/posts';
 import {debounce} from 'lodash';
 import {LONGPAGE_APP_ID, SidebarTabKeys} from '@/config/constants';
@@ -91,6 +92,7 @@ $(window).on('mouseup', null, null, () => {
 export default {
   name: 'LongpageSidebar',
   components: {
+    [SidebarTabKeys.HIGHLIGHTS]: Highlights,
     [SidebarTabKeys.POSTS]: Posts,
     [SidebarTabKeys.TOC]: TableOfContents,
   },
@@ -99,8 +101,9 @@ export default {
       LONGPAGE_SIDEBAR_ID,
       LONGPAGE_SIDEBAR_TAB_CONTENT,
       tabs: [
-        {key: SidebarTabKeys.POSTS, id: 'sidebar-tab-posts', icon: ['fa', 'fa-comment', 'fa-fw']},
         {key: SidebarTabKeys.TOC, id: 'sidebar-tab-table-of-contents', icon: ['fa', 'fa-list', 'fa-fw']},
+        {key: SidebarTabKeys.POSTS, id: 'sidebar-tab-posts', icon: ['fa', 'fa-comments-o', 'fa-fw']},
+        {key: SidebarTabKeys.HIGHLIGHTS, id: 'sidebar-tab-highlights', icon: ['fa', 'fa-pencil', 'fa-fw']},
       ],
     };
   },

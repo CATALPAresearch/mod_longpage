@@ -60,13 +60,10 @@
           <post-visibility-indicator :post="post" />
         </div>
       </div>
-      <div
-        v-if="highlightedText"
-        class="row no-gutters my-1"
-      >
+      <div class="row no-gutters my-1">
         <div class="col col-auto p-0">
           <expandable-highlight-excerpt
-            :highlighted-text="highlightedText"
+            :annotation-target="annotation.target"
             @highlight-clicked="selectAnnotation"
           />
         </div>
@@ -104,20 +101,19 @@
 import {GET} from '@/store/types';
 import {
   SCROLL_INTO_VIEW_OPTIONS,
-  SelectorType
 } from '@/config/constants';
 import {mapGetters} from 'vuex';
 import {applyMathjaxFilterToNodes} from '@/util/moodle';
 import {getHighlightByAnnotationId} from '@/util/annotation';
 import UserAvatar from '@/components/UserAvatar';
 import scrollIntoView from 'scroll-into-view-if-needed';
-import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/posts/thread/post/ExpandableHighlightExcerpt';
+import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/ExpandableHighlightExcerpt';
 import PostForm from '@/components/longpage-sidebar/posts/thread/post_form';
 import PostActions from '@/components/longpage-sidebar/posts/thread/post/PostActions';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
 import PostVisibilityIndicator from '@/components/longpage-sidebar/posts/thread/post/PostVisibilityIndicator';
-import PostDateTimes from '@/components/longpage-sidebar/posts/thread/post/PostDateTimes';
+import PostDateTimes from '@/components/longpage-sidebar/DateTimes';
 
 export default {
   name: 'Post',
@@ -146,10 +142,6 @@ export default {
     },
     creator() {
       return this[GET.USER](this.post.creatorId);
-    },
-    highlightedText() {
-      const textQuoteSelector = this.annotation.target.selectors.find(sel => sel.type === SelectorType.TEXT_QUOTE_SELECTOR);
-      return textQuoteSelector && textQuoteSelector.exact;
     },
     showPostVisibilityIndicator() {
       return this.user === this.creator;

@@ -42,7 +42,7 @@ import PostFilter from '@/components/longpage-sidebar/posts/PostFilter';
 
 
 export default {
-  name: 'AnnotationSidebar',
+  name: 'Posts',
   components: {
     PostFilter,
     Thread

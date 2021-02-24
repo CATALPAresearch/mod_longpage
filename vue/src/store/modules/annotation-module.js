@@ -26,8 +26,8 @@ export default {
                     getters[GET.ANNOTATION_FILTER].ids.includes(annotation.id)
                 );
         },
-        [GET.ANNOTATIONS_TARGETING_ANNOTATION]: (_, getters) => {
-            return getters[GET.ANNOTATIONS];
+        [GET.HIGHLIGHTS]: (_, getters) => {
+            return getters[GET.ANNOTATIONS].filter(a => a.type === AnnotationType.HIGHLIGHT);
         },
         [GET.NEW_ANNOTATION]: (_, getters) => (params = {}) => {
             const annotation = new Annotation({

@@ -40,6 +40,7 @@ export const MoodleWSMethods = Object.freeze({
 });
 
 export const SidebarTabKeys = Object.freeze({
+    HIGHLIGHTS: 'highlights',
     POSTS: 'posts',
     TOC: 'toc'
 });

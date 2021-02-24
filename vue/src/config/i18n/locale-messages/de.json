@@ -43,6 +43,12 @@
   },
   "sidebar": {
     "tabs": {
+      "highlights": {
+        "heading": "Markierungen",
+        "message": {
+          "noneCreated": "Es wurde noch keine Markierung erstellt."
+        }
+      },
       "posts": {
         "heading": "Anmerkungen"
       },
