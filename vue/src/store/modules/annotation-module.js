@@ -11,27 +11,29 @@ export default {
         annotationFilter: {},
     },
     getters: {
-        [GET.ANNOTATION]: ({annotations}) => id => annotations.find(a => a.id === id),
+        [GET.ANNOTATION]: (_, getters) => id => getters[GET.ANNOTATIONS].find(a => a.id === id),
         [GET.ANNOTATION_FILTER]: ({annotationFilter}) => annotationFilter,
         [GET.ANNOTATION_WITH_CONTEXT]: (_, getters) => annotation => ({
             ...annotation,
             pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
         }),
         [GET.ANNOTATIONS]: ({annotations}) => annotations.sort(AnnotationCompareFunction.BY_POSITION),
-        [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT]: (_, getters) => {
-            return getters[GET.ANNOTATIONS];
+        [GET.BOOKMARKS]: (_, getters) => {
+            return getters[GET.ANNOTATIONS].filter(a => a.type === AnnotationType.BOOKMARK);
         },
-        [GET.ANNOTATIONS_TARGETING_PAGE_SEGMENT_FILTERED]: (_, getters) => {
+        [GET.FILTERED_ANNOTATIONS]: (_, getters) => {
             return getters[GET.ANNOTATIONS]
                 .filter(annotation => !getters[GET.ANNOTATION_FILTER].ids ||
                     getters[GET.ANNOTATION_FILTER].ids.includes(annotation.id)
                 );
         },
-        [GET.BOOKMARKS]: (_, getters) => {
-            return getters[GET.ANNOTATIONS].filter(a => a.type === AnnotationType.BOOKMARK);
-        },
         [GET.HIGHLIGHTS]: (_, getters) => {
-            return getters[GET.ANNOTATIONS].filter(a => a.type === AnnotationType.HIGHLIGHT);
+            return getters[GET.ANNOTATIONS]
+                .filter(a => a.type === AnnotationType.HIGHLIGHT)
+                .filter(
+                    annotation => !getters[GET.ANNOTATION_FILTER].ids ||
+                        getters[GET.ANNOTATION_FILTER].ids.includes(annotation.id)
+                );
         },
         [GET.NEW_ANNOTATION]: (_, getters) => (params = {}) => {
             const annotation = new Annotation({
