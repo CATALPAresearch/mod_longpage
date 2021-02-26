@@ -28,10 +28,10 @@
 <script>
 import {ACT, GET} from './store/types';
 import {mapActions, mapGetters} from 'vuex';
-import PostIndicators from '@/components/annotation/PostIndicators';
+import PostIndicators from '@/components/Annotation/PostIndicators';
 import Log from './lib/Logging';
 import {LONGPAGE_CONTENT_ID} from '@/config/constants';
-import LongpageSidebar from '@/components/longpage-sidebar';
+import LongpageSidebar from '@/components/LongpageSidebar';
 import {ReadingTimeEstimator} from '@/lib/reading-time-estimator';
 import {toIdSelector} from '@/util/style';
 import Utils from './util/utils';

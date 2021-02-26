@@ -60,11 +60,11 @@
 </template>
 
 <script>
-import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/ExpandableHighlightExcerpt';
+import ExpandableHighlightExcerpt from '@/components/LongpageSidebar/ExpandableHighlightExcerpt';
 import {ACT} from '@/store/types';
 import {mapActions} from 'vuex';
-import DateTimes from '@/components/longpage-sidebar/DateTimes';
-import SidebarTab from '@/components/longpage-sidebar/SidebarTab';
+import DateTimes from '@/components/LongpageSidebar/DateTimes';
+import SidebarTab from '@/components/LongpageSidebar/SidebarTab';
 import {AnnotationType} from '@/config/constants';
 
 export default {

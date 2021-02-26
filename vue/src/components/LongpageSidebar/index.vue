@@ -45,12 +45,12 @@
 <script>
 import {GET, MUTATE} from '@/store/types';
 import {mapGetters, mapMutations} from 'vuex';
-import Bookmarks from '@/components/longpage-sidebar/bookmarks';
-import Highlights from '@/components/longpage-sidebar/highlights';
-import Posts from '@/components/longpage-sidebar/posts';
+import Bookmarks from '@/components/LongpageSidebar/Bookmarks';
+import Highlights from '@/components/LongpageSidebar/Highlights';
+import Posts from '@/components/LongpageSidebar/Posts';
 import {debounce} from 'lodash';
 import {LONGPAGE_APP_ID, SidebarTabKeys} from '@/config/constants';
-import TableOfContents from '@/components/longpage-sidebar/TableOfContents';
+import TableOfContents from '@/components/LongpageSidebar/TableOfContents';
 
 const LONGPAGE_SIDEBAR_ID = 'longpage-sidebar';
 const LONGPAGE_SIDEBAR_TAB_CONTENT = 'longpage-sidebar-tab-content';

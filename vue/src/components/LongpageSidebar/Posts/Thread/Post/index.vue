@@ -110,13 +110,13 @@ import {applyMathjaxFilterToNodes} from '@/util/moodle';
 import {getHighlightByAnnotationId} from '@/util/annotation';
 import UserAvatar from '@/components/UserAvatar';
 import scrollIntoView from 'scroll-into-view-if-needed';
-import ExpandableHighlightExcerpt from '@/components/longpage-sidebar/ExpandableHighlightExcerpt';
-import PostForm from '@/components/longpage-sidebar/posts/thread/post_form';
-import PostActions from '@/components/longpage-sidebar/posts/thread/post/PostActions';
+import ExpandableHighlightExcerpt from '@/components/LongpageSidebar/ExpandableHighlightExcerpt';
+import PostForm from '@/components/LongpageSidebar/Posts/Thread/PostForm';
+import PostActions from '@/components/LongpageSidebar/Posts/Thread/Post/PostActions';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
-import PostVisibilityIndicator from '@/components/longpage-sidebar/posts/thread/post/PostVisibilityIndicator';
-import PostDateTimes from '@/components/longpage-sidebar/DateTimes';
+import PostVisibilityIndicator from '@/components/LongpageSidebar/Posts/Thread/Post/PostVisibilityIndicator';
+import PostDateTimes from '@/components/LongpageSidebar/DateTimes';
 
 export default {
   name: 'Post',

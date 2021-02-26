@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import Post from './post';
-import ReplyForm from '@/components/longpage-sidebar/posts/thread/ReplyForm';
+import Post from './Post';
+import ReplyForm from '@/components/LongpageSidebar/Posts/Thread/ReplyForm';
 import {getThreadElementId} from '@/lib/annotation/utils';
 import {Thread} from '@/types/thread';
 

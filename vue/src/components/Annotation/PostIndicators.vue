@@ -10,7 +10,7 @@
 </template>
 
 <script>
-  import PostIndicator from '@/components/annotation/PostIndicator';
+  import PostIndicator from '@/components/Annotation/PostIndicator';
   import emitter from 'tiny-emitter/instance';
   import {LONGPAGE_CONTENT_ID} from '@/config/constants';
   import {ResizeObserver} from '@juggle/resize-observer';

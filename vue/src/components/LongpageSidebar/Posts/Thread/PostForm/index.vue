@@ -68,7 +68,7 @@ import {cloneDeep} from 'lodash';
 import {mapActions, mapGetters, mapMutations} from 'vuex';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
-import PostFormInput from '@/components/longpage-sidebar/posts/thread/post_form/PostFormInput';
+import PostFormInput from '@/components/LongpageSidebar/Posts/Thread/PostForm/PostFormInput';
 
 const SAVE_ACTIONS = [
   {key: 'publish', iconClasses: ['fa-users']},

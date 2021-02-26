@@ -34,11 +34,11 @@
 </template>
 
 <script>
-import Thread from './thread';
+import Thread from './Thread';
 import {mapGetters} from 'vuex';
 import {GET} from '@/store/types';
 import {THREAD_CONTAINER_ID} from '@/config/constants';
-import PostFilter from '@/components/longpage-sidebar/posts/PostFilter';
+import PostFilter from '@/components/LongpageSidebar/Posts/PostFilter';
 
 
 export default {
