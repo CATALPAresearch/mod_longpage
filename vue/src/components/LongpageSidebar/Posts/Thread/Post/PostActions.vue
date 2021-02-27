@@ -10,17 +10,13 @@
         @click="togglePostLike"
       >
         <i
-          v-show="!postIntern.likedByUser"
-          class="icon fa fa-thumbs-o-up fa-fw mr-1"
-        />
-        <i
-          v-show="postIntern.likedByUser"
-          class="icon fa fa-thumbs-up fa-fw mr-1"
+          class="icon fa  fa-fw mr-1"
+          :class="[postIntern.likedByUser ? 'fa-thumbs-up' : 'fa-thumbs-o-up']"
         />
       </a>
       <span
         :class="{'font-weight-bold': postIntern.likedByUser}"
-      >{{ postIntern.likeCount }}</span>
+      >{{ postIntern.likesCount }}</span>
     </div>
     <div
       v-if="post === thread.root"
@@ -126,19 +122,6 @@ export default {
   data() {
     return {
       ipost: {
-        stats: {
-          likeCount: 123,
-          readerCount: 123,
-          replyCount: 4,
-        },
-        userReactions: {
-          liked: true,
-          marked: true,
-          read: true,
-          subscribed: true,
-        },
-        likedByUser: true,
-        likeCount: 123,
         replyCount: 20,
         markedByUser: true,
         subscribedByUser: false,
@@ -154,16 +137,14 @@ export default {
       ];
     },
     postIntern() {
-      return {
-        ...this.post,
-        ...this.ipost,
-      };
+      return this.post;
     },
   },
   methods: {
     ...mapActions([
       ACT.CREATE_POST,
       ACT.DELETE_POST,
+      ACT.TOGGLE_POST_LIKE,
     ]),
     deletePost() {
       this[ACT.DELETE_POST](this.post);
@@ -175,8 +156,7 @@ export default {
       this.ipost.markedByUser = !this.ipost.markedByUser;
     },
     togglePostLike() {
-      this.ipost.likedByUser = !this.ipost.likedByUser;
-      this.ipost.likeCount -= 1;
+      this[ACT.TOGGLE_POST_LIKE]({postId: this.post.id, threadId: this.post.threadId});
     },
     toggleRepliesOrReply() {
       this.$emit('toggle-replies');

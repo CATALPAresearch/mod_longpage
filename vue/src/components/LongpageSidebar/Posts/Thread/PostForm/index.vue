@@ -96,7 +96,9 @@ export default {
     ...mapGetters([GET.ANNOTATION]),
     selectedSaveAction: {
       get() {
-        return this.selectedSaveActionInternal;
+        if (this.postUpdate.anonymous) return SAVE_ACTIONS[1];
+        if (this.postUpdate.isPublic) return SAVE_ACTIONS[0];
+        return SAVE_ACTIONS[2];
       },
       set(action) {
         this.postUpdate.anonymous = action.key === 'publishAnonymously';
@@ -132,6 +134,8 @@ export default {
       this.$emit('update:show');
     },
     async createOrUpdatePost() {
+      if (!this.postUpdate.content) return;
+
       if (this.post.created) this[ACT.UPDATE_POST](this.postUpdate);
       else this[ACT.CREATE_POST](this.postUpdate);
       this.closeForm();

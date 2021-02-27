@@ -142,6 +142,17 @@ class mod_page_external extends external_api {
         ];
     }
 
+    /**
+     * @param $post
+     */
+    private static function anonymize_post($post): void {
+        global $USER;
+
+        if ($post->anonymous && $USER->id !== $post->creatorid) {
+            unset($post->creatorid);
+        }
+    }
+
     public static function create_annotation($annotation) {
         global $DB, $USER;
 
@@ -255,18 +266,19 @@ class mod_page_external extends external_api {
         return ['post' => $DB->get_record('page_posts', ['id' => $id])];
     }
 
-    public static function create_post_like($parameters) {
-        global $DB;
+    public static function create_post_like($postid) {
+        global $DB, $USER;
+
+        self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_post_likes', array_merge($parameters, ['timecreated' => time()]));
+        $DB->insert_record('page_post_likes', ['postid' => $postid, 'timecreated' => time(), 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 
     public static function create_post_like_parameters() {
         return new external_function_parameters([
             'postid' => new external_value(PARAM_INT),
-            'userid' => new external_value(PARAM_INT),
         ]);
     }
 
@@ -474,11 +486,13 @@ class mod_page_external extends external_api {
         $transaction->allow_commit();
     }
 
-    public static function delete_post_like($parameters) {
-        global $DB;
+    public static function delete_post_like($postid) {
+        global $DB, $USER;
+
+        self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_likes', $parameters);
+        $DB->delete_records('page_post_likes', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 
@@ -791,11 +805,25 @@ class mod_page_external extends external_api {
      */
     private static function get_post_returns(): external_single_structure {
         return new external_single_structure(array_merge(
-            ['id' => new external_value(PARAM_INT)],
+            [
+                'id' => new external_value(PARAM_INT),
+                'creatorid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+            ],
             omit_keys(self::post_parameters(), ['creatorid']),
-            ['creatorid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)],
+            self::get_reactions_to_post_returns(),
             self::timestamp_parameters()
         ));
+    }
+
+    private static function get_reactions_to_post_returns() {
+        return [
+            'likescount' => new external_value(PARAM_INT),
+            'likedbyuser' => new external_value(PARAM_BOOL),
+            'markedbyuser' => new external_value(PARAM_BOOL),
+            'markedasrequestedreply' => new external_value(PARAM_BOOL),
+            'readingscount' => new external_value(PARAM_INT),
+            'readbyuser' => new external_value(PARAM_BOOL),
+        ];
     }
 
     private static function get_posts($threadid) {
@@ -808,12 +836,26 @@ class mod_page_external extends external_api {
             'timemodified'
         );
 
-        return array_map(function ($post) use ($USER) {
-            if ($post->anonymous && $USER->id !== $post->creatorid) {
-                unset($post->creatorid);
-            }
+        return array_map(function ($post) {
+            self::anonymize_post($post);
+            self::add_reactions_to_post($post);
             return $post;
         }, array_values($posts));
+    }
+
+    private static function add_reactions_to_post($post) {
+        global $DB, $USER;
+
+        $post->likescount = $DB->count_records('page_post_likes', ['postid' => $post->id]);
+        $post->likedbyuser = $DB->record_exists('page_post_likes', ['postid' => $post->id, 'userid' => $USER->id]);
+
+        $post->readingscount = $DB->count_records('page_post_readings', ['postid' => $post->id]);
+        $post->readbyuser = $DB->record_exists('page_post_readings', ['postid' => $post->id, 'userid' => $USER->id]);
+
+        $post->markedbyuser =
+            $DB->record_exists('page_post_marks', ['postid' => $post->id, 'userid' => $USER->id]);
+
+        return $post;
     }
 
     private static function get_selectors($annotationtargetid) {
@@ -831,10 +873,12 @@ class mod_page_external extends external_api {
     }
 
     public static function get_thread($annotationid) {
-        global $DB;
+        global $DB, $USER;
 
         $thread = $DB->get_record('page_threads', ['annotationid' => $annotationid]);
         $thread->posts = self::get_posts($thread->id);
+        $thread->subscribedtobyuser =
+            $DB->record_exists('page_thread_subscriptions', ['threadid' => $thread->id, 'userid' => $USER->id]);
 
         return $thread;
     }
@@ -846,6 +890,7 @@ class mod_page_external extends external_api {
             'posts' => new external_multiple_structure(self::get_post_returns()),
             'replyid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
             'replyrequested' => new external_value(PARAM_BOOL),
+            'subscribedtobyuser' => new external_value(PARAM_BOOL),
         ], '', VALUE_OPTIONAL);
     }
 
@@ -1174,6 +1219,15 @@ class mod_page_external extends external_api {
             throw new invalid_parameter_exception('Only the last postIntern in a thread can be deleted/updated as postIntern could be referenced
                 by other posts.');
         }
+    }
+
+    /**
+     * @param $postid
+     */
+    private static function validate_post_write($postid): void {
+        self::validate_parameters(self::create_post_like_parameters(), ['postid' => $postid]);
+        $annotation = self::get_annotation_by_post_id($postid);
+        self::validate_cm_context($annotation->pageid);
     }
 
     /**

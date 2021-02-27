@@ -40,6 +40,25 @@ export default {
         },
     },
     actions: {
+        [ACT.TOGGLE_POST_LIKE]({commit, getters}, {postId, threadId}) {
+            const post = getters[GET.POST](postId, threadId);
+            commit(
+                MUTATE.UPDATE_POST,
+                {threadId: post.threadId, postId: post.id, postUpdate: {...post, likedByUser: !post.likedByUser}}
+            );
+            const methodname = post.likedByUser ? MoodleWSMethods.CREATE_POST_LIKE : MoodleWSMethods.DELETE_POST_LIKE;
+            ajax.call([{
+                methodname,
+                args: {postid: post.id},
+                fail: (e) => {
+                    console.error(`"${methodname}" failed`, e);
+                    commit(
+                        MUTATE.UPDATE_POST,
+                        {threadId: post.threadId, postId: post.id, postUpdate: {...post, likedByUser: !post.likedByUser}}
+                    );
+                }
+            }]);
+        },
         [ACT.REPLACE_OR_ADD_POST]({commit, getters}, post) {
             if (getters[GET.POST](post.id, post.threadId)) {
                 commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, postUpdate: post});

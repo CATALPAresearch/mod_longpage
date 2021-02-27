@@ -32,8 +32,10 @@ export const LONGPAGE_MAIN_ID = 'longpage-main';
 export const MoodleWSMethods = Object.freeze({
     CREATE_ANNOTATION: 'mod_page_create_annotation',
     CREATE_POST: 'mod_page_create_post',
+    CREATE_POST_LIKE: 'mod_page_create_post_like',
     DELETE_ANNOTATION: 'mod_page_delete_annotation',
     DELETE_POST: 'mod_page_delete_post',
+    DELETE_POST_LIKE: 'mod_page_delete_post_like',
     GET_ANNOTATIONS: 'mod_page_get_annotations',
     GET_ENROLLED_USERS: 'core_course_get_enrolled_users_by_cmid',
     UPDATE_POST: 'mod_page_update_post',
