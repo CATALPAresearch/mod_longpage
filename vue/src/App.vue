@@ -65,6 +65,7 @@ export default {
       Y.use('mathjax', () => {
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
       });
+      this[ACT.FETCH_USER_ROLES]();
       this[ACT.FETCH_ENROLLED_USERS]();
       var _this = this;
       // Log bootstrap interactions
@@ -95,7 +96,7 @@ export default {
       log(key, values) {
         this.logger.add(key, values);
       },
-      ...mapActions([ACT.FETCH_ENROLLED_USERS]),
+      ...mapActions([ACT.FETCH_ENROLLED_USERS, ACT.FETCH_USER_ROLES]),
     },
 };
 </script>

@@ -29,6 +29,24 @@ defined('MOODLE_INTERNAL') || die;
 // TODO Capabilities and type checking
 
 $functions = array(
+    'mod_page_get_user_roles_by_pageid' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'get_user_roles_by_pageid',
+        'description'   => 'Get roles of users participating in a page instance',
+        'type'          => 'read',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
+
+    'mod_page_get_enrolled_users_with_roles_by_pageid' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'get_enrolled_users_with_roles_by_pageid',
+        'description'   => 'Get enrolled users with roles (ids) by page id',
+        'type'          => 'read',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
+
     'mod_page_create_annotation' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_annotation',

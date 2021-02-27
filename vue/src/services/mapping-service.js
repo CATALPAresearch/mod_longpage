@@ -5,6 +5,8 @@ import {invert, omit, pick} from 'lodash';
 import {AnnotationTarget} from '@/types/annotation-target';
 import {Thread} from '@/types/thread';
 import {Post} from '@/types/post';
+import {User} from '@/types/user';
+import {UserRole} from '@/types/user-role';
 
 const SELECTOR_TYPE_ARGS_MAPPING = {
     [SelectorType.TEXT_QUOTE_SELECTOR]: 0,
@@ -150,13 +152,21 @@ const MappingService = {
             subscribedToByUser: response.subscribedtobyuser,
         });
     },
-    [MoodleWSMethods.UPDATE_ANNOTATION](annotation) {
-        return deepLowerCaseKeys({
-            annotation: {
-                ...omit(annotation, [
-                    '$orphan', 'pageId', 'ratingByUser', 'target', 'timecreated', 'timemodified', 'userId'
-                ]),
-            },
+    mapResponseToUser(response) {
+        return new User({
+            id: response.id,
+            firstName: response.firstname,
+            fullName: response.fullname,
+            lastName: response.lastname,
+            imageAlt: response.imagealt,
+            profileImage: response.profileimage,
+        });
+    },
+    mapResponseToUserRole(response) {
+        return new UserRole({
+            id: response.id,
+            localName: response.localname,
+            shortName: response.shortname,
         });
     },
 };

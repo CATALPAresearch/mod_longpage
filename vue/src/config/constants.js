@@ -43,7 +43,8 @@ export const MoodleWSMethods = Object.freeze({
     DELETE_POST_READING: 'mod_page_delete_post_reading',
     DELETE_THREAD_SUBSCRIPTION: 'mod_page_delete_thread_subscription',
     GET_ANNOTATIONS: 'mod_page_get_annotations',
-    GET_ENROLLED_USERS: 'core_course_get_enrolled_users_by_cmid',
+    GET_ENROLLED_USERS: 'mod_page_get_enrolled_users_with_roles_by_pageid',
+    GET_USER_ROLES_FOR_MODULE: 'mod_page_get_user_roles_by_pageid',
     UPDATE_POST: 'mod_page_update_post',
     UPDATE_ANNOTATION: 'mod_page_update_annotation',
 });

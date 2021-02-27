@@ -4,6 +4,7 @@ import {Annotation} from '@/types/annotation';
 import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
 import MappingService from '@/services/mapping-service';
+import {compact, uniq} from 'lodash';
 
 export default {
     state: {
@@ -96,7 +97,7 @@ export default {
                 }
             }]);
         },
-        [ACT.FETCH_ANNOTATIONS]({commit, getters}) {
+        [ACT.FETCH_ANNOTATIONS]({commit, dispatch, getters}) {
             ajax.call([{
                 methodname: MoodleWSMethods.GET_ANNOTATIONS,
                 args: {
@@ -106,6 +107,11 @@ export default {
                 },
                 done: (response) => {
                     const annotations = MappingService.mapResponseToAnnotations(response.annotations);
+                    const userIds = compact(uniq(annotations.reduce(
+                        (result, {creatorId, body: {participantIds} = {}}) => [...result, creatorId, ...participantIds],
+                        [getters[GET.LONGPAGE_CONTEXT].userId],
+                    )));
+                    dispatch(ACT.FETCH_COURSE_USER_PROFILES, userIds);
                     commit(MUTATE.SET_ANNOTATIONS, annotations);
                     commit(MUTATE.SET_THREADS, annotations.filter(a => Boolean(a.body)).map(a => a.body));
                 },

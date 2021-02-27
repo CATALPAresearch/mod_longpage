@@ -33,6 +33,10 @@ export class Thread {
         return this.replies[this.replies.length -1];
     }
 
+    get participantIds() {
+        return this.posts.map(({creatorId}) => creatorId);
+    }
+
     get replyCount() {
         return this.replies.length
     }

@@ -26,7 +26,10 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
+require_once("$CFG->dirroot/course/externallib.php");
+require_once("$CFG->dirroot/user/externallib.php");
 
 function pick_keys($arrOrObj, $keys, $inplace = false) {
     if (!$inplace) {
@@ -579,6 +582,84 @@ class mod_page_external extends external_api {
         $DB->delete_records('page_selectors', $conditions);
     }
 
+    public static function get_user_roles_by_pageid($pageid) {
+        $context = self::get_cm_context_by_pageid($pageid);
+        return ['userroles' => role_get_names($context)];
+    }
+
+    public static function get_user_roles_by_pageid_parameters() {
+        return new external_function_parameters([
+            'pageid' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function get_user_roles_by_pageid_returns() {
+        return new external_function_parameters([
+            'userroles' => new external_multiple_structure(
+              new external_single_structure([
+                  'id' => new external_value(PARAM_INT),
+                  'localname' => new external_value(PARAM_TEXT),
+                  'shortname' => new external_value(PARAM_TEXT),
+              ]),
+            ),
+        ]);
+    }
+
+    private static function get_user_roles_ids($context, $userid) {
+        $result = [];
+        $roles = get_user_roles($context, $userid);
+        foreach ($roles as $role) {
+            array_push($result, $role->roleid);
+        }
+        return $result;
+    }
+
+    public static function get_enrolled_users_with_roles_by_pageid($pageid) {
+        $cm = self::get_coursemodule_by_pageid($pageid);
+        $get_enrolled_users_returns = core_course_external::get_enrolled_users_by_cmid($cm->id);
+        foreach ($get_enrolled_users_returns['users'] as $user) {
+            $user->roles = self::get_user_roles_ids(context_module::instance($cm->id), $user->id);
+        }
+        return $get_enrolled_users_returns;
+    }
+
+    public static function get_enrolled_users_with_roles_by_pageid_parameters() {
+        return self::get_user_roles_by_pageid_parameters();
+    }
+
+    public static function get_enrolled_users_with_roles_by_pageid_returns() {
+        return new external_single_structure([
+            'users' => new external_multiple_structure(self::user_description()),
+            'warnings' => new external_warnings(),
+        ]);
+    }
+
+    /**
+     * Create user return value description.
+     *
+     * @return external_description
+     */
+    public static function user_description() {
+        $userfields = [
+            'id'    => new external_value(core_user::get_property_type('id'), 'ID of the user'),
+            'profileimage' => new external_value(PARAM_URL, 'The location of the users larger image', VALUE_OPTIONAL),
+            'imagealt' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+            'fullname' => new external_value(PARAM_TEXT, 'The full name of the user', VALUE_OPTIONAL), # TODO: Handle users without name in frontend
+            'firstname'   => new external_value(
+                core_user::get_property_type('firstname'),
+                'The first name(s) of the user',
+                VALUE_OPTIONAL),
+            'lastname'    => new external_value(
+                core_user::get_property_type('lastname'),
+                'The family name of the user',
+                VALUE_OPTIONAL),
+            'roles' => new external_multiple_structure(
+                new external_value(PARAM_INT),
+            ),
+        ];
+        return new external_single_structure($userfields);
+    }
+
     public static function delete_thread_subscription($threadid) {
         global $DB, $USER;
 
@@ -1129,13 +1210,20 @@ class mod_page_external extends external_api {
         return self::create_post_returns();
     }
 
-    private static function validate_cm_context($pageid) {
+    private static function get_coursemodule_by_pageid($pageid) {
         global $DB;
 
         $page = $DB->get_record('page', ['id' => $pageid], '*', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
-        $modcontext = context_module::instance($cm->id);
-        self::validate_context($modcontext);
+        return get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
+    }
+
+    private static function get_cm_context_by_pageid($pageid) {
+        $cm = self::get_coursemodule_by_pageid($pageid);
+        return context_module::instance($cm->id);
+    }
+
+    private static function validate_cm_context($pageid) {
+        self::validate_context(self::get_cm_context_by_pageid($pageid));
     }
 
     private static function validate_highlight_can_be_deleted_and_updated($highlight): void {
