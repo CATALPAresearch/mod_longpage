@@ -3,7 +3,7 @@ export class UserRole {
         id,
         localName = '',
         shortName = '',
-    }) {
+    } = {}) {
         this.id = id;
         this.localName = localName;
         this.shortName = shortName;

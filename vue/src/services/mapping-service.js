@@ -160,6 +160,7 @@ const MappingService = {
             lastName: response.lastname,
             imageAlt: response.imagealt,
             profileImage: response.profileimage,
+            profileLink: response.profilelink,
             roles: response.roles,
         });
     },

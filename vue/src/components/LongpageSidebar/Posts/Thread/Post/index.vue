@@ -15,13 +15,13 @@
           <a
             v-if="creator"
             class="mr-1 align-middle"
-            href="#"
+            :href="creator.profileLink"
           >{{ creator.fullName }}</a>
           <span v-else>{{ $t('avatar.nameAnonymous') }}</span>
           <span
             v-for="role in creatorRoles"
             :key="role.id"
-            class="badge badge-info"
+            class="badge badge-info ml-2"
           >{{ role.localName || role.shortName }}</span>
         </div>
         <div class="col text-right">

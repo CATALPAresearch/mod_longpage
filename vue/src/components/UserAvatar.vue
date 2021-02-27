@@ -1,5 +1,5 @@
 <template>
-  <a>
+  <a :href="profileLink">
     <img
       :src="avatar.src"
       class="userpicture avatar"
@@ -27,6 +27,10 @@
           src: M.util.image_url('user-secret-avatar', 'mod_page'),
         };
       },
+      profileLink() {
+        console.log(this.user);
+        return this.user ? this.user.profileLink : 'javascript:void(0)';
+      }
     }
   };
 </script>

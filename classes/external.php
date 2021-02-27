@@ -614,11 +614,23 @@ class mod_page_external extends external_api {
         return $result;
     }
 
+    /**
+     * Get the link to the users's profile page.
+     *
+     * @return string
+     */
+    public function get_profile_link($userid, $courseid) {
+        $queryparams = ['id' => $userid, 'course' => $courseid];
+        $link = new \moodle_url('/user/view.php', $queryparams);
+        return $link->out(false);
+    }
+
     public static function get_enrolled_users_with_roles_by_pageid($pageid) {
         $cm = self::get_coursemodule_by_pageid($pageid);
         $get_enrolled_users_returns = core_course_external::get_enrolled_users_by_cmid($cm->id);
         foreach ($get_enrolled_users_returns['users'] as $user) {
             $user->roles = self::get_user_roles_ids(context_module::instance($cm->id), $user->id);
+            $user->profilelink = self::get_profile_link($user->id, $cm->course);
         }
         return $get_enrolled_users_returns;
     }
@@ -643,6 +655,7 @@ class mod_page_external extends external_api {
         $userfields = [
             'id'    => new external_value(core_user::get_property_type('id'), 'ID of the user'),
             'profileimage' => new external_value(PARAM_URL, 'The location of the users larger image', VALUE_OPTIONAL),
+            'profilelink' => new external_value(PARAM_URL),
             'imagealt' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
             'fullname' => new external_value(PARAM_TEXT, 'The full name of the user', VALUE_OPTIONAL), # TODO: Handle users without name in frontend
             'firstname'   => new external_value(
