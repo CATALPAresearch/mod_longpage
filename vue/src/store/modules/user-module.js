@@ -7,7 +7,7 @@ export default {
         enrolledUsers: [],
     },
     getters: {
-        [GET.USER]: ({enrolledUsers}, getters) => (id) => enrolledUsers.find(
+        [GET.USER]: ({enrolledUsers}, getters) => id => enrolledUsers.find(
             user => user.id === (id || getters[GET.LONGPAGE_CONTEXT].userId)
         ),
         [GET.ENROLLED_USERS]: ({enrolledUsers}) => enrolledUsers,

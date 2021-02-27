@@ -2,7 +2,7 @@
   <div class="row no-gutters">
     <div class="col col-auto p-0">
       <user-avatar
-        :user="user"
+        :user="creator"
       />
     </div>
     <div class="col p-0">
@@ -141,7 +141,7 @@ export default {
       return this[GET.ANNOTATION](this.thread.annotationId);
     },
     creator() {
-      return this[GET.USER](this.post.creatorId);
+      return this.post.creatorId ? this[GET.USER](this.post.creatorId) : null;
     },
     showPostVisibilityIndicator() {
       return this.user === this.creator;

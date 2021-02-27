@@ -19,19 +19,13 @@
     },
     computed: {
       avatar() {
-        return this.avatarUser || this.avatarAnonymous;
-      },
-      avatarAnonymous() {
-        return {
-          alt: this.$i18n.tc('avatar.alt', 1),
-          src: M.util.image_url('user-secret-avatar', 'mod_page'),
-        };
-      },
-      avatarUser() {
         return this.user ? {
           src: this.user.profileimage,
           alt: this.$i18n.tc('avatar.alt', 2, {fullName: this.user.fullname})
-        } : null;
+        } : {
+          alt: this.$i18n.tc('avatar.alt', 1),
+          src: M.util.image_url('user-secret-avatar', 'mod_page'),
+        };
       },
     }
   };
