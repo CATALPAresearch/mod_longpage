@@ -127,6 +127,7 @@ const MappingService = {
             ...pick(response, ['id', 'anonymous', 'content']),
             creatorId: response.creatorid,
             isPublic: response.ispublic,
+            bookmarkedByUser: response.bookmarkedbyuser,
             likedByUser: response.likedbyuser,
             likesCount: response.likescount,
             readByUser: response.readbyuser,
@@ -146,6 +147,7 @@ const MappingService = {
             posts: this.mapResponseToPosts(response.posts),
             replyId: response.replyid,
             replyRequested: response.replyrequested,
+            subscribedToByUser: response.subscribedtobyuser,
         });
     },
     [MoodleWSMethods.UPDATE_ANNOTATION](annotation) {

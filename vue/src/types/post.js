@@ -14,7 +14,7 @@ export class Post {
         isPublic = false,
         likedByUser = false,
         likesCount = 0,
-        markedByUser = false,
+        bookmarkedByUser = false,
         readByUser = false,
         readingsCount = 0,
         timeCreated,
@@ -30,7 +30,7 @@ export class Post {
         this.content = content;
         this.isPublic = isPublic;
         this.likesCount = likesCount;
-        this.markedByUser = markedByUser;
+        this.bookmarkedByUser = bookmarkedByUser;
         this.readingsCount = readingsCount;
         this.timeCreated = timeCreated;
         this.timeModified = timeModified;

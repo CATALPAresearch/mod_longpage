@@ -8,15 +8,17 @@ export class Thread {
     constructor({
         id = Thread._getPreliminaryId(),
         annotationId,
+        posts = [],
         replyId,
         replyRequested = false,
-        posts = []
+        subscribedToByUser = false,
     }) {
         this.id = id;
         this.annotationId = annotationId;
+        this.posts = posts;
         this.replyId = replyId;
         this.replyRequested = replyRequested;
-        this.posts = posts;
+        this.subscribedToByUser = subscribedToByUser;
     }
 
     get created() {

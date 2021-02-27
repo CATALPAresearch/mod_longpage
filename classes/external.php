@@ -230,7 +230,7 @@ class mod_page_external extends external_api {
 
         $DB->delete_records('page_post_likes', ['postid' => $id]);
         $DB->delete_records('page_post_readings', ['postid' => $id]);
-        $DB->delete_records('page_post_marks', ['postid' => $id]);
+        $DB->delete_records('page_post_bookmarks', ['postid' => $id]);
         $DB->delete_records('page_posts', ['id' => $id]);
     }
 
@@ -286,19 +286,21 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    public static function create_post_mark($parameters) {
-        global $DB;
+    public static function create_post_bookmark($postid) {
+        global $DB, $USER;
+
+        self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_post_marks', array_merge($parameters, ['timecreated' => time()]));
+        $DB->insert_record('page_post_bookmarks', ['postid' => $postid, 'timecreated' => time(), 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 
-    public static function create_post_mark_parameters() {
+    public static function create_post_bookmark_parameters() {
         return self::create_post_like_parameters();
     }
 
-    public static function create_post_mark_returns() {
+    public static function create_post_bookmark_returns() {
         return null;
     }
 
@@ -379,18 +381,21 @@ class mod_page_external extends external_api {
 
     }
 
-    public static function create_thread_subscription($parameters) {
-        global $DB;
+    public static function create_thread_subscription($threadid) {
+        global $DB, $USER;
+
+        self::validate_parameters(self::create_thread_subscription_parameters(), ['threadid' => $threadid]);
+        $annotation = self::get_annotation_by_thread($threadid);
+        self::validate_cm_context($annotation->pageid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_thread_subscriptions', array_merge($parameters, ['timecreated' => time()]));
+        $DB->insert_record('page_thread_subscriptions', ['threadid' => $threadid, 'timecreated' => time(), 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 
     public static function create_thread_subscription_parameters() {
         return new external_function_parameters([
             'threadid' => new external_value(PARAM_INT),
-            'userid' => new external_value(PARAM_INT),
         ]);
     }
 
@@ -463,6 +468,18 @@ class mod_page_external extends external_api {
         return null;
     }
 
+    /**
+     * @param $DB
+     * @param $threadid
+     * @return mixed
+     */
+    private static function get_annotation_by_thread($threadid) {
+        global $DB;
+
+        $thread = $DB->get_record('page_threads', ['id' => $threadid]);
+        return $DB->get_record('page_annotations', ['id' => $thread->annotationid]);
+    }
+
     private static function is_post_thread_root($post) {
         global $DB;
 
@@ -506,19 +523,21 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    public static function delete_post_mark($parameters) {
-        global $DB;
+    public static function delete_post_bookmark($postid) {
+        global $DB, $USER;
+
+        self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_marks', $parameters);
+        $DB->delete_records('page_post_bookmarks', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 
-    public static function delete_post_mark_parameters() {
+    public static function delete_post_bookmark_parameters() {
         return self::create_post_like_parameters();
     }
 
-    public static function delete_post_mark_returns() {
+    public static function delete_post_bookmark_returns() {
         return null;
     }
 
@@ -560,11 +579,15 @@ class mod_page_external extends external_api {
         $DB->delete_records('page_selectors', $conditions);
     }
 
-    public static function delete_thread_subscription($parameters) {
-        global $DB;
+    public static function delete_thread_subscription($threadid) {
+        global $DB, $USER;
+
+        self::validate_parameters(self::create_thread_subscription_parameters(), ['threadid' => $threadid]);
+        $annotation = self::get_annotation_by_thread($threadid);
+        self::validate_cm_context($annotation->pageid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_thread_subscriptions', $parameters);
+        $DB->delete_records('page_thread_subscriptions', ['threadid' => $threadid, 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 
@@ -823,7 +846,7 @@ class mod_page_external extends external_api {
         return [
             'likescount' => new external_value(PARAM_INT),
             'likedbyuser' => new external_value(PARAM_BOOL),
-            'markedbyuser' => new external_value(PARAM_BOOL),
+            'bookmarkedbyuser' => new external_value(PARAM_BOOL),
             'markedasrequestedreply' => new external_value(PARAM_BOOL),
             'readingscount' => new external_value(PARAM_INT),
             'readbyuser' => new external_value(PARAM_BOOL),
@@ -856,8 +879,8 @@ class mod_page_external extends external_api {
         $post->readingscount = $DB->count_records('page_post_readings', ['postid' => $post->id]);
         $post->readbyuser = $DB->record_exists('page_post_readings', ['postid' => $post->id, 'userid' => $USER->id]);
 
-        $post->markedbyuser =
-            $DB->record_exists('page_post_marks', ['postid' => $post->id, 'userid' => $USER->id]);
+        $post->bookmarkedbyuser =
+            $DB->record_exists('page_post_bookmarks', ['postid' => $post->id, 'userid' => $USER->id]);
 
         return $post;
     }
@@ -1043,13 +1066,6 @@ class mod_page_external extends external_api {
         return ['timecreated' => new external_value(PARAM_INT), 'timemodified' => new external_value(PARAM_INT)];
     }
 
-    private static function update_annotation_tags($tags, $annotationid) {
-        global $DB;
-
-        $DB->delete_records('page_annotation_tags', ['annotationid' => $annotationid]);
-        $DB->insert_records('page_annotation_tags', array_map_merge($tags, ['annotationid' => $annotationid]));
-    }
-
     public static function update_highlight($id, $styleclass) {
         global $DB;
 
@@ -1155,12 +1171,12 @@ class mod_page_external extends external_api {
                 It cannot be deleted/updated since others might depend on it.');
         }
 
-        $ismarked = $DB->record_exists_select(
-            'page_post_marks',
+        $isbookmarked = $DB->record_exists_select(
+            'page_post_bookmarks',
             'postid = ? AND userid != ?',
             ['postid' => $post->id, 'userid' => $post->creatorid]
         );
-        if ($ismarked) {
+        if ($isbookmarked) {
             throw new invalid_parameter_exception('Post is marked by others. 
                 It cannot be deleted/updated since others might depend on it.');
         }

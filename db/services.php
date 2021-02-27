@@ -112,17 +112,17 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-    'mod_page_create_post_mark' => array(
+    'mod_page_create_post_bookmark' => array(
         'classname'     => 'mod_page_external',
-        'methodname'    => 'create_post_mark',
+        'methodname'    => 'create_post_bookmark',
         'description'   => 'Create postIntern mark',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-    'mod_page_delete_post_mark' => array(
+    'mod_page_delete_post_bookmark' => array(
         'classname'     => 'mod_page_external',
-        'methodname'    => 'delete_post_mark',
+        'methodname'    => 'delete_post_bookmark',
         'description'   => 'Delete postIntern mark',
         'type'          => 'write',
         'capabilities'  => 'mod/page:view',

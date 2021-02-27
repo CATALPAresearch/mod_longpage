@@ -39,15 +39,11 @@
         href="javascript:void(0)"
         class="text-dark"
         role="button"
-        @click="toggleMark"
+        @click="toggleBookmark"
       >
         <i
-          v-if="postIntern.markedByUser"
-          class="icon fa fa-star fa-fw m-0"
-        />
-        <i
-          v-else
-          class="icon fa fa-star-o fa-fw m-0"
+          class="icon fa fa-fw m-0"
+          :class="[post.bookmarkedByUser ? 'fa-star' : 'fa-star-o']"
         />
       </a>
     </div>
@@ -58,15 +54,11 @@
         href="javascript:void(0)"
         class="text-dark"
         role="button"
-        @click="toggleSubscription"
+        @click="toggleThreadSubscription"
       >
         <i
-          v-if="postIntern.subscribedByUser"
-          class="icon fa fa-bell fa-fw m-0"
-        />
-        <i
-          v-else
-          class="icon fa fa-bell-o fa-fw m-0"
+          class="icon fa fa-fw m-0"
+          :class="[thread.subscribedToByUser ? 'fa-bell' : 'fa-bell-o']"
         />
       </a>
     </div>
@@ -119,15 +111,6 @@ export default {
     show: {type: Boolean, default: true},
   },
   emits: ['edit-clicked', 'toggle-replies'],
-  data() {
-    return {
-      ipost: {
-        replyCount: 20,
-        markedByUser: true,
-        subscribedByUser: false,
-      }
-    };
-  },
   computed: {
     dropdownMenuItems() {
       return [
@@ -148,8 +131,10 @@ export default {
     ...mapActions([
       ACT.CREATE_POST,
       ACT.DELETE_POST,
+      ACT.TOGGLE_POST_BOOKMARK,
       ACT.TOGGLE_POST_LIKE,
       ACT.TOGGLE_POST_READING,
+      ACT.TOGGLE_THREAD_SUBSCRIPTION,
     ]),
     deletePost() {
       this[ACT.DELETE_POST](this.post);
@@ -157,8 +142,8 @@ export default {
     openEditor() {
       this.$emit('edit-clicked');
     },
-    toggleMark() {
-      this.ipost.markedByUser = !this.ipost.markedByUser;
+    toggleBookmark() {
+      this[ACT.TOGGLE_POST_BOOKMARK]({postId: this.post.id, threadId: this.post.threadId});
     },
     togglePostLike() {
       this[ACT.TOGGLE_POST_LIKE]({postId: this.post.id, threadId: this.post.threadId});
@@ -170,8 +155,8 @@ export default {
       this.$emit('toggle-replies');
       if (!this.thread.replyCount) this[ACT.CREATE_POST]({threadId: this.thread.id});
     },
-    toggleSubscription() {
-      this.ipost.subscribedByUser = !this.ipost.subscribedByUser;
+    toggleThreadSubscription() {
+      this[ACT.TOGGLE_THREAD_SUBSCRIPTION](this.post.threadId);
     },
   }
 };

@@ -162,7 +162,7 @@
         <KEY NAME="postIntern" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="page_post_marks" COMMENT="">
+    <TABLE NAME="page_post_bookmarks" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>

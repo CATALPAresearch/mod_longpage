@@ -95,6 +95,25 @@ export default {
                 commit(MUTATE.UPDATE_THREAD, {id: thread.id, threadUpdate: thread});
             } else commit(MUTATE.ADD_THREADS, [thread]);
         },
+        [ACT.TOGGLE_POST_BOOKMARK]({commit, getters}, {postId, threadId}) {
+            const post = getters[GET.POST](postId, threadId);
+            commit(
+                MUTATE.UPDATE_POST,
+                {threadId: post.threadId, postId: post.id, postUpdate: {...post, bookmarkedByUser: !post.bookmarkedByUser}}
+            );
+            const methodname = post.bookmarkedByUser ? MoodleWSMethods.CREATE_POST_BOOKMARK : MoodleWSMethods.DELETE_POST_BOOKMARK;
+            ajax.call([{
+                methodname,
+                args: {postid: post.id},
+                fail: (e) => {
+                    console.error(`"${methodname}" failed`, e);
+                    commit(
+                        MUTATE.UPDATE_POST,
+                        {threadId: post.threadId, postId: post.id, postUpdate: {...post, bookmarkedByUser: !post.bookmarkedByUser}}
+                    );
+                }
+            }]);
+        },
         [ACT.TOGGLE_POST_LIKE]({commit, getters}, {postId, threadId}) {
             const post = getters[GET.POST](postId, threadId);
             commit(
@@ -129,6 +148,26 @@ export default {
                     commit(
                         MUTATE.UPDATE_POST,
                         {threadId: post.threadId, postId: post.id, postUpdate: {...post, readByUser: !post.readByUser}}
+                    );
+                }
+            }]);
+        },
+        [ACT.TOGGLE_THREAD_SUBSCRIPTION]({commit, getters}, threadId) {
+            const thread = getters[GET.THREAD](threadId);
+            commit(
+                MUTATE.UPDATE_THREAD,
+                {id: threadId, threadUpdate: {...thread, subscribedToByUser: !thread.subscribedToByUser}}
+            );
+            const methodname = thread.subscribedToByUser ?
+                MoodleWSMethods.CREATE_THREAD_SUBSCRIPTION : MoodleWSMethods.DELETE_THREAD_SUBSCRIPTION;
+            ajax.call([{
+                methodname,
+                args: {threadid: thread.id},
+                fail: (e) => {
+                    console.error(`"${methodname}" failed`, e);
+                    commit(
+                        MUTATE.UPDATE_THREAD,
+                        {id: threadId, threadUpdate: {...thread, subscribedToByUser: !thread.subscribedToByUser}}
                     );
                 }
             }]);
