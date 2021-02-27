@@ -20,8 +20,8 @@
     computed: {
       avatar() {
         return this.user ? {
-          src: this.user.profileimage,
-          alt: this.$i18n.tc('avatar.alt', 2, {fullName: this.user.fullname})
+          src: this.user.profileImage,
+          alt: this.user.imageAlt || this.$i18n.tc('avatar.alt', 2, {fullName: this.user.fullName})
         } : {
           alt: this.$i18n.tc('avatar.alt', 1),
           src: M.util.image_url('user-secret-avatar', 'mod_page'),

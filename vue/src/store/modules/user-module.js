@@ -1,7 +1,7 @@
 import ajax from 'core/ajax';
 import {MoodleWSMethods} from '@/config/constants';
 import {GET, ACT, MUTATE} from '../types';
-import {User} from '@/types/user';
+import MappingService from '@/services/mapping-service';
 
 export default {
     state: {
@@ -12,7 +12,9 @@ export default {
         [GET.USER]: ({enrolledUsers}, getters) => id => enrolledUsers.find(
             user => user.id === (id || getters[GET.LONGPAGE_CONTEXT].userId)
         ),
-        [GET.ENROLLED_USERS]: ({enrolledUsers}) => enrolledUsers,
+        [GET.USER_ROLES]: ({userRoles}, getters) => userId => userRoles.filter(
+            role => getters[GET.USER](userId).roles.includes(role.id)
+        ),
     },
     actions: {
         [ACT.FETCH_ENROLLED_USERS]({commit, getters}) {
@@ -23,7 +25,7 @@ export default {
                     pageid: context.pageId,
                 },
                 done: ({users}) => {
-                    commit(MUTATE.SET_ENROLLED_USERS, users.map(response => new User(response)));
+                    commit(MUTATE.SET_ENROLLED_USERS, users.map(response => MappingService.mapResponseToUser(response)));
                 },
                 fail: (e) => {
                     console.error(`"${MoodleWSMethods.GET_ENROLLED_USERS}" failed`, e);
@@ -38,7 +40,7 @@ export default {
                     pageid: context.pageId,
                 },
                 done: ({userroles}) => {
-                    commit(MUTATE.SET_USER_ROLES, userroles);
+                    commit(MUTATE.SET_USER_ROLES, userroles.map(response => MappingService.mapResponseToUserRole(response)));
                 },
                 fail: (e) => {
                     console.error(`"${MoodleWSMethods.GET_USER_ROLES_FOR_MODULE}" failed`, e);
@@ -50,8 +52,8 @@ export default {
         [MUTATE.SET_ENROLLED_USERS](state, enrolledUsers) {
             state.enrolledUsers = enrolledUsers;
         },
-        [MUTATE.SET_USER_ROLES](state, enrolledUsers) {
-            state.enrolledUsers = enrolledUsers;
+        [MUTATE.SET_USER_ROLES](state, userRoles) {
+            state.userRoles = userRoles;
         },
     },
 };

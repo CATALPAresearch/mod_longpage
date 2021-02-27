@@ -16,13 +16,13 @@
             v-if="creator"
             class="mr-1 align-middle"
             href="#"
-          >{{ creator.fullname }}</a>
+          >{{ creator.fullName }}</a>
           <span v-else>{{ $t('avatar.nameAnonymous') }}</span>
-          <!--          <user-role-button-->
-          <!--            v-if="creator && creator.role"-->
-          <!--            :role="creator.role"-->
-          <!--            :href="creator.roleOverview"-->
-          <!--          />-->
+          <span
+            v-for="role in creatorRoles"
+            :key="role.id"
+            class="badge badge-info"
+          >{{ role.localName || role.shortName }}</span>
         </div>
         <div class="col text-right">
           <i class="icon fa fa-question-circle-o fa-fw" />
@@ -136,12 +136,15 @@ export default {
     };
   },
   computed: {
-    ...mapGetters([GET.ANNOTATION, GET.USER]),
+    ...mapGetters([GET.ANNOTATION, GET.USER_ROLES, GET.USER]),
     annotation() {
       return this[GET.ANNOTATION](this.thread.annotationId);
     },
     creator() {
       return this.post.creatorId ? this[GET.USER](this.post.creatorId) : null;
+    },
+    creatorRoles() {
+      return this.creator ? this[GET.USER_ROLES](this.creator.id) : [];
     },
     showPostVisibilityIndicator() {
       return this.user === this.creator;
