@@ -308,11 +308,13 @@ class mod_page_external extends external_api {
         ]);
     }
 
-    public static function create_post_reading($parameters) {
-        global $DB;
+    public static function create_post_reading($postid) {
+        global $DB, $USER;
+
+        self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_post_readings', array_merge($parameters, ['timecreated' => time()]));
+        $DB->insert_record('page_post_readings', ['postid' => $postid, 'timecreated' => time(), 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 
@@ -524,11 +526,13 @@ class mod_page_external extends external_api {
         return new external_function_parameters(self::id_parameter());
     }
 
-    public static function delete_post_reading($parameters) {
-        global $DB;
+    public static function delete_post_reading($postid) {
+        global $DB, $USER;
+
+        self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_readings', $parameters);
+        $DB->delete_records('page_post_likes', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 

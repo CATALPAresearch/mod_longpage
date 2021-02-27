@@ -40,35 +40,6 @@ export default {
         },
     },
     actions: {
-        [ACT.TOGGLE_POST_LIKE]({commit, getters}, {postId, threadId}) {
-            const post = getters[GET.POST](postId, threadId);
-            commit(
-                MUTATE.UPDATE_POST,
-                {threadId: post.threadId, postId: post.id, postUpdate: {...post, likedByUser: !post.likedByUser}}
-            );
-            const methodname = post.likedByUser ? MoodleWSMethods.CREATE_POST_LIKE : MoodleWSMethods.DELETE_POST_LIKE;
-            ajax.call([{
-                methodname,
-                args: {postid: post.id},
-                fail: (e) => {
-                    console.error(`"${methodname}" failed`, e);
-                    commit(
-                        MUTATE.UPDATE_POST,
-                        {threadId: post.threadId, postId: post.id, postUpdate: {...post, likedByUser: !post.likedByUser}}
-                    );
-                }
-            }]);
-        },
-        [ACT.REPLACE_OR_ADD_POST]({commit, getters}, post) {
-            if (getters[GET.POST](post.id, post.threadId)) {
-                commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, postUpdate: post});
-            } else commit(MUTATE.ADD_POSTS_TO_THREAD, {threadId: post.threadId, posts: [post]});
-        },
-        [ACT.REPLACE_OR_ADD_THREAD]({commit, getters}, thread) {
-            if (getters[GET.THREAD](thread.id)) {
-                commit(MUTATE.UPDATE_THREAD, {id: thread.id, threadUpdate: thread});
-            } else commit(MUTATE.ADD_THREADS, [thread]);
-        },
         [ACT.CREATE_POST]({commit, dispatch, getters}, params = {}) {
             const post = getters[GET.POST](params.id) || getters[GET.NEW_POST](params);
             dispatch(ACT.REPLACE_OR_ADD_POST, post);
@@ -111,6 +82,54 @@ export default {
                 fail: (e) => {
                     commit(MUTATE.ADD_POSTS_TO_THREAD, {threadId: thread.id, posts: [post]});
                     console.error(`"${MoodleWSMethods.DELETE_POST}" failed`, e);
+                }
+            }]);
+        },
+        [ACT.REPLACE_OR_ADD_POST]({commit, getters}, post) {
+            if (getters[GET.POST](post.id, post.threadId)) {
+                commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, postUpdate: post});
+            } else commit(MUTATE.ADD_POSTS_TO_THREAD, {threadId: post.threadId, posts: [post]});
+        },
+        [ACT.REPLACE_OR_ADD_THREAD]({commit, getters}, thread) {
+            if (getters[GET.THREAD](thread.id)) {
+                commit(MUTATE.UPDATE_THREAD, {id: thread.id, threadUpdate: thread});
+            } else commit(MUTATE.ADD_THREADS, [thread]);
+        },
+        [ACT.TOGGLE_POST_LIKE]({commit, getters}, {postId, threadId}) {
+            const post = getters[GET.POST](postId, threadId);
+            commit(
+                MUTATE.UPDATE_POST,
+                {threadId: post.threadId, postId: post.id, postUpdate: {...post, likedByUser: !post.likedByUser}}
+            );
+            const methodname = post.likedByUser ? MoodleWSMethods.CREATE_POST_LIKE : MoodleWSMethods.DELETE_POST_LIKE;
+            ajax.call([{
+                methodname,
+                args: {postid: post.id},
+                fail: (e) => {
+                    console.error(`"${methodname}" failed`, e);
+                    commit(
+                        MUTATE.UPDATE_POST,
+                        {threadId: post.threadId, postId: post.id, postUpdate: {...post, likedByUser: !post.likedByUser}}
+                    );
+                }
+            }]);
+        },
+        [ACT.TOGGLE_POST_READING]({commit, getters}, {postId, threadId}) {
+            const post = getters[GET.POST](postId, threadId);
+            commit(
+                MUTATE.UPDATE_POST,
+                {threadId: post.threadId, postId: post.id, postUpdate: {...post, readByUser: !post.readByUser}}
+            );
+            const methodname = post.readByUser ? MoodleWSMethods.CREATE_POST_READING : MoodleWSMethods.DELETE_POST_READING;
+            ajax.call([{
+                methodname,
+                args: {postid: post.id},
+                fail: (e) => {
+                    console.error(`"${methodname}" failed`, e);
+                    commit(
+                        MUTATE.UPDATE_POST,
+                        {threadId: post.threadId, postId: post.id, postUpdate: {...post, readByUser: !post.readByUser}}
+                    );
                 }
             }]);
         },

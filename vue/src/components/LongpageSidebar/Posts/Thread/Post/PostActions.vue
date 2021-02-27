@@ -131,7 +131,11 @@ export default {
   computed: {
     dropdownMenuItems() {
       return [
-        {iconClasses: ['fa', 'fa-eye-slash', 'fa-fw'], handler: () => {}, text: this.$i18n.t('post.action.markAsUnread')},
+        {
+          iconClasses: ['fa', this.post.readByUser ? 'fa-eye-slash' : 'fa-eye', 'fa-fw'],
+          handler: this.togglePostReading,
+          text: this.$i18n.t(`post.action.${this.post.readByUser ? 'markAsUnread' : 'markAsRead'}`),
+        },
         {iconClasses: ['fa', 'fa-pencil', 'fa-fw'], handler: this.openEditor, text: this.$i18n.t('post.action.edit')},
         {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deletePost, text: this.$i18n.t('post.action.delete')},
       ];
@@ -145,6 +149,7 @@ export default {
       ACT.CREATE_POST,
       ACT.DELETE_POST,
       ACT.TOGGLE_POST_LIKE,
+      ACT.TOGGLE_POST_READING,
     ]),
     deletePost() {
       this[ACT.DELETE_POST](this.post);
@@ -157,6 +162,9 @@ export default {
     },
     togglePostLike() {
       this[ACT.TOGGLE_POST_LIKE]({postId: this.post.id, threadId: this.post.threadId});
+    },
+    togglePostReading() {
+      this[ACT.TOGGLE_POST_READING]({postId: this.post.id, threadId: this.post.threadId});
     },
     toggleRepliesOrReply() {
       this.$emit('toggle-replies');
