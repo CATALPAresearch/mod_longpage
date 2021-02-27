@@ -1,8 +1,12 @@
 <template>
-  <highlights-tab :highlights="highlights" />
+  <highlights-tab
+    :highlights="highlights"
+    :type="type"
+  />
 </template>
 
 <script>
+import {AnnotationType} from '@/config/constants';
 import {GET} from '@/store/types';
 import HighlightsTab from '../HighlightsTab';
 import {mapGetters} from 'vuex';
@@ -14,6 +18,9 @@ export default {
     ...mapGetters({
       highlights: GET.BOOKMARKS,
     }),
+    type() {
+      return AnnotationType.BOOKMARK;
+    }
   },
 };
 </script>

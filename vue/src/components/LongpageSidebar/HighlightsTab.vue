@@ -71,6 +71,7 @@ export default {
   name: 'HighlightsTab',
   components: {DateTimes, ExpandableHighlightExcerpt, SidebarTab},
   props: {
+    type: {type: Number, default: AnnotationType.HIGHLIGHT},
     highlights: {type: Array, default: () => []}
   },
   computed: {
@@ -81,7 +82,7 @@ export default {
       ];
     },
     areHighlights() {
-      return Boolean(this.highlights.length) && this.highlights[0].type === AnnotationType.HIGHLIGHT;
+      return this.type === AnnotationType.HIGHLIGHT;
     },
   },
   methods: {
