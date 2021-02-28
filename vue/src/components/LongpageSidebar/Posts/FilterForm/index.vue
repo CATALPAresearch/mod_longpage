@@ -25,41 +25,41 @@
         Status
       </h6>
       <div class="col-auto">
-        <div class="form-check form-check-inline mr-3">
+        <div
+          v-for="input in stateInputs"
+          :key="input.id"
+          class="form-check form-check-inline mr-3"
+        >
           <input
-            id="defaultCheck1"
+            :id="input.id"
+            v-model="input.value"
             class="form-check-input"
             type="checkbox"
           >
           <label
             class="form-check-label"
-            for="defaultCheck1"
+            :for="input.id"
           >
-            Gelesen
+            {{ input.label }}
             <i
-              class="icon fa fa-eye fa-fw"
-            />
-          </label>
-        </div>
-        <div class="form-check form-check-inline mr-3">
-          <input
-            id="defaultCheck2"
-            class="form-check-input"
-            type="checkbox"
-          >
-          <label
-            class="form-check-label"
-            for="defaultCheck2"
-          >
-            Noch nicht gelesen
-            <i
-              class="icon fa fa-eye-slash fa-fw"
+              class="icon fa fa-fw"
+              :class="input.iconClasses"
             />
           </label>
         </div>
       </div>
     </div>
     <div
+      v-if="likesCountSliderOptions"
+      class="mb-2 row"
+    >
+      <h6 class="d-inline mr-3 col-auto">
+        Likes
+      </h6>
+      <slider :slider-options="likesCountSliderOptions" />
+    </div>
+    <div
+      v-if="datesCreatedSliderOptions"
       class="mb-2 row"
     >
       <h6 class="d-inline mr-3 col-auto">
@@ -68,6 +68,7 @@
       <slider :slider-options="datesCreatedSliderOptions" />
     </div>
     <div
+      v-if="datesModifiedSliderOptions"
       class="mb-2 row"
     >
       <h6 class="d-inline mr-3 col-auto">
@@ -83,8 +84,8 @@
 </template>
 
 <script>
-  import {isEmpty, last} from 'lodash';
   import {GET} from '@/store/types';
+  import {isEmpty} from 'lodash';
   import {mapGetters} from 'vuex';
   import Slider from '@/components/Generic/Slider';
   import {getDateFormat} from '@/config/i18n/date-time-utils';
@@ -97,22 +98,69 @@
   export default {
     name: 'FilterForm',
     components: {Slider},
+    data() {
+      return {
+        stateInputs: [
+          {
+            id: 'posts-filter-checkbox-read',
+            label: this.$i18n.t('post.state.unread'),
+            iconClasses: ['fa-eye-slash'],
+            value: true
+          },
+          {
+            id: 'posts-filter-checkbox-unread',
+            label: this.$i18n.t('post.state.read'),
+            iconClasses: ['fa-eye'],
+            value: true
+          },
+          {
+            id: 'posts-filter-checkbox-bookmarked',
+            label: this.$i18n.t('post.state.bookmarked'),
+            iconClasses: ['fa-star'],
+            value: true
+          },
+          {
+            id: 'posts-filter-checkbox-subscribed-to-thread',
+            label: this.$i18n.t('post.state.subscribedToThread'),
+            iconClasses: ['fa-bell'],
+            value: true
+          },
+        ],
+      };
+    },
     computed: {
       ...mapGetters([GET.POSTS]),
+      likesCountSliderOptions() {
+        const likesCounts = this[GET.POSTS].map(({likesCount}) => likesCount);
+        if (isEmpty(likesCounts)) return;
+
+        const [min, max] = [Math.min(...likesCounts), Math.max(...likesCounts)];
+        if (min === max) return;
+
+        return {min, max, value: [min, max]};
+      },
       datesCreatedSliderOptions() {
-        const timestampsAsc = this.mapPostsToTimestampsAsc(this[GET.POSTS]);
-        const minMax = isEmpty(timestampsAsc) ? [0, Date.now()] : [timestampsAsc[0], last(timestampsAsc)];
-        return this.getDateSliderOptions(...minMax);
+        const timestamps = this.mapPostsToTimestamps(this[GET.POSTS]);
+        if (isEmpty(timestamps)) return;
+
+        const [min, max] = [Math.min(...timestamps), Math.max(...timestamps)];
+        if (min === max) return;
+
+        return this.getDateSliderOptions(min, max);
       },
       datesModifiedSliderOptions() {
-        const timestampsAsc = this.mapPostsToTimestampsAsc(this[GET.POSTS], Timestamp.MODIFIED);
-        const minMax = isEmpty(timestampsAsc) ? [0, Date.now()] : [timestampsAsc[0], last(timestampsAsc)];
-        return this.getDateSliderOptions(...minMax);
+        const timestamps = this.mapPostsToTimestamps(this[GET.POSTS], Timestamp.MODIFIED);
+        if (isEmpty(timestamps)) return;
+
+        const [min, max] = [Math.min(...timestamps), Math.max(...timestamps)];
+        if (min === max) return;
+
+        return this.getDateSliderOptions(min, max);
       },
     },
     methods: {
-      mapPostsToTimestampsAsc(posts, timestamp = Timestamp.CREATED) {
-        return posts.filter(p => p.created).map(p => p[timestamp].getTime()).sort((tA, tB) => tA - tB) || [];
+      mapPostsToTimestamps(posts, timestamp = Timestamp.CREATED) {
+        return posts.filter(p => p.created).map(p => p[timestamp].getTime()) || [];
       },
       getDateSliderOptions(timeMin, timeMax) {
         const format = time => this.$i18n.d.call(this.$i18n, time, getDateFormat(time));

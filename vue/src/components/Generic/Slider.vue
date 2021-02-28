@@ -1,12 +1,16 @@
 <template>
-  <div v-if="sliderOptions && sliderOptions">
-    <span class="mr-3">{{ sliderOptions.formatter(sliderOptions.value[0]) }}</span>
+  <div v-if="sliderOptions">
+    <span class="mr-3">
+      {{ sliderOptions.formatter ? sliderOptions.formatter(sliderOptions.min) : sliderOptions.min }}
+    </span>
     <input
       :id="inputId"
       ref="input"
       type="text"
     >
-    <span class="ml-3">{{ sliderOptions.formatter(sliderOptions.value[1]) }}</span>
+    <span class="ml-3">
+      {{ sliderOptions.formatter ? sliderOptions.formatter(sliderOptions.max) : sliderOptions.max }}
+    </span>
   </div>
 </template>
 
@@ -29,33 +33,18 @@
       };
     },
     watch: {
-      async sliderOptions() {
-        await this.destroySlider();
-        this.initSlider();
+      async sliderOptions(options) {
+        await this.initSliderPromise;
+        Object.entries(options).forEach(([key, value]) => {
+          this.slider.setAttribute(key, value);
+        });
+        this.slider.refresh({useCurrentValue: true});
       }
     },
     async mounted() {
       this.initSlider();
     },
     methods: {
-      async destroySlider() {
-        await this.initSliderPromise;
-        this.slider.destroy();
-        return new Promise((resolve) => {
-          const mutationObserver = new MutationObserver(() => {
-            if (!document.querySelector(toIdSelector(this.sliderId))) {
-              mutationObserver.disconnect();
-              resolve();
-            }
-          });
-          mutationObserver.observe(document, {
-            attributes: false,
-            childList: true,
-            characterData: false,
-            subtree: true,
-          });
-        });
-      },
       initSlider() {
         this.initSliderPromise = new Promise((resolve) => {
           const mutationObserver = new MutationObserver(() => {

@@ -33,6 +33,12 @@
         "publishAnonymously": "Anonym veröffentlichen",
         "save": "Speichern ohne Veröffentlichen"
       }
+    },
+    "state": {
+      "read": "Gelesen",
+      "unread": "Ungelesen",
+      "bookmarked": "Gemerkt",
+      "subscribedToThread": "Thread abonniert"
     }
   },
   "annotationSidebar": {
