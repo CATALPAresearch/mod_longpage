@@ -1,6 +1,7 @@
 import {ACT, GET, MUTATE} from '../types';
 import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
+import {flatten} from 'lodash';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
 import {MoodleWSMethods} from '@/config/constants';
@@ -25,6 +26,9 @@ export default {
         [GET.POST]: ({threads}) => (postId, threadId) => {
             const thread = threads.find(t => t.id === threadId);
             return thread && thread.posts.find(p => p.id === postId);
+        },
+        [GET.POSTS]: ({threads}) => {
+            return flatten(threads.map(({posts}) => posts));
         },
         [GET.THREAD]: ({threads}) => id => threads.find(t => t.id === id),
         [GET.THREADS]: (_, getters) => {
