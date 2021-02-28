@@ -10,7 +10,7 @@
     <div
       v-show="tabOpenedKey"
       :id="LONGPAGE_SIDEBAR_TAB_CONTENT"
-      class="col h-100 timeMin-w-320-px mw-100"
+      class="col h-100 min-w-320-px mw-100"
     >
       <component
         :is="tab.key"
@@ -80,7 +80,7 @@ $(document.body).on('mousedown', '.resize-handle--x', null, event => {
 $(window).on('mousemove', null, null, debounce($event => {
   if (resizeData.tracking) {
     const cursorScreenXDelta = resizeData.startCursorScreenX - $event.screenX;
-    const newWidth = Math.timeMin(resizeData.startWidth + cursorScreenXDelta, resizeData.maxWidth);
+    const newWidth = Math.min(resizeData.startWidth + cursorScreenXDelta, resizeData.maxWidth);
 
     $(resizeData.resizeTarget).outerWidth(newWidth);
   }
@@ -131,8 +131,8 @@ export default {
     timeMax-width: 75%;
   }
 
-  .timeMin-w-320-px {
-    timeMin-width: 320px;
+  .min-w-320-px {
+    min-width: 320px;
   }
 
   $handle-size: 10px;

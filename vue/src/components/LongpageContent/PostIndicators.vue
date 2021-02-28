@@ -36,7 +36,7 @@
       getIndicatorTop(highlights, offset = 0) {
         return highlights
           .map(highlight => highlight.getBoundingClientRect().top)
-          .reduce((minTop, top) => Math.timeMin(minTop, top)) - offset;
+          .reduce((minTop, top) => Math.min(minTop, top)) - offset;
       },
       getTopOffset() {
         return this.parentElement.getBoundingClientRect().top;
