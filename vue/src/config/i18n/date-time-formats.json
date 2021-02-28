@@ -1,8 +1,9 @@
 {
   "de": {
-    "time": {
-      "hour": "numeric",
-      "minute": "numeric"
+    "date": {
+      "month": "short",
+      "day": "numeric",
+      "year": "numeric"
     },
     "dateTime": {
       "hour": "numeric",
@@ -23,6 +24,19 @@
       "minute": "numeric",
       "month": "short",
       "day": "numeric"
+    },
+    "dateWithoutCentury": {
+      "month": "short",
+      "day": "numeric",
+      "year": "2-digit"
+    },
+    "dateWithoutYear": {
+      "month": "short",
+      "day": "numeric"
+    },
+    "time": {
+      "hour": "numeric",
+      "minute": "numeric"
     }
   }
 }
