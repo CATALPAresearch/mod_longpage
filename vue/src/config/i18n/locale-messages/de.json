@@ -52,6 +52,7 @@
     "alt": "Profilbild von anonymem Nutzer | Profilbild von {fullName}"
   },
   "generic": {
+    "defaultSelectOptionsCategory": "Ohne Kategorie",
     "toggleDropdown": "Menü ausklappen",
     "loadingIndicator": {
       "creating": "Wird erstellt",

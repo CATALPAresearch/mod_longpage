@@ -1,5 +1,5 @@
 <template>
-  <div v-if="sliderOptions">
+  <div>
     <span class="mr-3">
       {{ sliderOptions.formatter ? sliderOptions.formatter(sliderOptions.min) : sliderOptions.min }}
     </span>
@@ -22,7 +22,7 @@
   export default {
     name: 'Slider',
     props: {
-      sliderOptions: {type: Object},
+      sliderOptions: {type: Object, required: true},
     },
     data() {
       return {

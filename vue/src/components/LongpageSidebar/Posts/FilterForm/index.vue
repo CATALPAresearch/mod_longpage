@@ -58,6 +58,12 @@
       </h6>
       <slider :slider-options="likesCountSliderOptions" />
     </div>
+    <div>
+      <h6 class="d-inline mr-3 col-auto">
+        AutorIn
+      </h6>
+      <multi-select-input />
+    </div>
     <div
       v-if="datesCreatedSliderOptions"
       class="mb-2 row"
@@ -76,10 +82,6 @@
       </h6>
       <slider :slider-options="datesModifiedSliderOptions" />
     </div>
-    <div class="mb-2">
-      <h5>AutorIn</h5>
-      <input>
-    </div>
   </div>
 </template>
 
@@ -89,6 +91,7 @@
   import {mapGetters} from 'vuex';
   import Slider from '@/components/Generic/Slider';
   import {getDateFormat} from '@/config/i18n/date-time-utils';
+  import MultiSelectInput from '@/components/LongpageSidebar/Posts/FilterForm/MultiSelectInput';
 
   const Timestamp = Object.freeze({
     CREATED: 'timeCreated',
@@ -97,7 +100,7 @@
 
   export default {
     name: 'FilterForm',
-    components: {Slider},
+    components: {MultiSelectInput, Slider},
     data() {
       return {
         stateInputs: [
