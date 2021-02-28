@@ -78,7 +78,7 @@
   import {isEmpty, last} from 'lodash';
   import {GET} from '@/store/types';
   import {mapGetters} from 'vuex';
-  import Slider from '@/components/Slider';
+  import Slider from '@/components/Generic/Slider';
   import {getDateFormat} from '@/config/i18n/date-time-utils';
 
   export default {

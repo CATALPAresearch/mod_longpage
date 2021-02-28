@@ -18,8 +18,8 @@
 </template>
 
 <script>
-  import DateTimeText from '@/components/DateTimeText';
-  import LoadingIndicatorDots from '@/components/LoadingIndicatorDots';
+  import DateTimeText from '@/components/Generic/DateTimeText';
+  import LoadingIndicatorDots from '@/components/Generic/LoadingIndicatorDots';
 
   export default {
     name: 'DateTimes',

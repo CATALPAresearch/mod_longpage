@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import ExpandableHighlightExcerpt from '@/components/LongpageSidebar/ExpandableHighlightExcerpt';
+import ExpandableHighlightExcerpt from '@/components/Generic/ExpandableHighlightExcerpt';
 import {ACT} from '@/store/types';
 import {mapActions} from 'vuex';
 import DateTimes from '@/components/LongpageSidebar/DateTimes';

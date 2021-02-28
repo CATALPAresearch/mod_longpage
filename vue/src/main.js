@@ -9,14 +9,14 @@
  * @since      3.1
  */
 import './assets/icons';
-import './components/Footnote';
+import './components/LongpageContent/Footnote';
 import './lib/scroll-snapping';
 import App from './App.vue';
 import {createApp} from 'vue';
 import {initStore} from '@/store';
 import {LONGPAGE_APP_CONTAINER_ID} from '@/config/constants';
 import {toIdSelector} from '@/util/style';
-import {useAnnotations} from './components/Annotation';
+import {useAnnotations} from './components/LongpageContent';
 import {FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText} from '@/assets/icons/font-awesome';
 import {i18n} from '@/config/i18n';
 

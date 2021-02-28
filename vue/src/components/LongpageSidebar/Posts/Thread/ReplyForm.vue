@@ -24,7 +24,7 @@
 import {ACT, GET} from '@/store/types';
 import {mapActions, mapGetters} from 'vuex';
 import {Thread} from '@/types/thread';
-import UserAvatar from '@/components/UserAvatar';
+import UserAvatar from '@/components/Generic/UserAvatar';
 
 export default {
   name: 'ReplyForm',

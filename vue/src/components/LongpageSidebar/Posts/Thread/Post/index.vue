@@ -105,9 +105,9 @@ import {
 import {mapGetters} from 'vuex';
 import {applyMathjaxFilterToNodes} from '@/util/moodle';
 import {getHighlightByAnnotationId} from '@/util/annotation';
-import UserAvatar from '@/components/UserAvatar';
+import UserAvatar from '@/components/Generic/UserAvatar';
 import scrollIntoView from 'scroll-into-view-if-needed';
-import ExpandableHighlightExcerpt from '@/components/LongpageSidebar/ExpandableHighlightExcerpt';
+import ExpandableHighlightExcerpt from '@/components/Generic/ExpandableHighlightExcerpt';
 import PostForm from '@/components/LongpageSidebar/Posts/Thread/PostForm';
 import PostActions from '@/components/LongpageSidebar/Posts/Thread/Post/PostActions';
 import {Post} from '@/types/post';

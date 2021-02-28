@@ -28,7 +28,7 @@
 <script>
 import {ACT, GET} from './store/types';
 import {mapActions, mapGetters} from 'vuex';
-import PostIndicators from '@/components/Annotation/PostIndicators';
+import PostIndicators from '@/components/LongpageContent/PostIndicators';
 import Log from './lib/Logging';
 import {LONGPAGE_CONTENT_ID} from '@/config/constants';
 import LongpageSidebar from '@/components/LongpageSidebar';

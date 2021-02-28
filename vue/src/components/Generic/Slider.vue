@@ -83,7 +83,7 @@
 </script>
 
 <style lang="scss">
-  @import '../../node_modules/bootstrap-slider/dist/css/bootstrap-slider.min.css';
+  @import '../../../node_modules/bootstrap-slider/dist/css/bootstrap-slider.min.css';
 
   .slider-selection {
     background: #036fa5;
