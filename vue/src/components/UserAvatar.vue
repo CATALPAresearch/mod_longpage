@@ -28,8 +28,7 @@
         };
       },
       profileLink() {
-        console.log(this.user);
-        return this.user ? this.user.profileLink : 'javascript:void(0)';
+        return this.user ? this.user.profileLink : '#';
       }
     }
   };
