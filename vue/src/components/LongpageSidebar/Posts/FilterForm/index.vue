@@ -65,7 +65,15 @@
       <h6 class="d-inline mr-3 col-auto">
         Erstellt zwischen
       </h6>
-      <slider :slider-options="timesCreatedSliderOptions" />
+      <slider :slider-options="datesCreatedSliderOptions" />
+    </div>
+    <div
+      class="mb-2 row"
+    >
+      <h6 class="d-inline mr-3 col-auto">
+        Zuletzt bearbeitet zwischen
+      </h6>
+      <slider :slider-options="datesModifiedSliderOptions" />
     </div>
     <div class="mb-2">
       <h5>AutorIn</h5>
@@ -81,29 +89,41 @@
   import Slider from '@/components/Generic/Slider';
   import {getDateFormat} from '@/config/i18n/date-time-utils';
 
+  const Timestamp = Object.freeze({
+    CREATED: 'timeCreated',
+    MODIFIED: 'timeModified'
+  });
+
   export default {
     name: 'FilterForm',
     components: {Slider},
     computed: {
       ...mapGetters([GET.POSTS]),
-      timesCreatedMinMax() {
-        const timesCreated =
-            this[GET.POSTS].filter(p => p.created).map(({timeCreated}) => timeCreated.getTime()).sort((tA, tB) => tA - tB) || [];
-        return isEmpty(timesCreated) ? [0, Date.now()] : [timesCreated[0], last(timesCreated)];
+      datesCreatedSliderOptions() {
+        const timestampsAsc = this.mapPostsToTimestampsAsc(this[GET.POSTS]);
+        const minMax = isEmpty(timestampsAsc) ? [0, Date.now()] : [timestampsAsc[0], last(timestampsAsc)];
+        return this.getDateSliderOptions(...minMax);
       },
-      timesCreatedSliderOptions() {
-        if (isEmpty(this[GET.POSTS])) return;
-
-        const [min, max] = this.timesCreatedMinMax;
-        const format = time => this.$i18n.d.call(this.$i18n, time, getDateFormat(time));
-        return {
-          min,
-          max,
-          value: [min, max],
-          formatter: value => Array.isArray(value) ? value.map(v => format(v)) : format(value),
-        };
+      datesModifiedSliderOptions() {
+        const timestampsAsc = this.mapPostsToTimestampsAsc(this[GET.POSTS], Timestamp.MODIFIED);
+        const minMax = isEmpty(timestampsAsc) ? [0, Date.now()] : [timestampsAsc[0], last(timestampsAsc)];
+        return this.getDateSliderOptions(...minMax);
       },
     },
+    methods: {
+      mapPostsToTimestampsAsc(posts, timestamp = Timestamp.CREATED) {
+        return posts.filter(p => p.created).map(p => p[timestamp].getTime()).sort((tA, tB) => tA - tB) || [];
+      },
+      getDateSliderOptions(timeMin, timeMax) {
+        const format = time => this.$i18n.d.call(this.$i18n, time, getDateFormat(time));
+        return {
+          min: timeMin,
+          max: timeMax,
+          value: [timeMin, timeMax],
+          formatter: value => Array.isArray(value) ? value.map(v => format(v)) : format(value),
+        };
+      }
+    }
   };
 </script>~
 
