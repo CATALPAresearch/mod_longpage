@@ -2,13 +2,30 @@
   <div class="h-100 bg-light">
     <div class="h-100 d-flex flex-column">
       <div class="p-3 bg-white">
-        <h3
-          id="posts-sidebar-heading"
-          class="m-0"
+        <div class="row">
+          <h3
+            id="posts-sidebar-heading"
+            class="col m-0"
+          >
+            {{ $t('sidebar.tabs.posts.heading') }}
+          </h3>
+          <div class="col text-right">
+            <a
+              href="javascript:void(0)"
+              @click="toggleFilterForm"
+            >
+              <i class="fa fa-filter fa-fw fa-2x" />
+            </a>
+          </div>
+        </div>
+        <hr
+          v-show="filterFormShown"
+          class="my-3"
         >
-          {{ $t('sidebar.tabs.posts.heading') }}
-        </h3>
-        <post-filter />
+        <filter-form
+          v-show="filterFormShown"
+        />
+        <active-filters-bar />
       </div>
       <hr class="my-0 mx-3">
       <div
@@ -38,17 +55,19 @@ import Thread from './Thread';
 import {mapGetters} from 'vuex';
 import {GET} from '@/store/types';
 import {THREAD_CONTAINER_ID} from '@/config/constants';
-import PostFilter from '@/components/LongpageSidebar/Posts/PostFilter';
-
+import ActiveFiltersBar from '@/components/LongpageSidebar/Posts/ActiveFiltersBar';
+import FilterForm from '@/components/LongpageSidebar/Posts/FilterForm/';
 
 export default {
   name: 'Posts',
   components: {
-    PostFilter,
+    FilterForm,
+    ActiveFiltersBar,
     Thread
   },
   data() {
     return {
+      filterFormShown: false,
       THREAD_CONTAINER_ID,
     };
   },
@@ -57,5 +76,10 @@ export default {
       threads: GET.THREADS,
     }),
   },
+  methods: {
+    toggleFilterForm() {
+      this.filterFormShown = !this.filterFormShown;
+    },
+  }
 };
 </script>
