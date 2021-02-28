@@ -112,13 +112,7 @@ export default {
     filteredOptions() {
       if (!this.query) return this.options;
 
-      const searchResults = this.fuse.search(this.query);
-      console.log(searchResults);
-      const r = searchResults.map(result => mapResultToHighlightedDoc(result));
-      console.log(r);
-      return r;
-      // SearchResults.forEach(result => mapResultToHighlightedDoc(result));
-      // return searchResults.map(({highlight, item}) => ({value: item.value, text: highlight, category: item.category}));
+      return this.fuse.search(this.query).map(result => mapResultToHighlightedDoc(result));
     },
     optionsByCategory() {
       return this.filteredOptions.reduce((result, option) => {
