@@ -22,6 +22,7 @@
     "hover.css": "2.3.2",
     "lodash": "4.17.20",
     "scroll-into-view-if-needed": "2.2.26",
+    "tagin": "^1.2.0",
     "tiny-emitter": "2.1.0",
     "vue": "3.0.4",
     "vue-i18n": "9.0.0-beta.16",
