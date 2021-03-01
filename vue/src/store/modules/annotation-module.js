@@ -47,6 +47,25 @@ export default {
             return annotation;
         },
     },
+    mutations: {
+        [MUTATE.ADD_ANNOTATIONS](state, annotations) {
+            state.annotations = [...state.annotations, ...annotations];
+        },
+        [MUTATE.REMOVE_ANNOTATIONS](state, annotationsToRemove) {
+            state.annotations = state.annotations.filter(a => !annotationsToRemove.find(atr => atr.id === a.id));
+        },
+        [MUTATE.RESET_ANNOTATION_FILTER](state, filter) {
+            state.annotationFilter = filter || {};
+        },
+        [MUTATE.SET_ANNOTATIONS](state, annotations) {
+            state.annotations = annotations;
+        },
+        [MUTATE.UPDATE_ANNOTATION](state, {id, annotationUpdate}) {
+            const annotation = state.annotations.find(annotation => annotation.id === id);
+            Object.assign(annotation, annotationUpdate);
+            state.annotations = [...state.annotations];
+        }
+    },
     actions: {
         [ACT.REPLACE_OR_ADD_ANNOTATION]({commit, getters}, annotation) {
             if (getters[GET.ANNOTATION](annotation.id)) {
@@ -117,23 +136,5 @@ export default {
         [ACT.FILTER_ANNOTATIONS]({commit}, filter) {
            commit(MUTATE.RESET_ANNOTATION_FILTER, filter);
         },
-    },
-    mutations: {
-        [MUTATE.ADD_ANNOTATIONS](state, annotations) {
-            state.annotations.push(...annotations);
-        },
-        [MUTATE.REMOVE_ANNOTATIONS](state, annotationsToRemove) {
-            state.annotations = state.annotations.filter(a => !annotationsToRemove.find(atr => atr.id === a.id));
-        },
-        [MUTATE.RESET_ANNOTATION_FILTER](state, filter) {
-            state.annotationFilter = filter || {};
-        },
-        [MUTATE.SET_ANNOTATIONS](state, annotations) {
-            state.annotations = annotations;
-        },
-        [MUTATE.UPDATE_ANNOTATION](state, {id, annotationUpdate}) {
-            const annotation = state.annotations.find(annotation => annotation.id === id);
-            Object.assign(annotation, annotationUpdate);
-        }
     },
 };

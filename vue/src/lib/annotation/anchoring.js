@@ -11,7 +11,7 @@ import {debounce, remove} from 'lodash';
 import {highlightRange, removeHighlights} from './highlighting';
 import {anchor} from './hypothesis/anchoring/html';
 import emitter from 'tiny-emitter/instance';
-import {MUTATE} from '@/store/types';
+import {GET} from '@/store/types';
 import {sniff} from './hypothesis/anchoring/range';
 
 const emitAnchorsUpdate = debounce((anchors) => {
@@ -28,27 +28,9 @@ export class Anchoring {
         this.root = root;
         this.anchors = anchors;
         this.anchoringPromise = Promise.resolve();
-        this.unsubscribe = store.subscribe((mutation, state) => {
-            switch (mutation.type) {
-                case MUTATE.ADD_ANNOTATIONS:
-                    this.anchorAnnotations(mutation.payload);
-                    break;
-                case MUTATE.REMOVE_ANNOTATIONS:
-                    this.detachAnnotations(mutation.payload);
-                    break;
-                case MUTATE.SET_ANNOTATIONS:
-                    this.detachAllAnnotations();
-                    this.anchorAnnotations(mutation.payload);
-                    break;
-                case MUTATE.UPDATE_ANNOTATION: {
-                    const annotation = state.AnnotationModule.annotations.find(
-                        a => a.id === mutation.payload.id || a.id === mutation.payload.annotationUpdate.id
-                    );
-                    this.detachAnnotation(annotation);
-                    this.anchorAnnotation(annotation);
-                    break;
-                }
-            }
+        this.unsubscribe = store.watch((_, getters) => getters[GET.ANNOTATIONS], (newAnnotations) => {
+            this.detachAllAnnotations();
+            this.anchorAnnotations(newAnnotations);
         });
     }
 
@@ -166,10 +148,10 @@ export class Anchoring {
 
             // Remove all the anchors for this annotation from the instance storage.
             for (anchor of this.anchors.splice(0, this.anchors.length)) {
-                if (anchor.annotation === annotation) {
+                if (anchor.annotation === annotation || anchor.annotation.id === annotation.id) {
                     // Anchors are valid as long as they still have a range and their target
                     // is still in the list of targets for this annotation.
-                    if (anchor.range && annotation.target === anchor.target) {
+                    if (anchor.range && (annotation.target === anchor.target || annotation.target.id === anchor.target.id)) {
                         anchors.push(anchor);
                         anchoredTargets.push(anchor.target);
                     } else if (anchor.highlights) {
@@ -189,7 +171,7 @@ export class Anchoring {
 
             // Actual work going on
             // Anchor the target of this annotation that is not anchored already.
-            if (!anchoredTargets.includes(annotation.target)) {
+            if (!anchoredTargets.includes(annotation.target) || !anchoredTargets.map(({id}) => id).includes(annotation.target.id)) {
                 anchor = locate(annotation.target).then(highlight);
                 anchors.push(anchor);
             }
