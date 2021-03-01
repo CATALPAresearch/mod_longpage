@@ -27,33 +27,38 @@
     <div
       class="dropdown-menu px-2 overflow-auto"
     >
-      <div
-        v-for="(options, category) in optionsByCategory"
-        :key="category"
-      >
-        <h6
-          class="dropdown-header"
-          v-html="category"
-        />
+      <div v-if="Object.entries(optionsByCategory).length">
         <div
-          v-for="option in options"
-          :key="option.value"
-          class="form-group px-4"
+          v-for="(options, category) in optionsByCategory"
+          :key="category"
         >
-          <input
-            id="defaultCheck1"
-            :checked="value.includes(option.value)"
-            class="form-check-input"
-            type="checkbox"
-            @change="toggleOption(option.value)"
-          >
-          <label
-            class="form-check-label"
-            for="defaultCheck1"
-            v-html="option.text"
+          <h6
+            class="dropdown-header"
+            v-html="category"
           />
+          <div
+            v-for="option in options"
+            :key="option.value"
+            class="form-group px-4"
+          >
+            <input
+              id="defaultCheck1"
+              :checked="value.includes(option.value)"
+              class="form-check-input"
+              type="checkbox"
+              @change="toggleOption(option.value)"
+            >
+            <label
+              class="form-check-label"
+              for="defaultCheck1"
+              v-html="option.text"
+            />
+          </div>
         </div>
       </div>
+      <p v-else>
+        {{ notFoundMessageIntern }}
+      </p>
     </div>
   </div>
 </template>
@@ -76,15 +81,9 @@ const FUSE_OPTIONS = Object.freeze({
 export default {
   name: 'MultiSelectInput',
   props: {
-    modelValue: {type: Array, default: () => [0, 4]},
-    options: {type: Array, default: () => [
-        {value: 0, text: 'Ann Kathrin', category: 'Lehrer'},
-        {value: 1, text: 'Jens', category: 'Student'},
-        {value: 2, text: 'Jürgen', category: 'Student'},
-        {value: 3, text: 'Jochen', category: 'Lehrer'},
-        {value: 4, text: 'Jana', category: 'Student'},
-        {value: 5, text: 'A'},
-      ]},
+    notFoundMessage: {type: String},
+    modelValue: {type: Array, default: () => []},
+    options: {type: Array, default: () => []},
   },
   emits: ['update:modelValue'],
   data() {
@@ -102,7 +101,13 @@ export default {
     filteredOptions() {
       if (!this.query) return this.options;
 
-      return this.fuse.search(this.query).map(result => mapResultToHighlightedDoc(result));
+      return this.fuse.search(this.query).map(result => {
+        console.log(result);
+        return mapResultToHighlightedDoc(result);
+      });
+    },
+    notFoundMessageIntern() {
+      return this.notFoundMessage || this.$i18n.t('generic.message.notFound');
     },
     optionsByCategory() {
       return this.filteredOptions.reduce((result, option) => {
@@ -131,16 +136,16 @@ export default {
   },
   watch: {
     options: {
-      handler(value) {
-        if (this.$refs.multiSelectInput) this.$refs.multiSelectInput._selectOptions = value;
-        if (!value || !value.length) return;
+      handler(newOptions) {
+        if (this.$refs.multiSelectInput) this.$refs.multiSelectInput._selectOptions = newOptions;
+        if (!newOptions || !newOptions.length) return;
 
-        this.fuse = new Fuse(value, FUSE_OPTIONS);
+        this.fuse = new Fuse(newOptions, FUSE_OPTIONS);
       },
       immediate: true,
     },
-    valueAsString(value) {
-      this.$refs.multiSelectInput.value = value;
+    valueAsString(newValueAsString) {
+      this.$refs.multiSelectInput.value = newValueAsString;
       this.$refs.multiSelectInput.dispatchEvent(new CustomEvent('update-tags'));
     },
   },

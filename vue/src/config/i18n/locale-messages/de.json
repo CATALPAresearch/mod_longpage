@@ -53,11 +53,14 @@
   },
   "generic": {
     "defaultSelectOptionsCategory": "Ohne Kategorie",
-    "toggleDropdown": "Menü ausklappen",
     "loadingIndicator": {
       "creating": "Wird erstellt",
       "updating": "Wird aktualisiert"
-    }
+    },
+    "message": {
+      "notFound": "Keine mit der Anfrage übereinstimmenden Ergebnisse gefunden"
+    },
+    "toggleDropdown": "Menü ausklappen"
   },
   "responseForm": {
     "placeholder": "Antworte"

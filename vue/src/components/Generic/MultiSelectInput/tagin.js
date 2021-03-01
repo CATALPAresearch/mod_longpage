@@ -13,7 +13,16 @@ export const tagin = (el, option = {}) => { // Use comma as seperator
     const placeholder = el.dataset.placeholder || option.placeholder || defaultPlaceholder;
 
     const getOptions = () => el._selectOptions;
-    const mapValueToText = value => getOptions().find(({value: v}) => v === Number(value)).text;
+    const mapValueToText = value => {
+        const option = getOptions().find(({value: v}) => v === Number(value));
+        if (!option) {
+            throw new Error(
+                'MultiSelectInput has a value but no options from which the selection of the value could be made.'
+            );
+        }
+
+        return option.text;
+    };
 
     const templateTag =
             v => `<span class="${classTag}" data-value="${v}">${mapValueToText(v)}<span class="${classRemove}"></span></span>`;

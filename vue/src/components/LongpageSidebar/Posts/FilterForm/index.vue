@@ -62,7 +62,10 @@
       <h6 class="d-inline mr-3 col-auto">
         AutorIn
       </h6>
-      <multi-select-input v-model="creators" />
+      <multi-select-input
+        v-model="creators"
+        not-found-message="Keine gefunden"
+      />
     </div>
     <div
       v-if="datesCreatedSliderOptions"
@@ -89,7 +92,7 @@
   import {GET} from '@/store/types';
   import {getDateFormat} from '@/config/i18n/date-time-utils';
   import {isEmpty} from 'lodash';
-  import MultiSelectInput from '@/components/LongpageSidebar/Posts/FilterForm/MultiSelectInput/index';
+  import MultiSelectInput from '@/components/Generic/MultiSelectInput/index';
   import {mapGetters} from 'vuex';
   import Slider from '@/components/Generic/Slider';
 
@@ -103,7 +106,7 @@
     components: {MultiSelectInput, Slider},
     data() {
       return {
-        creators: [0, 4],
+        creators: [],
         stateInputs: [
           {
             id: 'posts-filter-checkbox-read',
