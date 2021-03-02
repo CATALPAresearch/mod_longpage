@@ -8,6 +8,7 @@ export class Thread {
     constructor({
         id = Thread._getPreliminaryId(),
         annotationId,
+        filteredPosts = [],
         posts = [],
         replyId,
         replyRequested = false,
@@ -15,6 +16,7 @@ export class Thread {
     }) {
         this.id = id;
         this.annotationId = annotationId;
+        this.filteredPosts = filteredPosts;
         this.posts = posts;
         this.replyId = replyId;
         this.replyRequested = replyRequested;

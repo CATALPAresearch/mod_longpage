@@ -4,11 +4,12 @@ import {Annotation} from '@/types/annotation';
 import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
 import MappingService from '@/services/mapping-service';
+import {AnnotationFilter} from '@/util/filters/annotation-filter';
 
 export default {
     state: {
         annotations: [],
-        annotationFilter: {},
+        annotationFilter: AnnotationFilter.DEFAULT,
     },
     getters: {
         [GET.ANNOTATION]: (_, getters) => id => getters[GET.ANNOTATIONS].find(a => a.id === id),
@@ -17,15 +18,13 @@ export default {
             ...annotation,
             pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
         }),
-        [GET.ANNOTATIONS]: ({annotations}) => annotations.sort(AnnotationCompareFunction.BY_POSITION),
+        [GET.ANNOTATIONS]: ({annotations}, getters) => {
+            return new AnnotationFilter(getters[GET.ANNOTATION_FILTER])
+                .applyTo(...annotations)
+                .sort(AnnotationCompareFunction.BY_POSITION);
+        },
         [GET.BOOKMARKS]: (_, getters) => {
             return getters[GET.ANNOTATIONS].filter(a => a.type === AnnotationType.BOOKMARK);
-        },
-        [GET.FILTERED_ANNOTATIONS]: (_, getters) => {
-            return getters[GET.ANNOTATIONS]
-                .filter(annotation => !getters[GET.ANNOTATION_FILTER].ids ||
-                    getters[GET.ANNOTATION_FILTER].ids.includes(annotation.id)
-                );
         },
         [GET.HIGHLIGHTS]: (_, getters) => {
             return getters[GET.ANNOTATIONS]
@@ -54,8 +53,8 @@ export default {
         [MUTATE.REMOVE_ANNOTATIONS](state, annotationsToRemove) {
             state.annotations = state.annotations.filter(a => !annotationsToRemove.find(atr => atr.id === a.id));
         },
-        [MUTATE.RESET_ANNOTATION_FILTER](state, filter) {
-            state.annotationFilter = filter || {};
+        [MUTATE.SET_ANNOTATION_FILTER](state, filter) {
+            state.annotationFilter = filter;
         },
         [MUTATE.SET_ANNOTATIONS](state, annotations) {
             state.annotations = annotations;
@@ -134,7 +133,7 @@ export default {
             }]);
         },
         [ACT.FILTER_ANNOTATIONS]({commit}, filter) {
-           commit(MUTATE.RESET_ANNOTATION_FILTER, filter);
+           commit(MUTATE.SET_ANNOTATION_FILTER, filter);
         },
     },
 };

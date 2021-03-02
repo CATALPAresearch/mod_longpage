@@ -101,10 +101,7 @@ export default {
     filteredOptions() {
       if (!this.query) return this.options;
 
-      return this.fuse.search(this.query).map(result => {
-        console.log(result);
-        return mapResultToHighlightedDoc(result);
-      });
+      return this.fuse.search(this.query).map(mapResultToHighlightedDoc);
     },
     notFoundMessageIntern() {
       return this.notFoundMessage || this.$i18n.t('generic.message.notFound');

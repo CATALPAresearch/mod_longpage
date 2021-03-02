@@ -78,9 +78,9 @@ export default {
       this.anchoring = new Anchoring(this.targetRoot, this.$store);
       setHighlightsVisible(document.getElementById(LONGPAGE_APP_ID), true);
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
-      addAnnotationSelectionListener(annotations => {
-        if (annotations.length > 0) this[ACT.FILTER_ANNOTATIONS]({ids: annotations.map(annotation => annotation.id)});
-      });
+      // AddAnnotationSelectionListener(annotations => {
+      //   if (annotations.length > 0) this[ACT.FILTER_ANNOTATIONS]({ids: annotations.map(annotation => annotation.id)});
+      // });
     });
   },
   beforeUnmount() {
@@ -88,15 +88,15 @@ export default {
     this.selectionListener.unsubscribe();
   },
   methods: {
-    ...mapActions([ACT.CREATE_ANNOTATION, ACT.FILTER_ANNOTATIONS, ACT.START_EDITING_ANNOTATION]),
-    ...mapMutations([MUTATE.RESET_ANNOTATION_FILTER, MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY]),
+    ...mapActions([ACT.CREATE_ANNOTATION, ACT.FILTER_ANNOTATIONS]),
+    ...mapMutations([MUTATE.SET_ANNOTATION_FILTER, MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY]),
     async createBookmark() {
       this[ACT.CREATE_ANNOTATION]({
         target: await this.getAnnotationTarget(), type: AnnotationType.BOOKMARK,
       });
     },
     createPost() {
-      this[MUTATE.RESET_ANNOTATION_FILTER]();
+      // This[MUTATE.SET_ANNOTATION_FILTER]();
       this[MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY](SidebarTabKeys.POSTS);
       this.$nextTick(async() => {
         this[ACT.CREATE_ANNOTATION]({

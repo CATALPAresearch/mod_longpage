@@ -9,6 +9,7 @@
           type="text"
           class="form-control"
           placeholder="Anmerkungstext durchsuchen"
+          @input="debouncedUpdateActiveFilter('body.posts.query', $event.target.value)"
         >
         <div class="input-group-append">
           <button
@@ -63,8 +64,10 @@
         AutorIn
       </h6>
       <multi-select-input
-        v-model="creators"
+        :options="creatorOptions"
+        :model-value="activeFilter.body.posts.creator"
         not-found-message="Keine gefunden"
+        @update:model-value="updateActiveFilter('body.posts.creator', $event)"
       />
     </div>
     <div
@@ -89,11 +92,11 @@
 </template>
 
 <script>
-  import {GET} from '@/store/types';
+import {GET, MUTATE} from '@/store/types';
   import {getDateFormat} from '@/config/i18n/date-time-utils';
-  import {isEmpty} from 'lodash';
+  import {debounce, isEmpty, set} from 'lodash';
   import MultiSelectInput from '@/components/Generic/MultiSelectInput/index';
-  import {mapGetters} from 'vuex';
+  import {mapGetters, mapMutations} from 'vuex';
   import Slider from '@/components/Generic/Slider';
 
   const Timestamp = Object.freeze({
@@ -106,7 +109,6 @@
     components: {MultiSelectInput, Slider},
     data() {
       return {
-        creators: [],
         stateInputs: [
           {
             id: 'posts-filter-checkbox-read',
@@ -136,7 +138,20 @@
       };
     },
     computed: {
-      ...mapGetters([GET.POSTS]),
+      ...mapGetters([GET.ANNOTATION_FILTER, GET.POSTS, GET.USER_ROLES, GET.USERS]),
+      activeFilter: {
+        get() {
+          return this[GET.ANNOTATION_FILTER];
+        },
+        set(filter) {
+          this[MUTATE.SET_ANNOTATION_FILTER](filter);
+        }
+      },
+      creatorOptions() {
+        return this[GET.USERS]
+            .flatMap(u => this[GET.USER_ROLES](u.id).map(r => ({text: u.fullName, value: u.id, category: r.localName})))
+            .sort((oA, oB) => oA.category.localeCompare(oB.category) || oA.text.localeCompare(oB.text));
+      },
       likesCountSliderOptions() {
         const likesCounts = this[GET.POSTS].map(({likesCount}) => likesCount);
         if (isEmpty(likesCounts)) return;
@@ -166,9 +181,14 @@
       },
     },
     methods: {
+      ...mapMutations([MUTATE.SET_ANNOTATION_FILTER]),
       mapPostsToTimestamps(posts, timestamp = Timestamp.CREATED) {
         return posts.filter(p => p.created).map(p => p[timestamp].getTime()) || [];
       },
+      debouncedUpdateActiveFilter: debounce(function(path, value) {
+        // eslint-disable-next-line no-invalid-this
+        this.updateActiveFilter(path, value);
+      }, 500),
       getDateSliderOptions(timeMin, timeMax) {
         const format = time => this.$i18n.d.call(this.$i18n, time, getDateFormat(time));
         return {
@@ -177,6 +197,10 @@
           value: [timeMin, timeMax],
           formatter: value => Array.isArray(value) ? value.map(v => format(v)) : format(value),
         };
+      },
+      updateActiveFilter(path, value) {
+        const updatedActiveFilter = set({...this.activeFilter}, path, value);
+        this.activeFilter = updatedActiveFilter;
       }
     }
   };

@@ -6,6 +6,7 @@ import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
 import {MoodleWSMethods} from '@/config/constants';
 import MappingService from '@/services/mapping-service';
+import {ThreadFilter} from '@/util/filters/thread-filter';
 
 export default {
     state: {
@@ -31,16 +32,15 @@ export default {
             return flatten(threads.map(({posts}) => posts));
         },
         [GET.THREAD]: ({threads}) => id => threads.find(t => t.id === id),
-        [GET.THREADS]: (_, getters) => {
-            return getters[GET.THREADS_SORTED_BY_ANNOTATION_POSITION];
-        },
-        [GET.THREADS_SORTED_BY_ANNOTATION_POSITION]: ({threads}, getters) => {
-            return threads.sort(
+        [GET.THREAD_FILTER]: (_, getters) => getters[GET.ANNOTATION_FILTER].body,
+        [GET.THREADS]: ({threads}, getters) => {
+            return new ThreadFilter(getters[GET.THREAD_FILTER])
+                .applyTo(...threads)
+                .sort(
                 (threadA, threadB) => {
                     const [annotationA, annotationB] = [threadA, threadB].map(t => getters[GET.ANNOTATION](t.annotationId));
                     return AnnotationCompareFunction.BY_POSITION(annotationA, annotationB);
-                }
-            );
+                });
         },
     },
     actions: {

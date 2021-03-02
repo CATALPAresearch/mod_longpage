@@ -11,6 +11,7 @@ export class Post {
         threadId,
         anonymous = false,
         content = '',
+        highlighted = {},
         isPublic = false,
         likedByUser = false,
         likesCount = 0,
@@ -28,6 +29,7 @@ export class Post {
         this._readByUser = readByUser;
         this.anonymous = anonymous;
         this.content = content;
+        this.highlighted = highlighted;
         this.isPublic = isPublic;
         this.likesCount = likesCount;
         this.bookmarkedByUser = bookmarkedByUser;

@@ -9,12 +9,13 @@ export default {
         userRoles: [],
     },
     getters: {
-        [GET.USER]: ({enrolledUsers}, getters) => id => enrolledUsers.find(
+        [GET.USER]: (_, getters) => id => getters[GET.USERS].find(
             user => user.id === (id || getters[GET.LONGPAGE_CONTEXT].userId)
         ),
         [GET.USER_ROLES]: ({userRoles}, getters) => userId => userRoles.filter(
             role => getters[GET.USER](userId).roles.includes(role.id)
         ),
+        [GET.USERS]: ({enrolledUsers}) => enrolledUsers,
     },
     actions: {
         [ACT.FETCH_ENROLLED_USERS]({commit, getters}) {

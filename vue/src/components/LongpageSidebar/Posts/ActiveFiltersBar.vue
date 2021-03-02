@@ -36,7 +36,7 @@
     },
     methods: {
       resetFilter() {
-        this[ACT.FILTER_ANNOTATIONS]({});
+        // This[ACT.FILTER_ANNOTATIONS]({});
       },
       ...mapActions([ACT.FILTER_ANNOTATIONS]),
     }

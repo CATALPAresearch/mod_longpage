@@ -74,7 +74,7 @@
             v-show="!showForm"
             ref="annotationBody"
             class="annotation-body"
-          >{{ post.content }}</span>
+          >{{ post.highlighted.content || post.content }}</span>
           <post-form
             v-model:show="showForm"
             :post="post"

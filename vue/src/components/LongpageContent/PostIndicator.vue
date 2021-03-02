@@ -46,7 +46,7 @@
     },
     methods: {
       filterAnnotations() {
-        this[ACT.FILTER_ANNOTATIONS]({ids: this.annotations.map(annotation => annotation.id)});
+        // This[ACT.FILTER_ANNOTATIONS]({ids: this.annotations.map(annotation => annotation.id)});
       },
       ...mapActions([ACT.FILTER_ANNOTATIONS]),
     }
