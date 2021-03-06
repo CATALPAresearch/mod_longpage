@@ -941,7 +941,6 @@ class mod_page_external extends external_api {
             'likescount' => new external_value(PARAM_INT),
             'likedbyuser' => new external_value(PARAM_BOOL),
             'bookmarkedbyuser' => new external_value(PARAM_BOOL),
-            'markedasrequestedreply' => new external_value(PARAM_BOOL),
             'readingscount' => new external_value(PARAM_INT),
             'readbyuser' => new external_value(PARAM_BOOL),
         ];
