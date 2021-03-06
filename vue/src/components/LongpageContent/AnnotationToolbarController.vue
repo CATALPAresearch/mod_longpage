@@ -15,7 +15,7 @@ import {AnnotationType, ArrowDirection, LONGPAGE_APP_ID, LONGPAGE_CONTENT_ID, Si
 import {AnnotationTarget} from '@/types/annotation-target';
 import AnnotationToolbar from './AnnotationToolbar.vue';
 import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-toolbar-popover-positioner'; // Interesting for architecture
-import {SelectionListener} from '@/lib/annotation/selection-listener'; // Interesting for architecture
+import {SelectionListener} from '@/lib/annotation/selection-listening'; // Interesting for architecture
 import {describe} from '@/lib/annotation/hypothesis/anchoring/html'; // Interesting for architecture
 import {Anchoring} from '@/lib/annotation/anchoring'; // Interesting for architecture
 import {mapActions, mapGetters, mapMutations} from 'vuex';
@@ -77,9 +77,6 @@ export default {
       this.anchoring = new Anchoring(this.targetRoot, this.$store);
       setHighlightsVisible(document.getElementById(LONGPAGE_APP_ID), true);
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
-      // AddAnnotationSelectionListener(annotations => {
-      //   if (annotations.length > 0) this[ACT.FILTER_ANNOTATIONS]({ids: annotations.map(annotation => annotation.id)});
-      // });
     });
   },
   beforeUnmount() {
@@ -95,7 +92,6 @@ export default {
       });
     },
     createPost() {
-      // This[MUTATE.SET_ANNOTATION_FILTER]();
       this[MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY](SidebarTabKeys.POSTS);
       this.$nextTick(async() => {
         this[ACT.CREATE_ANNOTATION]({

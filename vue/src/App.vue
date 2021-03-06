@@ -16,7 +16,7 @@
       />
       <div
         class="col col-auto p-0 mx-1"
-        style="width: 1.5em;"
+        style="width: 3em;"
       >
         <post-indicators />
       </div>
@@ -28,7 +28,7 @@
 <script>
 import {ACT, GET} from './store/types';
 import {mapActions, mapGetters} from 'vuex';
-import PostIndicators from '@/components/LongpageContent/PostIndicators';
+import PostIndicators from '@/components/LongpageContent/AnnotationIndicatorSidebar';
 import Log from './lib/Logging';
 import {LONGPAGE_CONTENT_ID} from '@/config/constants';
 import LongpageSidebar from '@/components/LongpageSidebar';

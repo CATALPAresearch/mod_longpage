@@ -4,6 +4,12 @@ export const AnnotationType = Object.freeze({
     BOOKMARK: 2,
 });
 
+export const AnnotationTypeIcon = Object.freeze({
+    [AnnotationType.BOOKMARK]: 'fa-bookmark-o',
+    [AnnotationType.HIGHLIGHT]: 'fa-pencil',
+    [AnnotationType.POST]: 'fa-comment-o',
+});
+
 /**
  * The preferred gap between the end of the text selection and the
  * arrow position of the annotation toolbar popover.

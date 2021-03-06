@@ -61,7 +61,7 @@
         v-if="thread.root.id === post.id"
         class="row no-gutters my-1"
       >
-        <div class="col col-auto p-0">
+        <div class="col col-auto p-0 border-left border-secondary pl-2">
           <expandable-highlight-excerpt
             :annotation-target="annotation.target"
             @highlight-clicked="selectAnnotation"
@@ -82,9 +82,6 @@
           />
         </div>
       </div>
-      <!--      <div class="my-1 text-muted text-small">
-        Von Ihnen und 124 Personen gelesen
-      </div>-->
       <post-actions
         :show="!showForm"
         :post="post"
