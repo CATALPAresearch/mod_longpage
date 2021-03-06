@@ -12,7 +12,7 @@
             class="badge badge-secondary"
             @click.stop="resetFilter"
           >
-            <font-awesome-icon icon="times" />
+            <i class="icon fa fa-fw fa-times m-0" />
             {{ $t('annotationSidebar.showAll') }}
           </a>
         </h6>

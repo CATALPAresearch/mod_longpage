@@ -13,10 +13,7 @@
       class="btn btn-sm btn-secondary ml-2 my-2"
       @click="cancel"
     >
-      <font-awesome-icon
-        class="ml-1"
-        icon="times"
-      />
+      <i class="icon fa fa-fw fa-times m-0" />
       {{ $t('post.form.action.cancel') }}
     </button>
     <div

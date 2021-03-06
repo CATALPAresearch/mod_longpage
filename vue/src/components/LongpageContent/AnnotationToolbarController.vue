@@ -14,13 +14,12 @@ import {ACT, GET, MUTATE} from '@/store/types';
 import {AnnotationType, ArrowDirection, LONGPAGE_APP_ID, LONGPAGE_CONTENT_ID, SidebarTabKeys} from '@/config/constants';
 import {AnnotationTarget} from '@/types/annotation-target';
 import AnnotationToolbar from './AnnotationToolbar.vue';
-import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-toolbar-popover-positioner';
-import {SelectionListener} from '@/lib/annotation/selection-listener';
-import {describe} from '@/lib/annotation/hypothesis/anchoring/html';
-import {Anchoring} from '@/lib/annotation/anchoring';
+import {AnnotationToolbarPopoverPositioner} from '@/lib/annotation/annotation-toolbar-popover-positioner'; // Interesting for architecture
+import {SelectionListener} from '@/lib/annotation/selection-listener'; // Interesting for architecture
+import {describe} from '@/lib/annotation/hypothesis/anchoring/html'; // Interesting for architecture
+import {Anchoring} from '@/lib/annotation/anchoring'; // Interesting for architecture
 import {mapActions, mapGetters, mapMutations} from 'vuex';
 import {setHighlightsVisible} from '@/lib/annotation/highlighting';
-import {addAnnotationSelectionListener} from '@/lib/annotation/highlight-selection-listener';
 
 export default {
   name: 'AnnotationToolbarController',
