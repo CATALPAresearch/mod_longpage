@@ -6,6 +6,7 @@
     >
       <input
         ref="multiSelectInput"
+        :placeholder="placeholder"
         type="text"
         class="form-control tagin"
         @change="valueAsString = $event.target.value"
@@ -33,13 +34,13 @@
           :key="category"
         >
           <h6
-            class="dropdown-header"
+            class="dropdown-header pr-1"
             v-html="category"
           />
           <div
             v-for="option in options"
             :key="option.value"
-            class="form-group px-4"
+            class="form-group pl-4 pr-1 mb-1"
           >
             <input
               id="defaultCheck1"
@@ -86,9 +87,10 @@ const FUSE_OPTIONS = Object.freeze({
 export default {
   name: 'MultiSelectInput',
   props: {
-    notFoundMessage: {type: String},
     modelValue: {type: Array, default: () => []},
+    notFoundMessage: {type: String},
     options: {type: Array, default: () => []},
+    placeholder: {type: String},
   },
   emits: ['update:modelValue'],
   data() {

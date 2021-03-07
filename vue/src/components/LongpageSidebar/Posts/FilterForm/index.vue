@@ -1,25 +1,23 @@
 <template>
   <div>
-    <div class="mb-2">
-      <div class="input-group">
+    <div class="mb-2 row">
+      <div class="input-group col-auto">
+        <div class="input-group-prepend">
+          <span class="input-group-text bg-transparent border-0 py-0 pl-0 pr-2">
+            <i class="fa fa-search fa-fw fa-2x text-secondary" />
+          </span>
+        </div>
         <input
+          id="content-filter-input"
           type="text"
           class="form-control"
-          placeholder="Anmerkungstext durchsuchen"
+          placeholder="Nach Anmerkungstext filtern"
           @input="debouncedUpdateActiveFilter('body.posts.query', $event.target.value)"
         >
-        <div class="input-group-append">
-          <button
-            class="btn btn-secondary"
-            type="button"
-          >
-            <i class="icon fa fa-search fa-fw mr-1" />
-          </button>
-        </div>
       </div>
     </div>
-    <div class="mb-2 row">
-      <h6 class="d-inline col-auto">
+    <div class="mb-2 row align-items-center">
+      <h6 class="d-inline m-0 col-auto">
         Gelesen-Status
       </h6>
       <div class="col-auto">
@@ -29,8 +27,8 @@
         />
       </div>
     </div>
-    <div class="mb-2 row">
-      <h6 class="d-inline col-auto">
+    <div class="mb-2 row align-items-center">
+      <h6 class="d-inline m-0 col-auto">
         Status
       </h6>
       <div class="col-auto">
@@ -42,18 +40,20 @@
     </div>
     <div
       v-if="likesCountSliderOptions"
-      class="mb-2 row"
+      class="mb-2 row align-items-center"
     >
-      <h6 class="d-inline mr-3 col-auto">
-        Likes
+      <h6 class="d-inline m-0 col-auto">
+        Gefällt
       </h6>
-      <slider :slider-options="likesCountSliderOptions" />
+      <slider
+        class="col"
+        :slider-options="likesCountSliderOptions"
+      />
     </div>
-    <div>
-      <h6 class="d-inline mr-3 col-auto">
-        AutorIn
-      </h6>
+    <div class="mb-2 row align-items-center">
       <multi-select-input
+        class="col-auto w-100"
+        placeholder="Autor:innen"
         :options="creatorOptions"
         :model-value="activeFilter.body.posts.creator"
         not-found-message="Keine gefunden"
@@ -62,21 +62,27 @@
     </div>
     <div
       v-if="datesCreatedSliderOptions"
-      class="mb-2 row"
+      class="mb-2 row align-items-center"
     >
-      <h6 class="d-inline mr-3 col-auto">
-        Erstellt zwischen
+      <h6 class="d-inline m-0 col-auto">
+        Erstellt
       </h6>
-      <slider :slider-options="datesCreatedSliderOptions" />
+      <slider
+        class="col"
+        :slider-options="datesCreatedSliderOptions"
+      />
     </div>
     <div
       v-if="datesModifiedSliderOptions"
-      class="mb-2 row"
+      class="mb-2 row align-items-center"
     >
-      <h6 class="d-inline mr-3 col-auto">
-        Zuletzt bearbeitet zwischen
+      <h6 class="d-inline m-0 col-auto">
+        Zuletzt bearbeitet
       </h6>
-      <slider :slider-options="datesModifiedSliderOptions" />
+      <slider
+        class="col"
+        :slider-options="datesModifiedSliderOptions"
+      />
     </div>
   </div>
 </template>

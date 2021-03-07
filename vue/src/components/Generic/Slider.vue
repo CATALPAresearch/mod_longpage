@@ -1,16 +1,19 @@
 <template>
-  <div>
-    <span class="mr-3">
+  <div class="row">
+    <div class="col-auto pr-0">
       {{ sliderOptions.formatter ? sliderOptions.formatter(sliderOptions.min) : sliderOptions.min }}
-    </span>
-    <input
-      :id="inputId"
-      ref="input"
-      type="text"
-    >
-    <span class="ml-3">
+    </div>
+    <div class="col">
+      <input
+        :id="inputId"
+        ref="input"
+        :style="{width: '100%'}"
+        type="text"
+      >
+    </div>
+    <div class="col-auto pl-0">
       {{ sliderOptions.formatter ? sliderOptions.formatter(sliderOptions.max) : sliderOptions.max }}
-    </span>
+    </div>
   </div>
 </template>
 
@@ -76,5 +79,9 @@
 
   .slider-selection {
     background: #036fa5;
+  }
+
+  .slider.slider-horizontal {
+    width: 30%;
   }
 </style>
