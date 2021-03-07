@@ -25,7 +25,7 @@
           >{{ role.localName || role.shortName }}</span>
         </div>
         <div class="col text-right">
-          <i class="icon fa fa-question-circle-o fa-fw" />
+          <!--          <i class="icon fa fa-question-circle-o fa-fw" />-->
           <i
             v-if="!post.readByUser"
             class="icon fa fa-eye-slash fa-fw"
