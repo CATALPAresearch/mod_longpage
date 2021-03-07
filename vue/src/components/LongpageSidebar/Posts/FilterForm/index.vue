@@ -33,8 +33,8 @@
       </h6>
       <div class="col-auto">
         <multi-select-checkbox-group
-          v-model="selectedStateOptions"
-          :options="stateOptions"
+          v-model="selectedQuickResponseOptions"
+          :options="quickResponseOptions"
         />
       </div>
     </div>
@@ -43,7 +43,7 @@
       class="mb-2 row align-items-center"
     >
       <h6 class="d-inline m-0 col-auto">
-        Gefällt
+        Gefällt # Personen
       </h6>
       <slider
         class="col"
@@ -106,40 +106,38 @@ import MultiSelectCheckboxGroup from '@/components/Generic/MultiSelectCheckboxGr
     components: {MultiSelectCheckboxGroup, MultiSelectInput, Slider},
     data() {
       return {
-        selectedReadingStateOptions: [],
-        selectedStateOptions: [],
         readingStateOptions: [
           {
             id: 'posts-filter-checkbox-read',
             text: this.$i18n.t('post.state.unread'),
             iconClasses: ['fa-eye-slash'],
-            value: false
+            value: 'unread'
           },
           {
             id: 'posts-filter-checkbox-unread',
             text: this.$i18n.t('post.state.read'),
             iconClasses: ['fa-eye'],
-            value: false
+            value: 'read'
           },
         ],
-        stateOptions: [
+        quickResponseOptions: [
           {
             id: 'posts-filter-checkbox-liked',
             text: this.$i18n.t('post.state.liked'),
             iconClasses: ['fa-thumbs-up'],
-            value: false
+            value: 'likedByUser'
           },
           {
             id: 'posts-filter-checkbox-bookmarked',
             text: this.$i18n.t('post.state.bookmarked'),
             iconClasses: ['fa-star'],
-            value: false
+            value: 'bookmarkedByUser'
           },
           {
             id: 'posts-filter-checkbox-subscribed-to-thread',
             text: this.$i18n.t('post.state.subscribedToThread'),
             iconClasses: ['fa-bell'],
-            value: false
+            value: 'subscribedToByUser'
           },
         ],
       };
@@ -185,6 +183,34 @@ import MultiSelectCheckboxGroup from '@/components/Generic/MultiSelectCheckboxGr
         if (min === max) return;
 
         return this.getDateSliderOptions(min, max);
+      },
+      selectedQuickResponseOptions: {
+        get() {
+          const value = [];
+          if (this.activeFilter.body.posts.likedByUser) value.push('likedByUser');
+          if (this.activeFilter.body.posts.bookmarkedByUser) value.push('bookmarkedByUser');
+          if (this.activeFilter.body.subscribedToByUser) value.push('subscribedToByUser');
+          return value;
+        },
+        set(options) {
+          this.updateActiveFilter('body.posts.likedByUser', options.includes('likedByUser') || undefined);
+          this.updateActiveFilter('body.posts.bookmarkedByUser', options.includes('bookmarkedByUser') || undefined);
+          this.updateActiveFilter('body.subscribedToByUser', options.includes('subscribedToByUser') || undefined);
+        }
+      },
+      selectedReadingStateOptions: {
+        get() {
+          const readByUser = this.activeFilter.body.posts.readByUser;
+          if (readByUser === undefined) return [];
+
+          return readByUser ? ['read'] : ['unread'];
+        },
+        set(options) {
+          this.updateActiveFilter(
+              'body.posts.readByUser',
+              options.includes('read') === options.includes('unread') ? undefined : options.includes('read')
+          );
+        }
       },
     },
     methods: {
