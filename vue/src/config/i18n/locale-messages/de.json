@@ -42,12 +42,6 @@
       "unread": "Ungelesen"
     }
   },
-  "annotationSidebar": {
-    "filter": "Filter",
-    "filterByTextSelection": "Zu Textauswahl und Filtern passsende Annotationen angezeigt",
-    "notYetCreatedAnnotations": "Es wurden bisher noch keine Annotationen erstellt. Wählen Sie eine Textpassage aus, um eine Annotation zu erstellen.",
-    "showAll": "Zeige alle"
-  },
   "avatar": {
     "nameAnonymous": "Anonym",
     "alt": "Profilbild von anonymem Nutzer | Profilbild von {fullName}"
@@ -71,17 +65,29 @@
       "bookmarks": {
         "heading": "Lesezeichen",
         "message": {
-          "noneCreated": "Es wurde noch keine Lesezeichen erstellt."
+          "noneCreated": "Es wurde noch keine Lesezeichen erstellt.",
+          "onlySelectedShown": "Nur Lesezeichen gezeigt, die Sie mittels Klick auf ein Lesezeichensymbol im Text ausgewählt haben.",
+          "showAll": "Alle zeigen"
         }
       },
       "highlights": {
         "heading": "Markierungen",
         "message": {
-          "noneCreated": "Es wurde noch keine Markierung erstellt."
+          "noneCreated": "Es wurde noch keine Markierung erstellt.",
+          "onlySelectedShown": "Nur Markierungen gezeigt, die Sie mittels Klick im Text ausgewählt haben.",
+          "showAll": "Alle zeigen"
         }
       },
       "posts": {
-        "heading": "Anmerkungen"
+        "heading": "Anmerkungen",
+        "message": {
+          "filtered": "Anmerkungen sind gefiltert.",
+          "noneFilteredShown": "Es gibt keine Anmerkungen, die Ihren aktuell gesetzten Filtern entsprechen.",
+          "noneShown": "Weder Sie noch andere Teilnehmende haben bisher Anmerkungen erstellt.",
+          "onlySelectedShown": "Nur Anmerkungen gezeigt, die Sie mittels Klick auf eine Sprechblase im Text ausgewählt haben.",
+          "showAll": "Alle zeigen",
+          "showAllFiltered": "Alle zeigen (ggf. gefiltert)"
+        }
       },
       "search": {
         "heading": "Volltextsuche"

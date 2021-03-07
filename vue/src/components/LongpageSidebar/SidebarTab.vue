@@ -10,6 +10,7 @@
         >
           {{ title }}
         </h3>
+        <slot name="append-header" />
       </div>
       <hr
         v-if="title"

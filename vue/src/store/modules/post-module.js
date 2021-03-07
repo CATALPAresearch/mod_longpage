@@ -1,7 +1,7 @@
 import {ACT, GET, MUTATE} from '../types';
 import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
-import {flatten} from 'lodash';
+import {flatten, isEqual} from 'lodash';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
 import {MoodleWSMethods} from '@/config/constants';
@@ -33,6 +33,7 @@ export default {
         },
         [GET.THREAD]: ({threads}) => id => threads.find(t => t.id === id),
         [GET.THREAD_FILTER]: (_, getters) => getters[GET.ANNOTATION_FILTER].body,
+        [GET.THREADS_FILTERED]: ({threads}, getters) => threads.length !== getters[GET.THREADS].length,
         [GET.THREADS]: ({threads}, getters) => {
             return new ThreadFilter(getters[GET.THREAD_FILTER])
                 .applyTo(...threads)

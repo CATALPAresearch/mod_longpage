@@ -1,5 +1,22 @@
 <template>
   <sidebar-tab :title="areHighlights ? $t('sidebar.tabs.highlights.heading') : $t('sidebar.tabs.bookmarks.heading')">
+    <template #append-header>
+      <div
+        v-show="selectedHighlights.length"
+        class="mt-2"
+      >
+        <p class="mb-1">
+          {{ $t(`sidebar.tabs.${areHighlights ? 'highlights' : 'bookmarks'}.message.onlySelectedShown`) }}
+        </p>
+        <a
+          role="button"
+          class="btn btn-sm btn-secondary"
+          @click.stop="resetSelection"
+        >
+          {{ $t(`sidebar.tabs.${areHighlights ? 'highlights' : 'bookmarks'}.message.showAll`) }}
+        </a>
+      </div>
+    </template>
     <template #body>
       <div
         v-if="allHighlightsOrSelection.length"
@@ -99,6 +116,9 @@ export default {
   },
   methods: {
     ...mapActions([ACT.DELETE_ANNOTATION]),
+    resetSelection() {
+      this.selectedHighlights = [];
+    },
     scrollInHighlight(id) {
       scrollIntoView(getHighlightByAnnotationId(id), SCROLL_INTO_VIEW_OPTIONS);
     },

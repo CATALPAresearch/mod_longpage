@@ -94,13 +94,13 @@
 </template>
 
 <script>
-import {GET, MUTATE} from '@/store/types';
+  import {GET, MUTATE} from '@/store/types';
   import {getDateFormat} from '@/config/i18n/date-time-utils';
   import {debounce, isEmpty, set} from 'lodash';
   import MultiSelectInput from '@/components/Generic/MultiSelectInput/index';
   import {mapGetters, mapMutations} from 'vuex';
   import Slider from '@/components/Generic/Slider';
-import MultiSelectCheckboxGroup from '@/components/Generic/MultiSelectCheckboxGroup';
+  import MultiSelectCheckboxGroup from '@/components/Generic/MultiSelectCheckboxGroup';
 
   const Timestamp = Object.freeze({
     CREATED: 'timeCreated',

@@ -25,6 +25,40 @@
         <filter-form
           v-show="filterFormShown"
         />
+        <div
+          v-if="selectedThreads.length"
+          class="row mt-2"
+        >
+          <div class="col">
+            <p class="mb-1">
+              {{ $t('sidebar.tabs.posts.message.onlySelectedShown') }}
+            </p>
+            <a
+              role="button"
+              class="btn btn-sm btn-secondary"
+              @click.stop="resetSelection"
+            >
+              {{ $t('sidebar.tabs.posts.message.showAllFiltered') }}
+            </a>
+          </div>
+        </div>
+        <div
+          v-else-if="threadsFiltered && !filterFormShown"
+          class="row mt-2"
+        >
+          <div class="col">
+            <p class="mb-1">
+              {{ $t('sidebar.tabs.posts.message.filtered') }}
+            </p>
+            <a
+              role="button"
+              class="btn btn-sm btn-secondary"
+              @click.stop="resetFilter"
+            >
+              {{ $t('sidebar.tabs.posts.message.showAll') }}
+            </a>
+          </div>
+        </div>
       </div>
       <hr class="my-0 mx-3">
       <div
@@ -40,10 +74,16 @@
         />
       </div>
       <p
+        v-else-if="threadsFiltered"
+        class="p-3"
+      >
+        {{ $t('sidebar.tabs.posts.message.noneFilteredShown') }}
+      </p>
+      <p
         v-else
         class="p-3"
       >
-        {{ $t('annotationSidebar.notYetCreatedAnnotations') }}
+        {{ $t('sidebar.tabs.posts.message.noneShown') }}
       </p>
     </div>
   </div>
@@ -51,11 +91,11 @@
 
 <script>
 import {AnnotationType, THREAD_CONTAINER_ID} from '@/config/constants';
-import ActiveFiltersBar from '@/components/LongpageSidebar/Posts/ActiveFiltersBar';
+import {GET, MUTATE} from '@/store/types';
+import {mapGetters, mapMutations} from 'vuex';
+import {AnnotationFilter} from '@/util/filters/annotation-filter';
 import {EventBus} from '@/lib/event-bus';
 import FilterForm from '@/components/LongpageSidebar/Posts/FilterForm/';
-import {GET} from '@/store/types';
-import {mapGetters} from 'vuex';
 import Thread from './Thread';
 
 export default {
@@ -74,10 +114,11 @@ export default {
   computed: {
     ...mapGetters({
       threads: GET.THREADS,
+      threadsFiltered: GET.THREADS_FILTERED,
     }),
     allThreadsOrSelection() {
       return this.selectedThreads.length ? this.selectedThreads : this.threads;
-    }
+    },
   },
   mounted() {
     EventBus.subscribe('annotations-selected', ({type, selection}) => {
@@ -86,6 +127,13 @@ export default {
     });
   },
   methods: {
+    ...mapMutations([MUTATE.SET_ANNOTATION_FILTER]),
+    resetFilter() {
+      this[MUTATE.SET_ANNOTATION_FILTER](AnnotationFilter.DEFAULT);
+    },
+    resetSelection() {
+      this.selectedThreads = [];
+    },
     toggleFilterForm() {
       this.filterFormShown = !this.filterFormShown;
     },
