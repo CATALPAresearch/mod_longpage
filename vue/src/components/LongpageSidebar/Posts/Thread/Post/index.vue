@@ -61,10 +61,10 @@
         v-if="thread.root.id === post.id"
         class="row no-gutters my-1"
       >
-        <div class="col col-auto p-0 border-left border-secondary pl-2">
+        <div class="col col-auto p-0 border-left border-secondary pl-2 cursor-pointer">
           <expandable-highlight-excerpt
             :annotation-target="annotation.target"
-            @highlight-clicked="selectAnnotation"
+            @highlight-clicked="scrollInText"
           />
         </div>
       </div>
@@ -164,7 +164,7 @@ export default {
     if (!this.post.created) this.showForm = true;
   },
   methods: {
-    selectAnnotation() {
+    scrollInText() {
       scrollIntoView(getHighlightByAnnotationId(this.annotation.id), SCROLL_INTO_VIEW_OPTIONS);
     },
   }

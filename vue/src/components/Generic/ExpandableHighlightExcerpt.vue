@@ -28,6 +28,7 @@ export default {
   props: {
     annotationTarget: {type: AnnotationTarget, required: true},
   },
+  emits: ['highlight-clicked'],
   data() {
     return {
       isExpanded: false,

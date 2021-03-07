@@ -11,7 +11,8 @@
         >
           <expandable-highlight-excerpt
             :annotation-target="highlight.target"
-            class="mx-2"
+            class="mx-2 cursor-pointer"
+            @highlight-clicked="scrollInHighlight(highlight.id)"
           />
           <div
             class="text-muted text-small mt-1 mx-2 row justify-content-between"
@@ -65,8 +66,10 @@ import {ACT} from '@/store/types';
 import {mapActions} from 'vuex';
 import DateTimes from '@/components/LongpageSidebar/DateTimes';
 import SidebarTab from '@/components/LongpageSidebar/SidebarTab';
-import {AnnotationType} from '@/config/constants';
+import {AnnotationType, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
 import {EventBus} from '@/lib/event-bus';
+import scrollIntoView from 'scroll-into-view-if-needed';
+import {getHighlightByAnnotationId} from '@/util/annotation';
 
 export default {
   name: 'HighlightsTab',
@@ -95,12 +98,15 @@ export default {
     },
   },
   methods: {
-    ...mapActions([ACT.DELETE_ANNOTATION])
+    ...mapActions([ACT.DELETE_ANNOTATION]),
+    scrollInHighlight(id) {
+      scrollIntoView(getHighlightByAnnotationId(id), SCROLL_INTO_VIEW_OPTIONS);
+    },
   },
   mounted() {
     EventBus.subscribe('annotations-selected', ({type, selection}) => {
       this.selectedHighlights = this.type === type ? selection : [];
     });
-  }
+  },
 };
 </script>
