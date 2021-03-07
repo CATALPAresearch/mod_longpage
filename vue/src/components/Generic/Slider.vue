@@ -19,16 +19,19 @@
 
 <script>
   import Slider from 'bootstrap-slider';
-  import {uniqueId} from 'lodash';
+  import {debounce, uniqueId} from 'lodash';
   import {toIdSelector} from '@/util/style';
 
   export default {
     name: 'Slider',
     props: {
+      modelValue: {type: Array, required: true},
       sliderOptions: {type: Object, required: true},
     },
+    emits: ['update:modelValue'],
     data() {
       return {
+        emitDebounced: () => {},
         inputId: uniqueId('slider-input-'),
         sliderId: uniqueId('slider-'),
         slider: null,
@@ -37,15 +40,18 @@
     },
     watch: {
       async sliderOptions(options) {
-        await this.initSliderPromise;
-        Object.entries(options).forEach(([key, value]) => {
-          this.slider.setAttribute(key, value);
-        });
-        this.slider.refresh({useCurrentValue: true});
-      }
+          await this.initSliderPromise;
+          Object.entries(options).forEach(([key, value]) => {
+            this.slider.setAttribute(key, value);
+          });
+          this.slider.refresh({useCurrentValue: true});
+      },
     },
     async mounted() {
       this.initSlider();
+      this.emitDebounced = debounce(newValue => {
+        this.$emit('update:modelValue', newValue);
+      }, 500);
     },
     methods: {
       initSlider() {
@@ -57,6 +63,9 @@
                 id: this.sliderId,
                 range: true,
                 ...(this.sliderOptions || {}),
+              });
+              this.slider.on('change', ({newValue}) => {
+                this.emitDebounced(newValue);
               });
               resolve();
             }

@@ -17,6 +17,16 @@
       </div>
     </div>
     <div class="mb-2 row align-items-center">
+      <multi-select-input
+        class="col-auto w-100"
+        placeholder="Autor:innen"
+        :options="creatorOptions"
+        :model-value="activeFilter.body.posts.creator"
+        not-found-message="Keine gefunden"
+        @update:model-value="updateActiveFilter('body.posts.creator', $event)"
+      />
+    </div>
+    <div class="mb-2 row align-items-center">
       <h6 class="d-inline m-0 col-auto">
         Gelesen-Status
       </h6>
@@ -48,16 +58,8 @@
       <slider
         class="col"
         :slider-options="likesCountSliderOptions"
-      />
-    </div>
-    <div class="mb-2 row align-items-center">
-      <multi-select-input
-        class="col-auto w-100"
-        placeholder="Autor:innen"
-        :options="creatorOptions"
-        :model-value="activeFilter.body.posts.creator"
-        not-found-message="Keine gefunden"
-        @update:model-value="updateActiveFilter('body.posts.creator', $event)"
+        :model-value="[activeFilter.body.posts.likesCount.min, activeFilter.body.posts.likesCount.max]"
+        @update:model-value="updateActiveFilter('body.posts.likesCount', {min: $event[0], max: $event[1]})"
       />
     </div>
     <div
@@ -70,6 +72,8 @@
       <slider
         class="col"
         :slider-options="datesCreatedSliderOptions"
+        :model-value="[activeFilter.body.posts.timeCreated.min, activeFilter.body.posts.timeCreated.max]"
+        @update:model-value="updateActiveFilter('body.posts.timeCreated', {min: $event[0], max: $event[1]})"
       />
     </div>
     <div
@@ -82,6 +86,8 @@
       <slider
         class="col"
         :slider-options="datesModifiedSliderOptions"
+        :model-value="[activeFilter.body.posts.timeModified.min, activeFilter.body.posts.timeModified.max]"
+        @update:model-value="updateActiveFilter('body.posts.timeModified', {min: $event[0], max: $event[1]})"
       />
     </div>
   </div>
