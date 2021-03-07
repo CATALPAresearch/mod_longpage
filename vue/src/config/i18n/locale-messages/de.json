@@ -35,10 +35,11 @@
       }
     },
     "state": {
-      "read": "Gelesen",
-      "unread": "Ungelesen",
       "bookmarked": "Gemerkt",
-      "subscribedToThread": "Thread abonniert"
+      "liked": "Gefällt mir",
+      "read": "Gelesen",
+      "subscribedToThread": "Thread abonniert",
+      "unread": "Ungelesen"
     }
   },
   "annotationSidebar": {

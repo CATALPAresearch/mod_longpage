@@ -1,8 +1,5 @@
 <template>
   <div>
-    <h4 class="mb-2">
-      Filter
-    </h4>
     <div class="mb-2">
       <div class="input-group">
         <input
@@ -23,31 +20,24 @@
     </div>
     <div class="mb-2 row">
       <h6 class="d-inline col-auto">
+        Gelesen-Status
+      </h6>
+      <div class="col-auto">
+        <multi-select-checkbox-group
+          v-model="selectedReadingStateOptions"
+          :options="readingStateOptions"
+        />
+      </div>
+    </div>
+    <div class="mb-2 row">
+      <h6 class="d-inline col-auto">
         Status
       </h6>
       <div class="col-auto">
-        <div
-          v-for="input in stateInputs"
-          :key="input.id"
-          class="form-check form-check-inline mr-3"
-        >
-          <input
-            :id="input.id"
-            v-model="input.value"
-            class="form-check-input"
-            type="checkbox"
-          >
-          <label
-            class="form-check-label"
-            :for="input.id"
-          >
-            {{ input.label }}
-            <i
-              class="icon fa fa-fw"
-              :class="input.iconClasses"
-            />
-          </label>
-        </div>
+        <multi-select-checkbox-group
+          v-model="selectedStateOptions"
+          :options="stateOptions"
+        />
       </div>
     </div>
     <div
@@ -98,6 +88,7 @@ import {GET, MUTATE} from '@/store/types';
   import MultiSelectInput from '@/components/Generic/MultiSelectInput/index';
   import {mapGetters, mapMutations} from 'vuex';
   import Slider from '@/components/Generic/Slider';
+import MultiSelectCheckboxGroup from '@/components/Generic/MultiSelectCheckboxGroup';
 
   const Timestamp = Object.freeze({
     CREATED: 'timeCreated',
@@ -106,33 +97,43 @@ import {GET, MUTATE} from '@/store/types';
 
   export default {
     name: 'FilterForm',
-    components: {MultiSelectInput, Slider},
+    components: {MultiSelectCheckboxGroup, MultiSelectInput, Slider},
     data() {
       return {
-        stateInputs: [
+        selectedReadingStateOptions: [],
+        selectedStateOptions: [],
+        readingStateOptions: [
           {
             id: 'posts-filter-checkbox-read',
-            label: this.$i18n.t('post.state.unread'),
+            text: this.$i18n.t('post.state.unread'),
             iconClasses: ['fa-eye-slash'],
-            value: true
+            value: false
           },
           {
             id: 'posts-filter-checkbox-unread',
-            label: this.$i18n.t('post.state.read'),
+            text: this.$i18n.t('post.state.read'),
             iconClasses: ['fa-eye'],
-            value: true
+            value: false
+          },
+        ],
+        stateOptions: [
+          {
+            id: 'posts-filter-checkbox-liked',
+            text: this.$i18n.t('post.state.liked'),
+            iconClasses: ['fa-thumbs-up'],
+            value: false
           },
           {
             id: 'posts-filter-checkbox-bookmarked',
-            label: this.$i18n.t('post.state.bookmarked'),
+            text: this.$i18n.t('post.state.bookmarked'),
             iconClasses: ['fa-star'],
-            value: true
+            value: false
           },
           {
             id: 'posts-filter-checkbox-subscribed-to-thread',
-            label: this.$i18n.t('post.state.subscribedToThread'),
+            text: this.$i18n.t('post.state.subscribedToThread'),
             iconClasses: ['fa-bell'],
-            value: true
+            value: false
           },
         ],
       };

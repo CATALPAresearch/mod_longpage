@@ -25,7 +25,6 @@
         <filter-form
           v-show="filterFormShown"
         />
-        <active-filters-bar />
       </div>
       <hr class="my-0 mx-3">
       <div
@@ -63,7 +62,6 @@ export default {
   name: 'Posts',
   components: {
     FilterForm,
-    ActiveFiltersBar,
     Thread
   },
   data() {

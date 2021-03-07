@@ -48,6 +48,11 @@
               type="checkbox"
               @change="toggleOption(option.value)"
             >
+            <i
+              v-if="option.iconClasses"
+              class="icon fa fa-fw mr-1"
+              :class="option.iconClasses"
+            />
             <label
               class="form-check-label"
               for="defaultCheck1"
