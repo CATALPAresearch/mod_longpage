@@ -31,6 +31,10 @@ export class Thread {
         return this.root.isPublic;
     }
 
+    get lastPost() {
+        return this.posts[this.posts.length - 1];
+    }
+
     get lastReply() {
         return this.replies[this.replies.length -1];
     }

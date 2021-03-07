@@ -98,8 +98,8 @@
 </template>
 
 <script>
-import {ACT} from '@/store/types';
-import {mapActions} from 'vuex';
+import {ACT, GET} from '@/store/types';
+import {mapActions, mapGetters} from 'vuex';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
 
@@ -112,16 +112,24 @@ export default {
   },
   emits: ['edit-clicked', 'toggle-replies'],
   computed: {
+    ...mapGetters([GET.USER]),
     dropdownMenuItems() {
-      return [
+      const items = [
         {
           iconClasses: ['fa', this.post.readByUser ? 'fa-eye-slash' : 'fa-eye', 'fa-fw'],
           handler: this.togglePostReading,
           text: this.$i18n.t(`post.action.${this.post.readByUser ? 'markAsUnread' : 'markAsRead'}`),
         },
-        {iconClasses: ['fa', 'fa-pencil', 'fa-fw'], handler: this.openEditor, text: this.$i18n.t('post.action.edit')},
-        {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deletePost, text: this.$i18n.t('post.action.delete')},
       ];
+
+      if (this[GET.USER]().id === this.post.creatorId && this.thread.lastPost.id === this.post.id) {
+        items.push(
+          {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deletePost, text: this.$i18n.t('post.action.delete')},
+          {iconClasses: ['fa', 'fa-pencil', 'fa-fw'], handler: this.openEditor, text: this.$i18n.t('post.action.edit')},
+        );
+      }
+
+      return items;
     },
     postIntern() {
       return this.post;
