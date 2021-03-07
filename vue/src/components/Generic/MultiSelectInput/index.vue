@@ -6,7 +6,6 @@
     >
       <input
         ref="multiSelectInput"
-        :placeholder="placeholder"
         type="text"
         class="form-control tagin"
         @change="valueAsString = $event.target.value"
@@ -157,7 +156,7 @@ export default {
     this.mounted = true;
     this.$refs.multiSelectInput._selectOptions = this.options;
     this.$refs.multiSelectInput.value = this.valueAsString;
-    tagin(this.$refs.multiSelectInput, {separator: this.valueSeperator});
+    tagin(this.$refs.multiSelectInput, {placeholder: this.placeholder, separator: this.valueSeperator});
   },
   methods: {
     toggleOption(value) {
