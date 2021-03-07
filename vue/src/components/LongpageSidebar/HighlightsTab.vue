@@ -2,10 +2,10 @@
   <sidebar-tab :title="areHighlights ? $t('sidebar.tabs.highlights.heading') : $t('sidebar.tabs.bookmarks.heading')">
     <template #body>
       <div
-        v-if="highlights.length"
+        v-if="allHighlightsOrSelection.length"
       >
         <div
-          v-for="(highlight, index) in highlights"
+          v-for="(highlight, index) in allHighlightsOrSelection"
           :key="highlight.id"
           class="mb-1"
         >
@@ -44,7 +44,7 @@
             </div>
           </div>
           <hr
-            v-if="index !== highlights.length - 1"
+            v-if="index !== allHighlightsOrSelection.length - 1"
             class="mt-1 mb-0"
           >
         </div>
@@ -66,13 +66,19 @@ import {mapActions} from 'vuex';
 import DateTimes from '@/components/LongpageSidebar/DateTimes';
 import SidebarTab from '@/components/LongpageSidebar/SidebarTab';
 import {AnnotationType} from '@/config/constants';
+import {EventBus} from '@/lib/event-bus';
 
 export default {
   name: 'HighlightsTab',
   components: {DateTimes, ExpandableHighlightExcerpt, SidebarTab},
   props: {
     type: {type: Number, default: AnnotationType.HIGHLIGHT},
-    highlights: {type: Array, default: () => []}
+    highlights: {type: Array, default: () => []},
+  },
+  data() {
+    return {
+      selectedHighlights: [],
+    };
   },
   computed: {
     actions() {
@@ -81,12 +87,20 @@ export default {
         {iconClasses: ['fa-trash'], handler: this[ACT.DELETE_ANNOTATION], text}
       ];
     },
+    allHighlightsOrSelection() {
+      return this.selectedHighlights.length ? this.selectedHighlights : this.highlights;
+    },
     areHighlights() {
       return this.type === AnnotationType.HIGHLIGHT;
     },
   },
   methods: {
     ...mapActions([ACT.DELETE_ANNOTATION])
+  },
+  mounted() {
+    EventBus.subscribe('annotations-selected', ({type, selection}) => {
+      this.selectedHighlights = this.type === type ? selection : [];
+    });
   }
 };
 </script>

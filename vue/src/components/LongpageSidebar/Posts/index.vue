@@ -34,7 +34,7 @@
         class="p-3 flex-shrink-1 flex-grow-1 overflow-y-auto overflow-x-hidden"
       >
         <thread
-          v-for="thread in threads"
+          v-for="thread in allThreadsOrSelection"
           :key="thread.id"
           :thread="thread"
           class="mb-3"
@@ -51,12 +51,13 @@
 </template>
 
 <script>
-import Thread from './Thread';
-import {mapGetters} from 'vuex';
-import {GET} from '@/store/types';
-import {THREAD_CONTAINER_ID} from '@/config/constants';
+import {AnnotationType, THREAD_CONTAINER_ID} from '@/config/constants';
 import ActiveFiltersBar from '@/components/LongpageSidebar/Posts/ActiveFiltersBar';
+import {EventBus} from '@/lib/event-bus';
 import FilterForm from '@/components/LongpageSidebar/Posts/FilterForm/';
+import {GET} from '@/store/types';
+import {mapGetters} from 'vuex';
+import Thread from './Thread';
 
 export default {
   name: 'Posts',
@@ -68,6 +69,7 @@ export default {
   data() {
     return {
       filterFormShown: false,
+      selectedThreads: [],
       THREAD_CONTAINER_ID,
     };
   },
@@ -75,11 +77,20 @@ export default {
     ...mapGetters({
       threads: GET.THREADS,
     }),
+    allThreadsOrSelection() {
+      return this.selectedThreads.length ? this.selectedThreads : this.threads;
+    }
+  },
+  mounted() {
+    EventBus.subscribe('annotations-selected', ({type, selection}) => {
+      this.selectedThreads = type === AnnotationType.POST ?
+          this.threads.filter(t => selection.findIndex(annotation => annotation.id === t.annotationId) >= 0) : [];
+    });
   },
   methods: {
     toggleFilterForm() {
       this.filterFormShown = !this.filterFormShown;
     },
-  }
+  },
 };
 </script>

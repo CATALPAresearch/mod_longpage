@@ -5,6 +5,7 @@
   >
     <div
       id="longpage-main"
+      ref="mainRef"
       class="col vh-100-wo-nav overflow-y-auto row no-gutters justify-content-center p-3"
     >
       <div
@@ -27,11 +28,13 @@
 
 <script>
 import {ACT, GET} from './store/types';
+import {AnnotationType, LONGPAGE_CONTENT_ID} from '@/config/constants';
+import {EventBus} from '@/lib/event-bus';
+import {getHighlightsAnchoredAt} from '@/lib/annotation/highlight-selection-listening';
+import Log from './lib/Logging';
+import LongpageSidebar from '@/components/LongpageSidebar';
 import {mapActions, mapGetters} from 'vuex';
 import PostIndicators from '@/components/LongpageContent/AnnotationIndicatorSidebar';
-import Log from './lib/Logging';
-import {LONGPAGE_CONTENT_ID} from '@/config/constants';
-import LongpageSidebar from '@/components/LongpageSidebar';
 import {ReadingTimeEstimator} from '@/lib/reading-time-estimator';
 import {toIdSelector} from '@/util/style';
 import Utils from './util/utils';
@@ -62,6 +65,14 @@ export default {
       ...mapGetters({context: GET.LONGPAGE_CONTEXT}),
     },
     mounted() {
+      this.$refs.mainRef.addEventListener('click', event => {
+        const highlightsAtClickCoords = getHighlightsAnchoredAt(event.target);
+        EventBus.publish('annotations-selected', {
+          type: highlightsAtClickCoords.length ? AnnotationType.HIGHLIGHT : undefined,
+          selection: highlightsAtClickCoords,
+        });
+      });
+
       Y.use('mathjax', () => {
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
       });

@@ -12,7 +12,7 @@
       <a
         role="button"
         class="icon-layer text-secondary fa-1-5x"
-        @click.stop="emitSelection"
+        @click.stop="publishSelection(Number(type))"
       >
         <i
           class="icon fa fa-fw m-0"
@@ -61,8 +61,11 @@
       },
     },
     methods: {
-      emitSelection() {
-        EventBus.publish('posts-selected', this.annotations);
+      publishSelection(annotationType) {
+        EventBus.publish('annotations-selected', {
+          type: annotationType,
+          selection: this.annotationsByType[annotationType],
+        });
       }
     }
   };

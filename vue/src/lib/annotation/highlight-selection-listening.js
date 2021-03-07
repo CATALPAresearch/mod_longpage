@@ -1,10 +1,14 @@
-import {AnnotationType, HighlightingConfig} from '../../config/constants';
+import {AnnotationType, HighlightingConfig, LONGPAGE_CONTENT_ID} from '../../config/constants';
 import {EventBus} from '@/lib/event-bus';
+import {toIdSelector} from '@/util/style';
 
-addEventListener('click', event => {
-    const highlightsAtClickCoords = getHighlightsAnchoredAt(event.target);
-    if (highlightsAtClickCoords.length) EventBus.publish('highlights-selected', highlightsAtClickCoords);
-});
+// Const contentContainer = document.querySelector(toIdSelector(LONGPAGE_CONTENT_ID));
+//
+//
+// contentContainer.addEventListener('click', event => {
+//     const highlightsAtClickCoords = getHighlightsAnchoredAt(event.target);
+//     EventBus.publish('highlights-selected', highlightsAtClickCoords);
+// });
 
 /**
  * Return the annotations associated with any highlights that contain a given
@@ -17,6 +21,7 @@ const getAnnotationsAnchoredAt = (node) => {
     const items = getHighlightsContainingNode(node)
         .map(h => /** @type {AnnotationHighlight} */ (h)._annotation)
         .filter(ann => ann !== undefined);
+
     return /** @type {AnnotationData[]} */ (items);
 };
 
@@ -27,7 +32,7 @@ const getAnnotationsAnchoredAt = (node) => {
  * @param {Node} node
  * @return {AnnotationData[]}
  */
-const getHighlightsAnchoredAt = (node) => {
+export const getHighlightsAnchoredAt = (node) => {
     return getAnnotationsAnchoredAt(node)
         .filter(annotation => annotation.type === AnnotationType.HIGHLIGHT);
 };

@@ -43,13 +43,14 @@
 </template>
 
 <script>
+import {AnnotationType, LONGPAGE_APP_ID, SidebarTabKeys} from '@/config/constants';
 import {GET, MUTATE} from '@/store/types';
 import {mapGetters, mapMutations} from 'vuex';
 import Bookmarks from '@/components/LongpageSidebar/Bookmarks';
+import {EventBus} from '@/lib/event-bus';
 import Highlights from '@/components/LongpageSidebar/Highlights';
 import Posts from '@/components/LongpageSidebar/Posts';
 import {debounce} from 'lodash';
-import {LONGPAGE_APP_ID, SidebarTabKeys} from '@/config/constants';
 import TableOfContents from '@/components/LongpageSidebar/TableOfContents';
 
 const LONGPAGE_SIDEBAR_ID = 'longpage-sidebar';
@@ -114,12 +115,24 @@ export default {
     ...mapGetters({tabOpenedKey: GET.SIDEBAR_TAB_OPENED_KEY}),
   },
   mounted() {
-
+    EventBus.subscribe('annotations-selected', ({type}) => {
+      switch (type) {
+        case AnnotationType.HIGHLIGHT:
+          this.setTabOpened(SidebarTabKeys.HIGHLIGHTS);
+          break;
+        case AnnotationType.BOOKMARK:
+          this.setTabOpened(SidebarTabKeys.BOOKMARKS);
+          break;
+        case AnnotationType.POST:
+          this.setTabOpened(SidebarTabKeys.POSTS);
+          break;
+      }
+    });
   },
   methods: {
-    toggleTab(tab) {
-      if (tab === this.tabOpenedKey) this.setTabOpened(undefined);
-      else this.setTabOpened(tab);
+    toggleTab(tabKey) {
+      if (tabKey === this.tabOpenedKey) this.setTabOpened(undefined);
+      else this.setTabOpened(tabKey);
     },
     ...mapMutations({setTabOpened: MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY})
   },
