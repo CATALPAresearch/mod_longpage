@@ -59,7 +59,7 @@
       </div>
       <div
         v-if="thread.root.id === post.id"
-        class="row no-gutters my-1"
+        class="row no-gutters my-2"
       >
         <div class="col col-auto p-0 border-left border-secondary pl-2 cursor-pointer">
           <expandable-highlight-excerpt
@@ -68,7 +68,7 @@
           />
         </div>
       </div>
-      <div class="row no-gutters my-1">
+      <div class="row no-gutters my-2">
         <div class="col col-12 p-0">
           <span
             v-show="!showForm"
