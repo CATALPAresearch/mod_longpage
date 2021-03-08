@@ -72,12 +72,12 @@ function page_get_view_actions() {
 }
 
 /**
- * List the actions that correspond to a post of this module.
+ * List the actions that correspond to a postIntern of this module.
  * This is used by the participation report.
  *
  * Note: This is not used by new logging system. Event with
  *       crud = ('c' || 'u' || 'd') and edulevel = LEVEL_PARTICIPATING
- *       will be considered as post action.
+ *       will be considered as postIntern action.
  *
  * @return array
  */

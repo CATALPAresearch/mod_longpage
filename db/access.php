@@ -33,10 +33,8 @@ $capabilities = array(
             'user' => CAP_ALLOW,
         )
     ),
-
     'mod/page:addinstance' => array(
         'riskbitmask' => RISK_XSS,
-
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(

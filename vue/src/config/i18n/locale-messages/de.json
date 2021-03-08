@@ -1,30 +1,60 @@
 {
-  "annotationCard": {
-    "editor": {
+  "expandable": {
+    "less": "Weniger",
+    "more": "Mehr"
+  },
+  "bookmark": {
+    "action": {
+      "delete": "Lesezeichen Löschen"
+    }
+  },
+  "highlight": {
+    "action": {
+      "delete": "Markierung Löschen"
+    }
+  },
+  "post": {
+    "action": {
+      "delete": "Beitrag löschen",
+      "edit": "Beitrag bearbeiten",
+      "like": "Gefällt mir",
+      "markAsAnwer": "Als Antwort markieren",
+      "markAsQuestion": "Als Frage markieren",
+      "markAsRead": "Beitrag als gelesen markieren",
+      "markAsUnread": "Beitrag als ungelesen markieren",
+      "markWithStar": "Beitrag mit Stern markieren",
+      "subscribe": "Thread abonnieren"
+    },
+    "form": {
       "bodyTextareaPlaceholder": "Erstellen Sie eine Anmerkung",
-      "cancel": "Abbrechen",
-      "saveActions": {
+      "action": {
+        "cancel": "Abbrechen",
         "publish": "Veröffentlichen",
         "publishAnonymously": "Anonym veröffentlichen",
         "save": "Speichern ohne Veröffentlichen"
       }
     },
-    "created": "erstellt",
-    "less": "Weniger",
-    "modified": "bearbeitet",
-    "more": "Mehr"
-  },
-  "annotationSidebar": {
-    "filter": "Filter",
-    "filterByTextSelection": "Zu Textauswahl und Filtern passsende Annotationen angezeigt",
-    "notYetCreatedAnnotations": "Es wurden bisher noch keine Annotationen erstellt. Wählen Sie eine Textpassage aus, um eine Annotation zu erstellen.",
-    "showAll": "Zeige alle"
+    "state": {
+      "bookmarked": "Gemerkt",
+      "liked": "Gefällt mir",
+      "read": "Gelesen",
+      "subscribedToThread": "Thread abonniert",
+      "unread": "Ungelesen"
+    }
   },
   "avatar": {
     "nameAnonymous": "Anonym",
     "alt": "Profilbild von anonymem Nutzer | Profilbild von {fullName}"
   },
   "generic": {
+    "defaultSelectOptionsCategory": "Ohne Kategorie",
+    "loadingIndicator": {
+      "creating": "Wird erstellt",
+      "updating": "Wird aktualisiert"
+    },
+    "message": {
+      "notFound": "Keine mit der Anfrage übereinstimmenden Ergebnisse gefunden"
+    },
     "toggleDropdown": "Menü ausklappen"
   },
   "responseForm": {
@@ -32,8 +62,32 @@
   },
   "sidebar": {
     "tabs": {
-      "annotations": {
-        "heading": "Annotationen"
+      "bookmarks": {
+        "heading": "Lesezeichen",
+        "message": {
+          "noneCreated": "Es wurde noch keine Lesezeichen erstellt.",
+          "onlySelectedShown": "Nur Lesezeichen gezeigt, die Sie mittels Klick auf ein Lesezeichensymbol im Text ausgewählt haben.",
+          "showAll": "Alle zeigen"
+        }
+      },
+      "highlights": {
+        "heading": "Markierungen",
+        "message": {
+          "noneCreated": "Es wurde noch keine Markierung erstellt.",
+          "onlySelectedShown": "Nur Markierungen gezeigt, die Sie mittels Klick im Text ausgewählt haben.",
+          "showAll": "Alle zeigen"
+        }
+      },
+      "posts": {
+        "heading": "Anmerkungen",
+        "message": {
+          "filtered": "Anmerkungen sind gefiltert.",
+          "noneFilteredShown": "Es gibt keine Anmerkungen, die Ihren aktuell gesetzten Filtern entsprechen.",
+          "noneShown": "Weder Sie noch andere Teilnehmende haben bisher Anmerkungen erstellt.",
+          "onlySelectedShown": "Nur Anmerkungen gezeigt, die Sie mittels Klick auf eine Sprechblase im Text ausgewählt haben.",
+          "showAll": "Alle zeigen",
+          "showAllFiltered": "Alle zeigen (ggf. gefiltert)"
+        }
       },
       "search": {
         "heading": "Volltextsuche"
@@ -42,5 +96,9 @@
         "heading": "Inhaltsverzeichnis"
       }
     }
+  },
+  "timestamps": {
+    "created": "erstellt",
+    "modified": "bearbeitet"
   }
 }

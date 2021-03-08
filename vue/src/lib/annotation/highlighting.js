@@ -6,7 +6,7 @@
  * Based on Hypothesis client's modules (see https://github.com/hypothesis/client):
  *   - src/annotator/highlighter.js
  */
-import {HighlightingConfig} from "../../config/constants";
+import {HighlightingConfig} from '../../config/constants';
 
 /**
  * Subset of the `NormalizedRange` class defined in `range.js` that this
@@ -46,7 +46,7 @@ export function highlightRange(normedRange, cssClass) {
     prevNode = node;
   });
 
-  // Filter out text node spans that consist only of white space. This avoids
+  // PostFilter out text node spans that consist only of white space. This avoids
   // inserting highlight elements in places that can only contain a restricted
   // subset of nodes such as table rows and lists.
   textNodeSpans = textNodeSpans.filter(span =>
@@ -116,22 +116,6 @@ export function removeHighlights(highlights) {
 }
 
 /**
- * Set whether the given highlight elements should appear "focused".
- *
- * A highlight can be displayed in a different ("focused") style to indicate
- * that it is current in some other context - for example the user has selected
- * the corresponding annotation in the sidebar.
- *
- * @param {HighlightElement[]} highlights
- * @param {boolean} focused
- */
-export function setHighlightsFocused(highlights, focused) {
-  highlights.forEach(h =>
-    h.classList.toggle(HighlightingConfig.HL_FOCUSED_CLASS_NAME, focused)
-  );
-}
-
-/**
  * Set whether highlights under the given root element should be visible.
  *
  * @param {HTMLElement} root
@@ -164,37 +148,4 @@ export function getHighlightsContainingNode(node) {
   }
 
   return highlights;
-}
-
-/**
- * Subset of `DOMRect` interface.
- *
- * @typedef Rect
- * @prop {number} top
- * @prop {number} left
- * @prop {number} bottom
- * @prop {number} right
- */
-
-/**
- * Get the bounding client rectangle of a collection in viewport coordinates.
- * Unfortunately, Chrome has issues ([1]) with Range.getBoundingClient rect or we
- * could just use that.
- *
- * [1] https://bugs.chromium.org/p/chromium/issues/detail?id=324437
- *
- * @param {HTMLElement[]} collection
- * @return {Rect}
- */
-export function getBoundingClientRect(collection) {
-  // Reduce the client rectangles of the highlights to a bounding box
-  const rects = collection.map(
-    n => /** @type {Rect} */ (n.getBoundingClientRect())
-  );
-  return rects.reduce((acc, r) => ({
-    top: Math.min(acc.top, r.top),
-    left: Math.min(acc.left, r.left),
-    bottom: Math.max(acc.bottom, r.bottom),
-    right: Math.max(acc.right, r.right),
-  }));
 }

@@ -7,30 +7,14 @@
 @use 'sass:color';
 
 @mixin colorized-bg-highlight($color) {
-  background: transparent linear-gradient(
-                  to right,
-                  rgba($color, 0.3),
-                  rgba($color, 0.9) 4%,
-                  rgba($color, 0.5)
-  );
+  cursor: pointer;
+  background: $color;
 }
 
 // `longpage-highlights-always-on` is a class that is toggled on the
 //  annotated longpage-container when highlights are enabled/disabled.
 .longpage-highlights-always-on {
-  .longpage-highlight {
-    position: relative;
-    mix-blend-mode: multiply;
-    margin: 0 -0.4em;
-    padding: 0.1em 0.4em;
-    border-radius: 0.8em 0.3em;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-  }
-
   .annotation-toolbar-item, .longpage-highlight {
-    cursor: pointer;
-
     &.bg-yellow {
       @include colorized-bg-highlight($color-highlight-yellow);
     }
@@ -40,14 +24,19 @@
     &.bg-orange {
       @include colorized-bg-highlight($color-highlight-orange);
     }
-    &.bg-violet {
-      @include colorized-bg-highlight($color-highlight-violet);
-    }
-    &.bg-blue {
-      @include colorized-bg-highlight($color-highlight-blue);
-    }
     &.bg-pink {
       @include colorized-bg-highlight($color-highlight-pink);
+    }
+    &.underline {
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-thickness: 0.125rem;
+    }
+    &.underline-red {
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-color: red;
+      text-decoration-thickness: 0.125rem;
     }
     // Make highlights visible to screen readers.
     // See also - https://developer.paciellogroup.com/blog/2017/12/short-note-on-making-your-mark-more-accessible/.

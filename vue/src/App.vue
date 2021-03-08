@@ -5,6 +5,7 @@
   >
     <div
       id="longpage-main"
+      ref="mainRef"
       class="col vh-100-wo-nav overflow-y-auto row no-gutters justify-content-center p-3"
     >
       <div
@@ -16,9 +17,9 @@
       />
       <div
         class="col col-auto p-0 mx-1"
-        style="width: 1.5em;"
+        style="width: 3em;"
       >
-        <note-indicators />
+        <post-indicators />
       </div>
     </div>
     <longpage-sidebar class="col-auto" />
@@ -27,11 +28,13 @@
 
 <script>
 import {ACT, GET} from './store/types';
-import {mapActions, mapGetters} from 'vuex';
-import AnnotationBodyIndicators from '@/components/annotation/AnnotationBodyIndicators';
+import {AnnotationType, LONGPAGE_CONTENT_ID} from '@/config/constants';
+import {EventBus} from '@/lib/event-bus';
+import {getHighlightsAnchoredAt} from '@/lib/annotation/highlight-selection-listening';
 import Log from './lib/Logging';
-import {LONGPAGE_CONTENT_ID} from '@/config/constants';
-import LongpageSidebar from '@/components/longpage-sidebar';
+import LongpageSidebar from '@/components/LongpageSidebar';
+import {mapActions, mapGetters} from 'vuex';
+import PostIndicators from '@/components/LongpageContent/AnnotationIndicatorSidebar';
 import {ReadingTimeEstimator} from '@/lib/reading-time-estimator';
 import {toIdSelector} from '@/util/style';
 import Utils from './util/utils';
@@ -39,7 +42,7 @@ import Utils from './util/utils';
 export default {
     name: 'App',
     components: {
-      NoteIndicators: AnnotationBodyIndicators,
+      PostIndicators,
       LongpageSidebar,
     },
     props: {
@@ -62,9 +65,18 @@ export default {
       ...mapGetters({context: GET.LONGPAGE_CONTEXT}),
     },
     mounted() {
+      this.$refs.mainRef.addEventListener('click', event => {
+        const highlightsAtClickCoords = getHighlightsAnchoredAt(event.target);
+        EventBus.publish('annotations-selected', {
+          type: highlightsAtClickCoords.length ? AnnotationType.HIGHLIGHT : undefined,
+          selection: highlightsAtClickCoords,
+        });
+      });
+
       Y.use('mathjax', () => {
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
       });
+      this[ACT.FETCH_USER_ROLES]();
       this[ACT.FETCH_ENROLLED_USERS]();
       var _this = this;
       // Log bootstrap interactions
@@ -95,7 +107,7 @@ export default {
       log(key, values) {
         this.logger.add(key, values);
       },
-      ...mapActions([ACT.FETCH_ENROLLED_USERS]),
+      ...mapActions([ACT.FETCH_ENROLLED_USERS, ACT.FETCH_USER_ROLES]),
     },
 };
 </script>
