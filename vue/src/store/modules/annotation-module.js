@@ -76,7 +76,8 @@ export default {
             dispatch(ACT.REPLACE_OR_ADD_ANNOTATION, annotation);
             if (annotation.type === AnnotationType.POST) {
                 dispatch(ACT.REPLACE_OR_ADD_THREAD, annotation.body);
-                commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, annotationUpdate: {isPublic: annotation.body.isPublic}});
+                annotation.isPublic = annotation.body.isPublic;
+                commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, annotationUpdate: annotation});
                 if (!annotation.body.root.content) return;
             }
 
