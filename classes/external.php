@@ -1200,6 +1200,12 @@ class mod_page_external extends external_api {
         $transaction = $DB->start_delegated_transaction();
         self::validate_post_can_be_updated($postupdate);
         $DB->update_record('page_posts', array_merge((array) $postupdate, ['timemodified' => time()]));
+        if (isset($postupdate->ispublic)) {
+            $DB->update_record(
+                'page_annotations',
+                ['id' => $annotation->id, 'ispublic' => $postupdate->ispublic, 'timemodified' => time()],
+            );
+        }
         $transaction->allow_commit();
 
         return ['post' => $DB->get_record('page_posts', pick_keys((array) $postupdate, ['id']))];
