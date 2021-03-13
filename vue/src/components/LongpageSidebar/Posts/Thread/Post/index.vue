@@ -70,11 +70,10 @@
       </div>
       <div class="row no-gutters my-2">
         <div class="col col-12 p-0">
-          <span
+          <post-content
             v-show="!showForm"
-            ref="annotationBody"
-            class="annotation-body"
-          >{{ post.highlighted.content || post.content }}</span>
+            :post="post"
+          />
           <post-form
             v-model:show="showForm"
             :post="post"
@@ -100,7 +99,6 @@ import {
   SCROLL_INTO_VIEW_OPTIONS,
 } from '@/config/constants';
 import {mapGetters} from 'vuex';
-import {applyMathjaxFilterToNodes} from '@/util/moodle';
 import {getHighlightByAnnotationId} from '@/util/annotation';
 import UserAvatar from '@/components/Generic/UserAvatar';
 import scrollIntoView from 'scroll-into-view-if-needed';
@@ -111,10 +109,12 @@ import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
 import PostVisibilityIndicator from '@/components/LongpageSidebar/Posts/Thread/Post/PostVisibilityIndicator';
 import PostDateTimes from '@/components/LongpageSidebar/DateTimes';
+import PostContent from '@/components/LongpageSidebar/Posts/Thread/Post/PostContent';
 
 export default {
   name: 'Post',
   components: {
+    PostContent,
     PostDateTimes,
     PostVisibilityIndicator,
     PostActions,
@@ -148,16 +148,6 @@ export default {
     },
     user() {
       return this[GET.USER]();
-    },
-  },
-  watch: {
-    'post.content': {
-      handler() {
-        this.$nextTick(() => {
-          applyMathjaxFilterToNodes(this.$refs.annotationBody);
-        });
-      },
-      immediate: true,
     },
   },
   mounted() {

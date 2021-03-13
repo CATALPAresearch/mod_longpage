@@ -554,7 +554,7 @@ class mod_page_external extends external_api {
         self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_likes', ['postid' => $postid, 'userid' => $USER->id]);
+        $DB->delete_records('page_post_readings', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 
