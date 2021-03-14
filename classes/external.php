@@ -26,94 +26,14 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+use mod_page\local\constants\annotation_type as annotation_type;
+use mod_page\local\constants\selector as selector;
+
 require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
 require_once("$CFG->dirroot/course/externallib.php");
 require_once("$CFG->dirroot/user/externallib.php");
-
-function pick_keys($arrOrObj, $keys, $inplace = false) {
-    if (!$inplace) {
-        $result = array_intersect_key((array) $arrOrObj, array_fill_keys($keys, 1));
-        return gettype($arrOrObj) == 'array' ? $result : (object) $result;
-    }
-
-    foreach (array_keys((array) $arrOrObj) as $key) {
-        if (in_array($key, $keys, false)) {
-            continue;
-        }
-        if (gettype($arrOrObj) == 'array') {
-            unset($arrOrObj[$key]);
-        } else {
-            unset($arrOrObj->{$key});
-        }
-    }
-    return $arrOrObj;
-}
-
-function omit_keys($arrOrObj, $keys, $inplace = false) {
-    if (!$inplace) {
-        $result = array_diff_key((array) $arrOrObj, array_fill_keys($keys, 1));
-        return gettype($arrOrObj) == 'array' ? $result : (object) $result;
-    }
-
-    foreach ($keys as $key) {
-        if (gettype($arrOrObj) == 'array') {
-            unset($arrOrObj[$key]);
-        } else {
-            unset($arrOrObj->{$key});
-        }
-    }
-    return $arrOrObj;
-}
-
-function array_map_merge($arrays, $tomerge) {
-    return array_map(static function($array) use ($tomerge) {
-        return array_merge($array, $tomerge);
-    }, $arrays);
-}
-
-function object_merge(...$objects) {
-    $result = [];
-    foreach ($objects as $object) {
-        $result = array_merge($result, (array) $object);
-    }
-    return (object) $result;
-}
-
-abstract class mod_page_annotation_type {
-    const HIGHLIGHT = 0;
-    const POST = 1;
-    const BOOKMARK = 2;
-}
-
-abstract class mod_page_selector {
-    const TYPE_TEXT_QUOTE_SELECTOR = 0;
-    const TYPE_TEXT_POSITION_SELECTOR = 1;
-    const TYPE_RANGE_SELECTOR = 2;
-
-    const TABLE_NAME_TEXT_QUOTE_SELECTOR = 'page_text_quote_selectors';
-    const TABLE_NAME_TEXT_POSITION_SELECTOR = 'page_text_position_selectors';
-    const TABLE_NAME_RANGE_SELECTOR = 'page_range_selectors';
-
-    private static $TYPE_TO_TABLE_NAME_MAPPING = array(
-        self::TYPE_TEXT_QUOTE_SELECTOR => self::TABLE_NAME_TEXT_QUOTE_SELECTOR,
-        self::TYPE_TEXT_POSITION_SELECTOR => self::TABLE_NAME_TEXT_POSITION_SELECTOR,
-        self::TYPE_RANGE_SELECTOR => self::TABLE_NAME_RANGE_SELECTOR,
-    );
-
-    private static $TABLE_NAME_TO_TYPE_MAPPING;
-
-    static function map_table_name_to_type($table_name) {
-        if (!isset(self::$TABLE_NAME_TO_TYPE_MAPPING)) {
-            self::$TABLE_NAME_TO_TYPE_MAPPING = array_flip(self::$TYPE_TO_TABLE_NAME_MAPPING);
-        }
-        return self::$TABLE_NAME_TO_TYPE_MAPPING[$table_name];
-    }
-
-    static function map_type_to_table_name($type) {
-        return self::$TYPE_TO_TABLE_NAME_MAPPING[$type];
-    }
-}
+require_once($CFG->dirroot.'/mod/page/locallib.php');
 
 /**
  * Page external functions
@@ -346,7 +266,7 @@ class mod_page_external extends external_api {
 
         foreach ($selectors as $selector) {
             $selectorid = $DB->insert_record('page_selectors', ['annotationtargetid' => $annotationtargetid, 'type' => $selector['type']]);
-            $DB->insert_record(mod_page_selector::map_type_to_table_name($selector['type']),
+            $DB->insert_record(selector::map_type_to_table_name($selector['type']),
                 array_merge(omit_keys($selector, ['type']), ['selectorid' => $selectorid]));
         }
     }
@@ -425,7 +345,7 @@ class mod_page_external extends external_api {
 
         $transaction = $DB->start_delegated_transaction();
         self::delete_annotation_target($id);
-        if ($annotation->type == mod_page_annotation_type::POST) {
+        if ($annotation->type == annotation_type::POST) {
             $thread = $DB->get_record('page_threads', ['annotationid' => $annotation->id]);
             self::delete_thread($thread);
         }
@@ -576,7 +496,7 @@ class mod_page_external extends external_api {
         $conditions = ['annotationtargetid' => $annotationtargetid];
         $pageselectors = $DB->get_records('page_selectors', $conditions);
         foreach ($pageselectors as $pageselector) {
-            $tablename = mod_page_selector::map_type_to_table_name($pageselector->type);
+            $tablename = selector::map_type_to_table_name($pageselector->type);
             $DB->delete_records($tablename, ['selectorid' => $pageselector->id]);
         }
         $DB->delete_records('page_selectors', $conditions);
@@ -626,7 +546,7 @@ class mod_page_external extends external_api {
     }
 
     public static function get_enrolled_users_with_roles_by_pageid($pageid) {
-        $cm = self::get_coursemodule_by_pageid($pageid);
+        $cm = get_coursemodule_by_pageid($pageid);
         $get_enrolled_users_returns = core_course_external::get_enrolled_users_by_cmid($cm->id);
         foreach ($get_enrolled_users_returns['users'] as $user) {
             $user->roles = self::get_user_roles_ids(context_module::instance($cm->id), $user->id);
@@ -739,7 +659,7 @@ class mod_page_external extends external_api {
 
         foreach ($annotations as $annotation) {
             $annotation->target = self::get_annotation_target($annotation->id);
-            if ($annotation->type == mod_page_annotation_type::POST) {
+            if ($annotation->type == annotation_type::POST) {
                 $annotation->body = self::get_thread($annotation->id);
             }
         }
@@ -984,7 +904,7 @@ class mod_page_external extends external_api {
         $selectors = $DB->get_records('page_selectors', ['annotationtargetid' => $annotationtargetid]);
         return array_values(array_map(function ($selector) use ($DB) {
             $result = $DB->get_record(
-                mod_page_selector::map_type_to_table_name($selector->type),
+                selector::map_type_to_table_name($selector->type),
                 ['selectorid' => $selector->id]
             );
             $result->type = $selector->type;
@@ -1141,15 +1061,8 @@ class mod_page_external extends external_api {
         }
     }
 
-    private static function get_coursemodule_by_pageid($pageid) {
-        global $DB;
-
-        $page = $DB->get_record('page', ['id' => $pageid], '*', MUST_EXIST);
-        return get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
-    }
-
     private static function get_cm_context_by_pageid($pageid) {
-        $cm = self::get_coursemodule_by_pageid($pageid);
+        $cm = get_coursemodule_by_pageid($pageid);
         return context_module::instance($cm->id);
     }
 
@@ -1163,7 +1076,7 @@ class mod_page_external extends external_api {
         if ($USER->id !== $highlight->creatorid) {
             throw new invalid_parameter_exception('Highlight cannot be updated by user other than its creator.');
         }
-        if ($highlight->type !== mod_page_annotation_type::HIGHLIGHT) {
+        if ($highlight->type !== annotation_type::HIGHLIGHT) {
             throw new invalid_parameter_exception('Annotation is no highlight. 
                 Only highlights can be updated by using this method.');
         }

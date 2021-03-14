@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -29,6 +28,61 @@ require_once("$CFG->libdir/filelib.php");
 require_once("$CFG->libdir/resourcelib.php");
 require_once("$CFG->dirroot/mod/page/lib.php");
 
+function get_coursemodule_by_pageid($pageid) {
+    global $DB;
+
+    $page = $DB->get_record('page', ['id' => $pageid], '*', MUST_EXIST);
+    return get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
+}
+
+function pick_keys($arrOrObj, $keys, $inplace = false) {
+    if (!$inplace) {
+        $result = array_intersect_key((array) $arrOrObj, array_fill_keys($keys, 1));
+        return gettype($arrOrObj) == 'array' ? $result : (object) $result;
+    }
+
+    foreach (array_keys((array) $arrOrObj) as $key) {
+        if (in_array($key, $keys, false)) {
+            continue;
+        }
+        if (gettype($arrOrObj) == 'array') {
+            unset($arrOrObj[$key]);
+        } else {
+            unset($arrOrObj->{$key});
+        }
+    }
+    return $arrOrObj;
+}
+
+function omit_keys($arrOrObj, $keys, $inplace = false) {
+    if (!$inplace) {
+        $result = array_diff_key((array) $arrOrObj, array_fill_keys($keys, 1));
+        return gettype($arrOrObj) == 'array' ? $result : (object) $result;
+    }
+
+    foreach ($keys as $key) {
+        if (gettype($arrOrObj) == 'array') {
+            unset($arrOrObj[$key]);
+        } else {
+            unset($arrOrObj->{$key});
+        }
+    }
+    return $arrOrObj;
+}
+
+function array_map_merge($arrays, $tomerge) {
+    return array_map(static function($array) use ($tomerge) {
+        return array_merge($array, $tomerge);
+    }, $arrays);
+}
+
+function object_merge(...$objects) {
+    $result = [];
+    foreach ($objects as $object) {
+        $result = array_merge($result, (array) $object);
+    }
+    return (object) $result;
+}
 
 /**
  * File browsing support class
