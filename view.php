@@ -52,6 +52,12 @@ require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/page:view', $context);
 
+$scrolltop = $DB->get_field(
+    'page_reading_progress',
+    'scrolltop',
+    ['userid' => $USER->id, 'pageid' => $page->id],
+);
+
 // Completion and trigger events.
 page_view($page, $course, $cm, $context);
 
@@ -108,6 +114,7 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
             format_string($page->name),
             $USER->id,
             $content,
+            $scrolltop,
         ]
     );
 } else {

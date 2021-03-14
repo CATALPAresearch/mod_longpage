@@ -51,8 +51,9 @@ export const MoodleWSMethods = Object.freeze({
     GET_ANNOTATIONS: 'mod_page_get_annotations',
     GET_ENROLLED_USERS: 'mod_page_get_enrolled_users_with_roles_by_pageid',
     GET_USER_ROLES_FOR_MODULE: 'mod_page_get_user_roles_by_pageid',
-    UPDATE_POST: 'mod_page_update_post',
     UPDATE_ANNOTATION: 'mod_page_update_annotation',
+    UPDATE_POST: 'mod_page_update_post',
+    UPDATE_READING_PROGRESS: 'mod_page_update_reading_progress',
 });
 
 export const SidebarTabKeys = Object.freeze({

@@ -28,7 +28,7 @@
 
 <script>
 import {ACT, GET} from './store/types';
-import {AnnotationType, LONGPAGE_CONTENT_ID} from '@/config/constants';
+import {AnnotationType, LONGPAGE_CONTENT_ID, LONGPAGE_MAIN_ID} from '@/config/constants';
 import {EventBus} from '@/lib/event-bus';
 import {getHighlightsAnchoredAt} from '@/lib/annotation/highlight-selection-listening';
 import Log from './lib/Logging';
@@ -36,6 +36,7 @@ import LongpageSidebar from '@/components/LongpageSidebar';
 import {mapActions, mapGetters} from 'vuex';
 import PostIndicators from '@/components/LongpageContent/AnnotationIndicatorSidebar';
 import {ReadingTimeEstimator} from '@/lib/reading-time-estimator';
+import {throttle} from 'lodash';
 import {toIdSelector} from '@/util/style';
 import Utils from './util/utils';
 
@@ -47,6 +48,7 @@ export default {
     },
     props: {
       content: {type: String, required: true},
+      scrollTop: {type: Number, default: 0},
     },
     data() {
       return {
@@ -65,6 +67,13 @@ export default {
       ...mapGetters({context: GET.LONGPAGE_CONTEXT}),
     },
     mounted() {
+      setTimeout(() => {
+        this.$refs.mainRef.scrollTop = this.scrollTop;
+        document.getElementById(LONGPAGE_MAIN_ID).addEventListener('scroll', throttle($event => {
+          this[ACT.UPDATE_READING_PROGRESS]($event.target.scrollTop);
+        }, 1000, {leading: false}));
+      }, 5000); // TODO: Make it less brittle by replacing the fixed timeout number with, e.g. a Mutation Observer
+
       this.$refs.mainRef.addEventListener('click', event => {
         const highlightsAtClickCoords = getHighlightsAnchoredAt(event.target);
         EventBus.publish('annotations-selected', {
@@ -72,7 +81,6 @@ export default {
           selection: highlightsAtClickCoords,
         });
       });
-
       Y.use('mathjax', () => {
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
       });
@@ -104,10 +112,10 @@ export default {
       });
     },
     methods: {
+      ...mapActions([ACT.FETCH_ENROLLED_USERS, ACT.FETCH_USER_ROLES, ACT.UPDATE_READING_PROGRESS]),
       log(key, values) {
         this.logger.add(key, values);
       },
-      ...mapActions([ACT.FETCH_ENROLLED_USERS, ACT.FETCH_USER_ROLES]),
     },
 };
 </script>

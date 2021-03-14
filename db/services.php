@@ -29,6 +29,14 @@ defined('MOODLE_INTERNAL') || die;
 // TODO Capabilities and type checking
 
 $functions = array(
+    'mod_page_update_reading_progress' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'update_reading_progress',
+        'description'   => 'Update reading progress of the user for one page',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        'ajax'          => true
+    ),
     'mod_page_get_user_roles_by_pageid' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_user_roles_by_pageid',
@@ -37,7 +45,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-
     'mod_page_get_enrolled_users_with_roles_by_pageid' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_enrolled_users_with_roles_by_pageid',
@@ -46,7 +53,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-
     'mod_page_create_annotation' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_annotation',
@@ -113,7 +119,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-
     'mod_page_create_post_like' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_post_like',
@@ -162,7 +167,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-
     'mod_page_create_thread_subscription' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'create_thread_subscription',
@@ -179,7 +183,6 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'ajax'          => true
     ),
-
     'mod_page_get_pages_by_courses' => array(
         'classname'     => 'mod_page_external',
         'methodname'    => 'get_pages_by_courses',
@@ -188,31 +191,6 @@ $functions = array(
         'type'          => 'read',
         'capabilities'  => 'mod/page:view',
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
-    ),
-    'mod_page_getreadingprogress' => array(
-        'classname'     => 'mod_page_external',
-        'methodname'    => 'getreadingprogress',
-        'description'   => 'Get readingprogress for a page and user',
-        'type'          => 'read',
-        'capabilities'  => 'mod/page:view',
-        'ajax'        => true
-    ),
-    'mod_page_log' => array(
-        'classname'     => 'mod_page_external',
-        'methodname'    => 'log',
-        'description'   => 'Writes logdata to database',
-        'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
-        //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
-        'ajax'        => true
-    ),
-    'mod_page_reading' => array(
-        'classname'     => 'mod_page_external',
-        'methodname'    => 'reading',
-        'description'   => 'Writes reading and scroll data to database',
-        'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
-        'ajax'        => true
     ),
     'mod_page_view_page' => array(
         'classname'     => 'mod_page_external',

@@ -27,6 +27,20 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="page_reading_progress" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="scrolltop" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="page" REFFIELDS="id"/>
+        <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
     <TABLE NAME="page_annotations" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -104,20 +118,6 @@
         <KEY NAME="selector" TYPE="foreign" FIELDS="selectorid" REFTABLE="page_selectors" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="page_reading" COMMENT="">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="section" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="sectionoffset" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="userid" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="creationdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
     <TABLE NAME="page_threads" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -158,7 +158,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="postIntern" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
+        <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_post_bookmarks" COMMENT="">
@@ -171,7 +171,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="postIntern" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
+        <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_post_readings" COMMENT="">
@@ -184,7 +184,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="postIntern" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
+        <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="page_thread_subscriptions" COMMENT="">

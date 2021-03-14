@@ -1014,135 +1014,8 @@ class mod_page_external extends external_api {
         ], '', VALUE_OPTIONAL);
     }
 
-    public static function getreadingprogress($data) {
-        global $CFG, $DB, $USER;
-
-        $r = new stdClass();
-        $r->userid = $USER->id;
-        $r->courseid = $data['courseid'];
-        $r->pageid = $data['pageid'];
-
-        $query = '
-            SELECT section, count(section) as count
-            FROM (SELECT * FROM ' . $CFG->prefix . 'page_reading AS m WHERE userid=? AND courseid=? AND pageid=?) as mm
-            GROUP by section
-            ';
-
-        $transaction = $DB->start_delegated_transaction();
-        $res = $DB->get_records_sql($query, array($USER->id, $data['courseid'], $data['pageid']));
-        $transaction->allow_commit();
-
-        return array('response' => json_encode($res));
-    }
-
-    public static function getreadingprogress_is_allowed_from_ajax() {
-        return true;
-    }
-
-    // TODO: Add returns for create and update
-
-    /**
-     * Get readingprogress
-     */
-    public static function getreadingprogress_parameters() {
-        return new external_function_parameters(
-            array(
-                'data' =>
-                    new external_single_structure(
-                        array(
-                            'courseid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                            'pageid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
-                        )
-                    )
-            )
-        );
-    }
-
-    public static function getreadingprogress_returns() {
-        return new external_single_structure(
-            array('response' => new external_value(PARAM_RAW, 'All bookmarks of an user'))
-        );
-    }
-
     private static function id_parameter() {
         return ['id' => new external_value(PARAM_INT)];
-    }
-
-    public static function log($data) {
-        global $CFG, $DB, $USER;
-
-        $r = new stdClass();
-        $r->name = 'mod_page';
-        $r->component = 'mod_page';
-        $r->eventname = '\mod_page\event\course_module_' . $data['action'];
-        $r->action = $data['action'];
-        $r->target = 'course_module';
-        $r->objecttable = 'page';
-        $r->objectid = 0;
-        $r->crud = 'r';
-        $r->edulevel = 2;
-        $r->contextid = 120;
-        $r->contextlevel = 70;
-        $r->contextinstanceid = 86;
-        $r->userid = $USER->id;
-        $r->courseid = (int) $data['courseid'];
-
-        //$r->relateduserid=NULL;
-        $r->anonymous = 0;
-        $r->other = $data['entry'];
-        $r->timecreated = $data['utc'];
-        $r->origin = 'web';
-        $r->ip = $_SERVER['REMOTE_ADDR'];
-        //$r->realuserid=NULL;
-
-        $transaction = $DB->start_delegated_transaction();
-        $res = $DB->insert_record("logstore_standard_log", (array) $r);
-        $transaction->allow_commit();
-
-        if ($data['action'] == "scroll") {
-            $d = json_decode($data['entry']);
-            $s = new stdClass();
-            $s->section = $d->value->targetID;
-            $s->sectionoffset = (int) $d->value->scrollYDistance;
-            $s->userid = (int) $USER->id;
-            $s->courseid = (int) $data['courseid'];
-            $s->pageid = (int) $d->value->pageid;
-            $s->creationdate = (int) $d->utc;
-
-            $transaction = $DB->start_delegated_transaction();
-            $res2 = $DB->insert_record("page_reading", (array) $s);
-            $transaction->allow_commit();
-        }
-        return array('response' => json_encode($res));
-    }
-
-    public static function log_is_allowed_from_ajax() {
-        return true;
-    }
-
-    /**
-     * Takes Longpage log data form the client
-     */
-    public static function log_parameters() {
-        return new external_function_parameters(
-            array(
-                'data' =>
-                    new external_single_structure(
-                        array(
-                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                            'utc' => new external_value(PARAM_INT, '...utc time', VALUE_OPTIONAL),
-                            'action' => new external_value(PARAM_TEXT, '..action', VALUE_OPTIONAL),
-                            'entry' => new external_value(PARAM_RAW, 'log data', VALUE_OPTIONAL)
-                        )
-                    )
-            )
-        );
-    }
-
-    public static function log_returns() {
-        return new external_single_structure(
-            array('response' => new external_value(PARAM_RAW, 'Server respons to the incomming log'))
-        );
     }
 
     private static function post_parameters() {
@@ -1226,6 +1099,46 @@ class mod_page_external extends external_api {
 
     public static function update_post_returns() {
         return self::create_post_returns();
+    }
+
+    public static function update_reading_progress($pageid, $scrolltop) {
+        global $DB, $USER;
+
+        self::validate_parameters(
+            self::update_reading_progress_parameters(),
+            ['pageid' => $pageid, 'scrolltop' => $scrolltop],
+        );
+        self::validate_cm_context($pageid);
+
+        $transaction = $DB->start_delegated_transaction();
+        self::update_or_create(
+            'page_reading_progress',
+            ['pageid' => $pageid, 'userid' => $USER->id],
+            ['pageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 'timemodified' => time()]
+        );
+        $transaction->allow_commit();
+    }
+
+    public static function update_reading_progress_parameters() {
+        return new external_function_parameters([
+            'pageid' => new external_value(PARAM_INT),
+            'scrolltop' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function update_reading_progress_returns() {
+        return null;
+    }
+
+    private static function update_or_create($table, $conditions, $dataobject) {
+        global $DB;
+
+        $record = $DB->get_record($table, $conditions);
+        if ($record) {
+            $DB->update_record($table, array_merge($dataobject, ['id' => $record->id]));
+        } else {
+            $DB->insert_record($table, $dataobject);
+        }
     }
 
     private static function get_coursemodule_by_pageid($pageid) {

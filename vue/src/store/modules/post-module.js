@@ -1,7 +1,7 @@
 import {ACT, GET, MUTATE} from '../types';
 import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
-import {flatten, isEqual} from 'lodash';
+import {flatten} from 'lodash';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
 import {MoodleWSMethods} from '@/config/constants';

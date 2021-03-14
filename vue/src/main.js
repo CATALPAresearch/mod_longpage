@@ -18,16 +18,16 @@ import {toIdSelector} from '@/util/style';
 import {useAnnotations} from './components/LongpageContent';
 import {i18n} from '@/config/i18n';
 
-export const init = (courseId, pageId, pageName, userId, content) => {
-  try {
-      const store = initStore({courseId: Number(courseId), pageId: Number(pageId), pageName, userId: Number(userId)});
-      createApp(App, {content})
-          .use(store)
-          .use(i18n)
-          .mount(toIdSelector(LONGPAGE_APP_CONTAINER_ID));
-      useAnnotations(store);
-  } catch (e) {
-    /* eslint-disable no-console */
-    console.error(e);
-  }
+export const init = (courseId, pageId, pageName, userId, content, scrollTop) => {
+    try {
+        const store = initStore({courseId: Number(courseId), pageId: Number(pageId), pageName, userId: Number(userId)});
+        createApp(App, {content, scrollTop: Number(scrollTop)})
+            .use(store)
+            .use(i18n)
+            .mount(toIdSelector(LONGPAGE_APP_CONTAINER_ID));
+        useAnnotations(store);
+    } catch (e) {
+        /* eslint-disable no-console */
+        console.error(e);
+    }
 };
