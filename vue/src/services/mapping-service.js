@@ -67,6 +67,7 @@ const MappingService = {
                   'anonymous',
                   'content',
                   'isPublic',
+                  'pageId',
               ])
           }
       });

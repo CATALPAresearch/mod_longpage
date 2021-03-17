@@ -28,12 +28,13 @@ defined('MOODLE_INTERNAL') || die;
 
 use mod_page\local\constants\annotation_type as annotation_type;
 use mod_page\local\constants\selector as selector;
+use mod_page\local\recommenders\preference_calculator as preference_calculator;
 
 require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
 require_once("$CFG->dirroot/course/externallib.php");
 require_once("$CFG->dirroot/user/externallib.php");
-require_once($CFG->dirroot.'/mod/page/locallib.php');
+require_once("$CFG->dirroot/mod/page/locallib.php");
 
 /**
  * Page external functions
@@ -94,7 +95,7 @@ class mod_page_external extends external_api {
         ));
         self::create_annotation_target($annotation['target'], $id);
         if(isset($annotation['body'])) {
-            self::create_thread($annotation['body'], $id);
+            self::create_thread($annotation['body'], $id, $annotation['pageid']);
         }
         $transaction->allow_commit();
 
@@ -176,8 +177,7 @@ class mod_page_external extends external_api {
 
         self::validate_parameters(self::create_post_parameters(), ['post' => $postparameters]);
         $post = (object) $postparameters;
-        $annotation = self::get_annotation_by_post($post);
-        self::validate_cm_context($annotation->pageid);
+        self::validate_cm_context($post->pageid);
 
         $transaction = $DB->start_delegated_transaction();
         $id = $DB->insert_record(
@@ -190,12 +190,19 @@ class mod_page_external extends external_api {
     }
 
     public static function create_post_like($postid) {
-        global $DB, $USER;
-
         self::validate_post_write($postid);
 
+        self::create_post_reaction('page_post_likes', $postid);
+    }
+
+    private static function create_post_reaction($table, $postid) {
+        global $DB, $USER;
+
+        $keyconditions = ['postid' => $postid, 'userid' => $USER->id];
         $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_post_likes', ['postid' => $postid, 'timecreated' => time(), 'userid' => $USER->id]);
+        if (!$DB->record_exists($table, $keyconditions)) {
+            $DB->insert_record($table, array_merge($keyconditions, ['timecreated' => time()]));
+        }
         $transaction->allow_commit();
     }
 
@@ -210,13 +217,9 @@ class mod_page_external extends external_api {
     }
 
     public static function create_post_bookmark($postid) {
-        global $DB, $USER;
-
         self::validate_post_write($postid);
 
-        $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_post_bookmarks', ['postid' => $postid, 'timecreated' => time(), 'userid' => $USER->id]);
-        $transaction->allow_commit();
+        self::create_post_reaction('page_post_bookmarks', $postid);
     }
 
     public static function create_post_bookmark_parameters() {
@@ -229,18 +232,16 @@ class mod_page_external extends external_api {
 
     public static function create_post_parameters() {
         return new external_function_parameters([
-            'post' => new external_single_structure(omit_keys(self::post_parameters(), ['creatorid'])),
+            'post' => new external_single_structure(
+                array_merge(omit_keys(self::post_parameters(), ['creatorid']), ['pageid' => new external_value(PARAM_INT)])
+            ),
         ]);
     }
 
     public static function create_post_reading($postid) {
-        global $DB, $USER;
-
         self::validate_post_write($postid);
 
-        $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_post_readings', ['postid' => $postid, 'timecreated' => time(), 'userid' => $USER->id]);
-        $transaction->allow_commit();
+        self::create_post_reaction('page_post_readings', $postid);
     }
 
     public static function create_post_reading_parameters() {
@@ -271,7 +272,7 @@ class mod_page_external extends external_api {
         }
     }
 
-    public static function create_thread($threadparameters, $annotationid) {
+    public static function create_thread($threadparameters, $annotationid, $pageid) {
         global $DB, $USER;
 
         $id = $DB->insert_record(
@@ -283,6 +284,7 @@ class mod_page_external extends external_api {
             ],
         );
         $postparameters = omit_keys($threadparameters, ['replyrequested']);
+        $postparameters['pageid'] = $pageid;
         $postparameters['threadid'] = $id;
         self::create_post($postparameters);
     }
@@ -311,8 +313,12 @@ class mod_page_external extends external_api {
         $annotation = self::get_annotation_by_thread($threadid);
         self::validate_cm_context($annotation->pageid);
 
+        $table = 'page_thread_subscriptions';
+        $keyconditions = ['threadid' => $threadid, 'userid' => $USER->id];
         $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_thread_subscriptions', ['threadid' => $threadid, 'timecreated' => time(), 'userid' => $USER->id]);
+        if (!$DB->record_exists($table, $keyconditions)) {
+            $DB->insert_record($table, array_merge($keyconditions, ['timecreated' => time()]));
+        }
         $transaction->allow_commit();
     }
 
