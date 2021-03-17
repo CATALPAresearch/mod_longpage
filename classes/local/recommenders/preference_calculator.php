@@ -42,17 +42,62 @@ require_once("$CFG->dirroot/mod/page/lib.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class preference_calculator {
-    public static function calculate_preferences($pageid, $batchsize = 100) {
+    public static function calculate_and_save_preference_profiles($pageid, $batchsize = 100) {
+        $limitfrom = 0;
+        while (true) {
+            $userids = self::get_page_users_ids($pageid, $limitfrom, $batchsize);
+            self::calculate_and_save_preference_profiles_for_users($userids, $pageid);
+            if (count($userids) < $batchsize) {
+                break;
+            }
+            $limitfrom += $batchsize;
+        }
+    }
+
+    public static function calculate_and_save_preference_profiles_for_users($userids, $pageid) {
+        global $DB;
+
+        $profiles = [];
+        foreach ($userids as $userid) {
+            $preferences = $DB->get_records('page_absolute_preferences', ['userid' => $userid, 'pageid' => $pageid]);
+            array_push($profiles, self::calculate_preference_profile($userid, $pageid, $preferences));
+        }
+
+        $table = 'page_preference_profiles';
+        list($inuseridssql, $inuseridsparams) = $DB->get_in_or_equal($userids);
+        $select = "userid $inuseridssql AND pageid = ".((int) $pageid);
+        $DB->delete_records_select($table, $select, $inuseridsparams);
+        $DB->insert_records($table, $profiles);
+    }
+
+    public static function calculate_preference_profile($userid, $pageid, $preferences) {
+        $profile = new \stdClass();
+        $profile->userid = $userid;
+        $profile->pageid = $pageid;
+        $profile->timecreated = time();
+
+        $count = count($preferences);
+        $values = array_map(function ($preference) { return (float) $preference->value; }, $preferences);
+        $profile->count = $count;
+        $profile->avg = (bool) $count ? array_sum($values) / $count : 0.0;
+
+        return $profile;
+    }
+
+    public static function calculate_and_save_preferences($pageid, $batchsize = 100) {
         global $DB;
 
         $limitfrom = 0;
         $fields = 'id, pageid, threadid, creatorid';
         while (true) {
             $posts = $DB->get_records('page_posts', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize);
-            self::calculate_preferences_for_posts($posts, $pageid);
+            if (!count($posts)) break;
+
+            self::calculate_and_save_preferences_for_posts($posts, $pageid);
             if (count($posts) < $batchsize) {
                 break;
             }
+
             $limitfrom += $batchsize;
         }
     }
@@ -63,14 +108,17 @@ class preference_calculator {
      * @param $posts
      * @param int $batchsize
      */
-    public static function calculate_preferences_for_posts($posts, $pageid, $batchsize = 100) {
+    public static function calculate_and_save_preferences_for_posts($posts, $pageid, $batchsize = 100) {
         $limitfrom = 0;
         while (true) {
             $userids = self::get_page_users_ids($pageid, $limitfrom, $batchsize);
+            if (!count($userids)) break;
+
             self::calculate_and_save_preferences_for_posts_and_users($posts, $userids, $pageid);
             if (count($userids) < $batchsize) {
                 break;
             }
+
             $limitfrom += $batchsize;
         }
     }
@@ -127,6 +175,6 @@ class preference_calculator {
         $cm = get_coursemodule_by_pageid($pageid);
         $context = \context_module::instance($cm->id);
         $users = get_enrolled_users($context, '', 0, 'u.id', 'timecreated ASC', null, $limitfrom, $limitnum);
-        return array_map(function ($user) { return $user->id; }, $users);
+        return array_map(function ($user) { return (int) $user->id; }, $users);
     }
 }
