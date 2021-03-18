@@ -42,6 +42,50 @@ require_once("$CFG->dirroot/mod/page/lib.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class preference_calculator {
+    public static function calculate_and_save_relative_preferences($pageid, $batchsize = 100) {
+        global $DB;
+
+        $limitfrom = 0;
+        $fields = 'userid, avg, count';
+        while (true) {
+            $prefprofiles = $DB->get_records(
+                'page_preference_profiles', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize
+            );
+            foreach ($prefprofiles as $profile) {
+                self::calculate_and_save_relative_preferences_for_user($profile, $pageid);
+            }
+            if (count($prefprofiles) < $batchsize) {
+                break;
+            }
+            $limitfrom += $batchsize;
+        }
+    }
+
+    private static function calculate_and_save_relative_preferences_for_user($prefprofile, $pageid, $batchsize = 100) {
+        global $DB;
+
+        $fields = 'postid, value';
+        $conditions = ['pageid' => $pageid, 'userid' => $prefprofile->userid];
+        $limitfrom = 0;
+        while (true) {
+            $abspreferences = array_values($DB->get_records(
+                'page_absolute_preferences', $conditions, 'timecreated ASC', $fields, $limitfrom, $batchsize,
+            ));
+            $relpreferences = array_map(function ($abspreference) use ($prefprofile, $pageid) {
+                $relpreference = new \stdClass();
+                $relpreference->pageid = $pageid;
+                $relpreference->time = time();
+                $relpreference->postid = $abspreference->postid;
+                $relpreference->userid = $abspreference->userid;
+                $relpreference->value = (float) $abspreference->value - (float) $prefprofile->avg;
+            }, $abspreferences);
+            $DB->insert_records('page_relative_preferences', $relpreferences);
+            if (count($abspreferences) < $batchsize) {
+                break;
+            }
+        }
+    }
+
     public static function calculate_and_save_preference_profiles($pageid, $batchsize = 100) {
         $limitfrom = 0;
         while (true) {
