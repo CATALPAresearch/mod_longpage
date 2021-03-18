@@ -42,6 +42,8 @@ require_once("$CFG->dirroot/mod/page/lib.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class preference_calculator {
+    const MIN_PREFERENCES = 3;
+
     public static function calculate_and_save_relative_preferences($pageid, $batchsize = 100) {
         global $DB;
 
@@ -71,6 +73,9 @@ class preference_calculator {
             $abspreferences = array_values($DB->get_records(
                 'page_absolute_preferences', $conditions, 'timecreated ASC', $fields, $limitfrom, $batchsize,
             ));
+            if (count($abspreferences) < self::MIN_PREFERENCES) {
+                break;
+            }
             $relpreferences = array_map(function ($abspreference) use ($prefprofile, $pageid) {
                 $relpreference = new \stdClass();
                 $relpreference->pageid = $pageid;

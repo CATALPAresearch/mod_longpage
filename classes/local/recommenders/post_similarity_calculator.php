@@ -33,5 +33,53 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class post_similarity_calculator {
+    const MIN_OVERLAP = 3;
+    const MIN_SIM = 0.3;
 
+
+    // TODO Clean out tables before recalculation, do I really need time created
+
+    private static function calculate_and_save_post_similarities($pageid) {
+        global $DB;
+
+        $sql = 'SELECT pa.postid AS postaid, pb.postid AS postbid
+                FROM {page_relative_preferences} pa JOIN {page_relative_preferences} pb
+                ON pa.userid = pb.userid AND pa.postid != pb.postid
+                WHERE pa.pageid = :pageid AND pb.pageid = :pageid
+                GROUP BY pa.postid, pb.postid
+                HAVING COUNT(*) >= :minoverlap';
+        $overlappingpostpairs = array_values($DB->get_records_sql($sql, ['pageid' => $pageid, 'minoverlap' => self::MIN_OVERLAP]));
+
+        self::calculate_and_save_post_similarities_for_overlapping_posts($overlappingpostpairs, $pageid);
+    }
+
+    private static function calculate_and_save_post_similarities_for_overlapping_posts($postpairs, $pageid) {
+        global $DB;
+
+        foreach ($postpairs as $postpair) {
+            $sql = 'SELECT pa.value AS valuea, pb.value AS valueb
+                FROM {page_relative_preferences} pa JOIN {page_relative_preferences} pb
+                ON pa.userid = pb.userid
+                WHERE pa.postid = :postaid AND pb.postid = :postbid';
+            $preferencepairs = array_values(
+                $DB->get_records_sql($sql, ['postaid' => $postpair->postaid, 'postbid' => $postpair->postbid])
+            );
+
+            $preferencesa = array_map(function ($preferencepair) { return $preferencepair->valuea; }, $preferencepairs);
+            $preferencesb = array_map(function ($preferencepair) { return $preferencepair->valueb; }, $preferencepairs);
+            $similarity = similarity_calculator::cosine($preferencesa, $preferencesb);
+
+            if ($similarity < self::MIN_SIM) {
+                break;
+            }
+
+            $postsim = new \stdClass();
+            $postsim->pageid = $pageid;
+            $postsim->postaid = $postpair->postaid;
+            $postsim->postbid = $postpair->postbid;
+            $postsim->value = $similarity;
+
+            $DB->insert_record('page_post_similarities', $postsim, false, true);
+        }
+    }
 }
