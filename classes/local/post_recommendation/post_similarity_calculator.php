@@ -39,7 +39,7 @@ class post_similarity_calculator {
     // TODO Clean out tables before recalculation, do I really need time created, add missing tables and management class
     // Don't save similarities twice
 
-    private static function calculate_and_save_post_similarities($pageid) {
+    public static function calculate_and_save_post_similarities($pageid) {
         global $DB;
 
         $sql = 'SELECT pa.postid AS postaid, pb.postid AS postbid

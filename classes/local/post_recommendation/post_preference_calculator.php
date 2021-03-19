@@ -26,12 +26,7 @@ namespace mod_page\local\post_recommendation;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->libdir/accesslib.php");
-require_once("$CFG->libdir/externallib.php");
-require_once("$CFG->dirroot/course/externallib.php");
-require_once("$CFG->dirroot/user/externallib.php");
 require_once("$CFG->dirroot/mod/page/locallib.php");
-require_once("$CFG->dirroot/mod/page/lib.php");
 
 /**
  * Post Preference Calculator
@@ -133,7 +128,7 @@ class post_preference_calculator {
         return $profile;
     }
 
-    public static function calculate_and_save_preferences($pageid, $batchsize = 100) {
+    public static function calculate_and_save_absolute_preferences($pageid, $batchsize = 100) {
         global $DB;
 
         $limitfrom = 0;
@@ -142,7 +137,7 @@ class post_preference_calculator {
             $posts = $DB->get_records('page_posts', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize);
             if (!count($posts)) break;
 
-            self::calculate_and_save_preferences_for_posts($posts, $pageid);
+            self::calculate_and_save_absolute_preferences_for_posts($posts, $pageid);
             if (count($posts) < $batchsize) {
                 break;
             }
@@ -157,13 +152,13 @@ class post_preference_calculator {
      * @param $posts
      * @param int $batchsize
      */
-    public static function calculate_and_save_preferences_for_posts($posts, $pageid, $batchsize = 100) {
+    public static function calculate_and_save_absolute_preferences_for_posts($posts, $pageid, $batchsize = 100) {
         $limitfrom = 0;
         while (true) {
             $userids = \get_page_users_ids($pageid, $limitfrom, $batchsize);
             if (!count($userids)) break;
 
-            self::calculate_and_save_preferences_for_posts_and_users($posts, $userids, $pageid);
+            self::calculate_and_save_absolute_preferences_for_posts_and_users($posts, $userids, $pageid);
             if (count($userids) < $batchsize) {
                 break;
             }
@@ -172,7 +167,7 @@ class post_preference_calculator {
         }
     }
 
-    private static function calculate_and_save_preferences_for_posts_and_users($posts, $userids, $pageid) {
+    private static function calculate_and_save_absolute_preferences_for_posts_and_users($posts, $userids, $pageid) {
         global $DB;
 
         $postids = array_map(function ($post) { return $post->id; }, $posts);
