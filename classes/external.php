@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 
 use mod_page\local\constants\annotation_type as annotation_type;
 use mod_page\local\constants\selector as selector;
-use mod_page\local\recommenders\postPreference_calculator as preference_calculator;
+use mod_page\local\post_recommendation\postPreference_calculator as preference_calculator;
 
 require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
