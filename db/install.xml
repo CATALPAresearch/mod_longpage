@@ -27,14 +27,13 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="page_absolute_preferences" COMMENT="">
+    <TABLE NAME="page_absolute_post_prefs" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -43,14 +42,28 @@
         <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="page_posts" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="page_preference_profiles" COMMENT="">
+    <TABLE NAME="page_post_similarities" COMMENT="">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="postaid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="postbid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="value" TYPE="float" LENGTH="5" DECIMALS="4" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="page" REFFIELDS="id"/>
+        <KEY NAME="posta" TYPE="foreign" FIELDS="postaid" REFTABLE="page_posts" REFFIELDS="id"/>
+        <KEY NAME="postb" TYPE="foreign" FIELDS="postbid" REFTABLE="page_posts" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="page_post_pref_profiles" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="avg" TYPE="float" LENGTH="5" DECIMALS="4" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="count" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

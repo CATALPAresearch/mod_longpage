@@ -69,7 +69,7 @@ class post_recommendation_calculator {
             return;
         }
 
-        $prefprofile = $DB->get_record('page_preference_profiles', ['pageid' => $pageid, 'userid' => $userid]);
+        $prefprofile = $DB->get_record('page_post_pref_profiles', ['pageid' => $pageid, 'userid' => $userid]);
 
         $limitfrom = 0;
         $idsofpostswithprefs = array_map(function($pref) {

@@ -46,7 +46,7 @@ class post_preference_calculator {
         $fields = 'userid, avg, count';
         while (true) {
             $prefprofiles = $DB->get_records(
-                'page_preference_profiles', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize
+                'page_post_pref_profiles', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize
             );
             foreach ($prefprofiles as $profile) {
                 self::calculate_and_save_relative_preferences_for_user($profile, $pageid);
@@ -66,7 +66,7 @@ class post_preference_calculator {
         $limitfrom = 0;
         while (true) {
             $abspreferences = array_values($DB->get_records(
-                'page_absolute_preferences', $conditions, 'timecreated ASC', $fields, $limitfrom, $batchsize,
+                'page_absolute_post_prefs', $conditions, 'timecreated ASC', $fields, $limitfrom, $batchsize,
             ));
             if (count($abspreferences) < self::MIN_PREFERENCES) {
                 break;
@@ -90,6 +90,10 @@ class post_preference_calculator {
         $limitfrom = 0;
         while (true) {
             $userids = \get_page_users_ids($pageid, $limitfrom, $batchsize);
+            if (!count($userids)) {
+                break;
+            }
+
             self::calculate_and_save_preference_profiles_for_users($userids, $pageid);
             if (count($userids) < $batchsize) {
                 break;
@@ -102,28 +106,28 @@ class post_preference_calculator {
         global $DB;
 
         $profiles = [];
+
+        $sql = 'SELECT AVG(value) AS avg, COUNT(*) as count
+                FROM {page_post_pref_profiles} 
+                WHERE userid = :userid AND pageid = :pageid';
         foreach ($userids as $userid) {
-            $preferences = $DB->get_records('page_absolute_preferences', ['userid' => $userid, 'pageid' => $pageid]);
-            array_push($profiles, self::calculate_preference_profile($userid, $pageid, $preferences));
+            $profile = $DB->get_records_sql($sql, ['userid' => $userid, 'pageid' => $pageid]);
+            array_push($profiles, self::get_preference_profile($userid, $pageid, $profile->avg, $profile->count));
         }
 
-        $table = 'page_preference_profiles';
+        $table = 'page_post_pref_profiles';
         list($inuseridssql, $inuseridsparams) = $DB->get_in_or_equal($userids);
         $select = "userid $inuseridssql AND pageid = ".((int) $pageid);
         $DB->delete_records_select($table, $select, $inuseridsparams);
         $DB->insert_records($table, $profiles);
     }
 
-    public static function calculate_preference_profile($userid, $pageid, $preferences) {
+    public static function get_preference_profile($userid, $pageid, $avg, $count) {
         $profile = new \stdClass();
         $profile->userid = $userid;
         $profile->pageid = $pageid;
-        $profile->timecreated = time();
-
-        $count = count($preferences);
-        $values = array_map(function ($preference) { return (float) $preference->value; }, $preferences);
+        $profile->avg = $avg;
         $profile->count = $count;
-        $profile->avg = (bool) $count ? array_sum($values) / $count : 0.0;
 
         return $profile;
     }
@@ -135,7 +139,9 @@ class post_preference_calculator {
         $fields = 'id, pageid, threadid, creatorid';
         while (true) {
             $posts = $DB->get_records('page_posts', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize);
-            if (!count($posts)) break;
+            if (!count($posts)) {
+                break;
+            }
 
             self::calculate_and_save_absolute_preferences_for_posts($posts, $pageid);
             if (count($posts) < $batchsize) {
@@ -156,7 +162,9 @@ class post_preference_calculator {
         $limitfrom = 0;
         while (true) {
             $userids = \get_page_users_ids($pageid, $limitfrom, $batchsize);
-            if (!count($userids)) break;
+            if (!count($userids)) {
+                break;
+            }
 
             self::calculate_and_save_absolute_preferences_for_posts_and_users($posts, $userids, $pageid);
             if (count($userids) < $batchsize) {
@@ -170,31 +178,14 @@ class post_preference_calculator {
     private static function calculate_and_save_absolute_preferences_for_posts_and_users($posts, $userids, $pageid) {
         global $DB;
 
-        $postids = array_map(function ($post) { return $post->id; }, $posts);
-
-        list($inpostidssql, $inpostidsparams) = $DB->get_in_or_equal($postids);
-        list($inuseridssql, $inuseridsparams) = $DB->get_in_or_equal($userids);
-        $select = "postid $inpostidssql AND userid $inuseridssql";
-        $params = array_merge($inpostidsparams, $inuseridsparams);
-        $sort = 'postid ASC, userid ASC';
-        $readings = $DB->get_records_select('page_post_readings', $select, $params, $sort);
-        $likes = $DB->get_records_select('page_post_likes', $select, $params, $sort);
-        $bookmarks = $DB->get_records_select('page_post_bookmarks', $select, $params, $sort);
+        list($select, $params, $readings, $likes, $bookmarks) = self::get_user_reactions($posts, $DB, $userids);
 
         $preferences = [];
         $nextreading = array_shift($readings);
         $nextlike = array_shift($likes);
         $nextbookmark = array_shift($bookmarks);
         while ($nextreading || $nextlike || $nextbookmark) {
-            $preference = new \stdClass();
-            $preference->timecreated = \time();
-            $preference->pageid = $pageid;
-            $preference->postid = min(
-                array_map(function ($next) { return (int) $next->postid; }, array_filter([$nextreading, $nextlike, $nextbookmark]))
-            );
-            $preference->userid = min(
-                array_map(function ($next) { return (int) $next->userid; }, array_filter([$nextreading, $nextlike, $nextbookmark]))
-            );
+            $preference = self::get_absolute_preference_base($pageid, $nextreading, $nextlike, $nextbookmark);
             if (isset($nextreading) && $nextreading->postid == $preference->postid && $nextreading->userid == $preference->userid) {
                 $preference->value = 0;
                 $nextreading = array_shift($readings);
@@ -210,8 +201,52 @@ class post_preference_calculator {
             array_push($preferences, $preference);
         }
 
-        $table = 'page_absolute_preferences';
+        $table = 'page_absolute_post_prefs';
         $DB->delete_records_select($table, $select, $params);
         $DB->insert_records($table, $preferences);
+    }
+
+    /**
+     * @param $pageid
+     * @param $nextreading
+     * @param $nextlike
+     * @param $nextbookmark
+     * @return \stdClass
+     */
+    private static function get_absolute_preference_base($pageid, $nextreading, $nextlike, $nextbookmark): \stdClass {
+        $preference = new \stdClass();
+        $preference->pageid = $pageid;
+        $preference->postid = min(
+            array_map(function($next) {
+                return (int) $next->postid;
+            }, array_filter([$nextreading, $nextlike, $nextbookmark]))
+        );
+        $preference->userid = min(
+            array_map(function($next) {
+                return (int) $next->userid;
+            }, array_filter([$nextreading, $nextlike, $nextbookmark]))
+        );
+        return $preference;
+    }
+
+    /**
+     * @param $posts
+     * @param $DB
+     * @param $userids
+     * @return array
+     */
+    private static function get_user_reactions($posts, $DB, $userids): array {
+        $postids = array_map(function($post) {
+            return (int) $post->id;
+        }, $posts);
+        list($inpostidssql, $inpostidsparams) = $DB->get_in_or_equal($postids);
+        list($inuseridssql, $inuseridsparams) = $DB->get_in_or_equal($userids);
+        $select = "postid $inpostidssql AND userid $inuseridssql";
+        $params = array_merge($inpostidsparams, $inuseridsparams);
+        $sort = 'postid ASC, userid ASC';
+        $readings = $DB->get_records_select('page_post_readings', $select, $params, $sort);
+        $likes = $DB->get_records_select('page_post_likes', $select, $params, $sort);
+        $bookmarks = $DB->get_records_select('page_post_bookmarks', $select, $params, $sort);
+        return array($select, $params, $readings, $likes, $bookmarks);
     }
 }
