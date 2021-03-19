@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Preference Calculator
+ * Post Preference Calculator
  *
  * @package    mod_page
  * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@web.com>
@@ -34,14 +34,14 @@ require_once("$CFG->dirroot/mod/page/locallib.php");
 require_once("$CFG->dirroot/mod/page/lib.php");
 
 /**
- * Preference Calculator
+ * Post Preference Calculator
  *
  * Calculates (all current) preferences of users for posts in batches of users and posts.
  *
  * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@web.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class preference_calculator {
+class post_preference_calculator {
     const MIN_PREFERENCES = 3;
 
     public static function calculate_and_save_relative_preferences($pageid, $batchsize = 100) {
@@ -94,7 +94,7 @@ class preference_calculator {
     public static function calculate_and_save_preference_profiles($pageid, $batchsize = 100) {
         $limitfrom = 0;
         while (true) {
-            $userids = self::get_page_users_ids($pageid, $limitfrom, $batchsize);
+            $userids = \get_page_users_ids($pageid, $limitfrom, $batchsize);
             self::calculate_and_save_preference_profiles_for_users($userids, $pageid);
             if (count($userids) < $batchsize) {
                 break;
@@ -160,7 +160,7 @@ class preference_calculator {
     public static function calculate_and_save_preferences_for_posts($posts, $pageid, $batchsize = 100) {
         $limitfrom = 0;
         while (true) {
-            $userids = self::get_page_users_ids($pageid, $limitfrom, $batchsize);
+            $userids = \get_page_users_ids($pageid, $limitfrom, $batchsize);
             if (!count($userids)) break;
 
             self::calculate_and_save_preferences_for_posts_and_users($posts, $userids, $pageid);
@@ -218,12 +218,5 @@ class preference_calculator {
         $table = 'page_absolute_preferences';
         $DB->delete_records_select($table, $select, $params);
         $DB->insert_records($table, $preferences);
-    }
-
-    private static function get_page_users_ids($pageid, $limitfrom = 0, $limitnum = 100) {
-        $cm = get_coursemodule_by_pageid($pageid);
-        $context = \context_module::instance($cm->id);
-        $users = get_enrolled_users($context, '', 0, 'u.id', 'timecreated ASC', null, $limitfrom, $limitnum);
-        return array_map(function ($user) { return (int) $user->id; }, $users);
     }
 }

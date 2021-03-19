@@ -36,8 +36,8 @@ class post_similarity_calculator {
     const MIN_OVERLAP = 3;
     const MIN_SIM = 0.3;
 
-
-    // TODO Clean out tables before recalculation, do I really need time created
+    // TODO Clean out tables before recalculation, do I really need time created, add missing tables and management class
+    // Don't save similarities twice
 
     private static function calculate_and_save_post_similarities($pageid) {
         global $DB;
@@ -50,10 +50,10 @@ class post_similarity_calculator {
                 HAVING COUNT(*) >= :minoverlap';
         $overlappingpostpairs = array_values($DB->get_records_sql($sql, ['pageid' => $pageid, 'minoverlap' => self::MIN_OVERLAP]));
 
-        self::calculate_and_save_post_similarities_for_overlapping_posts($overlappingpostpairs, $pageid);
+        self::calculate_and_save_post_similarities_for_overlapping_posts($overlappingpostpairs);
     }
 
-    private static function calculate_and_save_post_similarities_for_overlapping_posts($postpairs, $pageid) {
+    private static function calculate_and_save_post_similarities_for_overlapping_posts($postpairs) {
         global $DB;
 
         foreach ($postpairs as $postpair) {
@@ -74,7 +74,6 @@ class post_similarity_calculator {
             }
 
             $postsim = new \stdClass();
-            $postsim->pageid = $pageid;
             $postsim->postaid = $postpair->postaid;
             $postsim->postbid = $postpair->postbid;
             $postsim->value = $similarity;
