@@ -28,11 +28,27 @@ require_once("$CFG->libdir/filelib.php");
 require_once("$CFG->libdir/resourcelib.php");
 require_once("$CFG->dirroot/mod/page/lib.php");
 
+function cmppostid($a, $b) {
+    $apostid = (int) $a->postid;
+    $bpostid = (int) $b->postid;
+    if ($apostid == $bpostid) {
+        return 0;
+    }
+    return ($apostid < $bpostid) ? -1 : 1;
+}
+
 function get_coursemodule_by_pageid($pageid) {
     global $DB;
 
     $page = $DB->get_record('page', ['id' => $pageid], '*', MUST_EXIST);
     return get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
+}
+
+function get_page_users_ids($pageid, $limitfrom = 0, $limitnum = 100) {
+    $cm = get_coursemodule_by_pageid($pageid);
+    $context = \context_module::instance($cm->id);
+    $users = get_enrolled_users($context, '', 0, 'u.id', 'timecreated ASC', null, $limitfrom, $limitnum);
+    return array_map(function ($user) { return (int) $user->id; }, $users);
 }
 
 function pick_keys($arrOrObj, $keys, $inplace = false) {

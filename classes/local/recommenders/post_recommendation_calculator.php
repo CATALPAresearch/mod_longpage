@@ -26,6 +26,8 @@ namespace mod_page\local\recommenders;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once("$CFG->dirroot/mod/page/locallib.php");
+
 /**
  * Post Recommendation Calculator
  *
@@ -33,15 +35,15 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class post_recommendation_calculator {
-    const MIN_PREFERENCES = 3;
-    const MIN_NEIGHBOURHOOD = 3;
+    const MIN_PREFERENCES = 2;
+    const MIN_NEIGHBOURHOOD = 2;
 
     public static function calculate_and_save_recommendations($pageid, $batchsize = 100) {
         $limitfrom = 0;
         while (true) {
             $userids = \get_page_users_ids($pageid, $limitfrom, $batchsize);
             foreach ($userids as $userid) {
-                self::calculate_and_save_recommendations_for_users($userid, $pageid);
+                self::calculate_and_save_recommendations_for_user($userid, $pageid);
             }
             if (count($userids) < $batchsize) {
                 break;
@@ -50,17 +52,40 @@ class post_recommendation_calculator {
         }
     }
 
+    /**
+     * Only posts that the user has not yet a preference for are recommended
+     *
+     * @param $userid
+     * @param $pageid
+     * @param int $batchsize
+     */
     private static function calculate_and_save_recommendations_for_user($userid, $pageid, $batchsize = 100) {
         global $DB;
 
+        $preferences = $DB->get_records(
+            'page_relative_preferences', ['pageid' => $pageid, 'userid' => $userid], 'postid, value'
+        );
+        if (count($preferences) < self::MIN_PREFERENCES) {
+            return;
+        }
+
+        $prefprofile = $DB->get_record('page_preference_profiles', ['pageid' => $pageid, 'userid' => $userid]);
+
         $limitfrom = 0;
+        $idsofpostswithprefs = array_map(function($pref) {
+            (int) $pref->postid;
+        }, $preferences);
+        list($select, $conditions) = self::get_select_and_conditions_for_posts_to_calc_rec_for($idsofpostswithprefs, $DB, $pageid);
         $fields = 'id';
         while (true) {
-            $posts = $DB->get_records('page_posts', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize);
+            $posts = $DB->get_records_select($select, $conditions, 'timecreated ASC', $fields, $limitfrom, $batchsize);
             $postids = array_map(function ($post) { return (int) $post->id; }, $posts);
             foreach ($postids as $postid) {
-                self::calculate_and_save_recommendation_for_user_for_post($userid, $postid, $pageid);
+                self::calculate_and_save_recommendation_for_user_for_post(
+                    $userid, $postid, $preferences, $idsofpostswithprefs, $prefprofile->avg, $pageid
+                );
             }
+
             if (count($posts) < $batchsize) {
                 break;
             }
@@ -69,86 +94,61 @@ class post_recommendation_calculator {
         }
     }
 
-    private static function calculate_and_save_recommendation_for_user_for_post($userid, $postid, $pageid) {
+    private static function calculate_and_save_recommendation_for_user_for_post
+        ($userid, $postid, $preferences, $idsofpostswithprefs, $avgpref, $pageid) {
         global $DB;
 
+        $recommendation = self::get_recommendation_base($pageid, $postid, $userid);
+
+        list($inpostidssql, $inpostidsparams) = $DB->get_in_or_equal($idsofpostswithprefs);
+        $select = "postaid $inpostidssql AND postbid = :postid OR postaid = :postid AND postbid $inpostidssql";
+        $relevantneighbourhood = $DB->get_records_select(
+            'page_post_similarities', $select, array_merge($inpostidsparams, ['postid' => $postid]),
+        );
+        $recommendation->value = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD ? $avgpref :
+            self::calculate_recommenation_from_preferences_and_neighbourhood($preferences, $relevantneighbourhood);
+        $DB->insert_record('page_post_recommendations', $recommendation, false, true);
+    }
+
+    private static function calculate_recommenation_from_preferences_and_neighbourhood($preferences, $neighbourhood) {
+        $dividend = 0;
+        $divisor = 0;
+        $prefssortedbypostid = uasort($preferences, 'cmppostid');
+        $neighbourhoodsortedbypostid = uasort($neighbourhood, 'cmppostid');
+        foreach ($neighbourhoodsortedbypostid as $similarity) {
+            $divisor += (float) $similarity->value;
+            $dividend += ((float) $similarity->value) *
+                ((float) self::shift_until_match_and_return_match($prefssortedbypostid, $similarity->postid));
+        }
+        return $dividend / $divisor;
+    }
+
+    private static function shift_until_match_and_return_match($prefssortedbypostid, $postid) {
+        $preference = array_shift($prefssortedbypostid);
+        while (isset($preference)) {
+            if ($preference->postid == $postid) {
+                return $preference;
+            }
+            $preference = array_shift($prefssortedbypostid);
+        }
+    }
+
+    private static function get_recommendation_base($pageid, $postid, $userid): \stdClass {
         $recommendation = new \stdClass();
         $recommendation->pageid = $pageid;
         $recommendation->postid = $postid;
         $recommendation->userid = $userid;
         $recommendation->timecreated = time();
-
-        // TODO Only calculate preferences for unknown posts
-
-        $relpreferences = $DB->get_records('page_relative_preferences', ['userid' => $userid, 'pageid' => $pageid]);
-        if (count($relpreferences) < self::MIN_PREFERENCES) {
-            $recommendation->value = self::get_avg_preference($pageid);
-            $DB->insert_record('page_post_recommendations', $recommendation, false, true);
-            return;
-        }
-
-        $postidswithpref = array_map(function ($relpref) { return (int) $relpref->postid; }, $relpreferences);
-        list($inpostidssql, $inpostidsparams) = $DB->get_in_or_equal($postidswithpref);
-        $select = "postaid $inpostidssql OR postbid $inpostidssql";
-        $similarities = $DB->get_records_select('page_post_similarities', $select, array_merge($inpostidsparams, $inpostidsparams));
-
-        if (count($similarities) < self::MIN_NEIGHBOURHOOD) {
-            $recommendation->value = self::get_avg_preference_of_user($userid, $pageid);
-            $DB->insert_record('page_post_recommendations', $recommendation, false, true);
-            return;
-        }
-
-
+        return $recommendation;
     }
 
-    private static function get_avg_preference_of_user($userid, $pageid) {
+    private static function get_select_and_conditions_for_posts_to_calc_rec_for($idsofpostswithprefs, $pageid) {
         global $DB;
 
-        $sql = 'SELECT AVG(value) AS avg FROM {page_relative_preferences} WHERE pageid = :pageid AND userid = :userid';
-        return (float) $DB->get_record_sql($sql, ['pageid' => $pageid, 'userid' => $userid])->avg;
+        list($insql, $inparams) = $DB->get_in_or_equal($idsofpostswithprefs);
+        $select = "postid NOT $insql AND pageid = :pageid AND ispublic = :ispublic";
+        $conditions = array_merge($inparams, ['pageid' => $pageid, 'ispublic' => true]);
+        return array($select, $conditions);
     }
-
-    private static function get_avg_preference($pageid) {
-        global $DB;
-
-        $sql = 'SELECT AVG(value) AS avg FROM {page_relative_preferences} WHERE pageid = :pageid';
-        return (float) $DB->get_record_sql($sql, ['pageid' => $pageid])->avg;
-    }
-
-    //public static function calculate_and_save_recommendations($pageid, $batchsize = 100) {
-    //    global $DB;
-    //
-    //    $limitfrom = 0;
-    //    $fields = 'id';
-    //    while (true) {
-    //        $posts = $DB->get_records('page_posts', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize);
-    //        $postids = array_map(function ($post) { return (int) $post->id; }, $posts);
-    //        self::calculate_and_save_recommendations_for_posts($postids);
-    //        if (count($posts) < $batchsize) {
-    //            break;
-    //        }
-    //
-    //        $limitfrom += $batchsize;
-    //    }
-    //}
-
-    //private static function calculate_and_save_recommenations_for_posts($postids) {
-    //    global $DB;
-    //
-    //    foreach ($postids as $postid) {
-    //        $similarities = $DB->get_records('page_post_similarities', );
-    //        self::calculate_and_save_recommenations_for_post($postid, $similarities);
-    //    }
-    //
-    //    // get similarities for page
-    //    /*        -- Ich hol mir zunächst die (15) ähnlichsten Posts über die Similarity
-    //            -- Anschließend hol ich mir die Preferences des Users für diese Posts und berechne Bewertung und speichere das raus
-    //            -- Ggf. muss ich dafür nochmal auf DB*/
-    //}
-    //
-    //private static function calculate_and_save_recommenations_for_post($postid, $similarities) {
-    //    $DB
-    //}
-
 
 }
