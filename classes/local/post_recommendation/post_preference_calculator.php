@@ -78,7 +78,16 @@ class post_preference_calculator {
             }
 
             $relpreferences = self::map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences);
-            $DB->insert_records('page_relative_post_prefs', $relpreferences);
+
+            $table = 'page_relative_post_prefs';
+            $postids = array_map(function ($pref) {
+                return (int) $pref->postid;
+            }, $relpreferences);
+            list($insql, $inparams) = $DB->get_in_or_equal($postids);
+            $select = "postid $insql AND pageid = :pageid AND userid = :userid";
+            $params = array_merge($inparams, ['pageid' => $pageid, 'userid' => $prefprofile->userid]);
+            $DB->delete_records_select($table, $select, $params);
+            $DB->insert_records($table, $relpreferences);
             if (count($abspreferences) < $batchsize) {
                 break;
             }
