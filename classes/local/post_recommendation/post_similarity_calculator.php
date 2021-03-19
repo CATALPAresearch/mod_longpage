@@ -43,7 +43,7 @@ class post_similarity_calculator {
         global $DB;
 
         $sql = 'SELECT pa.postid AS postaid, pb.postid AS postbid
-                FROM {page_relative_preferences} pa JOIN {page_relative_preferences} pb
+                FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
                 ON pa.userid = pb.userid AND pa.postid != pb.postid
                 WHERE pa.pageid = :pageid AND pb.pageid = :pageid
                 GROUP BY pa.postid, pb.postid
@@ -58,7 +58,7 @@ class post_similarity_calculator {
 
         foreach ($postpairs as $postpair) {
             $sql = 'SELECT pa.value AS valuea, pb.value AS valueb
-                FROM {page_relative_preferences} pa JOIN {page_relative_preferences} pb
+                FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
                 ON pa.userid = pb.userid
                 WHERE pa.postid = :postaid AND pb.postid = :postbid';
             $preferencepairs = array_values(

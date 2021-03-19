@@ -48,38 +48,37 @@ class post_preference_calculator {
             $prefprofiles = $DB->get_records(
                 'page_post_pref_profiles', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize
             );
+            if (!count($prefprofiles)) {
+                break;
+            }
+
             foreach ($prefprofiles as $profile) {
-                self::calculate_and_save_relative_preferences_for_user($profile, $pageid);
+                self::calculate_and_save_relative_preferences_for_user_with_profile($profile, $pageid);
             }
             if (count($prefprofiles) < $batchsize) {
                 break;
             }
+
             $limitfrom += $batchsize;
         }
     }
 
-    private static function calculate_and_save_relative_preferences_for_user($prefprofile, $pageid, $batchsize = 100) {
+    private static function calculate_and_save_relative_preferences_for_user_with_profile($prefprofile, $pageid, $batchsize = 100) {
         global $DB;
 
         $fields = 'postid, value';
         $conditions = ['pageid' => $pageid, 'userid' => $prefprofile->userid];
         $limitfrom = 0;
         while (true) {
-            $abspreferences = array_values($DB->get_records(
+            $abspreferences = $DB->get_records(
                 'page_absolute_post_prefs', $conditions, 'timecreated ASC', $fields, $limitfrom, $batchsize,
-            ));
+            );
             if (count($abspreferences) < self::MIN_PREFERENCES) {
                 break;
             }
-            $relpreferences = array_map(function ($abspreference) use ($prefprofile, $pageid) {
-                $relpreference = new \stdClass();
-                $relpreference->pageid = $pageid;
-                $relpreference->time = time();
-                $relpreference->postid = $abspreference->postid;
-                $relpreference->userid = $abspreference->userid;
-                $relpreference->value = (float) $abspreference->value - (float) $prefprofile->avg;
-            }, $abspreferences);
-            $DB->insert_records('page_relative_preferences', $relpreferences);
+
+            $relpreferences = self::map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences);
+            $DB->insert_records('page_relative_post_prefs', $relpreferences);
             if (count($abspreferences) < $batchsize) {
                 break;
             }
@@ -248,5 +247,22 @@ class post_preference_calculator {
         $likes = $DB->get_records_select('page_post_likes', $select, $params, $sort);
         $bookmarks = $DB->get_records_select('page_post_bookmarks', $select, $params, $sort);
         return array($select, $params, $readings, $likes, $bookmarks);
+    }
+
+    /**
+     * @param $prefprofile
+     * @param $pageid
+     * @param $abspreferences
+     * @return void[]
+     */
+    private static function map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences): array {
+        $relpreferences = array_map(function($abspreference) use ($prefprofile, $pageid) {
+            $relpreference = new \stdClass();
+            $relpreference->pageid = $pageid;
+            $relpreference->postid = $abspreference->postid;
+            $relpreference->userid = $abspreference->userid;
+            $relpreference->value = (float) $abspreference->value - (float) $prefprofile->avg;
+        }, $abspreferences);
+        return $relpreferences;
     }
 }

@@ -63,7 +63,7 @@ class post_recommendation_calculator {
         global $DB;
 
         $preferences = $DB->get_records(
-            'page_relative_preferences', ['pageid' => $pageid, 'userid' => $userid], 'postid, value'
+            'page_relative_post_prefs', ['pageid' => $pageid, 'userid' => $userid], 'postid, value'
         );
         if (count($preferences) < self::MIN_PREFERENCES) {
             return;
