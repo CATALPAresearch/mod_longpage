@@ -46,7 +46,7 @@ class post_preference_calculator {
         $fields = 'userid, avg, count';
         while (true) {
             $prefprofiles = $DB->get_records(
-                'page_post_pref_profiles', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize
+                'page_post_pref_profiles', ['pageid' => $pageid], 'id ASC', $fields, $limitfrom, $batchsize
             );
             if (!count($prefprofiles)) {
                 break;
@@ -71,7 +71,7 @@ class post_preference_calculator {
         $limitfrom = 0;
         while (true) {
             $abspreferences = $DB->get_records(
-                'page_absolute_post_prefs', $conditions, 'timecreated ASC', $fields, $limitfrom, $batchsize,
+                'page_absolute_post_prefs', $conditions, 'id ASC', $fields, $limitfrom, $batchsize,
             );
             if (count($abspreferences) < self::MIN_PREFERENCES) {
                 break;
@@ -146,7 +146,7 @@ class post_preference_calculator {
         $limitfrom = 0;
         $fields = 'id, pageid, threadid, creatorid';
         while (true) {
-            $posts = $DB->get_records('page_posts', ['pageid' => $pageid], 'timecreated ASC', $fields, $limitfrom, $batchsize);
+            $posts = $DB->get_records('page_posts', ['pageid' => $pageid], 'id ASC', $fields, $limitfrom, $batchsize);
             if (!count($posts)) {
                 break;
             }

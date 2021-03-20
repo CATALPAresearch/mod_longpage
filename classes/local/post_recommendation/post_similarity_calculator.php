@@ -36,11 +36,12 @@ class post_similarity_calculator {
     const MIN_OVERLAP = 3;
     const MIN_SIM = 0.3;
 
-    // TODO Clean out tables before recalculation, do I really need time created, add missing tables and management class
     // Don't save similarities twice
 
-    public static function calculate_and_save_post_similarities($pageid) {
+    public static function calculate_and_save_post_similarities($pageid, $batchsize = 100) {
         global $DB;
+
+        $DB->delete_records('page_post_similarities', ['pageid' => $pageid]);
 
         $sql = 'SELECT pa.postid AS postaid, pb.postid AS postbid
                 FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
@@ -48,37 +49,59 @@ class post_similarity_calculator {
                 WHERE pa.pageid = :pageid AND pb.pageid = :pageid
                 GROUP BY pa.postid, pb.postid
                 HAVING COUNT(*) >= :minoverlap';
-        $overlappingpostpairs = array_values($DB->get_records_sql($sql, ['pageid' => $pageid, 'minoverlap' => self::MIN_OVERLAP]));
+        $limitfrom = 0;
+        while (true) {
+            $overlappingpostpairs =
+                $DB->get_records_sql($sql, ['pageid' => $pageid, 'minoverlap' => self::MIN_OVERLAP], $limitfrom, $batchsize);
+            if (count($overlappingpostpairs)) {
+                break;
+            }
 
-        self::calculate_and_save_post_similarities_for_overlapping_posts($overlappingpostpairs);
+            self::calculate_and_save_post_similarities_for_overlapping_posts($overlappingpostpairs);
+            if (count($overlappingpostpairs) < $batchsize) {
+                break;
+            }
+
+            $limitfrom += $batchsize;
+        }
     }
 
     private static function calculate_and_save_post_similarities_for_overlapping_posts($postpairs) {
         global $DB;
 
-        foreach ($postpairs as $postpair) {
-            $sql = 'SELECT pa.value AS valuea, pb.value AS valueb
+        $sql = 'SELECT pa.value AS valuea, pb.value AS valueb
                 FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
                 ON pa.userid = pb.userid
                 WHERE pa.postid = :postaid AND pb.postid = :postbid';
-            $preferencepairs = array_values(
-                $DB->get_records_sql($sql, ['postaid' => $postpair->postaid, 'postbid' => $postpair->postbid])
-            );
-
-            $preferencesa = array_map(function ($preferencepair) { return $preferencepair->valuea; }, $preferencepairs);
-            $preferencesb = array_map(function ($preferencepair) { return $preferencepair->valueb; }, $preferencepairs);
-            $similarity = similarity_calculator::cosine($preferencesa, $preferencesb);
-
-            if ($similarity < self::MIN_SIM) {
-                break;
+        $table = 'page_post_similarities';
+        foreach ($postpairs as $postpair) {
+            $conditions = ['postaid' => $postpair->postaid, 'postbid' => $postpair->postbid];
+            if ($DB->record_exists($table, $conditions)) {
+                continue;
             }
 
-            $postsim = new \stdClass();
-            $postsim->postaid = $postpair->postaid;
-            $postsim->postbid = $postpair->postbid;
-            $postsim->value = $similarity;
+            $preferencepairs = $DB->get_records_sql($sql, $conditions);
 
+            list($preferencesa, $preferencesb) = array_map(function ($preferencepair) {
+                return [(float) $preferencepair->valuea, (float) $preferencepair->valueb];
+            }, $preferencepairs);
+            $similarity = similarity_calculator::cosine($preferencesa, $preferencesb);
+            if ($similarity < self::MIN_SIM) {
+                continue;
+            }
+
+            $postsim = self::get_post_similarity($postpair, $similarity);
+
+            $DB->delete_records('page_post_similarities', ['postaid' => $postsim->postaid, 'postbid' => $postsim->postbid]);
             $DB->insert_record('page_post_similarities', $postsim, false, true);
         }
+    }
+
+    private static function get_post_similarity($postpair, $similarity) {
+        $postsim = new \stdClass();
+        $postsim->postaid = $postpair->postaid;
+        $postsim->postbid = $postpair->postbid;
+        $postsim->value = $similarity;
+        return $postsim;
     }
 }
