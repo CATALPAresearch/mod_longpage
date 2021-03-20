@@ -27,8 +27,8 @@
 defined('MOODLE_INTERNAL') || die;
 
 use mod_page\local\constants\annotation_type as annotation_type;
+use mod_page\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
 use mod_page\local\constants\selector as selector;
-use mod_page\local\post_recommendation\postPreference_calculator as preference_calculator;
 
 require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
@@ -186,6 +186,8 @@ class mod_page_external extends external_api {
         );
         $transaction->allow_commit();
 
+        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
+
         return ['post' => $DB->get_record('page_posts', ['id' => $id])];
     }
 
@@ -204,6 +206,8 @@ class mod_page_external extends external_api {
             $DB->insert_record($table, array_merge($keyconditions, ['timecreated' => time()]));
         }
         $transaction->allow_commit();
+
+        self::schedule_post_recommendation_calculation_task_for_page_with_post($postid);
     }
 
     public static function create_post_like_parameters() {
@@ -320,6 +324,8 @@ class mod_page_external extends external_api {
             $DB->insert_record($table, array_merge($keyconditions, ['timecreated' => time()]));
         }
         $transaction->allow_commit();
+
+        post_recommendation_calculation_task::create_from_pageid_and_queue($annotation->pageid);
     }
 
     public static function create_thread_subscription_parameters() {
@@ -432,6 +438,8 @@ class mod_page_external extends external_api {
         $transaction = $DB->start_delegated_transaction();
         self::delete_post_from_db($id);
         $transaction->allow_commit();
+
+        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
     }
 
     public static function delete_post_like($postid) {
@@ -442,6 +450,8 @@ class mod_page_external extends external_api {
         $transaction = $DB->start_delegated_transaction();
         $DB->delete_records('page_post_likes', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
+
+        self::schedule_post_recommendation_calculation_task_for_page_with_post($postid);
     }
 
     public static function delete_post_like_parameters() {
@@ -460,6 +470,8 @@ class mod_page_external extends external_api {
         $transaction = $DB->start_delegated_transaction();
         $DB->delete_records('page_post_bookmarks', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
+
+        self::schedule_post_recommendation_calculation_task_for_page_with_post($postid);
     }
 
     public static function delete_post_bookmark_parameters() {
@@ -482,6 +494,8 @@ class mod_page_external extends external_api {
         $transaction = $DB->start_delegated_transaction();
         $DB->delete_records('page_post_readings', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
+
+        self::schedule_post_recommendation_calculation_task_for_page_with_post($postid);
     }
 
     public static function delete_post_reading_parameters() {
@@ -570,6 +584,13 @@ class mod_page_external extends external_api {
             'users' => new external_multiple_structure(self::user_description()),
             'warnings' => new external_warnings(),
         ]);
+    }
+
+    private static function schedule_post_recommendation_calculation_task_for_page_with_post($postid) {
+        global $DB;
+
+        $pageid = $DB->get_record('page_posts', ['postid' => $postid], 'pageid')->pageid;
+        post_recommendation_calculation_task::create_from_pageid_and_queue($pageid);
     }
 
     /**
@@ -1006,6 +1027,8 @@ class mod_page_external extends external_api {
             );
         }
         $transaction->allow_commit();
+
+        post_recommendation_calculation_task::create_from_pageid_and_queue($annotation->pageid);
 
         return ['post' => $DB->get_record('page_posts', pick_keys((array) $postupdate, ['id']))];
     }
