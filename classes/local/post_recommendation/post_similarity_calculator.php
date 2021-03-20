@@ -36,8 +36,6 @@ class post_similarity_calculator {
     const MIN_OVERLAP = 3;
     const MIN_SIM = 0.3;
 
-    // Don't save similarities twice
-
     public static function calculate_and_save_post_similarities($pageid, $batchsize = 100) {
         global $DB;
 
