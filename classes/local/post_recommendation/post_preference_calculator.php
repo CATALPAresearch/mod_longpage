@@ -80,14 +80,9 @@ class post_preference_calculator {
             $relpreferences = self::map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences);
 
             $table = 'page_relative_post_prefs';
-            $postids = array_map(function ($pref) {
-                return (int) $pref->postid;
-            }, $relpreferences);
-            list($insql, $inparams) = $DB->get_in_or_equal($postids);
-            $select = "postid $insql AND pageid = :pageid AND userid = :userid";
-            $params = array_merge($inparams, ['pageid' => $pageid, 'userid' => $prefprofile->userid]);
-            $DB->delete_records_select($table, $select, $params);
+            $transaction = $DB->start_delegated_transaction();
             $DB->insert_records($table, $relpreferences);
+            $transaction->allow_commit();
             if (count($abspreferences) < $batchsize) {
                 break;
             }
@@ -116,18 +111,21 @@ class post_preference_calculator {
         $profiles = [];
 
         $sql = 'SELECT AVG(value) AS avg, COUNT(*) as count
-                FROM {page_post_pref_profiles} 
-                WHERE userid = :userid AND pageid = :pageid';
+                FROM {page_absolute_post_prefs} 
+                WHERE userid = ? AND pageid = ?';
         foreach ($userids as $userid) {
-            $profile = $DB->get_records_sql($sql, ['userid' => $userid, 'pageid' => $pageid]);
+            $profile = $DB->get_record_sql($sql, [$userid, $pageid]);
+            if (((int) $profile->count) < self::MIN_PREFERENCES) {
+                continue;
+            }
+
             array_push($profiles, self::get_preference_profile($userid, $pageid, $profile->avg, $profile->count));
         }
 
         $table = 'page_post_pref_profiles';
-        list($inuseridssql, $inuseridsparams) = $DB->get_in_or_equal($userids);
-        $select = "userid $inuseridssql AND pageid = ".((int) $pageid);
-        $DB->delete_records_select($table, $select, $inuseridsparams);
+        $transaction = $DB->start_delegated_transaction();
         $DB->insert_records($table, $profiles);
+        $transaction->allow_commit();
     }
 
     public static function get_preference_profile($userid, $pageid, $avg, $count) {
@@ -140,13 +138,38 @@ class post_preference_calculator {
         return $profile;
     }
 
+    public static function delete_absolute_preferences($pageid) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_absolute_post_prefs', ['pageid' => $pageid]);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_preference_profiles($pageid) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_post_pref_profiles', ['pageid' => $pageid]);
+        $transaction->allow_commit();
+    }
+
+    public static function delete_relative_preferences($pageid) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_relative_post_prefs', ['pageid' => $pageid]);
+        $transaction->allow_commit();
+    }
+
     public static function calculate_and_save_absolute_preferences($pageid, $batchsize = 100) {
         global $DB;
 
         $limitfrom = 0;
         $fields = 'id, pageid, threadid, creatorid';
+        $conditions = ['pageid' => $pageid, 'ispublic' => 1];
         while (true) {
-            $posts = $DB->get_records('page_posts', ['pageid' => $pageid], 'id ASC', $fields, $limitfrom, $batchsize);
+            $posts = $DB->get_records('page_posts', $conditions, 'id ASC', $fields, $limitfrom, $batchsize);
             if (!count($posts)) {
                 break;
             }
@@ -186,7 +209,7 @@ class post_preference_calculator {
     private static function calculate_and_save_absolute_preferences_for_posts_and_users($posts, $userids, $pageid) {
         global $DB;
 
-        list($select, $params, $readings, $likes, $bookmarks) = self::get_user_reactions($posts, $DB, $userids);
+        list($readings, $likes, $bookmarks) = self::get_user_reactions($posts, $DB, $userids);
 
         $preferences = [];
         $nextreading = array_shift($readings);
@@ -210,8 +233,9 @@ class post_preference_calculator {
         }
 
         $table = 'page_absolute_post_prefs';
-        $DB->delete_records_select($table, $select, $params);
+        $transaction = $DB->start_delegated_transaction();
         $DB->insert_records($table, $preferences);
+        $transaction->allow_commit();
     }
 
     /**
@@ -255,23 +279,17 @@ class post_preference_calculator {
         $readings = $DB->get_records_select('page_post_readings', $select, $params, $sort);
         $likes = $DB->get_records_select('page_post_likes', $select, $params, $sort);
         $bookmarks = $DB->get_records_select('page_post_bookmarks', $select, $params, $sort);
-        return array($select, $params, $readings, $likes, $bookmarks);
+        return array($readings, $likes, $bookmarks);
     }
 
-    /**
-     * @param $prefprofile
-     * @param $pageid
-     * @param $abspreferences
-     * @return void[]
-     */
-    private static function map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences): array {
-        $relpreferences = array_map(function($abspreference) use ($prefprofile, $pageid) {
+    private static function map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences) {
+        return array_map(function($abspreference) use ($prefprofile, $pageid) {
             $relpreference = new \stdClass();
             $relpreference->pageid = $pageid;
             $relpreference->postid = $abspreference->postid;
-            $relpreference->userid = $abspreference->userid;
+            $relpreference->userid = $prefprofile->userid;
             $relpreference->value = (float) $abspreference->value - (float) $prefprofile->avg;
+            return $relpreference;
         }, $abspreferences);
-        return $relpreferences;
     }
 }

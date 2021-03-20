@@ -158,10 +158,10 @@ class mod_page_external extends external_api {
         $DB->delete_records('page_posts', ['id' => $id]);
     }
 
-    private static function get_annotation_by_post($post) {
+    private static function get_annotation_by_thread_id($threadid) {
         global $DB;
 
-        $thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
+        $thread = $DB->get_record('page_threads', ['id' => $threadid]);
         return $DB->get_record('page_annotations', ['id' => $thread->annotationid]);
     }
 
@@ -169,26 +169,29 @@ class mod_page_external extends external_api {
         global $DB;
 
         $post = $DB->get_record('page_posts', ['id' => $id]);
-        return self::get_annotation_by_post($post);
+        return self::get_annotation_by_thread_id($post->threadid);
     }
 
     public static function create_post($postparameters) {
         global $DB, $USER;
 
         self::validate_parameters(self::create_post_parameters(), ['post' => $postparameters]);
-        $post = (object) $postparameters;
-        self::validate_cm_context($post->pageid);
+        $postparameters = (object) $postparameters;
+        self::validate_cm_context($postparameters->pageid);
 
         $transaction = $DB->start_delegated_transaction();
         $id = $DB->insert_record(
             'page_posts',
-            object_merge($post, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()]),
+            object_merge($postparameters, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()]),
         );
         $transaction->allow_commit();
 
-        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
+        self::create_post_reading($id);
 
-        return ['post' => $DB->get_record('page_posts', ['id' => $id])];
+        post_recommendation_calculation_task::create_from_pageid_and_queue($postparameters->pageid);
+
+        $posts = self::get_posts($postparameters->threadid, [$id]);
+        return ['post' => array_shift($posts)];
     }
 
     public static function create_post_like($postid) {
@@ -200,6 +203,8 @@ class mod_page_external extends external_api {
     private static function create_post_reaction($table, $postid) {
         global $DB, $USER;
 
+        $post = $DB->get_record('page_posts', ['id' => $postid]);
+
         $keyconditions = ['postid' => $postid, 'userid' => $USER->id];
         $transaction = $DB->start_delegated_transaction();
         if (!$DB->record_exists($table, $keyconditions)) {
@@ -207,7 +212,7 @@ class mod_page_external extends external_api {
         }
         $transaction->allow_commit();
 
-        self::schedule_post_recommendation_calculation_task_for_page_with_post($postid);
+        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
     }
 
     public static function create_post_like_parameters() {
@@ -258,11 +263,7 @@ class mod_page_external extends external_api {
 
     public static function create_post_returns() {
         return new external_function_parameters([
-            'post' => new external_single_structure(array_merge(
-                self::post_parameters(),
-                self::id_parameter(),
-                self::timestamp_parameters(),
-            )),
+            'post' => self::get_post_returns(),
         ]);
     }
 
@@ -338,12 +339,14 @@ class mod_page_external extends external_api {
         return null;
     }
 
-    private static function delete_thread($thread) {
+    private static function delete_thread($thread, $pageid) {
         global $DB;
 
         self::delete_post_from_db(self::get_posts($thread->id)[0]->id);
         $DB->delete_records('page_thread_subscriptions', ['threadid' => $thread->id]);
         $DB->delete_records('page_threads', ['id' => $thread->id]);
+
+        post_recommendation_calculation_task::create_from_pageid_and_queue($pageid);
     }
 
     public static function delete_annotation($id): void {
@@ -359,7 +362,7 @@ class mod_page_external extends external_api {
         self::delete_annotation_target($id);
         if ($annotation->type == annotation_type::POST) {
             $thread = $DB->get_record('page_threads', ['annotationid' => $annotation->id]);
-            self::delete_thread($thread);
+            self::delete_thread($thread, $annotation->pageid);
         }
         $DB->delete_records('page_annotations', ['id' => $id]);
         $transaction->allow_commit();
@@ -589,8 +592,9 @@ class mod_page_external extends external_api {
     private static function schedule_post_recommendation_calculation_task_for_page_with_post($postid) {
         global $DB;
 
-        $pageid = $DB->get_record('page_posts', ['postid' => $postid], 'pageid')->pageid;
-        post_recommendation_calculation_task::create_from_pageid_and_queue($pageid);
+        $post = $DB->get_record('page_posts', ['id' => $postid], 'pageid');
+
+        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
     }
 
     /**
@@ -893,15 +897,18 @@ class mod_page_external extends external_api {
         ];
     }
 
-    private static function get_posts($threadid) {
+    private static function get_posts($threadid, $postids = []) {
         global $DB, $USER;
 
-        $posts = $DB->get_records_select(
-            'page_posts',
-            'threadid = ? AND (ispublic = 1 OR creatorid = ?)',
-            ['threadid' => $threadid, 'creatorid' => $USER->id],
-            'timemodified'
-        );
+        $select = 'threadid = ? AND (ispublic = 1 OR creatorid = ?)';
+        $params = [$threadid, $USER->id];
+        if ($postids) {
+            list($inpostidssql, $inpostidsparams) = $DB->get_in_or_equal($postids);
+            $select .= " AND id $inpostidssql";
+            $params = array_merge($params, $inpostidsparams);
+        }
+
+        $posts = $DB->get_records_select('page_posts', $select, $params, 'timemodified ASC');
 
         return array_map(function ($post) {
             self::anonymize_post($post);
@@ -1014,13 +1021,14 @@ class mod_page_external extends external_api {
 
         self::validate_parameters(self::update_post_parameters(), ['postupdate' => $postupdateparams]);
         $postupdate = (object) $postupdateparams;
-        $annotation = self::get_annotation_by_post_id($postupdate->id);
-        self::validate_cm_context($annotation->pageid);
+        $post = $DB->get_record('page_posts', ['id' => $postupdate->id]);
+        self::validate_cm_context($post->pageid);
 
         $transaction = $DB->start_delegated_transaction();
         self::validate_post_can_be_updated($postupdate);
         $DB->update_record('page_posts', array_merge((array) $postupdate, ['timemodified' => time()]));
         if (isset($postupdate->ispublic)) {
+            $annotation = self::get_annotation_by_thread_id($post->threadid);
             $DB->update_record(
                 'page_annotations',
                 ['id' => $annotation->id, 'ispublic' => $postupdate->ispublic, 'timemodified' => time()],
@@ -1028,9 +1036,10 @@ class mod_page_external extends external_api {
         }
         $transaction->allow_commit();
 
-        post_recommendation_calculation_task::create_from_pageid_and_queue($annotation->pageid);
+        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
 
-        return ['post' => $DB->get_record('page_posts', pick_keys((array) $postupdate, ['id']))];
+        $posts = self::get_posts($post->threadid, [$postupdate->id]);
+        return ['post' => array_shift($posts)];
     }
 
     public static function update_post_parameters() {

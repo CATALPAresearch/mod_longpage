@@ -47,6 +47,14 @@ class post_recommendation_calculator {
     const MIN_PREFERENCES = 2;
     const MIN_NEIGHBOURHOOD = 2;
 
+    public static function delete_recommendations($pageid) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_post_recommendations', ['pageid' => $pageid]);
+        $transaction->allow_commit();
+    }
+
     public static function calculate_and_save_recommendations($pageid, $batchsize = 100) {
         $limitfrom = 0;
         while (true) {
@@ -84,9 +92,9 @@ class post_recommendation_calculator {
         $idsofpostswithprefs = array_map(function($pref) {
             return (int) $pref->postid;
         }, $preferences);
-        list($select, $conditions) = self::get_select_and_conditions_for_posts_to_calc_rec_for($idsofpostswithprefs, $DB, $pageid);
+        list($select, $params) = self::get_select_and_params_for_posts_to_calc_rec_for($idsofpostswithprefs, $pageid);
         while (true) {
-            $posts = $DB->get_records_select($select, $conditions, 'timecreated ASC', 'id', $limitfrom, $batchsize);
+            $posts = $DB->get_records_select('page_posts', $select, $params, 'timecreated ASC', 'id', $limitfrom, $batchsize);
             $postids = array_map(function ($post) { return (int) $post->id; }, $posts);
             foreach ($postids as $postid) {
                 self::calculate_and_save_recommendation_for_user_for_post(
@@ -109,22 +117,30 @@ class post_recommendation_calculator {
         $recommendation = self::get_recommendation_base($pageid, $postid, $userid);
 
         list($inpostidssql, $inpostidsparams) = $DB->get_in_or_equal($idsofpostswithprefs);
-        $select = "(postaid $inpostidssql AND postbid = :postid) OR (postaid = :postid AND postbid $inpostidssql)";
+        $select = "(postaid $inpostidssql AND postbid = ?) OR (postaid = ? AND postbid $inpostidssql)";
         $relevantneighbourhood = $DB->get_records_select(
-            'page_post_similarities', $select, array_merge($inpostidsparams, ['postid' => $postid]),
+            'page_post_similarities', $select, array_merge($inpostidsparams, [$postid, $postid], $inpostidsparams),
         );
         $recommendation->value = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD ? $avgpref :
-            self::calculate_recommenation_from_preferences_and_neighbourhood($preferences, $relevantneighbourhood);
+            self::calculate_recommenation_from_preferences_and_neighbourhood($postid, $preferences, $relevantneighbourhood);
 
-        $DB->delete_record('page_post_recommendations', ['pageid' => $pageid, 'postid' => $postid, 'userid' => $userid]);
+        $transaction = $DB->start_delegated_transaction();
         $DB->insert_record('page_post_recommendations', $recommendation, false, true);
+        $transaction->allow_commit();
     }
 
-    private static function calculate_recommenation_from_preferences_and_neighbourhood($preferences, $neighbourhood) {
+    private static function calculate_recommenation_from_preferences_and_neighbourhood($postid, $preferences, $neighbourhood) {
         $dividend = 0;
         $divisor = 0;
         $prefssortedbypostid = uasort($preferences, 'cmppostid');
-        $neighbourhoodsortedbypostid = uasort($neighbourhood, 'cmppostid');
+        $normalizedneighbourhood = array_map(function ($similarity) use ($postid) {
+            $sim = new \stdClass();
+            $sim->postid =
+                ((int) $postid) == ((int) $similarity->postaid) ? (int) $similarity->postbid : (int) $similarity->postaid;
+            $sim->value = $similarity->value;
+            return $sim;
+        }, $neighbourhood);
+        $neighbourhoodsortedbypostid = uasort($normalizedneighbourhood, 'cmppostid');
         foreach ($neighbourhoodsortedbypostid as $similarity) {
             $divisor += (float) $similarity->value;
             $dividend += ((float) $similarity->value) *
@@ -151,13 +167,13 @@ class post_recommendation_calculator {
         return $recommendation;
     }
 
-    private static function get_select_and_conditions_for_posts_to_calc_rec_for($idsofpostswithprefs, $pageid) {
+    private static function get_select_and_params_for_posts_to_calc_rec_for($idsofpostswithprefs, $pageid) {
         global $DB;
 
         list($insql, $inparams) = $DB->get_in_or_equal($idsofpostswithprefs);
-        $select = "postid NOT $insql AND pageid = :pageid AND ispublic = :ispublic";
-        $conditions = array_merge($inparams, ['pageid' => $pageid, 'ispublic' => true]);
-        return array($select, $conditions);
+        $select = "NOT (id $insql) AND pageid = ? AND ispublic = ?";
+        $params = array_merge($inparams, [$pageid, 1]);
+        return array($select, $params);
     }
 
 }

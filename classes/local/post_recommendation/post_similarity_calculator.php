@@ -36,21 +36,27 @@ class post_similarity_calculator {
     const MIN_OVERLAP = 3;
     const MIN_SIM = 0.3;
 
-    public static function calculate_and_save_post_similarities($pageid, $batchsize = 100) {
+    public static function delete_similarities($pageid) {
         global $DB;
 
+        $transaction = $DB->start_delegated_transaction();
         $DB->delete_records('page_post_similarities', ['pageid' => $pageid]);
+        $transaction->allow_commit();
+    }
+
+    public static function calculate_and_save_post_similarities($pageid, $batchsize = 100) {
+        global $DB;
 
         $sql = 'SELECT pa.postid AS postaid, pb.postid AS postbid
                 FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
                 ON pa.userid = pb.userid AND pa.postid != pb.postid
-                WHERE pa.pageid = :pageid AND pb.pageid = :pageid
+                WHERE pa.pageid = ? AND pb.pageid = ?
                 GROUP BY pa.postid, pb.postid
-                HAVING COUNT(*) >= :minoverlap';
+                HAVING COUNT(*) >= ?';
         $limitfrom = 0;
         while (true) {
             $overlappingpostpairs =
-                $DB->get_records_sql($sql, ['pageid' => $pageid, 'minoverlap' => self::MIN_OVERLAP], $limitfrom, $batchsize);
+                $DB->get_records_sql($sql, [$pageid, $pageid, self::MIN_OVERLAP], $limitfrom, $batchsize);
             if (count($overlappingpostpairs)) {
                 break;
             }
@@ -90,8 +96,9 @@ class post_similarity_calculator {
 
             $postsim = self::get_post_similarity($postpair, $similarity);
 
-            $DB->delete_records('page_post_similarities', ['postaid' => $postsim->postaid, 'postbid' => $postsim->postbid]);
+            $transaction = $DB->start_delegated_transaction();
             $DB->insert_record('page_post_similarities', $postsim, false, true);
+            $transaction->allow_commit();
         }
     }
 
