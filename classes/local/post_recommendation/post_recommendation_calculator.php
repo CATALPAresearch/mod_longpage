@@ -28,6 +28,15 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/page/locallib.php");
 
+function cmppostid($a, $b) {
+    $apostid = (int) $a->postid;
+    $bpostid = (int) $b->postid;
+    if ($apostid == $bpostid) {
+        return 0;
+    }
+    return ($apostid < $bpostid) ? -1 : 1;
+}
+
 /**
  * Post Recommendation Calculator
  *
@@ -69,16 +78,15 @@ class post_recommendation_calculator {
             return;
         }
 
-        $prefprofile = $DB->get_record('page_post_pref_profiles', ['pageid' => $pageid, 'userid' => $userid]);
+        $prefprofile = $DB->get_record('page_post_pref_profiles', ['pageid' => $pageid, 'userid' => $userid], 'avg');
 
         $limitfrom = 0;
         $idsofpostswithprefs = array_map(function($pref) {
-            (int) $pref->postid;
+            return (int) $pref->postid;
         }, $preferences);
         list($select, $conditions) = self::get_select_and_conditions_for_posts_to_calc_rec_for($idsofpostswithprefs, $DB, $pageid);
-        $fields = 'id';
         while (true) {
-            $posts = $DB->get_records_select($select, $conditions, 'timecreated ASC', $fields, $limitfrom, $batchsize);
+            $posts = $DB->get_records_select($select, $conditions, 'timecreated ASC', 'id', $limitfrom, $batchsize);
             $postids = array_map(function ($post) { return (int) $post->id; }, $posts);
             foreach ($postids as $postid) {
                 self::calculate_and_save_recommendation_for_user_for_post(
@@ -101,12 +109,14 @@ class post_recommendation_calculator {
         $recommendation = self::get_recommendation_base($pageid, $postid, $userid);
 
         list($inpostidssql, $inpostidsparams) = $DB->get_in_or_equal($idsofpostswithprefs);
-        $select = "postaid $inpostidssql AND postbid = :postid OR postaid = :postid AND postbid $inpostidssql";
+        $select = "(postaid $inpostidssql AND postbid = :postid) OR (postaid = :postid AND postbid $inpostidssql)";
         $relevantneighbourhood = $DB->get_records_select(
             'page_post_similarities', $select, array_merge($inpostidsparams, ['postid' => $postid]),
         );
         $recommendation->value = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD ? $avgpref :
             self::calculate_recommenation_from_preferences_and_neighbourhood($preferences, $relevantneighbourhood);
+
+        $DB->delete_record('page_post_recommendations', ['pageid' => $pageid, 'postid' => $postid, 'userid' => $userid]);
         $DB->insert_record('page_post_recommendations', $recommendation, false, true);
     }
 
@@ -138,7 +148,6 @@ class post_recommendation_calculator {
         $recommendation->pageid = $pageid;
         $recommendation->postid = $postid;
         $recommendation->userid = $userid;
-        $recommendation->timecreated = time();
         return $recommendation;
     }
 

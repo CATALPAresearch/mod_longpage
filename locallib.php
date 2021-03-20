@@ -28,15 +28,6 @@ require_once("$CFG->libdir/filelib.php");
 require_once("$CFG->libdir/resourcelib.php");
 require_once("$CFG->dirroot/mod/page/lib.php");
 
-function cmppostid($a, $b) {
-    $apostid = (int) $a->postid;
-    $bpostid = (int) $b->postid;
-    if ($apostid == $bpostid) {
-        return 0;
-    }
-    return ($apostid < $bpostid) ? -1 : 1;
-}
-
 function get_coursemodule_by_pageid($pageid) {
     global $DB;
 
