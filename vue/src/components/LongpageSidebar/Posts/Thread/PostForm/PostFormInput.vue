@@ -7,7 +7,8 @@
     rows="3"
     @click.stop=""
     @input="$emit('update:modelValue', $event.target.value)"
-    v-on="$attrs"
+    @keydown.enter.meta.exact.prevent="$emit('submit')"
+    @keydown.esc.exact.prevent="$emit('submit')"
   />
 </template>
 
@@ -16,11 +17,10 @@ import autosize from 'autosize';
 
 export default {
   name: 'PostFormInput',
-  inheritAttrs: false,
   props: {
     modelValue: {type: String, required: true},
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'submit'],
   mounted() {
     this.$nextTick(
         () => {

@@ -5,8 +5,8 @@
   >
     <post-form-input
       v-model="postUpdate.content"
-      @keydown.enter.meta.exact="createOrUpdatePost"
-      @keydown.esc.exact="cancel"
+      @cancel="cancel"
+      @submit="createOrUpdatePost"
     />
     <button
       type="button"
