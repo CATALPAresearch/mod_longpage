@@ -127,7 +127,7 @@ const MappingService = {
     },
     mapResponseToPost(response) {
         return new Post({
-            ...pick(response, ['id', 'anonymous', 'content']),
+            ...pick(response, ['id', 'anonymous', 'content', 'recommendation']),
             creatorId: response.creatorid,
             isPublic: response.ispublic,
             bookmarkedByUser: response.bookmarkedbyuser,

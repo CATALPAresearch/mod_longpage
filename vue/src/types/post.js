@@ -18,6 +18,7 @@ export class Post {
         bookmarkedByUser = false,
         readByUser = true,
         readingsCount = 0,
+        recommendation,
         timeCreated,
         timeModified,
     } = {}) {
@@ -34,6 +35,7 @@ export class Post {
         this.likesCount = likesCount;
         this.bookmarkedByUser = bookmarkedByUser;
         this.readingsCount = readingsCount;
+        this.recommendation = recommendation;
         this.timeCreated = timeCreated;
         this.timeModified = timeModified;
     }

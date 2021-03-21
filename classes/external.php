@@ -46,6 +46,16 @@ require_once("$CFG->dirroot/mod/page/locallib.php");
  * @since      Moodle 3.0
  */
 class mod_page_external extends external_api {
+    private static function add_recommendations_to_post($post) {
+        global $DB, $USER;
+
+        if ($post->readbyuser) return;
+
+        $post->recommendation =
+            $DB->get_field('page_post_recommendations', 'value', ['postid' => $post->id, 'userid' => $USER->id]) ??
+            $DB->get_field('page', 'avgpostpreference', ['pageid' => $post->pageid]);
+    }
+
     private static function annotation_target_parameters_base() {
         return [
             'selectors' => new external_multiple_structure(
@@ -880,6 +890,7 @@ class mod_page_external extends external_api {
             [
                 'id' => new external_value(PARAM_INT),
                 'creatorid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                'recommendation' => new external_value(PARAM_FLOAT, '', VALUE_OPTIONAL),
             ],
             omit_keys(self::post_parameters(), ['creatorid']),
             self::get_reactions_to_post_returns(),
@@ -913,6 +924,7 @@ class mod_page_external extends external_api {
         return array_map(function ($post) {
             self::anonymize_post($post);
             self::add_reactions_to_post($post);
+            self::add_recommendations_to_post($post);
             return $post;
         }, array_values($posts));
     }

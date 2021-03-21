@@ -60,6 +60,9 @@ class post_recommendation_calculation_task extends \core\task\adhoc_task {
         mtrace('Calculating preference profiles of users on page '.$pageid.'.');
         post_preference_calculator::calculate_and_save_preference_profiles($pageid);
 
+        mtrace('Calculating average preference of users on page '.$pageid.'.');
+        post_preference_calculator::calculate_and_save_avg_preference($pageid);
+
         mtrace('Calculating relative preferences for posts on page '.$pageid.'.');
         post_preference_calculator::calculate_and_save_relative_preferences($pageid);
 

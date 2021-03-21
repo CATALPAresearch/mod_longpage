@@ -79,14 +79,25 @@ class post_preference_calculator {
 
             $relpreferences = self::map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences);
 
-            $table = 'page_relative_post_prefs';
             $transaction = $DB->start_delegated_transaction();
-            $DB->insert_records($table, $relpreferences);
+            $DB->insert_records('page_relative_post_prefs', $relpreferences);
             $transaction->allow_commit();
             if (count($abspreferences) < $batchsize) {
                 break;
             }
         }
+    }
+
+    public static function calculate_and_save_avg_preference($pageid) {
+        global $DB;
+
+        $sql = 'SELECT AVG(avg) AS avg
+                FROM {page_post_pref_profiles} 
+                WHERE pageid = ?';
+        $avgpostpreference = $DB->get_field_sql($sql, ['pageid' => $pageid]);
+        $transaction = $DB->start_delegated_transaction();
+        $DB->update_record('page', ['id' => $pageid, 'avgpostpreference' => $avgpostpreference]);
+        $transaction->allow_commit();
     }
 
     public static function calculate_and_save_preference_profiles($pageid, $batchsize = 100) {
