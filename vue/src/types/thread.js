@@ -12,7 +12,7 @@ export class Thread {
         posts = [],
         replyId,
         replyRequested = false,
-        subscribedToByUser = false,
+        subscribedToByUser = true,
     }) {
         this.id = id;
         this.annotationId = annotationId;

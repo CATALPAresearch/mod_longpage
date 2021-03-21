@@ -301,6 +301,7 @@ class mod_page_external extends external_api {
         $postparameters['pageid'] = $pageid;
         $postparameters['threadid'] = $id;
         self::create_post($postparameters);
+        self::create_thread_subscription($id);
     }
 
     public static function create_thread_parameters() {
