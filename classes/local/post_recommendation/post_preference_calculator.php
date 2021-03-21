@@ -37,7 +37,7 @@ require_once("$CFG->dirroot/mod/page/locallib.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class post_preference_calculator {
-    const MIN_PREFERENCES = 3;
+    public const MIN_PREFERENCES_PER_USER = 3;
 
     public static function calculate_and_save_relative_preferences($pageid, $batchsize = 100) {
         global $DB;
@@ -73,7 +73,7 @@ class post_preference_calculator {
             $abspreferences = $DB->get_records(
                 'page_absolute_post_prefs', $conditions, 'id ASC', $fields, $limitfrom, $batchsize,
             );
-            if (count($abspreferences) < self::MIN_PREFERENCES) {
+            if (count($abspreferences) < self::MIN_PREFERENCES_PER_USER) {
                 break;
             }
 
@@ -115,7 +115,7 @@ class post_preference_calculator {
                 WHERE userid = ? AND pageid = ?';
         foreach ($userids as $userid) {
             $profile = $DB->get_record_sql($sql, [$userid, $pageid]);
-            if (((int) $profile->count) < self::MIN_PREFERENCES) {
+            if (((int) $profile->count) < self::MIN_PREFERENCES_PER_USER) {
                 continue;
             }
 
@@ -249,14 +249,16 @@ class post_preference_calculator {
         $preference = new \stdClass();
         $preference->pageid = $pageid;
         $preference->postid = min(
-            array_map(function($next) {
+            array_map(function ($next) {
                 return (int) $next->postid;
             }, array_filter([$nextreading, $nextlike, $nextbookmark]))
         );
         $preference->userid = min(
-            array_map(function($next) {
+            array_map(function ($next) {
                 return (int) $next->userid;
-            }, array_filter([$nextreading, $nextlike, $nextbookmark]))
+            }, array_filter([$nextreading, $nextlike, $nextbookmark], function ($next) use ($preference) {
+                return isset($next) && $next->postid == $preference->postid;
+            }))
         );
         return $preference;
     }

@@ -44,8 +44,8 @@ function cmppostid($a, $b) {
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class post_recommendation_calculator {
-    const MIN_PREFERENCES = 2;
-    const MIN_NEIGHBOURHOOD = 2;
+    public const MIN_PREFERENCES_PER_USER_IN_NBH = 2;
+    public const MIN_NEIGHBOURHOOD_SIZE = 2;
 
     public static function delete_recommendations($pageid) {
         global $DB;
@@ -82,7 +82,7 @@ class post_recommendation_calculator {
         $preferences = $DB->get_records(
             'page_relative_post_prefs', ['pageid' => $pageid, 'userid' => $userid], 'postid, value'
         );
-        if (count($preferences) < self::MIN_PREFERENCES) {
+        if (count($preferences) < self::MIN_PREFERENCES_PER_USER_IN_NBH) {
             return;
         }
 
@@ -121,7 +121,7 @@ class post_recommendation_calculator {
         $relevantneighbourhood = $DB->get_records_select(
             'page_post_similarities', $select, array_merge($inpostidsparams, [$postid, $postid], $inpostidsparams),
         );
-        $recommendation->value = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD ? $avgpref :
+        $recommendation->value = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD_SIZE ? $avgpref :
             self::calculate_recommenation_from_preferences_and_neighbourhood($postid, $preferences, $relevantneighbourhood);
 
         $transaction = $DB->start_delegated_transaction();

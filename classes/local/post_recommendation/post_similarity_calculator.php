@@ -33,8 +33,8 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class post_similarity_calculator {
-    const MIN_OVERLAP = 3;
-    const MIN_SIM = 0.3;
+    public const MIN_OVERLAP = 3;
+    public const MIN_SIM = 0.3;
 
     public static function delete_similarities($pageid) {
         global $DB;
