@@ -28,15 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/page/locallib.php");
 
-function cmppostid($a, $b) {
-    $apostid = (int) $a->postid;
-    $bpostid = (int) $b->postid;
-    if ($apostid == $bpostid) {
-        return 0;
-    }
-    return ($apostid < $bpostid) ? -1 : 1;
-}
-
 /**
  * Post Recommendation Calculator
  *
@@ -95,8 +86,8 @@ class post_recommendation_calculator {
         list($select, $params) = self::get_select_and_params_for_posts_to_calc_rec_for($idsofpostswithprefs, $pageid);
         while (true) {
             $posts = $DB->get_records_select('page_posts', $select, $params, 'timecreated ASC', 'id', $limitfrom, $batchsize);
-            $postids = array_map(function ($post) { return (int) $post->id; }, $posts);
-            foreach ($postids as $postid) {
+            $idsofpostswithoutprefs = array_map(function ($post) { return (int) $post->id; }, $posts);
+            foreach ($idsofpostswithoutprefs as $postid) {
                 self::calculate_and_save_recommendation_for_user_for_post(
                     $userid, $postid, $preferences, $idsofpostswithprefs, $prefprofile->avg, $pageid
                 );
@@ -121,7 +112,7 @@ class post_recommendation_calculator {
         $relevantneighbourhood = $DB->get_records_select(
             'page_post_similarities', $select, array_merge($inpostidsparams, [$postid, $postid], $inpostidsparams),
         );
-        $recommendation->value = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD_SIZE ? $avgpref :
+        $recommendation->value = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD_SIZE ? (float) $avgpref :
             self::calculate_recommenation_from_preferences_and_neighbourhood($postid, $preferences, $relevantneighbourhood);
 
         $transaction = $DB->start_delegated_transaction();
@@ -130,9 +121,9 @@ class post_recommendation_calculator {
     }
 
     private static function calculate_recommenation_from_preferences_and_neighbourhood($postid, $preferences, $neighbourhood) {
-        $dividend = 0;
-        $divisor = 0;
-        $prefssortedbypostid = uasort($preferences, 'cmppostid');
+        $dividend = 0.0;
+        $divisor = 0.0;
+        uasort($preferences, ['self', 'cmppostid']);
         $normalizedneighbourhood = array_map(function ($similarity) use ($postid) {
             $sim = new \stdClass();
             $sim->postid =
@@ -140,11 +131,11 @@ class post_recommendation_calculator {
             $sim->value = $similarity->value;
             return $sim;
         }, $neighbourhood);
-        $neighbourhoodsortedbypostid = uasort($normalizedneighbourhood, 'cmppostid');
-        foreach ($neighbourhoodsortedbypostid as $similarity) {
+        uasort($normalizedneighbourhood, ['self', 'cmppostid']);
+        foreach ($normalizedneighbourhood as $similarity) {
             $divisor += (float) $similarity->value;
             $dividend += ((float) $similarity->value) *
-                ((float) self::shift_until_match_and_return_match($prefssortedbypostid, $similarity->postid));
+                self::shift_until_match_and_return_match($preferences, $similarity->postid);
         }
         return $dividend / $divisor;
     }
@@ -153,7 +144,7 @@ class post_recommendation_calculator {
         $preference = array_shift($prefssortedbypostid);
         while (isset($preference)) {
             if ($preference->postid == $postid) {
-                return $preference;
+                return (float) $preference->value;
             }
             $preference = array_shift($prefssortedbypostid);
         }
@@ -176,4 +167,12 @@ class post_recommendation_calculator {
         return array($select, $params);
     }
 
+    private static function cmppostid($a, $b) {
+        $apostid = (int) $a->postid;
+        $bpostid = (int) $b->postid;
+        if ($apostid == $bpostid) {
+            return 0;
+        }
+        return ($apostid < $bpostid) ? -1 : 1;
+    }
 }

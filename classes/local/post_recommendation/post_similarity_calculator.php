@@ -47,7 +47,10 @@ class post_similarity_calculator {
     public static function calculate_and_save_post_similarities($pageid, $batchsize = 100) {
         global $DB;
 
-        $sql = 'SELECT pa.postid AS postaid, pb.postid AS postbid
+        $sql = 'SELECT 
+                    ' . $DB->sql_concat('pa.postid', "'_'", 'pb.postid')  . ' AS id,
+                    pa.postid AS postaid, 
+                    pb.postid AS postbid
                 FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
                 ON pa.userid = pb.userid AND pa.postid != pb.postid
                 WHERE pa.pageid = ? AND pb.pageid = ?
@@ -57,11 +60,11 @@ class post_similarity_calculator {
         while (true) {
             $overlappingpostpairs =
                 $DB->get_records_sql($sql, [$pageid, $pageid, self::MIN_OVERLAP], $limitfrom, $batchsize);
-            if (count($overlappingpostpairs)) {
+            if (!count($overlappingpostpairs)) {
                 break;
             }
 
-            self::calculate_and_save_post_similarities_for_overlapping_posts($overlappingpostpairs);
+            self::calculate_and_save_post_similarities_for_overlapping_posts($overlappingpostpairs, $pageid);
             if (count($overlappingpostpairs) < $batchsize) {
                 break;
             }
@@ -70,31 +73,34 @@ class post_similarity_calculator {
         }
     }
 
-    private static function calculate_and_save_post_similarities_for_overlapping_posts($postpairs) {
+    private static function calculate_and_save_post_similarities_for_overlapping_posts($postpairs, $pageid) {
         global $DB;
 
-        $sql = 'SELECT pa.value AS valuea, pb.value AS valueb
+        $sql = 'SELECT 
+                    pa.userid AS id,
+                    pa.value AS valuea, 
+                    pb.value AS valueb
                 FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
                 ON pa.userid = pb.userid
-                WHERE pa.postid = :postaid AND pb.postid = :postbid';
-        $table = 'page_post_similarities';
+                WHERE pa.postid = ? AND pb.postid = ?';
         foreach ($postpairs as $postpair) {
-            $conditions = ['postaid' => $postpair->postaid, 'postbid' => $postpair->postbid];
-            if ($DB->record_exists($table, $conditions)) {
+            if (self::has_similarity_already_been_calculated($postpair)) {
                 continue;
             }
 
-            $preferencepairs = $DB->get_records_sql($sql, $conditions);
-
-            list($preferencesa, $preferencesb) = array_map(function ($preferencepair) {
-                return [(float) $preferencepair->valuea, (float) $preferencepair->valueb];
+            $preferencepairs = $DB->get_records_sql($sql, [$postpair->postaid, $postpair->postbid]);
+            $preferencesa = array_map(function ($preferencepair) {
+                return (float) $preferencepair->valuea;
+            }, $preferencepairs);
+            $preferencesb = array_map(function ($preferencepair) {
+                return (float) $preferencepair->valueb;
             }, $preferencepairs);
             $similarity = similarity_calculator::cosine($preferencesa, $preferencesb);
             if ($similarity < self::MIN_SIM) {
                 continue;
             }
 
-            $postsim = self::get_post_similarity($postpair, $similarity);
+            $postsim = self::get_post_similarity($postpair, $similarity, $pageid);
 
             $transaction = $DB->start_delegated_transaction();
             $DB->insert_record('page_post_similarities', $postsim, false, true);
@@ -102,11 +108,20 @@ class post_similarity_calculator {
         }
     }
 
-    private static function get_post_similarity($postpair, $similarity) {
+    private static function get_post_similarity($postpair, $similarity, $pageid) {
         $postsim = new \stdClass();
+        $postsim->pageid = $pageid;
         $postsim->postaid = $postpair->postaid;
         $postsim->postbid = $postpair->postbid;
         $postsim->value = $similarity;
         return $postsim;
+    }
+
+    private static function has_similarity_already_been_calculated($postpair) {
+        global $DB;
+
+        $conditions = [$postpair->postaid, $postpair->postbid, $postpair->postbid, $postpair->postaid];
+        $select = '(postaid = ? AND postbid = ?) OR (postaid = ? AND postbid = ?)';
+        return $DB->record_exists_select('page_post_similarities', $select, $conditions);
     }
 }

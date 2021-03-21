@@ -128,6 +128,18 @@ class post_preference_calculator {
         $transaction->allow_commit();
     }
 
+    private static function did_user_participate_in_thread($threadid, $userid) {
+        global $DB;
+
+        $postsinthread = $DB->get_records('page_posts', ['threadid' => $threadid]);
+        foreach ($postsinthread as $post) {
+            if ($post->creatorid == $userid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static function get_preference_profile($userid, $pageid, $avg, $count) {
         $profile = new \stdClass();
         $profile->userid = $userid;
@@ -174,7 +186,9 @@ class post_preference_calculator {
                 break;
             }
 
-            self::calculate_and_save_absolute_preferences_for_posts($posts, $pageid);
+            foreach ($posts as $post) {
+                self::calculate_and_save_absolute_preferences_for_post($post, $pageid);
+            }
             if (count($posts) < $batchsize) {
                 break;
             }
@@ -183,13 +197,7 @@ class post_preference_calculator {
         }
     }
 
-    /**
-     * IMPORTANT: Posts must belong to the same page.
-     *
-     * @param $posts
-     * @param int $batchsize
-     */
-    public static function calculate_and_save_absolute_preferences_for_posts($posts, $pageid, $batchsize = 100) {
+    public static function calculate_and_save_absolute_preferences_for_post($post, $pageid, $batchsize = 100) {
         $limitfrom = 0;
         while (true) {
             $userids = \get_page_users_ids($pageid, $limitfrom, $batchsize);
@@ -197,7 +205,9 @@ class post_preference_calculator {
                 break;
             }
 
-            self::calculate_and_save_absolute_preferences_for_posts_and_users($posts, $userids, $pageid);
+            foreach ($userids as $userid) {
+                self::calculate_and_save_absolute_preferences_for_post_and_user($post, $userid, $pageid);
+            }
             if (count($userids) < $batchsize) {
                 break;
             }
@@ -206,82 +216,41 @@ class post_preference_calculator {
         }
     }
 
-    private static function calculate_and_save_absolute_preferences_for_posts_and_users($posts, $userids, $pageid) {
+    private static function calculate_and_save_absolute_preferences_for_post_and_user($post, $userid, $pageid) {
         global $DB;
 
-        list($readings, $likes, $bookmarks) = self::get_user_reactions($posts, $DB, $userids);
-
-        $preferences = [];
-        $nextreading = array_shift($readings);
-        $nextlike = array_shift($likes);
-        $nextbookmark = array_shift($bookmarks);
-        while ($nextreading || $nextlike || $nextbookmark) {
-            $preference = self::get_absolute_preference_base($pageid, $nextreading, $nextlike, $nextbookmark);
-            if (isset($nextreading) && $nextreading->postid == $preference->postid && $nextreading->userid == $preference->userid) {
-                $preference->value = 0;
-                $nextreading = array_shift($readings);
-            }
-            if (isset($nextlike) && $nextlike->postid == $preference->postid && $nextlike->userid == $preference->userid) {
-                $preference->value = 1;
-                $nextlike = array_shift($likes);
-            }
-            if (isset($nextbookmark) && $nextbookmark->postid == $preference->postid && $nextbookmark->userid == $preference->userid) {
-                $preference->value = 1;
-                $nextbookmark = array_shift($bookmarks);
-            }
-            array_push($preferences, $preference);
+        $conditions = ['postid' => $post->id, 'userid' => $userid];
+        $userreadpost = $DB->record_exists('page_post_readings', $conditions);
+        if (!$userreadpost) {
+            return;
         }
 
-        $table = 'page_absolute_post_prefs';
+        $preference = self::get_absolute_preference($post, $userid, $pageid);
+
         $transaction = $DB->start_delegated_transaction();
-        $DB->insert_records($table, $preferences);
+        $DB->insert_record('page_absolute_post_prefs', (array) $preference, false, true);
         $transaction->allow_commit();
     }
 
-    /**
-     * @param $pageid
-     * @param $nextreading
-     * @param $nextlike
-     * @param $nextbookmark
-     * @return \stdClass
-     */
-    private static function get_absolute_preference_base($pageid, $nextreading, $nextlike, $nextbookmark): \stdClass {
+    private static function get_absolute_preference($post, $userid, $pageid) {
         $preference = new \stdClass();
         $preference->pageid = $pageid;
-        $preference->postid = min(
-            array_map(function ($next) {
-                return (int) $next->postid;
-            }, array_filter([$nextreading, $nextlike, $nextbookmark]))
-        );
-        $preference->userid = min(
-            array_map(function ($next) {
-                return (int) $next->userid;
-            }, array_filter([$nextreading, $nextlike, $nextbookmark], function ($next) use ($preference) {
-                return isset($next) && $next->postid == $preference->postid;
-            }))
-        );
+        $preference->postid = $post->id;
+        $preference->userid = $userid;
+        $preference->value = self::get_post_preference_of_user($post, $userid);
         return $preference;
     }
 
-    /**
-     * @param $posts
-     * @param $DB
-     * @param $userids
-     * @return array
-     */
-    private static function get_user_reactions($posts, $DB, $userids): array {
-        $postids = array_map(function($post) {
-            return (int) $post->id;
-        }, $posts);
-        list($inpostidssql, $inpostidsparams) = $DB->get_in_or_equal($postids);
-        list($inuseridssql, $inuseridsparams) = $DB->get_in_or_equal($userids);
-        $select = "postid $inpostidssql AND userid $inuseridssql";
-        $params = array_merge($inpostidsparams, $inuseridsparams);
-        $sort = 'postid ASC, userid ASC';
-        $readings = $DB->get_records_select('page_post_readings', $select, $params, $sort);
-        $likes = $DB->get_records_select('page_post_likes', $select, $params, $sort);
-        $bookmarks = $DB->get_records_select('page_post_bookmarks', $select, $params, $sort);
-        return array($readings, $likes, $bookmarks);
+    private static function get_post_preference_of_user($post, $userid) {
+        global $DB;
+
+        $conditions = ['postid' => $post->id, 'userid' => $userid];
+        $userlikespost = $DB->record_exists('page_post_likes', $conditions);
+        $userbookmarkedpost = $DB->record_exists('page_post_bookmarks', $conditions);
+        $userparticipatedinthread = self::did_user_participate_in_thread($post->threadid, $userid);
+        $usersubscribedtothread =
+            $DB->record_exists('page_thread_subscriptions', ['threadid' => $post->threadid, 'userid' => $userid]);
+        return $userlikespost || $userbookmarkedpost || $userparticipatedinthread || $usersubscribedtothread ? 1 : 0;
     }
 
     private static function map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences) {
