@@ -29,7 +29,7 @@
           <expandable-highlight-excerpt
             :annotation-target="highlight.target"
             class="mx-2 cursor-pointer"
-            @highlight-clicked="scrollInHighlight(highlight.id)"
+            @highlight-clicked="scrollTextElementIntoView(highlight.id)"
           />
           <div
             class="text-muted text-small mt-1 mx-2 row justify-content-between"
@@ -78,15 +78,15 @@
 </template>
 
 <script>
-import ExpandableHighlightExcerpt from '@/components/Generic/ExpandableHighlightExcerpt';
 import {ACT} from '@/store/types';
-import {mapActions} from 'vuex';
+import {AnnotationType} from '@/config/constants';
 import DateTimes from '@/components/LongpageSidebar/DateTimes';
-import SidebarTab from '@/components/LongpageSidebar/SidebarTab';
-import {AnnotationType, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
+import ExpandableHighlightExcerpt from '@/components/Generic/ExpandableHighlightExcerpt';
 import {EventBus} from '@/lib/event-bus';
-import scrollIntoView from 'scroll-into-view-if-needed';
 import {getHighlightByAnnotationId} from '@/util/annotation';
+import {mapActions} from 'vuex';
+import SidebarTab from '@/components/LongpageSidebar/SidebarTab';
+import {scrollTextElementIntoView} from '@/util/misc';
 
 export default {
   name: 'HighlightsTab',
@@ -119,8 +119,8 @@ export default {
     resetSelection() {
       this.selectedHighlights = [];
     },
-    scrollInHighlight(id) {
-      scrollIntoView(getHighlightByAnnotationId(id), SCROLL_INTO_VIEW_OPTIONS);
+    scrollTextElementIntoView(id) {
+      scrollTextElementIntoView(getHighlightByAnnotationId(id));
     },
   },
   mounted() {

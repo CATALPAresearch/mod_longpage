@@ -1,6 +1,7 @@
 import {camelCase, flow, upperFirst} from 'lodash';
-
+import {LONGPAGE_MAIN_ID, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
 import deepRenameKeys from 'deep-rename-keys';
+import scrollIntoView from 'scroll-into-view-if-needed';
 
 export const deepLowerCaseKeys = object => deepRenameKeys(object, key => key.toLowerCase());
 
@@ -19,4 +20,8 @@ export const createElement = (tag, attributes, style = {}) => {
         element.style[attrKey] = attrValue;
     });
     return element;
+};
+
+export const scrollTextElementIntoView = el => {
+    scrollIntoView(el, {...SCROLL_INTO_VIEW_OPTIONS, boundary: document.getElementById(LONGPAGE_MAIN_ID)});
 };

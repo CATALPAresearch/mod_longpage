@@ -64,7 +64,7 @@
         <div class="col col-auto p-0 border-left border-secondary pl-2 cursor-pointer">
           <expandable-highlight-excerpt
             :annotation-target="annotation.target"
-            @highlight-clicked="scrollInText"
+            @highlight-clicked="scrollTextElementIntoView"
           />
         </div>
       </div>
@@ -95,13 +95,9 @@
 
 <script>
 import {GET} from '@/store/types';
-import {
-  SCROLL_INTO_VIEW_OPTIONS,
-} from '@/config/constants';
 import {mapGetters} from 'vuex';
 import {getHighlightByAnnotationId} from '@/util/annotation';
 import UserAvatar from '@/components/Generic/UserAvatar';
-import scrollIntoView from 'scroll-into-view-if-needed';
 import ExpandableHighlightExcerpt from '@/components/Generic/ExpandableHighlightExcerpt';
 import PostForm from '@/components/LongpageSidebar/Posts/Thread/PostForm';
 import PostActions from '@/components/LongpageSidebar/Posts/Thread/Post/PostActions';
@@ -110,6 +106,7 @@ import {Thread} from '@/types/thread';
 import PostVisibilityIndicator from '@/components/LongpageSidebar/Posts/Thread/Post/PostVisibilityIndicator';
 import PostDateTimes from '@/components/LongpageSidebar/DateTimes';
 import PostContent from '@/components/LongpageSidebar/Posts/Thread/Post/PostContent';
+import {scrollTextElementIntoView} from '@/util/misc';
 
 export default {
   name: 'Post',
@@ -154,8 +151,8 @@ export default {
     if (!this.post.created) this.showForm = true;
   },
   methods: {
-    scrollInText() {
-      scrollIntoView(getHighlightByAnnotationId(this.annotation.id), SCROLL_INTO_VIEW_OPTIONS);
+    scrollTextElementIntoView() {
+      scrollTextElementIntoView(getHighlightByAnnotationId(this.annotation.id));
     },
   }
 };

@@ -22,7 +22,7 @@
             :href="`#${entry.hId}`"
             data-toggle="pill"
             :style="`margin-left: ${entry.hLvl*2}rem`"
-            @click="scrollIntoView(entry.hEl)"
+            @click="scrollTextElementIntoView(entry.hEl)"
           >{{ entry.text }}</a>
         </nav>
       </div>
@@ -31,10 +31,10 @@
 </template>
 
 <script>
-import {LONGPAGE_CONTENT_ID, LONGPAGE_MAIN_ID, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
-import scrollIntoView from 'scroll-into-view-if-needed';
-import {toIdSelector} from '@/util/style';
+import {LONGPAGE_CONTENT_ID, LONGPAGE_MAIN_ID} from '@/config/constants';
 import {findLast} from 'lodash';
+import {toIdSelector} from '@/util/style';
+import {scrollTextElementIntoView} from '@/util/misc';
 
 export default {
     name: 'TableOfContents',
@@ -90,9 +90,7 @@ export default {
               $(el).attr('class', this.hClass);
             });
         },
-        scrollIntoView(el) {
-          scrollIntoView(el, {...SCROLL_INTO_VIEW_OPTIONS, boundary: document.getElementById(LONGPAGE_MAIN_ID)});
-        },
+        scrollTextElementIntoView,
     },
 };
 </script>
