@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="thread.lastReply.created"
     class="row no-gutters align-items-center reply-form"
   >
     <div

@@ -2,17 +2,20 @@ import {ACT, GET, MUTATE} from '../types';
 import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
 import {flatten} from 'lodash';
+import MappingService from '@/services/mapping-service';
+import {MoodleWSMethods} from '@/config/constants';
 import {Post} from '@/types/post';
 import {Thread} from '@/types/thread';
-import {MoodleWSMethods} from '@/config/constants';
-import MappingService from '@/services/mapping-service';
 import {ThreadFilter} from '@/util/filters/thread-filter';
 
 export default {
     state: {
+        filteredThreads: null,
+        threadFilter: ThreadFilter.DEFAULT,
         threads: [],
     },
     getters: {
+        [GET.FILTERED_THREADS]: ({filteredThreads}) => filteredThreads,
         [GET.NEW_POST]: (_, getters) => (params = {}) => {
             return new Post({
                 creatorId: getters[GET.LONGPAGE_CONTEXT].userId,
@@ -32,17 +35,60 @@ export default {
             return flatten(threads.map(({posts}) => posts));
         },
         [GET.THREAD]: ({threads}) => id => threads.find(t => t.id === id),
-        [GET.THREAD_FILTER]: (_, getters) => getters[GET.ANNOTATION_FILTER].body,
-        [GET.THREADS_FILTERED]: ({threads}, getters) => threads.length !== getters[GET.THREADS].length,
-        [GET.THREADS]: ({threads}, getters) => {
-            return new ThreadFilter(getters[GET.THREAD_FILTER])
-                .applyTo(...threads)
-                .sort(
-                (threadA, threadB) => {
-                    const [annotationA, annotationB] = [threadA, threadB].map(t => getters[GET.ANNOTATION](t.annotationId));
-                    return AnnotationCompareFunction.BY_POSITION(annotationA, annotationB);
-                });
+        [GET.THREAD_FILTER]: ({threadFilter}) => threadFilter,
+        [GET.THREADS]: ({threads}) => threads,
+        [GET.THREADS_FILTERED]: (_, getters) => Boolean(getters[GET.FILTERED_THREADS]),
+    },
+    mutations: {
+        [MUTATE.ADD_POSTS_TO_THREAD](state, {threadId, posts}) {
+            const thread = state.threads.find(thread => thread.id === threadId);
+            thread.posts = [...thread.posts, ...posts];
+            if (!state.filteredThreads) return;
+
+            const threadDuplicate = state.filteredThreads.find(thread => thread.id === threadId);
+            threadDuplicate.posts = [...threadDuplicate.posts, ...posts];
         },
+        [MUTATE.ADD_THREADS](state, threads) {
+            state.threads.push(...threads);
+        },
+        [MUTATE.REMOVE_POSTS_FROM_THREAD](state, {threadId, posts}) {
+            const thread = state.threads.find(thread => thread.id === threadId);
+            thread.posts = thread.posts.filter(p => !posts.find(post => post.id === p.id));
+            if (!state.filteredThreads) return;
+
+            const threadDuplicate = state.filteredThreads.find(thread => thread.id === threadId);
+            threadDuplicate.posts = threadDuplicate.posts.filter(p => !posts.find(post => post.id === p.id));
+        },
+        [MUTATE.REMOVE_THREADS](state, threadsToRemove) {
+            state.threads = state.threads.filter(t => !threadsToRemove.find(ttr => ttr.id === t.id));
+            if (!state.filteredThreads) return;
+
+            state.filteredThreads = state.filteredThreads.filter(t => !threadsToRemove.find(ttr => ttr.id === t.id));
+        },
+        [MUTATE.REPLACE_POST](state, post) {
+            const thread = state.threads.find(thread => thread.id === post.threadId);
+            const posts = [...thread.posts];
+            posts.splice(posts.findIndex(p => p.id === post.id), 1, post);
+            thread.posts = posts;
+        },
+        [MUTATE.SET_FILTERED_THREADS](state, filteredThreads) {
+            state.filteredThreads = filteredThreads;
+        },
+        [MUTATE.SET_THREAD_FILTER](state, filter) {
+            state.threadFilter = filter;
+        },
+        [MUTATE.SET_THREADS](state, threads) {
+            state.threads = threads;
+        },
+        [MUTATE.UPDATE_POST](state, {threadId, postId, postUpdate}) {
+            const thread = state.threads.find(thread => thread.id === threadId);
+            const post = thread.posts.find(post => post.id === postId);
+            Object.assign(post, postUpdate);
+        },
+        [MUTATE.UPDATE_THREAD](state, {id, threadUpdate}) {
+            const thread = state.threads.find(thread => thread.id === id);
+            Object.assign(thread, threadUpdate);
+        }
     },
     actions: {
         [ACT.CREATE_POST]({commit, dispatch, getters}, params = {}) {
@@ -90,15 +136,38 @@ export default {
                 }
             }]);
         },
+        [ACT.FILTER_THREADS]({commit, getters}, filter = null) {
+            commit(MUTATE.SET_THREAD_FILTER, filter || ThreadFilter.DEFAULT);
+            const filteredThreads = filter && new ThreadFilter(filter)
+                .applyTo(...getters[GET.THREADS])
+                .sort(
+                    (threadA, threadB) => {
+                        const [annotationA, annotationB] = [threadA, threadB].map(t => getters[GET.ANNOTATION](t.annotationId));
+                        return AnnotationCompareFunction.BY_POSITION(annotationA, annotationB);
+                    });
+            commit(MUTATE.SET_FILTERED_THREADS, filteredThreads);
+        },
         [ACT.REPLACE_OR_ADD_POST]({commit, getters}, post) {
             if (getters[GET.POST](post.id, post.threadId)) {
                 commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, postUpdate: post});
-            } else commit(MUTATE.ADD_POSTS_TO_THREAD, {threadId: post.threadId, posts: [post]});
+            } else {
+                commit(MUTATE.ADD_POSTS_TO_THREAD, {threadId: post.threadId, posts: [post]});
+            }
         },
         [ACT.REPLACE_OR_ADD_THREAD]({commit, getters}, thread) {
             if (getters[GET.THREAD](thread.id)) {
                 commit(MUTATE.UPDATE_THREAD, {id: thread.id, threadUpdate: thread});
-            } else commit(MUTATE.ADD_THREADS, [thread]);
+            } else {
+                commit(MUTATE.ADD_THREADS, [thread]);
+                if (getters[GET.THREADS_FILTERED]) {
+                    commit(
+                        MUTATE.SET_FILTERED_THREADS,
+                        [thread, ...getters[GET.FILTERED_THREADS]].sort((threadA, threadB) => {
+                            const [annotationA, annotationB] = [threadA, threadB].map(t => getters[GET.ANNOTATION](t.annotationId));
+                            return AnnotationCompareFunction.BY_POSITION(annotationA, annotationB);
+                        }));
+}
+            }
         },
         [ACT.TOGGLE_POST_BOOKMARK]({commit, getters}, {postId, threadId}) {
             const post = getters[GET.POST](postId, threadId);
@@ -193,39 +262,5 @@ export default {
                 }
             }]);
         },
-    },
-    mutations: {
-        [MUTATE.ADD_POSTS_TO_THREAD](state, {threadId, posts}) {
-          const thread = state.threads.find(thread => thread.id === threadId);
-          thread.posts = [...thread.posts, ...posts];
-        },
-        [MUTATE.ADD_THREADS](state, threads) {
-            state.threads.push(...threads);
-        },
-        [MUTATE.REMOVE_POSTS_FROM_THREAD](state, {threadId, posts}) {
-            const thread = state.threads.find(thread => thread.id === threadId);
-            thread.posts = thread.posts.filter(p => !posts.find(post => post.id === p.id));
-        },
-        [MUTATE.REMOVE_THREADS](state, threadsToRemove) {
-            state.threads = state.threads.filter(t => !threadsToRemove.find(ttr => ttr.id === t.id));
-        },
-        [MUTATE.REPLACE_POST](state, post) {
-            const thread = state.threads.find(thread => thread.id === post.threadId);
-            const posts = [...thread.posts];
-            posts.splice(posts.findIndex(p => p.id === post.id), 1, post);
-            thread.posts = posts;
-        },
-        [MUTATE.SET_THREADS](state, threads) {
-            state.threads = threads;
-        },
-        [MUTATE.UPDATE_POST](state, {threadId, postId, postUpdate}) {
-            const thread = state.threads.find(thread => thread.id === threadId);
-            const post = thread.posts.find(post => post.id === postId);
-            Object.assign(post, postUpdate);
-        },
-        [MUTATE.UPDATE_THREAD](state, {id, threadUpdate}) {
-            const thread = state.threads.find(thread => thread.id === id);
-            Object.assign(thread, threadUpdate);
-        }
     },
 };

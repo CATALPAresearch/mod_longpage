@@ -94,13 +94,13 @@
 </template>
 
 <script>
-  import {GET, MUTATE} from '@/store/types';
-  import {getDateFormat} from '@/config/i18n/date-time-utils';
+  import {ACT, GET} from '@/store/types';
   import {debounce, isEmpty, set} from 'lodash';
-  import MultiSelectInput from '@/components/Generic/MultiSelectInput/index';
-  import {mapGetters, mapMutations} from 'vuex';
-  import Slider from '@/components/Generic/Slider';
+  import {mapActions, mapGetters} from 'vuex';
+  import {getDateFormat} from '@/config/i18n/date-time-utils';
   import MultiSelectCheckboxGroup from '@/components/Generic/MultiSelectCheckboxGroup';
+  import MultiSelectInput from '@/components/Generic/MultiSelectInput/index';
+  import Slider from '@/components/Generic/Slider';
 
   const Timestamp = Object.freeze({
     CREATED: 'timeCreated',
@@ -155,7 +155,7 @@
           return this[GET.ANNOTATION_FILTER];
         },
         set(filter) {
-          this[MUTATE.SET_ANNOTATION_FILTER](filter);
+          this[ACT.FILTER_ANNOTATIONS](filter);
         }
       },
       creatorOptions() {
@@ -220,7 +220,7 @@
       },
     },
     methods: {
-      ...mapMutations([MUTATE.SET_ANNOTATION_FILTER]),
+      ...mapActions([ACT.FILTER_ANNOTATIONS]),
       mapPostsToTimestamps(posts, timestamp = Timestamp.CREATED) {
         return posts.filter(p => p.created).map(p => p[timestamp].getTime()) || [];
       },

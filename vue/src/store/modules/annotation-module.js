@@ -10,6 +10,7 @@ export default {
     state: {
         annotations: [],
         annotationFilter: AnnotationFilter.DEFAULT,
+        filteredAnnotations: null,
     },
     getters: {
         [GET.ANNOTATION]: (_, getters) => id => getters[GET.ANNOTATIONS].find(a => a.id === id),
@@ -18,21 +19,14 @@ export default {
             ...annotation,
             pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
         }),
-        [GET.ANNOTATIONS]: ({annotations}, getters) => {
-            return new AnnotationFilter(getters[GET.ANNOTATION_FILTER])
-                .applyTo(...annotations)
-                .sort(AnnotationCompareFunction.BY_POSITION);
-        },
+        [GET.ANNOTATIONS]: ({annotations}) => annotations,
         [GET.BOOKMARKS]: (_, getters) => {
             return getters[GET.ANNOTATIONS].filter(a => a.type === AnnotationType.BOOKMARK);
         },
+        [GET.FILTERED_ANNOTATIONS]: ({filteredAnnotations}) => filteredAnnotations,
         [GET.HIGHLIGHTS]: (_, getters) => {
             return getters[GET.ANNOTATIONS]
-                .filter(a => a.type === AnnotationType.HIGHLIGHT)
-                .filter(
-                    annotation => !getters[GET.ANNOTATION_FILTER].ids ||
-                        getters[GET.ANNOTATION_FILTER].ids.includes(annotation.id)
-                );
+                .filter(a => a.type === AnnotationType.HIGHLIGHT);
         },
         [GET.NEW_ANNOTATION]: (_, getters) => (params = {}) => {
             const annotation = new Annotation({
@@ -59,17 +53,27 @@ export default {
         [MUTATE.SET_ANNOTATIONS](state, annotations) {
             state.annotations = annotations;
         },
+        [MUTATE.SET_FILTERED_ANNOTATIONS](state, annotations) {
+            state.filteredAnnotations = annotations;
+        },
         [MUTATE.UPDATE_ANNOTATION](state, {id, annotationUpdate}) {
             const annotation = state.annotations.find(annotation => annotation.id === id);
             Object.assign(annotation, annotationUpdate);
-            state.annotations = [...state.annotations];
         }
     },
     actions: {
         [ACT.REPLACE_OR_ADD_ANNOTATION]({commit, getters}, annotation) {
             if (getters[GET.ANNOTATION](annotation.id)) {
                 commit(MUTATE.UPDATE_ANNOTATION, {id: annotation.id, annotationUpdate: annotation});
-            } else commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
+            } else {
+                commit(MUTATE.ADD_ANNOTATIONS, [annotation]);
+                if (getters[GET.FILTERED_ANNOTATIONS]) {
+                    commit(
+                        MUTATE.SET_FILTERED_ANNOTATIONS,
+                        [annotation, ...getters[GET.FILTERED_ANNOTATIONS]].sort(AnnotationCompareFunction.BY_POSITION)
+                    );
+                }
+            }
         },
         [ACT.CREATE_ANNOTATION]({commit, dispatch, getters}, params = {}) {
             const annotation = getters[GET.ANNOTATION](params.id) || getters[GET.NEW_ANNOTATION](params);
@@ -133,8 +137,13 @@ export default {
                 }
             }]);
         },
-        [ACT.FILTER_ANNOTATIONS]({commit}, filter) {
-           commit(MUTATE.SET_ANNOTATION_FILTER, filter);
+        [ACT.FILTER_ANNOTATIONS]({commit, dispatch, getters}, filter = null) {
+           commit(MUTATE.SET_ANNOTATION_FILTER, filter || AnnotationFilter.DEFAULT);
+           const filteredAnnotations = filter && new AnnotationFilter(filter)
+               .applyTo(...getters[GET.ANNOTATIONS])
+               .sort(AnnotationCompareFunction.BY_POSITION);
+           commit(MUTATE.SET_FILTERED_ANNOTATIONS, filteredAnnotations);
+           dispatch(ACT.FILTER_THREADS, filter && filter.body);
         },
     },
 };

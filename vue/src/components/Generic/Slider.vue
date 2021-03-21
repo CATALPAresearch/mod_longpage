@@ -39,12 +39,18 @@
       };
     },
     watch: {
-      async sliderOptions(options) {
+      sliderOptions: {
+        async handler(options) {
           await this.initSliderPromise;
           Object.entries(options).forEach(([key, value]) => {
             this.slider.setAttribute(key, value);
           });
           this.slider.refresh({useCurrentValue: true});
+          this.slider.on('change', ({newValue}) => {
+            this.emitDebounced(newValue);
+          });
+        },
+        deep: true,
       },
     },
     async mounted() {

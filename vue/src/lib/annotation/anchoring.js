@@ -28,10 +28,12 @@ export class Anchoring {
         this.root = root;
         this.anchors = anchors;
         this.anchoringPromise = Promise.resolve();
-        this.unsubscribe = store.watch((_, getters) => getters[GET.ANNOTATIONS], (newAnnotations) => {
-            this.detachAllAnnotations();
-            this.anchorAnnotations(newAnnotations);
-        });
+        this.unsubscribe = store.watch(
+            (_, getters) => getters[GET.FILTERED_ANNOTATIONS] || getters[GET.ANNOTATIONS],
+            (newAnnotations) => {
+                this.detachAllAnnotations();
+                this.anchorAnnotations(newAnnotations);
+            });
     }
 
     _chainToAnchoringPromise(onFulfilled) {

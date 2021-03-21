@@ -122,7 +122,7 @@ export default {
         },
       ];
 
-      if (this[GET.USER]().id === this.post.creatorId && this.thread.lastPost.id === this.post.id) {
+      if (this[GET.USER]() && this[GET.USER]().id === this.post.creatorId && this.thread.lastPost.id === this.post.id) {
         items.push(
           {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deletePost, text: this.$i18n.t('post.action.delete')},
           {iconClasses: ['fa', 'fa-pencil', 'fa-fw'], handler: this.openEditor, text: this.$i18n.t('post.action.edit')},

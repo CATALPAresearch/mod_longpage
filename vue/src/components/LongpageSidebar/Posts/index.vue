@@ -90,10 +90,9 @@
 </template>
 
 <script>
+import {ACT, GET} from '@/store/types';
 import {AnnotationType, THREAD_CONTAINER_ID} from '@/config/constants';
-import {GET, MUTATE} from '@/store/types';
-import {mapGetters, mapMutations} from 'vuex';
-import {AnnotationFilter} from '@/util/filters/annotation-filter';
+import {mapActions, mapGetters} from 'vuex';
 import {EventBus} from '@/lib/event-bus';
 import FilterForm from '@/components/LongpageSidebar/Posts/FilterForm/';
 import Thread from './Thread';
@@ -112,13 +111,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      threads: GET.THREADS,
-      threadsFiltered: GET.THREADS_FILTERED,
-    }),
+    ...mapGetters([GET.FILTERED_THREADS, GET.THREADS]),
+    ...mapGetters({threadsFiltered: GET.THREADS_FILTERED}),
     allThreadsOrSelection() {
       return this.selectedThreads.length ? this.selectedThreads : this.threads;
     },
+    threads() {
+      return this.threadsFiltered ? this[GET.FILTERED_THREADS] : this[GET.THREADS];
+    }
   },
   mounted() {
     EventBus.subscribe('annotations-selected', ({type, selection}) => {
@@ -127,9 +127,9 @@ export default {
     });
   },
   methods: {
-    ...mapMutations([MUTATE.SET_ANNOTATION_FILTER]),
+    ...mapActions([ACT.FILTER_ANNOTATIONS]),
     resetFilter() {
-      this[MUTATE.SET_ANNOTATION_FILTER](AnnotationFilter.DEFAULT);
+      this[ACT.FILTER_ANNOTATIONS]();
     },
     resetSelection() {
       this.selectedThreads = [];

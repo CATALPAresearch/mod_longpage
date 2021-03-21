@@ -51,9 +51,6 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      annotations: GET.ANNOTATIONS,
-    }),
     ...mapGetters([GET.NEW_ANNOTATION]),
     annotationToolbarPopover() {
       return this.$refs.annotationToolbarPopover;
@@ -84,8 +81,8 @@ export default {
     this.selectionListener.unsubscribe();
   },
   methods: {
-    ...mapActions([ACT.CREATE_ANNOTATION, ACT.FILTER_ANNOTATIONS]),
-    ...mapMutations([MUTATE.SET_ANNOTATION_FILTER, MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY]),
+    ...mapActions([ACT.CREATE_ANNOTATION]),
+    ...mapMutations([MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY]),
     async createBookmark() {
       this[ACT.CREATE_ANNOTATION]({
         target: await this.getAnnotationTarget(), type: AnnotationType.BOOKMARK,
