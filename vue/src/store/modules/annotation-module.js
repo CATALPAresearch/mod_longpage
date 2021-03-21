@@ -46,6 +46,11 @@ export default {
         },
         [MUTATE.REMOVE_ANNOTATIONS](state, annotationsToRemove) {
             state.annotations = state.annotations.filter(a => !annotationsToRemove.find(atr => atr.id === a.id));
+            if (state.filteredAnnotations) {
+                state.filteredAnnotations = state.filteredAnnotations.filter(
+                    a => !annotationsToRemove.find(atr => atr.id === a.id)
+                );
+            }
         },
         [MUTATE.SET_ANNOTATION_FILTER](state, filter) {
             state.annotationFilter = filter;

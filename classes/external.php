@@ -1139,10 +1139,10 @@ class mod_page_external extends external_api {
         //if ($postIntern->creatorid !== $USER->id) {
         //    throw new invalid_parameter_exception('Post can only be deleted or updated by user that created it.');
         //}
-        if ($post->markedasrequestedreply) {
-            throw new invalid_parameter_exception('Post is marked as the reply requested. 
-                It cannot be deleted/updated since others might depend on it.');
-        }
+        //if ($post->markedasrequestedreply) {
+        //    throw new invalid_parameter_exception('Post is marked as the reply requested.
+        //        It cannot be deleted/updated since others might depend on it.');
+        //}
 
         self::validate_post_not_referenced_by_other_post($post);
 
