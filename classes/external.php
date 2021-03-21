@@ -51,9 +51,8 @@ class mod_page_external extends external_api {
 
         if ($post->readbyuser) return;
 
-        $post->recommendation =
-            $DB->get_field('page_post_recommendations', 'value', ['postid' => $post->id, 'userid' => $USER->id]) ??
-            $DB->get_field('page', 'avgpostpreference', ['pageid' => $post->pageid]);
+        $post->recommendation = $DB->get_field('page_post_recommendations', 'value', ['postid' => $post->id, 'userid' => $USER->id]) ?:
+            $DB->get_field('page', 'avgpostpreference', ['id' => $post->pageid]);
     }
 
     private static function annotation_target_parameters_base() {
