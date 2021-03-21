@@ -38,13 +38,5 @@ export default {
                 }
             }]);
         },
-        [ACT.TOGGLE_POST_READING]({commit, getters}, {postId, threadId}) {
-            const post = getters[GET.POST](postId, threadId);
-            commit(
-                MUTATE.UPDATE_POST,
-                {threadId: post.threadId, postId: post.id, postUpdate: {...post, readByUser: !post.readByUser}}
-            );
-
-        },
     }
 };
