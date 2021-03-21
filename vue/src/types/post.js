@@ -16,7 +16,7 @@ export class Post {
         likedByUser = false,
         likesCount = 0,
         bookmarkedByUser = false,
-        readByUser = false,
+        readByUser = true,
         readingsCount = 0,
         timeCreated,
         timeModified,
