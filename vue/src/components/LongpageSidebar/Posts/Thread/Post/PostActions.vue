@@ -65,6 +65,7 @@
       </a>
     </div>
     <div
+      v-if="dropdownMenuItems && dropdownMenuItems.length"
       class="dropdown"
       style="float: right;"
     >
@@ -116,7 +117,7 @@ export default {
   computed: {
     ...mapGetters([GET.USER]),
     dropdownMenuItems() {
-      const items = [
+      const items = this.userIsCreator ? [] : [
         {
           iconClasses: ['fa', this.post.readByUser ? 'fa-eye-slash' : 'fa-eye', 'fa-fw'],
           handler: this.togglePostReading,
