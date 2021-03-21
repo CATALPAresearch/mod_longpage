@@ -7,15 +7,17 @@
       <a
         href="javascript:void(0)"
         role="button"
+        :class="{'disabled': userIsCreator}"
         @click="togglePostLike"
       >
         <i
-          class="icon fa  fa-fw mr-1"
+          class="icon fa fa-fw mr-1"
           :class="[postIntern.likedByUser ? 'fa-thumbs-up' : 'fa-thumbs-o-up']"
         />
       </a>
       <span
-        :class="{'font-weight-bold': postIntern.likedByUser}"
+        class="mr-1"
+        :class="{'font-weight-bold': postIntern.likedByUser, 'text-primary': postIntern.likedByUser}"
       >{{ postIntern.likesCount }}</span>
     </div>
     <div
@@ -122,7 +124,7 @@ export default {
         },
       ];
 
-      if (this[GET.USER]() && this[GET.USER]().id === this.post.creatorId && this.thread.lastPost.id === this.post.id) {
+      if (this.userIsCreator && this.thread.lastPost.id === this.post.id) {
         items.push(
           {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deletePost, text: this.$i18n.t('post.action.delete')},
           {iconClasses: ['fa', 'fa-pencil', 'fa-fw'], handler: this.openEditor, text: this.$i18n.t('post.action.edit')},
@@ -134,6 +136,9 @@ export default {
     postIntern() {
       return this.post;
     },
+    userIsCreator() {
+      return this[GET.USER]() && this[GET.USER]().id === this.post.creatorId;
+    }
   },
   methods: {
     ...mapActions([
@@ -154,7 +159,7 @@ export default {
       this[ACT.TOGGLE_POST_BOOKMARK]({postId: this.post.id, threadId: this.post.threadId});
     },
     togglePostLike() {
-      this[ACT.TOGGLE_POST_LIKE]({postId: this.post.id, threadId: this.post.threadId});
+      if (!this.userIsCreator) this[ACT.TOGGLE_POST_LIKE]({postId: this.post.id, threadId: this.post.threadId});
     },
     togglePostReading() {
       this[ACT.TOGGLE_POST_READING]({postId: this.post.id, threadId: this.post.threadId});
