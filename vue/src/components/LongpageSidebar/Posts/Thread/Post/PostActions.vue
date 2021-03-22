@@ -117,19 +117,27 @@ export default {
   computed: {
     ...mapGetters([GET.USER]),
     dropdownMenuItems() {
-      const items = this.userIsCreator ? [] : [
-        {
+      const items = [];
+      if (this.userIsCreator) {
+        items.push({
+          iconClasses: ['fa', 'fa-pencil', 'fa-fw'],
+          handler: this.openEditor,
+          text: this.$i18n.t('post.action.edit'),
+        });
+
+        if (this.postIsLastPostInThread) {
+          items.push({
+            iconClasses: ['fa', 'fa-trash', 'fa-fw'],
+            handler: this.deletePost,
+            text: this.$i18n.t('post.action.delete'),
+          });
+        }
+      } else {
+        items.push({
           iconClasses: ['fa', this.post.readByUser ? 'fa-eye-slash' : 'fa-eye', 'fa-fw'],
           handler: this.togglePostReading,
           text: this.$i18n.t(`post.action.${this.post.readByUser ? 'markAsUnread' : 'markAsRead'}`),
-        },
-      ];
-
-      if (this.userIsCreator && this.postIsLastPostInThread) {
-        items.push(
-          {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deletePost, text: this.$i18n.t('post.action.delete')},
-          {iconClasses: ['fa', 'fa-pencil', 'fa-fw'], handler: this.openEditor, text: this.$i18n.t('post.action.edit')},
-        );
+        });
       }
 
       return items;

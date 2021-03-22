@@ -80,17 +80,19 @@ export default {
   data() {
     return {
       postUpdate: null,
-      saveActions: SAVE_ACTIONS,
       selectedSaveActionInternal: SAVE_ACTIONS[0],
     };
   },
   computed: {
     ...mapGetters([GET.ANNOTATION]),
+    saveActions() {
+      return SAVE_ACTIONS.filter(({key}) => !(key === 'save' && this.post.created && this.post.isPublic));
+    },
     selectedSaveAction: {
       get() {
-        if (this.postUpdate.anonymous) return SAVE_ACTIONS[1];
-        if (this.postUpdate.isPublic) return SAVE_ACTIONS[0];
-        return SAVE_ACTIONS[2];
+        if (this.postUpdate.anonymous) return this.saveActions[1];
+        if (this.postUpdate.isPublic) return this.saveActions[0];
+        return this.saveActions[2];
       },
       set(action) {
         this.postUpdate.anonymous = action.key === 'publishAnonymously';
