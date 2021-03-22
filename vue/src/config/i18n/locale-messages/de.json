@@ -23,7 +23,8 @@
       "markAsRead": "Beitrag als gelesen markieren",
       "markAsUnread": "Beitrag als ungelesen markieren",
       "markWithStar": "Beitrag mit Stern markieren",
-      "subscribe": "Thread abonnieren"
+      "subscribe": "Thread abonnieren",
+      "unsubscribe": "Threadabonnement beenden"
     },
     "form": {
       "bodyTextareaPlaceholder": "Erstellen Sie eine Anmerkung",

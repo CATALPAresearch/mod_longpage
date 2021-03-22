@@ -50,6 +50,7 @@
       </a>
     </div>
     <div
+      v-if="thread.root.id === post.id"
       class="float-left ml-3"
     >
       <a
@@ -118,6 +119,21 @@ export default {
     ...mapGetters([GET.USER]),
     dropdownMenuItems() {
       const items = [];
+      if (this.post.id !== this.thread.root.id) {
+        if (this.thread.subscribedToByUser) {
+          items.push({
+            iconClasses: ['fa', 'fa-bell-o', 'fa-fw'],
+            handler: this.toggleThreadSubscription,
+            text: this.$i18n.t('post.action.unsubscribe'),
+          });
+        } else {
+          items.push({
+            iconClasses: ['fa', 'fa-bell', 'fa-fw'],
+            handler: this.toggleThreadSubscription,
+            text: this.$i18n.t('post.action.subscribe'),
+          });
+        }
+      }
       if (this.userIsCreator) {
         items.push({
           iconClasses: ['fa', 'fa-pencil', 'fa-fw'],
