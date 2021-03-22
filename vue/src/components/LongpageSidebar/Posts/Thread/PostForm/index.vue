@@ -86,12 +86,14 @@ export default {
   computed: {
     ...mapGetters([GET.ANNOTATION]),
     saveActions() {
-      return SAVE_ACTIONS.filter(({key}) => !(key === 'save' && this.post.created && this.post.isPublic));
+      return SAVE_ACTIONS.filter(
+          ({key}) => !(key === 'save' && (this.post.created && this.post.isPublic || this.thread.isPublic))
+      );
     },
     selectedSaveAction: {
       get() {
         if (this.postUpdate.anonymous) return this.saveActions[1];
-        if (this.postUpdate.isPublic) return this.saveActions[0];
+        if (this.postUpdate.isPublic || !this.saveActions.find(({key}) => key === 'save')) return this.saveActions[0];
         return this.saveActions[2];
       },
       set(action) {
