@@ -21,7 +21,7 @@
       >{{ postIntern.likesCount }}</span>
     </div>
     <div
-      v-if="post === thread.root"
+      v-if="post === thread.root && !(userIsCreator && postIsLastPostInThread)"
       class="float-left ml-3"
       role="button"
       @click="toggleRepliesOrReply"
@@ -125,7 +125,7 @@ export default {
         },
       ];
 
-      if (this.userIsCreator && this.thread.lastPost.id === this.post.id) {
+      if (this.userIsCreator && this.postIsLastPostInThread) {
         items.push(
           {iconClasses: ['fa', 'fa-trash', 'fa-fw'], handler: this.deletePost, text: this.$i18n.t('post.action.delete')},
           {iconClasses: ['fa', 'fa-pencil', 'fa-fw'], handler: this.openEditor, text: this.$i18n.t('post.action.edit')},
@@ -136,6 +136,9 @@ export default {
     },
     postIntern() {
       return this.post;
+    },
+    postIsLastPostInThread() {
+      return this.thread.lastPost.id === this.post.id;
     },
     userIsCreator() {
       return this[GET.USER]() && this[GET.USER]().id === this.post.creatorId;
