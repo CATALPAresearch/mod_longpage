@@ -21,7 +21,7 @@
       >{{ postIntern.likesCount }}</span>
     </div>
     <div
-      v-if="post === thread.root && !(userIsCreator && postIsLastPostInThread)"
+      v-if="post === thread.root && post.isPublic"
       class="float-left ml-3"
       role="button"
       @click="toggleRepliesOrReply"
