@@ -2,29 +2,56 @@
   <div class="h-100 bg-light">
     <div class="h-100 d-flex flex-column">
       <div class="p-3 bg-white">
-        <div class="row">
+        <div class="row pr-3">
           <h3
             id="posts-sidebar-heading"
             class="col m-0"
           >
             {{ $t('sidebar.tabs.posts.heading') }}
           </h3>
-          <div class="col text-right">
+          <div class="col-auto px-0">
             <a
               href="javascript:void(0)"
-              @click="toggleFilterForm"
+              @click="toggleFormShown('filter')"
             >
               <i class="fa fa-filter fa-fw fa-2x" />
             </a>
           </div>
+          <div class="col-auto px-0">
+            <a
+              href="javascript:void(0)"
+              @click="toggleFormShown('sorting')"
+            >
+              <i class="fa fa-sort-amount-desc fa-fw fa-2x" />
+            </a>
+          </div>
         </div>
         <hr
-          v-show="filterFormShown"
+          v-show="formShown !== null"
           class="my-3"
         >
         <filter-form
-          v-show="filterFormShown"
+          v-show="formShown === 'filter'"
         />
+        <div v-show="formShown === 'sorting'">
+          <select
+            v-model="selectedSortingOption"
+            class="custom-select"
+          >
+            <option>
+              {{ selectedSortingOption }}
+            </option>
+            <option value="1">
+              One
+            </option>
+            <option value="2">
+              Two
+            </option>
+            <option value="3">
+              Three
+            </option>
+          </select>
+        </div>
         <div
           v-if="selectedThreads.length"
           class="row mt-2"
@@ -43,7 +70,7 @@
           </div>
         </div>
         <div
-          v-else-if="threadsFiltered && !filterFormShown"
+          v-else-if="threadsFiltered && !formShown"
           class="row mt-2"
         >
           <div class="col">
@@ -105,7 +132,8 @@ export default {
   },
   data() {
     return {
-      filterFormShown: false,
+      formShown: null,
+      selectedSortingOption: 1,
       selectedThreads: [],
       THREAD_CONTAINER_ID,
     };
@@ -134,8 +162,8 @@ export default {
     resetSelection() {
       this.selectedThreads = [];
     },
-    toggleFilterForm() {
-      this.filterFormShown = !this.filterFormShown;
+    toggleFormShown(formKey = null) {
+      this.formShown = this.formShown === formKey ? null : formKey;
     },
   },
 };
