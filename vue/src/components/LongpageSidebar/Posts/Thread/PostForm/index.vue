@@ -61,17 +61,12 @@
 
 <script>
 import {ACT, GET, MUTATE} from '@/store/types';
-import {cloneDeep} from 'lodash';
 import {mapActions, mapGetters, mapMutations} from 'vuex';
+import {cloneDeep} from 'lodash';
 import {Post} from '@/types/post';
-import {Thread} from '@/types/thread';
 import PostFormInput from '@/components/LongpageSidebar/Posts/Thread/PostForm/PostFormInput';
-
-const SAVE_ACTIONS = [
-  {key: 'publish', iconClasses: ['fa-users']},
-  {key: 'publishAnonymously', iconClasses: ['fa-user-secret']},
-  {key: 'save', iconClasses: ['fa-lock']},
-];
+import {SAVE_ACTIONS} from '@/config/constants';
+import {Thread} from '@/types/thread';
 
 export default {
   name: 'PostForm',

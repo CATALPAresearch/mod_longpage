@@ -1,7 +1,7 @@
 import {ACT, GET, MUTATE} from '../types';
+import {flatten, pick} from 'lodash';
 import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
-import {flatten} from 'lodash';
 import MappingService from '@/services/mapping-service';
 import {MoodleWSMethods} from '@/config/constants';
 import {Post} from '@/types/post';
@@ -11,14 +11,17 @@ import {ThreadFilter} from '@/util/filters/thread-filter';
 export default {
     state: {
         filteredThreads: null,
+        postLastModified: null,
         threadFilter: ThreadFilter.DEFAULT,
         threads: [],
     },
     getters: {
         [GET.FILTERED_THREADS]: ({filteredThreads}) => filteredThreads,
         [GET.NEW_POST]: (_, getters) => (params = {}) => {
+            const rememberablePropsOfPostLastModified = pick(getters[GET.POST_LAST_MODIFIED] || {}, ['isPublic', 'anonymous']);
             return new Post({
                 creatorId: getters[GET.LONGPAGE_CONTEXT].userId,
+                ...rememberablePropsOfPostLastModified,
                 ...params,
             });
         },
@@ -31,6 +34,7 @@ export default {
             const thread = threads.find(t => t.id === threadId);
             return thread && thread.posts.find(p => p.id === postId);
         },
+        [GET.POST_LAST_MODIFIED]: ({postLastModified}) => postLastModified,
         [GET.POSTS]: ({threads}) => {
             return flatten(threads.map(({posts}) => posts));
         },
@@ -50,6 +54,9 @@ export default {
         },
         [MUTATE.ADD_THREADS](state, threads) {
             state.threads.push(...threads);
+        },
+        [MUTATE.POST_LAST_MODIFIED](state, post) {
+            state.postLastModified = post;
         },
         [MUTATE.REMOVE_POSTS_FROM_THREAD](state, {threadId, posts}) {
             const thread = state.threads.find(thread => thread.id === threadId);
@@ -94,7 +101,9 @@ export default {
         [ACT.CREATE_POST]({commit, dispatch, getters}, params = {}) {
             const post = getters[GET.POST](params.id) || getters[GET.NEW_POST](params);
             dispatch(ACT.REPLACE_OR_ADD_POST, post);
+            commit(MUTATE.POST_LAST_MODIFIED, post);
             if (!post.content) return;
+
             const thread = getters[GET.THREAD](post.threadId);
             if (!thread.created) {
                 dispatch(ACT.CREATE_ANNOTATION, getters[GET.ANNOTATION](thread.annotationId));
@@ -125,7 +134,6 @@ export default {
             }
 
             commit(MUTATE.REMOVE_POSTS_FROM_THREAD, {threadId: thread.id, posts: [post]});
-
             ajax.call([{
                 methodname: MoodleWSMethods.DELETE_POST,
                 args: {id: post.id},
@@ -249,6 +257,7 @@ export default {
         [ACT.UPDATE_POST]({commit, getters}, postUpdate) {
             const post = {...getters[GET.POST](postUpdate.id, postUpdate.threadId)};
             commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, postUpdate});
+            commit(MUTATE.POST_LAST_MODIFIED, new Post({...postUpdate, ...post}));
             ajax.call([{
                 methodname: MoodleWSMethods.UPDATE_POST,
                 args: MappingService.mapPostUpdateToArgs(postUpdate),

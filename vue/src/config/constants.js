@@ -75,3 +75,9 @@ export const SelectorType = Object.freeze({
 });
 
 export const MOODLE_NAVBAR_HEIGHT_IN_PX = 50;
+
+export const SAVE_ACTIONS = [
+    {key: 'publish', iconClasses: ['fa-users']},
+    {key: 'publishAnonymously', iconClasses: ['fa-user-secret']},
+    {key: 'save', iconClasses: ['fa-lock']},
+];
