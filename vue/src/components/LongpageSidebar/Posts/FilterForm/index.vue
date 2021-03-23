@@ -11,7 +11,7 @@
           id="content-filter-input"
           type="text"
           class="form-control"
-          placeholder="Nach Anmerkungstext filtern"
+          :placeholder="$t('sidebar.tabs.posts.filter.byContent')"
           @input="debouncedUpdateActiveFilter('body.posts.query', $event.target.value)"
         >
       </div>
@@ -19,16 +19,16 @@
     <div class="mb-2 row align-items-center">
       <multi-select-input
         class="col-auto w-100"
-        placeholder="Autor:innen"
+        :placeholder="$t('sidebar.tabs.posts.filter.authors')"
         :options="creatorOptions"
         :model-value="activeFilter.body.posts.creator"
-        not-found-message="Keine gefunden"
+        :not-found-message="$t('sidebar.tabs.posts.filter.notFound')"
         @update:model-value="updateActiveFilter('body.posts.creator', $event)"
       />
     </div>
     <div class="mb-2 row align-items-center">
       <h6 class="d-inline m-0 col-auto">
-        Gelesen-Status
+        {{ $t('sidebar.tabs.posts.filter.readingStatus') }}
       </h6>
       <div class="col-auto">
         <multi-select-checkbox-group
@@ -39,7 +39,7 @@
     </div>
     <div class="mb-2 row align-items-center">
       <h6 class="d-inline m-0 col-auto">
-        Status
+        {{ $t('sidebar.tabs.posts.filter.status') }}
       </h6>
       <div class="col-auto">
         <multi-select-checkbox-group
@@ -53,7 +53,7 @@
       class="mb-2 row align-items-center"
     >
       <h6 class="d-inline m-0 col-auto">
-        Gefällt # Personen
+        {{ $t('sidebar.tabs.posts.filter.likedBy') }}
       </h6>
       <slider
         class="col"
@@ -67,7 +67,7 @@
       class="mb-2 row align-items-center"
     >
       <h6 class="d-inline m-0 col-auto">
-        Erstellt
+        {{ $t('sidebar.tabs.posts.filter.timeCreated') }}
       </h6>
       <slider
         class="col"
@@ -81,7 +81,7 @@
       class="mb-2 row align-items-center"
     >
       <h6 class="d-inline m-0 col-auto">
-        Zuletzt bearbeitet
+        {{ $t('sidebar.tabs.posts.filter.timeModified') }}
       </h6>
       <slider
         class="col"

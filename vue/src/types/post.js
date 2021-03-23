@@ -19,8 +19,8 @@ export class Post {
         readByUser = true,
         readingsCount = 0,
         recommendation,
-        timeCreated,
-        timeModified,
+        timeCreated = new Date(),
+        timeModified = new Date(),
     } = {}) {
         this.id = id;
         this.creatorId = creatorId;
@@ -41,7 +41,7 @@ export class Post {
     }
 
     get created() {
-        return Boolean(this.timeCreated);
+        return Number(this.id);
     }
 
     get likedByUser() {

@@ -12,7 +12,7 @@ export default {
     state: {
         filteredThreads: null,
         postLastModified: null,
-        selectedThreadSortingOption: 'byNovelty',
+        selectedThreadSortingOption: 'byRecommendation',
         threadFilter: ThreadFilter.DEFAULT,
         threads: [],
     },

@@ -35,20 +35,15 @@
         />
         <div v-show="formShown === 'sorting'">
           <select
-            v-model="selectedSortingOption"
+            v-model="selectedThreadSortingOption"
             class="custom-select"
           >
-            <option>
-              {{ selectedSortingOption }}
-            </option>
-            <option value="1">
-              One
-            </option>
-            <option value="2">
-              Two
-            </option>
-            <option value="3">
-              Three
+            <option
+              v-for="option in threadSortingOptions"
+              :key="option"
+              :value="option"
+            >
+              {{ $t(`sidebar.tabs.posts.sorting.option.${option}`) }}
             </option>
           </select>
         </div>
@@ -117,9 +112,9 @@
 </template>
 
 <script>
-import {ACT, GET} from '@/store/types';
+import {ACT, GET, MUTATE} from '@/store/types';
 import {AnnotationType, THREAD_CONTAINER_ID} from '@/config/constants';
-import {mapActions, mapGetters} from 'vuex';
+import {mapActions, mapGetters, mapMutations} from 'vuex';
 import {EventBus} from '@/lib/event-bus';
 import FilterForm from '@/components/LongpageSidebar/Posts/FilterForm/';
 import Thread from './Thread';
@@ -133,16 +128,26 @@ export default {
   data() {
     return {
       formShown: null,
-      selectedSortingOption: 1,
       selectedThreads: [],
       THREAD_CONTAINER_ID,
     };
   },
   computed: {
-    ...mapGetters([GET.FILTERED_THREADS, GET.THREADS]),
+    ...mapGetters([GET.FILTERED_THREADS, GET.SELECTED_THREAD_SORTING_OPTION, GET.THREADS, GET.THREAD_SORTING_OPTIONS]),
     ...mapGetters({threadsFiltered: GET.THREADS_FILTERED}),
     allThreadsOrSelection() {
       return this.selectedThreads.length ? this.selectedThreads : this.threads;
+    },
+    selectedThreadSortingOption: {
+      get() {
+        return this[GET.SELECTED_THREAD_SORTING_OPTION];
+      },
+      set(option) {
+        this[MUTATE.SELECTED_THREAD_SORTING_OPTION](option);
+      },
+    },
+    threadSortingOptions() {
+      return Object.keys(this[GET.THREAD_SORTING_OPTIONS]);
     },
     threads() {
       return this.threadsFiltered ? this[GET.FILTERED_THREADS] : this[GET.THREADS];
@@ -156,6 +161,7 @@ export default {
   },
   methods: {
     ...mapActions([ACT.FILTER_ANNOTATIONS]),
+    ...mapMutations([MUTATE.SELECTED_THREAD_SORTING_OPTION]),
     resetFilter() {
       this[ACT.FILTER_ANNOTATIONS]();
     },
