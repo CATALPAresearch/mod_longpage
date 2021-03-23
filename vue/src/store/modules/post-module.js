@@ -12,11 +12,14 @@ export default {
     state: {
         filteredThreads: null,
         postLastModified: null,
+        selectedThreadSortingOption: 'byRecommendation',
         threadFilter: ThreadFilter.DEFAULT,
         threads: [],
     },
     getters: {
-        [GET.FILTERED_THREADS]: ({filteredThreads}) => filteredThreads,
+        [GET.FILTERED_THREADS]:
+            ({filteredThreads}, getters) => filteredThreads &&
+                filteredThreads.sort(getters[GET.SELECTED_THREAD_COMP_FUNC_FOR_SORT]),
         [GET.NEW_POST]: (_, getters) => (params = {}) => {
             const rememberablePropsOfPostLastModified = pick(getters[GET.POST_LAST_MODIFIED] || {}, ['isPublic', 'anonymous']);
             return new Post({
@@ -38,9 +41,22 @@ export default {
         [GET.POSTS]: ({threads}) => {
             return flatten(threads.map(({posts}) => posts));
         },
+        [GET.SELECTED_THREAD_SORTING_OPTION]: ({selectedThreadSortingOption}) => selectedThreadSortingOption,
+        [GET.SELECTED_THREAD_COMP_FUNC_FOR_SORT]:
+            (_, getters) => {
+                return getters[GET.THREAD_SORTING_OPTIONS][getters[GET.SELECTED_THREAD_SORTING_OPTION]];
+            },
         [GET.THREAD]: ({threads}) => id => threads.find(t => t.id === id),
         [GET.THREAD_FILTER]: ({threadFilter}) => threadFilter,
-        [GET.THREADS]: ({threads}) => threads,
+        [GET.THREAD_SORTING_OPTIONS]: (_, getters) => ({
+            byNovelty: (a, b) => b.timeModified - a.timeModified,
+            byPosition: (a, b) => {
+                const [annotationA, annotationB] = [a, b].map(t => getters[GET.ANNOTATION](t.annotationId));
+                return AnnotationCompareFunction.BY_POSITION(annotationA, annotationB);
+            },
+            byRecommendation: (a, b) => b.recommendation - a.recommendation,
+        }),
+        [GET.THREADS]: ({threads}, getters) => threads.sort(getters[GET.SELECTED_THREAD_COMP_FUNC_FOR_SORT]),
         [GET.THREADS_FILTERED]: (_, getters) => Boolean(getters[GET.FILTERED_THREADS]),
     },
     mutations: {
@@ -77,6 +93,9 @@ export default {
             const posts = [...thread.posts];
             posts.splice(posts.findIndex(p => p.id === post.id), 1, post);
             thread.posts = posts;
+        },
+        [MUTATE.SELECTED_THREAD_SORTING_OPTION](state, option) {
+            state.selectedThreadSortingOption = option;
         },
         [MUTATE.SET_FILTERED_THREADS](state, filteredThreads) {
             state.filteredThreads = filteredThreads;
@@ -147,12 +166,7 @@ export default {
         [ACT.FILTER_THREADS]({commit, getters}, filter = null) {
             commit(MUTATE.SET_THREAD_FILTER, filter || ThreadFilter.DEFAULT);
             const filteredThreads = filter && new ThreadFilter(filter)
-                .applyTo(...getters[GET.THREADS])
-                .sort(
-                    (threadA, threadB) => {
-                        const [annotationA, annotationB] = [threadA, threadB].map(t => getters[GET.ANNOTATION](t.annotationId));
-                        return AnnotationCompareFunction.BY_POSITION(annotationA, annotationB);
-                    });
+                .applyTo(...getters[GET.THREADS]);
             commit(MUTATE.SET_FILTERED_THREADS, filteredThreads);
         },
         [ACT.REPLACE_OR_ADD_POST]({commit, getters}, post) {
@@ -170,11 +184,9 @@ export default {
                 if (getters[GET.THREADS_FILTERED]) {
                     commit(
                         MUTATE.SET_FILTERED_THREADS,
-                        [thread, ...getters[GET.FILTERED_THREADS]].sort((threadA, threadB) => {
-                            const [annotationA, annotationB] = [threadA, threadB].map(t => getters[GET.ANNOTATION](t.annotationId));
-                            return AnnotationCompareFunction.BY_POSITION(annotationA, annotationB);
-                        }));
-}
+                        [thread, ...getters[GET.FILTERED_THREADS]]
+                    );
+                }
             }
         },
         [ACT.TOGGLE_POST_BOOKMARK]({commit, getters}, {postId, threadId}) {

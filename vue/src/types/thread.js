@@ -43,6 +43,11 @@ export class Thread {
         return this.posts.map(({creatorId}) => creatorId);
     }
 
+    get recommendation() {
+        const recommendations = this.posts.filter(({recommendation}) => Boolean(recommendation)).map(({recommendation}) => recommendation)
+        return recommendations.length ? Math.max(...recommendations) : 0
+    }
+
     get replyCount() {
         return this.replies.length
     }
@@ -64,6 +69,6 @@ export class Thread {
     }
 
     get timeModified() {
-        return this.root.timeModified;
+        return this.lastPost.timeModified
     }
 }

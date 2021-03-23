@@ -80,6 +80,16 @@
         }
       },
       "posts": {
+        "filter": {
+          "authors": "Autor:innen",
+          "byContent": "Nach Anmerkungstext filtern",
+          "likedBy": "Gefällt # Personen",
+          "notFound": "Keine gefunden",
+          "readingStatus": "Gelesen-Status",
+          "status": "Status",
+          "timeCreated": "Erstellt",
+          "timeModified": "Zuletzt bearbeitet"
+        },
         "heading": "Anmerkungen",
         "message": {
           "filtered": "Anmerkungen sind gefiltert.",
@@ -88,6 +98,13 @@
           "onlySelectedShown": "Nur Anmerkungen gezeigt, die Sie mittels Klick auf eine Sprechblase im Text ausgewählt haben.",
           "showAll": "Alle zeigen",
           "showAllFiltered": "Alle zeigen (ggf. gefiltert)"
+        },
+        "sorting": {
+          "option": {
+            "byNovelty": "Neueste zuerst",
+            "byPosition": "Nach Position im Text",
+            "byRecommendation": "Relevanteste zuerst"
+          }
         }
       },
       "search": {
