@@ -2,7 +2,7 @@
   <sidebar-tab :title="areHighlights ? $t('sidebar.tabs.highlights.heading') : $t('sidebar.tabs.bookmarks.heading')">
     <template #append-header>
       <div
-        v-show="selectedHighlights.length"
+        v-show="selectedHighlights === allHighlightsOrSelection"
         class="mt-2"
       >
         <p class="mb-1">
@@ -108,7 +108,9 @@ export default {
       ];
     },
     allHighlightsOrSelection() {
-      return this.selectedHighlights.length ? this.selectedHighlights : this.highlights;
+      return this.selectedHighlights.length &&
+        this.selectedHighlights.some(shl => Boolean(this.highlights.find(hl => hl.id === shl.id))) ?
+          this.selectedHighlights : this.highlights;
     },
     areHighlights() {
       return this.type === AnnotationType.HIGHLIGHT;
