@@ -3,11 +3,15 @@ import * as observable from './util/observable';
 /** Returns the selected `DOMRange` in `document`. */
 function selectedRange(document) {
   const selection = document.getSelection();
-  if (!selection.rangeCount || selection.getRangeAt(0).collapsed) {
-    return null;
-  } else {
-    return selection.getRangeAt(0);
+  if (!selection.rangeCount) return null;
+
+  let index = 0;
+  const range = selection.getRangeAt(index);
+  while (++index < selection.rangeCount) {
+    const nextRange = selection.getRangeAt(index);
+    range.setEnd(nextRange.endContainer, nextRange.endOffset);
   }
+  return range.collapsed ? null : range;
 }
 
 /**
@@ -27,7 +31,7 @@ export default function selections(document) {
   let isMouseDown;
   const selectionEvents = observable
     .listen(document, ['mousedown', 'mouseup', 'selectionchange'])
-    .filter(function (event) {
+    .filter(function(event) {
       if (event.type === 'mousedown' || event.type === 'mouseup') {
         isMouseDown = event.type === 'mousedown';
         return false;
@@ -50,7 +54,7 @@ export default function selections(document) {
     observable.delay(0, observable.Observable.of({})),
   ]);
 
-  return events.map(function () {
+  return events.map(function() {
     return selectedRange(document);
   });
 }
