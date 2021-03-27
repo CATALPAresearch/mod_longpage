@@ -1,7 +1,7 @@
 <template>
   <div
     :id="LONGPAGE_SIDEBAR_ID"
-    class="row no-gutters vh-100-wo-nav max-w-100"
+    class="row no-gutters vh-100-wo-nav max-w-80"
   >
     <div
       v-show="tabOpenedKey"
@@ -10,7 +10,7 @@
     <div
       v-show="tabOpenedKey"
       :id="LONGPAGE_SIDEBAR_TAB_CONTENT"
-      class="col h-100 w-360-px mw-100"
+      class="col h-100 min-w-300-px"
     >
       <component
         :is="tab.key"
@@ -140,12 +140,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .max-w-100 {
-    max-width: 100%;
+  .max-w-80 {
+    max-width: 80%;
   }
 
-  .w-360-px {
-    width: 360px;
+  .min-w-300-px {
+    min-width: 300px;
   }
 
   $handle-size: 10px;
