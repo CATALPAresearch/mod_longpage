@@ -29,7 +29,7 @@
     "form": {
       "bodyTextareaPlaceholder": "Erstellen Sie eine Anmerkung",
       "action": {
-        "cancel": "Abbrechen",
+        "cancel": "Verwerfen",
         "publish": "Veröffentlichen",
         "publishAnonymously": "Anonym veröffentlichen",
         "save": "Speichern ohne Veröffentlichen"
@@ -81,7 +81,7 @@
       },
       "posts": {
         "filter": {
-          "authors": "Autor:innen",
+          "authors": "Autoren/innen",
           "byContent": "Nach Anmerkungstext filtern",
           "likedBy": "Gefällt # Personen",
           "notFound": "Keine gefunden",
