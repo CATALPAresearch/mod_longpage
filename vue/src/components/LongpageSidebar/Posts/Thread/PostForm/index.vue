@@ -87,7 +87,7 @@ export default {
     ...mapGetters([GET.ANNOTATION]),
     saveActions() {
       return SAVE_ACTIONS.filter(
-          ({key}) => !(key === 'save' && (this.post.created && this.post.isPublic || this.thread.isPublic))
+          ({key}) => key !== 'save' || this.post === this.thread.root && (!this.post.created || !this.post.isPublic)
       );
     },
     selectedSaveAction: {
