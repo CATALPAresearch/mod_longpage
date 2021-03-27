@@ -50,7 +50,7 @@
       </a>
     </div>
     <div
-      v-if="thread.root.id === post.id"
+      v-if="thread.root.id === post.id && thread.isPublic"
       class="float-left ml-3"
     >
       <a
