@@ -12,7 +12,7 @@
     <div
       v-show="tabOpenedKey"
       :id="LONGPAGE_SIDEBAR_TAB_CONTENT"
-      class="col h-100 min-w-300-px"
+      class="col h-100 min-w-300-px w-xs-px"
     >
       <component
         :is="tab.key"
@@ -150,6 +150,10 @@ export default {
 <style scoped lang="scss">
   .max-w-80 {
     max-width: 80%;
+  }
+
+  .w-xs-px {
+    width: 576px;
   }
 
   .min-w-300-px {
