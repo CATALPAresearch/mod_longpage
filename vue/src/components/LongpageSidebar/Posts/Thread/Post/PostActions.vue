@@ -12,6 +12,8 @@
       >
         <i
           class="icon fa fa-fw mr-1"
+          :title="userIsCreator ? undefined : $t(postIntern.likedByUser ? 'post.action.rmLike' : 'post.action.like')"
+          :aria-label="userIsCreator ? undefined : $t(postIntern.likedByUser ? 'post.action.rmLike' : 'post.action.like')"
           :class="[postIntern.likedByUser ? 'fa-thumbs-up' : 'fa-thumbs-o-up']"
         />
       </a>
@@ -30,7 +32,11 @@
         href="javascript:void(0)"
         class="text-dark"
       >
-        <i class="icon fa fa-comment-o fa-fw mr-1" />
+        <i
+          :title="$t('post.action.answer')"
+          :aria-label="$t('post.action.answer')"
+          class="icon fa fa-comment-o fa-fw mr-1"
+        />
       </a>
       <span v-if="thread.replyCount">{{ thread.replyCount }}</span>
     </div>
@@ -44,6 +50,8 @@
         @click="toggleBookmark"
       >
         <i
+          :title="post.bookmarkedByUser ? $t('post.action.rmMarkWithStar') : $t('post.action.markWithStar')"
+          :aria-label="post.bookmarkedByUser ? $t('post.action.rmMarkWithStar') : $t('post.action.markWithStar')"
           class="icon fa fa-fw m-0"
           :class="[post.bookmarkedByUser ? 'fa-star' : 'fa-star-o']"
         />
@@ -60,6 +68,8 @@
         @click="toggleThreadSubscription"
       >
         <i
+          :title="thread.subscribedToByUser ? $t('post.action.unsubscribe') : $t('post.action.subscribe')"
+          :aria-label="thread.subscribedToByUser ? $t('post.action.unsubscribe') : $t('post.action.subscribe')"
           class="icon fa fa-fw m-0"
           :class="[thread.subscribedToByUser ? 'fa-bell' : 'fa-bell-o']"
         />
@@ -78,7 +88,11 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <i class="icon fa fa-ellipsis-h fa-fw m-0" />
+        <i
+          :title="$t('post.action.more')"
+          :aria-label="$t('post.action.more')"
+          class="icon fa fa-ellipsis-h fa-fw m-0"
+        />
       </a>
       <div class="dropdown-menu">
         <a

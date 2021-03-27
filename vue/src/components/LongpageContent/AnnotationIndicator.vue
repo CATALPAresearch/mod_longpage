@@ -15,6 +15,8 @@
         @click.stop="publishSelection(Number(type))"
       >
         <i
+          :title="$t(`content.annotationIndicator.${type}`)"
+          :aria-label="$t(`content.annotationIndicator.${type}`)"
           class="icon fa fa-fw m-0"
           :class="annotationTypeIcon[type]"
         />

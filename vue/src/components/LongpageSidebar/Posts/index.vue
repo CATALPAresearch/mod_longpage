@@ -14,7 +14,11 @@
               href="javascript:void(0)"
               @click="toggleFormShown('filter')"
             >
-              <i class="fa fa-filter fa-fw fa-2x" />
+              <i
+                :title="$t('sidebar.tabs.posts.filter.title')"
+                :aria-label="$t('sidebar.tabs.posts.filter.title')"
+                class="fa fa-filter fa-fw fa-2x"
+              />
             </a>
           </div>
           <div class="col-auto px-0">
@@ -22,7 +26,11 @@
               href="javascript:void(0)"
               @click="toggleFormShown('sorting')"
             >
-              <i class="fa fa-sort-amount-desc fa-fw fa-2x" />
+              <i
+                :title="$t('sidebar.tabs.posts.sorting.title')"
+                :aria-label="$t('sidebar.tabs.posts.sorting.title')"
+                class="fa fa-sort-amount-desc fa-fw fa-2x"
+              />
             </a>
           </div>
         </div>

@@ -5,6 +5,8 @@
   >
     <div
       v-show="tabOpenedKey"
+      :title="$t('sidebar.util.changeWidth')"
+      :aria-label="$t('sidebar.util.changeWidth')"
       class="resize-handle--x h-100 col-auto border-left border-right"
     />
     <div
@@ -31,10 +33,16 @@
         :key="tab.key"
         class="nav-link text-center"
         href="javascript:void(0)"
-        :class="{active: tab.key === tabOpenedKey}"
+        :class="{
+          active: tab.key === tabOpenedKey,
+          'text-white': tab.key === tabOpenedKey,
+          'text-dark': tab.key !== tabOpenedKey,
+        }"
         @click="toggleTab(tab.key)"
       >
         <i
+          :title="$t(`sidebar.tabMenu.titles.${tab.key}`)"
+          :aria-label="$t(`sidebar.tabMenu.titles.${tab.key}`)"
           :class="tab.icon"
         />
       </a>
