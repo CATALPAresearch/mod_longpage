@@ -46,7 +46,7 @@
           :key="action.key"
           class="dropdown-item"
           href="javascript:void(0)"
-          @click="selectedSaveAction = action; createOrUpdatePost"
+          @click="selectedSaveAction = action; createOrUpdatePost()"
         >
           <i
             class="icon fa fa-fw"
