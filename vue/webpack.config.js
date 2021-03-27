@@ -1,3 +1,4 @@
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 var path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const {VueLoaderPlugin} = require('vue-loader');
@@ -67,6 +68,7 @@ module.exports = (env, options) => {
         },
         devtool: '#eval-source-map',
         plugins: [
+            new BundleAnalyzerPlugin(),
             new VueLoaderPlugin(),
         ],
         watchOptions: {
