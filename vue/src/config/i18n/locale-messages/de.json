@@ -4,6 +4,11 @@
       "0": "Markierungen einblenden",
       "1": "Anmerkungen einblenden",
       "2": "Lesezeichen einblenden"
+    },
+    "annotationToolbar": {
+      "createBookmark": "Lesezeichen erstellen",
+      "createHighlight": "Text markieren",
+      "createPost": "Anmerkung erstellen"
     }
   },
   "expandable": {

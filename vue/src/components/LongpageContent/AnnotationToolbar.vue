@@ -22,6 +22,8 @@
         :key="index"
         class="annotation-toolbar-item dot"
         :class="[option]"
+        :title="$t('content.annotationToolbar.createHighlight')"
+        :aria-label="$t('content.annotationToolbar.createHighlight')"
         @click.prevent="$emit('highlight-clicked', option)"
       >
         A
@@ -30,6 +32,8 @@
         class="annotation-toolbar-item dot"
       >
         <i
+          :title="$t('content.annotationToolbar.createBookmark')"
+          :aria-label="$t('content.annotationToolbar.createBookmark')"
           class="fa fa-bookmark-o fa-fw"
           @click.prevent="$emit('bookmark-clicked')"
         />
@@ -38,6 +42,8 @@
         class="annotation-toolbar-item dot"
       >
         <i
+          :title="$t('content.annotationToolbar.createPost')"
+          :aria-label="$t('content.annotationToolbar.createPost')"
           class="fa fa-comment-o fa-fw"
           @click.prevent="$emit('post-clicked')"
         />
