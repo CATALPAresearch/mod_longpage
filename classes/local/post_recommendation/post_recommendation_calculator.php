@@ -37,14 +37,8 @@ require_once("$CFG->dirroot/mod/page/locallib.php");
 class post_recommendation_calculator {
     public const MIN_PREFERENCES_PER_USER_IN_NBH = 2;
     public const MIN_NEIGHBOURHOOD_SIZE = 2;
-
-    public static function delete_recommendations($pageid) {
-        global $DB;
-
-        $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_recommendations', ['pageid' => $pageid]);
-        $transaction->allow_commit();
-    }
+    public const WEIGHT_COLLAB_FILTER = 0.5;
+    public const WEIGHT_NOVELTY_FACTOR = 0.5;
 
     public static function calculate_and_save_recommendations($pageid, $batchsize = 100) {
         $limitfrom = 0;
@@ -112,15 +106,20 @@ class post_recommendation_calculator {
         $relevantneighbourhood = $DB->get_records_select(
             'page_post_similarities', $select, array_merge($inpostidsparams, [$postid, $postid], $inpostidsparams),
         );
-        $recommendation->value = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD_SIZE ? (float) $avgpref :
-            self::calculate_recommenation_from_preferences_and_neighbourhood($postid, $preferences, $relevantneighbourhood);
+        $recommendationbycollabfilter = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD_SIZE ? (float) $avgpref :
+            self::calculate_recommendation_from_preferences_and_neighbourhood($postid, $preferences, $relevantneighbourhood);
+
+        $postnovelty = $DB->get_record('page_post_novelties', ['postid' => $postid]);
+
+        $recommendation->value =
+            self::WEIGHT_COLLAB_FILTER * $recommendationbycollabfilter + self::WEIGHT_NOVELTY_FACTOR * $postnovelty->value;
 
         $transaction = $DB->start_delegated_transaction();
         $DB->insert_record('page_post_recommendations', $recommendation, false, true);
         $transaction->allow_commit();
     }
 
-    private static function calculate_recommenation_from_preferences_and_neighbourhood($postid, $preferences, $neighbourhood) {
+    private static function calculate_recommendation_from_preferences_and_neighbourhood($postid, $preferences, $neighbourhood) {
         $dividend = 0.0;
         $divisor = 0.0;
         uasort($preferences, ['self', 'cmppostid']);
@@ -138,6 +137,14 @@ class post_recommendation_calculator {
                 self::shift_until_match_and_return_match($preferences, $similarity->postid);
         }
         return $dividend / $divisor;
+    }
+
+    public static function delete_recommendations($pageid) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->delete_records('page_post_recommendations', ['pageid' => $pageid]);
+        $transaction->allow_commit();
     }
 
     private static function shift_until_match_and_return_match($prefssortedbypostid, $postid) {

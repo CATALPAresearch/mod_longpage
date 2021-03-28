@@ -45,6 +45,9 @@ class post_recommendation_calculation_task extends \core\task\adhoc_task {
         mtrace('Deleting obsolete similarities of posts on page '.$pageid.'.');
         post_similarity_calculator::delete_similarities($pageid);
 
+        mtrace('Deleting obsolete novelties of posts on page '.$pageid.'.');
+        post_novelty_calculator::delete_post_novelties($pageid);
+
         mtrace('Deleting obsolete relative preferences for posts on page '.$pageid.'.');
         post_preference_calculator::delete_relative_preferences($pageid);
 
@@ -72,11 +75,17 @@ class post_recommendation_calculation_task extends \core\task\adhoc_task {
         mtrace('Calculating similarities of posts on page '.$pageid.'.');
         post_similarity_calculator::calculate_and_save_post_similarities($pageid);
 
+        mtrace('Calculating novelties of posts on page '.$pageid.'.');
+        post_novelty_calculator::calculate_and_save_post_novelties($pageid);
+
         mtrace('Calculating recommendations of posts on page '.$pageid.'.');
         post_recommendation_calculator::calculate_and_save_recommendations($pageid);
 
         mtrace('Deleting similarities of posts on page '.$pageid.' to save disc space.');
         post_similarity_calculator::delete_similarities($pageid);
+
+        mtrace('Deleting novelties of posts on page '.$pageid.' to save disc space.');
+        post_novelty_calculator::delete_post_novelties($pageid);
 
         mtrace('Deleting relative preferences for posts on page '.$pageid.' to save disc space.');
         post_preference_calculator::delete_relative_preferences($pageid);
