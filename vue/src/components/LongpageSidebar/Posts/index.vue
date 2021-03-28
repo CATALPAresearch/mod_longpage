@@ -73,7 +73,7 @@
           </div>
         </div>
         <div
-          v-else-if="threadsFiltered && !formShown"
+          v-else-if="threadsFiltered && formShown !== 'filter'"
           class="row mt-2"
         >
           <div class="col">
