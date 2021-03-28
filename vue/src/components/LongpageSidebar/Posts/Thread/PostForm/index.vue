@@ -93,7 +93,7 @@ export default {
     selectedSaveAction: {
       get() {
         if (this.postUpdate.anonymous) return this.saveActions[1];
-        if (this.postUpdate.isPublic || !this.saveActions.find(({key}) => key === 'save')) return this.saveActions[0];
+        if (this.postUpdate.isPublic) return this.saveActions[0];
         return this.saveActions[2];
       },
       set(action) {
@@ -105,6 +105,7 @@ export default {
   },
   mounted() {
     this.postUpdate = cloneDeep(this.post);
+    this.postUpdate.isPublic = this.thread.isPublic;
   },
   methods: {
     ...mapActions([
