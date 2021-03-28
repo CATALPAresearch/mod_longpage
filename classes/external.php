@@ -1029,7 +1029,7 @@ class mod_page_external extends external_api {
     }
 
     public static function update_post($postupdateparams) {
-        global $DB;
+        global $DB, $USER;
 
         self::validate_parameters(self::update_post_parameters(), ['postupdate' => $postupdateparams]);
         $postupdate = (object) $postupdateparams;
@@ -1039,6 +1039,10 @@ class mod_page_external extends external_api {
         $transaction = $DB->start_delegated_transaction();
         self::validate_post_can_be_updated($postupdate);
         $DB->update_record('page_posts', array_merge((array) $postupdate, ['timemodified' => time()]));
+        if (isset($postupdate->content) && $post->content !== $postupdate->content) {
+            $DB->delete_records('page_post_readings', ['postid' => $post->id]);
+            $DB->insert_record('page_post_readings', ['postid' => $post->id, 'userid' => $USER->id, 'timecreated' => time()]);
+        }
         if (isset($postupdate->ispublic)) {
             $annotation = self::get_annotation_by_thread_id($post->threadid);
             $DB->update_record(
