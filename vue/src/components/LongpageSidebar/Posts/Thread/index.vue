@@ -7,7 +7,7 @@
       :post="thread.root"
       :thread="thread"
       class="card-body text-dark thread-root"
-      @toggle-replies="showReplies = !showReplies"
+      @toggle-replies="toggleReplies"
     />
     <div
       v-if="showReplies && thread.replies.length"
@@ -30,9 +30,11 @@
 </template>
 
 <script>
+import {getThreadElementId} from '@/lib/annotation/utils';
+import {MUTATE} from '@/store/types';
+import {mapMutations} from 'vuex';
 import Post from './Post';
 import ReplyForm from '@/components/LongpageSidebar/Posts/Thread/ReplyForm';
-import {getThreadElementId} from '@/lib/annotation/utils';
 import {Thread} from '@/types/thread';
 
 export default {
@@ -54,5 +56,14 @@ export default {
       return getThreadElementId(this.thread.id);
     },
   },
+  methods: {
+    ...mapMutations([MUTATE.REMOVE_POSTS_FROM_THREAD]),
+    toggleReplies() {
+      if (this.showReplies && !this.thread.lastReply.created && !this.thread.lastReply.content.trim()) {
+        this[MUTATE.REMOVE_POSTS_FROM_THREAD]({threadId: this.thread.id, posts: [this.thread.lastReply]});
+      }
+      this.showReplies = !this.showReplies;
+    }
+  }
 };
 </script>

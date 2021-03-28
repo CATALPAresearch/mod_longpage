@@ -27,6 +27,10 @@ export class Thread {
         return this.root.created;
     }
 
+    getIndexOfPost(postId) {
+        return this.posts.findIndex(p => p.id === postId)
+    }
+
     get isPublic() {
         return this.root.isPublic;
     }
@@ -41,6 +45,11 @@ export class Thread {
 
     get participantIds() {
         return this.posts.map(({creatorId}) => creatorId);
+    }
+
+    getPostsAfter(postId) {
+        const postIndex = this.getIndexOfPost(postId);
+        return this.posts.filter((_, index) => index > postIndex)
     }
 
     get recommendation() {

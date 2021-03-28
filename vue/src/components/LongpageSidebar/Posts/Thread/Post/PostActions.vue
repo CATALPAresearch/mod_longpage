@@ -148,6 +148,7 @@ export default {
           });
         }
       }
+
       if (this.userIsCreator) {
         items.push({
           iconClasses: ['fa', 'fa-pencil', 'fa-fw'],
@@ -162,7 +163,14 @@ export default {
             text: this.$i18n.t('post.action.delete'),
           });
         }
-      } else {
+      }
+
+      if (!this.userIsCreator &&
+          !this.post.likedByUser &&
+          !this.post.bookmarkedByUser &&
+          (this.post !== this.thread.root || !this.thread.subscribedToByUser) &&
+          !this.thread.getPostsAfter(this.post.id).find(post => post.creatorId === this.userId)
+      ) {
         items.push({
           iconClasses: ['fa', this.post.readByUser ? 'fa-eye-slash' : 'fa-eye', 'fa-fw'],
           handler: this.togglePostReading,
@@ -178,9 +186,12 @@ export default {
     postIsLastPostInThread() {
       return this.thread.lastPost.id === this.post.id;
     },
+    userId() {
+      return this[GET.USER]() && this[GET.USER]().id;
+    },
     userIsCreator() {
-      return this[GET.USER]() && this[GET.USER]().id === this.post.creatorId;
-    }
+      return this.userId === this.post.creatorId;
+    },
   },
   methods: {
     ...mapActions([
@@ -206,9 +217,9 @@ export default {
     togglePostReading() {
       this[ACT.TOGGLE_POST_READING]({postId: this.post.id, threadId: this.post.threadId});
     },
-    toggleRepliesOrReply() {
+    async toggleRepliesOrReply() {
+      if (!this.thread.replyCount) await this[ACT.CREATE_POST]({threadId: this.thread.id});
       this.$emit('toggle-replies');
-      if (!this.thread.replyCount) this[ACT.CREATE_POST]({threadId: this.thread.id});
     },
     toggleThreadSubscription() {
       this[ACT.TOGGLE_THREAD_SUBSCRIPTION](this.post.threadId);

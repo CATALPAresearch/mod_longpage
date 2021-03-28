@@ -117,7 +117,7 @@ export default {
         }
     },
     actions: {
-        [ACT.CREATE_POST]({commit, dispatch, getters}, params = {}) {
+        async [ACT.CREATE_POST]({commit, dispatch, getters}, params = {}) {
             const post = getters[GET.POST](params.id) || getters[GET.NEW_POST](params);
             dispatch(ACT.REPLACE_OR_ADD_POST, post);
             commit(MUTATE.POST_LAST_MODIFIED, post);
