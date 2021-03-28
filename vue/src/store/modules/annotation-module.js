@@ -21,12 +21,15 @@ export default {
         }),
         [GET.ANNOTATIONS]: ({annotations}) => annotations,
         [GET.BOOKMARKS]: (_, getters) => {
-            return getters[GET.ANNOTATIONS].filter(a => a.type === AnnotationType.BOOKMARK);
+            return getters[GET.ANNOTATIONS]
+                .filter(a => a.type === AnnotationType.BOOKMARK)
+                .sort(AnnotationCompareFunction.BY_POSITION);
         },
         [GET.FILTERED_ANNOTATIONS]: ({filteredAnnotations}) => filteredAnnotations,
         [GET.HIGHLIGHTS]: (_, getters) => {
             return getters[GET.ANNOTATIONS]
-                .filter(a => a.type === AnnotationType.HIGHLIGHT);
+                .filter(a => a.type === AnnotationType.HIGHLIGHT)
+                .sort(AnnotationCompareFunction.BY_POSITION);
         },
         [GET.NEW_ANNOTATION]: (_, getters) => (params = {}) => {
             const annotation = new Annotation({
