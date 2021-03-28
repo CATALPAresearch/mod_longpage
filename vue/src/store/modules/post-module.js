@@ -269,7 +269,7 @@ export default {
         [ACT.UPDATE_POST]({commit, getters}, postUpdate) {
             const post = {...getters[GET.POST](postUpdate.id, postUpdate.threadId)};
             commit(MUTATE.UPDATE_POST, {threadId: post.threadId, postId: post.id, postUpdate});
-            commit(MUTATE.POST_LAST_MODIFIED, new Post({...postUpdate, ...post}));
+            commit(MUTATE.POST_LAST_MODIFIED, new Post({...post, ...postUpdate}));
             ajax.call([{
                 methodname: MoodleWSMethods.UPDATE_POST,
                 args: MappingService.mapPostUpdateToArgs(postUpdate),
