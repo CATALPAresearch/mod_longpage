@@ -135,7 +135,7 @@ export default {
   },
   data() {
     return {
-      formShown: null,
+      formShown: 'sorting',
       selectedThreads: [],
       THREAD_CONTAINER_ID,
     };

@@ -128,7 +128,7 @@
           "title": "Sortieroptionen ein-/ausblenden",
           "option": {
             "byNovelty": "Neueste zuerst",
-            "byPosition": "Nach Position im Text",
+            "byPosition": "Sortiert nach Position im Text",
             "byRecommendation": "Relevanteste zuerst"
           }
         }
