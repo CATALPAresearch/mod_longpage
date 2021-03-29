@@ -97,7 +97,7 @@
   import {ACT, GET} from '@/store/types';
   import {debounce, isEmpty, set} from 'lodash';
   import {mapActions, mapGetters} from 'vuex';
-  import {getDateFormat} from '@/config/i18n/date-time-utils';
+  import {getDateTimeFormat} from '@/config/i18n/date-time-utils';
   import MultiSelectCheckboxGroup from '@/components/Generic/MultiSelectCheckboxGroup';
   import MultiSelectInput from '@/components/Generic/MultiSelectInput/index';
   import Slider from '@/components/Generic/Slider';
@@ -229,10 +229,11 @@
         this.updateActiveFilter(path, value);
       }, 500),
       getDateSliderOptions(timeMin, timeMax) {
-        const format = time => this.$i18n.d.call(this.$i18n, time, getDateFormat(time));
+        const format = time => this.$i18n.d.call(this.$i18n, time, getDateTimeFormat(time));
         return {
           min: timeMin,
           max: timeMax,
+          step: 60,
           value: [timeMin, timeMax],
           formatter: value => Array.isArray(value) ? value.map(v => format(v)) : format(value),
         };
