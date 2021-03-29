@@ -40,11 +40,15 @@
     },
     watch: {
       sliderOptions: {
-        async handler(options) {
+        async handler(options, oldOptions) {
           await this.initSliderPromise;
           Object.entries(options).forEach(([key, value]) => {
             this.slider.setAttribute(key, value);
           });
+          this.slider.setValue([
+            this.modelValue[0] === undefined || this.modelValue[0] === oldOptions.min ? options.min : this.modelValue[0],
+            this.modelValue[1] === undefined || this.modelValue[1] === oldOptions.max ? options.max : this.modelValue[1],
+          ]);
           this.slider.refresh({useCurrentValue: true});
           this.slider.on('change', ({newValue}) => {
             this.emitDebounced(newValue);
