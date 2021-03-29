@@ -9,6 +9,8 @@
  * @since      3.1
  */
 import './components/LongpageContent/Footnote';
+import './lib/hashchange-listening';
+import './lib/page-ready-listening';
 import './lib/scroll-snapping';
 import App from './App.vue';
 import {createApp} from 'vue';

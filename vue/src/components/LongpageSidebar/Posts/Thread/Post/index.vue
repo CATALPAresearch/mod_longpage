@@ -1,5 +1,8 @@
 <template>
-  <div class="row no-gutters">
+  <div
+    :id="postDOMId"
+    class="row no-gutters"
+  >
     <div class="col col-auto p-0">
       <user-avatar
         :user="creator"
@@ -25,7 +28,6 @@
           >{{ role.localName || role.shortName }}</span>
         </div>
         <div class="col text-right">
-          <!--          <i class="icon fa fa-question-circle-o fa-fw" />-->
           <i
             v-if="!post.readByUser"
             class="icon fa fa-eye-slash fa-fw"
@@ -94,9 +96,9 @@
 </template>
 
 <script>
+import {getDOMIdOfPost, getHighlightByAnnotationId} from '@/util/annotation';
 import {GET} from '@/store/types';
 import {mapGetters} from 'vuex';
-import {getHighlightByAnnotationId} from '@/util/annotation';
 import UserAvatar from '@/components/Generic/UserAvatar';
 import ExpandableHighlightExcerpt from '@/components/Generic/ExpandableHighlightExcerpt';
 import PostForm from '@/components/LongpageSidebar/Posts/Thread/PostForm';
@@ -139,6 +141,9 @@ export default {
     },
     creatorRoles() {
       return this.creator ? this[GET.USER_ROLES](this.creator.id) : [];
+    },
+    postDOMId() {
+      return getDOMIdOfPost(this.post.id);
     },
     showPostVisibilityIndicator() {
       return this.user === this.creator;

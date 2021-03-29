@@ -30,12 +30,15 @@
 </template>
 
 <script>
-import {getThreadElementId} from '@/lib/annotation/utils';
+import {SCROLL_INTO_VIEW_OPTIONS, SidebarTabKeys} from '@/config/constants';
+import {EventBus} from '@/lib/event-bus';
+import {getDOMIdOfThread} from '@/util/annotation';
 import {MUTATE} from '@/store/types';
 import {mapMutations} from 'vuex';
 import Post from './Post';
 import ReplyForm from '@/components/LongpageSidebar/Posts/Thread/ReplyForm';
 import {Thread} from '@/types/thread';
+import scrollIntoView from 'scroll-into-view-if-needed';
 
 export default {
   name: 'Thread',
@@ -53,11 +56,39 @@ export default {
   },
   computed: {
     id() {
-      return getThreadElementId(this.thread.id);
+      return getDOMIdOfThread(this.thread.id);
     },
+  },
+  mounted() {
+    EventBus.subscribe('post-selected-by-url-hash', ({postId, postDOMId}) => {
+      if (this.thread.posts.findIndex(post => post.id === postId) < 0) return;
+
+      this.setTabOpened(SidebarTabKeys.POSTS);
+      this.showReplies = true;
+      this.$nextTick(() => {
+        scrollIntoView(
+          document.getElementById(postDOMId),
+          {...SCROLL_INTO_VIEW_OPTIONS, boundary: document.getElementById('sidebar-tab-posts')}
+        );
+      });
+    });
+
+    EventBus.subscribe('thread-selected-by-url-hash', ({threadId, threadDOMId}) => {
+      if (this.thread.id !== threadId) return;
+
+      this.setTabOpened(SidebarTabKeys.POSTS);
+      this.showReplies = true;
+      this.$nextTick(() => {
+        scrollIntoView(
+            document.getElementById(threadDOMId),
+            {...SCROLL_INTO_VIEW_OPTIONS, boundary: document.getElementById('sidebar-tab-posts')}
+        );
+      });
+    });
   },
   methods: {
     ...mapMutations([MUTATE.REMOVE_POSTS_FROM_THREAD]),
+    ...mapMutations({setTabOpened: MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY}),
     toggleReplies() {
       if (this.showReplies && !this.thread.lastReply.created && !this.thread.lastReply.content.trim()) {
         this[MUTATE.REMOVE_POSTS_FROM_THREAD]({threadId: this.thread.id, posts: [this.thread.lastReply]});
