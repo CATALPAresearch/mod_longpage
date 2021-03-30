@@ -161,12 +161,22 @@ class mod_page_external extends external_api {
      * @param $post
      */
     private static function delete_post_from_db($id): void {
-        global $DB;
+        global $DB, $USER;
 
+        $post = $DB->get_record('page_posts', ['id' => $id]);
         $DB->delete_records('page_post_likes', ['postid' => $id]);
         $DB->delete_records('page_post_readings', ['postid' => $id]);
         $DB->delete_records('page_post_bookmarks', ['postid' => $id]);
         $DB->delete_records('page_posts', ['id' => $id]);
+
+        manage_thread_subscriptions_task::create_manage_thread_subscriptions_task(
+            get_coursemodule_by_pageid($post->pageid)->id,
+            $id,
+            $post->threadid,
+            $USER->id,
+            post_action::DELETE,
+            $post->content,
+        );
     }
 
     private static function get_annotation_by_thread_id($threadid) {
@@ -1065,6 +1075,17 @@ class mod_page_external extends external_api {
         $transaction->allow_commit();
 
         post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
+        if (isset($postupdate->content) && $post->content !== $postupdate->content) {
+            manage_thread_subscriptions_task::create_manage_thread_subscriptions_task(
+                get_coursemodule_by_pageid($post->pageid)->id,
+                $post->id,
+                $post->threadid,
+                $USER->id,
+                post_action::UPDATE,
+                $postupdate->content,
+                $post->content,
+            );
+        }
 
         $posts = self::get_posts($post->threadid, [$postupdate->id]);
         return ['post' => array_shift($posts)];

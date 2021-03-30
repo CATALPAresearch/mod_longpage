@@ -40,11 +40,24 @@ $string['legacyfilesdone'] = 'Abgeschlossen';
 $string['loading'] = 'Wird geladen...';
 
 $string['messageprovider:posts'] = 'Abonnierte Threads';
+
 $string['messagesubjectpostcreated'] = 'Neuer Beitrag innerhalb eines abonnierten Threads';
 $string['messagefullpostcreated'] = '{$a->firstname} {$a->lastname} hat einen neuen Beitrag innerhalb eines von Ihnen abonnierten Threads verfasst:\n „{$a->content}“';
 $string['messagehtmlpostcreated'] = '<p>{$a->firstname} {$a->lastname} hat einen neuen Beitrag innerhalb eines von Ihnen abonnierten Threads verfasst:</p><p>„{$a->content}“</p>';
 $string['messagesmallpostcreated'] = '{$a->firstname} {$a->lastname}: {$a->content}';
-$string['messagecontexturlnamepostcreated'] = 'Beitrag';
+$string['messagecontexturlnamepostcreated'] = 'Neuer Beitrag';
+
+$string['messagesubjectpostdeleted'] = 'Beitrag innerhalb eines abonnierten Threads gelöscht';
+$string['messagefullpostdeleted'] = '{$a->firstname} {$a->lastname} hat folgenden Beitrag innerhalb eines von Ihnen abonnierten Threads gelöscht:\n „{$a->content}“';
+$string['messagehtmlpostdeleted'] = '<p>{$a->firstname} {$a->lastname} hat folgenden Beitrag innerhalb eines von Ihnen abonnierten Threads gelöscht:</p><p>„{$a->content}“</p>';
+$string['messagesmallpostdeleted'] = '{$a->firstname} {$a->lastname}: {$a->content}';
+$string['messagecontexturlnamepostdeleted'] = 'Thread, innerhalb dessen der Beitrag gelöscht wurde';
+
+$string['messagesubjectpostupdated'] = 'Beitrag innerhalb eines abonnierten Threads wurde bearbeitet';
+$string['messagefullpostupdated'] = '{$a->firstname} {$a->lastname} hat folgenden Beitrag innerhalb eines von Ihnen abonnierten Threads bearbeitet:\n„{$a->oldcontent}“\nNeuer Text: „{$a->content}“';
+$string['messagehtmlpostupdated'] = '<p>{$a->firstname} {$a->lastname} hat folgenden Beitrag innerhalb eines von Ihnen abonnierten Threads bearbeitet:</p><p>„{$a->oldcontent}“</p><p>Neuer Text:</p><p>„{$a->content}“</p>';
+$string['messagesmallpostupdated'] = '{$a->firstname} {$a->lastname}: {$a->content}';
+$string['messagecontexturlnamepostupdated'] = 'Bearbeiteter Beitrag';
 
 $string['modulename'] = 'Longpage';
 $string['modulename_help'] = 'Longpage ermöglocht Lehrenden länge Tetxte in Form von HTML abzulegen.';

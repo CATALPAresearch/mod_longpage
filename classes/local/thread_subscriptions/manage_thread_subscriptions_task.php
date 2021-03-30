@@ -43,6 +43,8 @@ class manage_thread_subscriptions_task extends \core\task\adhoc_task {
         $subscriptions = $DB->get_records('page_thread_subscriptions', ['threadid' => $threadid]);
         foreach($subscriptions as $subscription) {
             $data->subscriberid = $subscription->userid;
+            if ((int) $data->subscriberid === (int) $data->actorid) continue;
+
             $message = message_builder::build_message($data);
             message_send($message);
         }
