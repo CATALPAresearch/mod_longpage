@@ -86,7 +86,6 @@ export default {
       });
     });
 
-    console.log(this.thread.includesUnreadReply);
     this.showReplies = this.thread.includesUnreadReply;
   },
   methods: {
