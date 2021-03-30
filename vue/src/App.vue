@@ -85,9 +85,9 @@ export default {
       EventBus.subscribe('page-ready', () => {
         this.pageReady = true;
         this.$nextTick(() => {
-          this.$refs.mainRef.scrollTop = this.scrollTop;
+          this.$refs.mainRef.scrollTop = this.scrollTop * this.$refs.mainRef.scrollHeight;
           document.getElementById(LONGPAGE_MAIN_ID).addEventListener('scroll', throttle($event => {
-            this[ACT.UPDATE_READING_PROGRESS]($event.target.scrollTop);
+            this[ACT.UPDATE_READING_PROGRESS]($event.target.scrollTop / $event.target.scrollHeight);
           }));
         });
       });

@@ -1129,7 +1129,7 @@ class mod_page_external extends external_api {
     public static function update_reading_progress_parameters() {
         return new external_function_parameters([
             'pageid' => new external_value(PARAM_INT),
-            'scrolltop' => new external_value(PARAM_INT),
+            'scrolltop' => new external_value(PARAM_FLOAT),
         ]);
     }
 
