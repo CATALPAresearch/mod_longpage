@@ -169,6 +169,8 @@ class mod_page_external extends external_api {
         $DB->delete_records('page_post_bookmarks', ['postid' => $id]);
         $DB->delete_records('page_posts', ['id' => $id]);
 
+        self::update_annotation_by_thread($post->threadid);
+
         manage_thread_subscriptions_task::create_manage_thread_subscriptions_task(
             get_coursemodule_by_pageid($post->pageid)->id,
             $id,
@@ -207,8 +209,8 @@ class mod_page_external extends external_api {
         );
         $transaction->allow_commit();
 
+        self::update_annotation_by_thread($postparameters->threadid, $postparameters->ispublic);
         self::create_post_reading($id);
-
         post_recommendation_calculation_task::create_from_pageid_and_queue($postparameters->pageid);
 
         $posts = self::get_posts($postparameters->threadid, [$id]);
@@ -627,6 +629,20 @@ class mod_page_external extends external_api {
         $post = $DB->get_record('page_posts', ['id' => $postid], 'pageid');
 
         post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
+    }
+
+    private static function update_annotation_by_thread($threadid, $ispublic = null) {
+        global $DB;
+
+        $annotation = self::get_annotation_by_thread_id($threadid);
+        $update = ['id' => $annotation->id, 'timemodified' => time()];
+        if (isset($ispublic)) {
+            $update['ispublic'] = $ispublic;
+        }
+
+        $transaction = $DB->start_delegated_transaction();
+        $DB->update_record('page_annotations', $update);
+        $transaction->allow_commit();
     }
 
     /**
@@ -1065,13 +1081,7 @@ class mod_page_external extends external_api {
             $DB->delete_records('page_post_readings', ['postid' => $post->id]);
             $DB->insert_record('page_post_readings', ['postid' => $post->id, 'userid' => $USER->id, 'timecreated' => time()]);
         }
-        if (isset($postupdate->ispublic)) {
-            $annotation = self::get_annotation_by_thread_id($post->threadid);
-            $DB->update_record(
-                'page_annotations',
-                ['id' => $annotation->id, 'ispublic' => $postupdate->ispublic, 'timemodified' => time()],
-            );
-        }
+        self::update_annotation_by_thread($post->threadid, isset($postupdate->ispublic) ? $postupdate->ispublic : $post->ispublic);
         $transaction->allow_commit();
 
         post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
