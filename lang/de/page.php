@@ -38,6 +38,14 @@ $string['legacyfiles'] = 'Migration of old course file';
 $string['legacyfilesactive'] = 'Aktive';
 $string['legacyfilesdone'] = 'Abgeschlossen';
 $string['loading'] = 'Wird geladen...';
+
+$string['messageprovider:posts'] = 'Abonnierte Threads';
+$string['messagesubjectpostcreated'] = 'Neuer Beitrag innerhalb eines abonnierten Threads';
+$string['messagefullpostcreated'] = '{$a->firstname} {$a->lastname} hat einen neuen Beitrag innerhalb eines von Ihnen abonnierten Threads verfasst:\n „{$a->content}“';
+$string['messagehtmlpostcreated'] = '<p>{$a->firstname} {$a->lastname} hat einen neuen Beitrag innerhalb eines von Ihnen abonnierten Threads verfasst:</p><p>„{$a->content}“</p>';
+$string['messagesmallpostcreated'] = '{$a->firstname} {$a->lastname}: {$a->content}';
+$string['messagecontexturlnamepostcreated'] = 'Beitrag';
+
 $string['modulename'] = 'Longpage';
 $string['modulename_help'] = 'Longpage ermöglocht Lehrenden länge Tetxte in Form von HTML abzulegen.';
 

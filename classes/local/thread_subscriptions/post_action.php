@@ -15,16 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Page module version information
+ * Post Action
  *
- * @package mod_page
- * @copyright  2009 Petr Skoda (http://skodak.org)
+ * @package    mod_page
+ * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@web.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_page\local\thread_subscriptions;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021032902;       // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2018050800;       // Requires this Moodle version
-$plugin->component = 'mod_page';       // Full name of the plugin (used for diagnostics)
-$plugin->cron      = 0;
+/**
+ * Post Action
+ *
+ * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@web.de>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+abstract class post_action {
+    const CREATE = 0;
+    const DELETE = 1;
+    const UPDATE = 2;
+}

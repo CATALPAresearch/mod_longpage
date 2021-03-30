@@ -27,8 +27,10 @@
 defined('MOODLE_INTERNAL') || die;
 
 use mod_page\local\constants\annotation_type as annotation_type;
-use mod_page\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
 use mod_page\local\constants\selector as selector;
+use mod_page\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
+use mod_page\local\thread_subscriptions\manage_thread_subscriptions_task as manage_thread_subscriptions_task;
+use mod_page\local\thread_subscriptions\post_action as post_action;
 
 require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
@@ -200,6 +202,16 @@ class mod_page_external extends external_api {
         post_recommendation_calculation_task::create_from_pageid_and_queue($postparameters->pageid);
 
         $posts = self::get_posts($postparameters->threadid, [$id]);
+
+        manage_thread_subscriptions_task::create_manage_thread_subscriptions_task(
+            get_coursemodule_by_pageid($postparameters->pageid)->id,
+            $id,
+            $postparameters->threadid,
+            $USER->id,
+            post_action::CREATE,
+            $postparameters->content,
+        );
+
         return ['post' => array_shift($posts)];
     }
 
