@@ -1,28 +1,42 @@
 <template>
-  <div
-    id="longpage-app"
-    class="row no-gutters w-100"
-  >
+  <div>
     <div
-      id="longpage-main"
-      ref="mainRef"
-      class="col vh-100-wo-nav overflow-y-auto row no-gutters justify-content-center p-3"
+      v-if="!pageReady"
+      class="row no-gutters vh-50"
     >
       <div
-        id="longpage-content"
-        ref="contentRef"
-        class="generalbox center clearfix col"
-        lang="de"
-        v-html="content"
-      />
-      <div
-        class="col col-auto p-0 mx-1"
-        style="width: 3em;"
+        class="spinner-border m-auto "
+        role="status"
       >
-        <post-indicators />
+        <span class="sr-only" />
       </div>
     </div>
-    <longpage-sidebar class="col-auto" />
+    <div
+      v-show="pageReady"
+      id="longpage-app"
+      class="row no-gutters w-100"
+    >
+      <div
+        id="longpage-main"
+        ref="mainRef"
+        class="col vh-100-wo-nav overflow-y-auto row no-gutters justify-content-center p-3"
+      >
+        <div
+          id="longpage-content"
+          ref="contentRef"
+          class="generalbox center clearfix col"
+          lang="de"
+          v-html="content"
+        />
+        <div
+          class="col col-auto p-0 mx-1"
+          style="width: 3em;"
+        >
+          <post-indicators />
+        </div>
+      </div>
+      <longpage-sidebar class="col-auto" />
+    </div>
   </div>
 </template>
 
@@ -53,6 +67,7 @@ export default {
     data() {
       return {
         eventListeners: [],
+        pageReady: false,
         readingTimeEstimator: new ReadingTimeEstimator(toIdSelector(LONGPAGE_CONTENT_ID)),
         tabContentVisible: false,
       };
@@ -67,13 +82,15 @@ export default {
       ...mapGetters({context: GET.LONGPAGE_CONTEXT}),
     },
     mounted() {
-      setTimeout(() => {
-        this.$refs.mainRef.scrollTop = this.scrollTop;
-        document.getElementById(LONGPAGE_MAIN_ID).addEventListener('scroll', throttle($event => {
-          this[ACT.UPDATE_READING_PROGRESS]($event.target.scrollTop);
-        }, 1000, {leading: false}));
-      }, 5000); // TODO: Make it less brittle by replacing the fixed timeout number with, e.g. a Mutation Observer
-
+      EventBus.subscribe('page-ready', () => {
+        this.pageReady = true;
+        this.$nextTick(() => {
+          this.$refs.mainRef.scrollTop = this.scrollTop;
+          document.getElementById(LONGPAGE_MAIN_ID).addEventListener('scroll', throttle($event => {
+            this[ACT.UPDATE_READING_PROGRESS]($event.target.scrollTop);
+          }));
+        });
+      });
       this.$refs.mainRef.addEventListener('click', event => {
         const highlightsAtClickCoords = getHighlightsAnchoredAt(event.target);
         EventBus.publish('annotations-selected', {
