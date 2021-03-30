@@ -88,7 +88,7 @@ export default {
           this.$refs.mainRef.scrollTop = this.scrollTop * this.$refs.mainRef.scrollHeight;
           document.getElementById(LONGPAGE_MAIN_ID).addEventListener('scroll', throttle($event => {
             this[ACT.UPDATE_READING_PROGRESS]($event.target.scrollTop / $event.target.scrollHeight);
-          }));
+          }, 1000, {leading: false}));
         });
       });
       this.$refs.mainRef.addEventListener('click', event => {
