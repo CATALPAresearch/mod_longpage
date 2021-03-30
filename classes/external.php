@@ -733,8 +733,8 @@ class mod_page_external extends external_api {
 
         $annotations =
             isset($parameters['annotationid']) ?
-                self::get_annotations_by_annotation_id($parameters['annotationid']) :
-                self::get_annotations_by_page_id($parameters['pageid']);
+                self::get_annotations_by_annotation_id($parameters['annotationid'], $parameters['timemodified']) :
+                self::get_annotations_by_page_id($parameters['pageid'], $parameters['timemodified']);
 
         foreach ($annotations as $annotation) {
             $annotation->target = self::get_annotation_target($annotation->id);
@@ -746,23 +746,23 @@ class mod_page_external extends external_api {
         return ['annotations' => array_values($annotations)];
     }
 
-    private static function get_annotations_by_annotation_id($annotationid) {
+    private static function get_annotations_by_annotation_id($annotationid, $timemodified = 0) {
         global $DB, $USER;
 
         return $DB->get_records_select(
             'page_annotations',
-            'id = ? AND (creatorid = ? OR ispublic = 1)',
-            ['id' => $annotationid, 'creatorid' => $USER->id],
+            'id = ? AND timemodified >= ? AND (creatorid = ? OR ispublic = 1)',
+            ['id' => $annotationid, 'timemodified' => $timemodified, 'creatorid' => $USER->id],
         );
     }
 
-    private static function get_annotations_by_page_id($pageid) {
+    private static function get_annotations_by_page_id($pageid, $timemodified = 0) {
         global $DB, $USER;
 
         return $DB->get_records_select(
             'page_annotations',
-            'pageid = ? AND (creatorid = ? OR ispublic = 1)',
-            ['pageid' => $pageid, 'creatorid' => $USER->id],
+            'pageid = ? AND timemodified >= ? AND (creatorid = ? OR ispublic = 1)',
+            ['pageid' => $pageid, 'timemodified' => $timemodified, 'creatorid' => $USER->id],
         );
     }
 
@@ -777,6 +777,7 @@ class mod_page_external extends external_api {
             'parameters' => new external_single_structure([
                 'pageid' => new external_value(PARAM_INT),
                 'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                'timemodified' => new external_value(PARAM_INT, '', VALUE_DEFAULT, 0),
             ]),
         ]);
     }
