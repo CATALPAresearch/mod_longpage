@@ -85,6 +85,9 @@ export default {
         );
       });
     });
+
+    console.log(this.thread.includesUnreadReply);
+    this.showReplies = this.thread.includesUnreadReply;
   },
   methods: {
     ...mapMutations([MUTATE.REMOVE_POSTS_FROM_THREAD]),

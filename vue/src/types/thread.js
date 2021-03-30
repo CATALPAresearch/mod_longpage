@@ -31,6 +31,10 @@ export class Thread {
         return this.posts.findIndex(p => p.id === postId)
     }
 
+    get includesUnreadReply() {
+        return this.replies.findIndex(reply => !reply.readByUser) >= 0
+    }
+
     get isPublic() {
         return this.root.isPublic;
     }

@@ -229,10 +229,12 @@ export default {
         },
         [ACT.TOGGLE_POST_READING]({commit, getters}, {postId, threadId}) {
             const post = getters[GET.POST](postId, threadId);
-            commit(
-                MUTATE.UPDATE_POST,
-                {threadId: post.threadId, postId: post.id, postUpdate: {...post, readByUser: !post.readByUser}}
-            );
+            setTimeout(() => {
+                commit(
+                    MUTATE.UPDATE_POST,
+                    {threadId: post.threadId, postId: post.id, postUpdate: {...post, readByUser: !post.readByUser}}
+                );
+            }, 3000);
             const methodname = post.readByUser ? MoodleWSMethods.CREATE_POST_READING : MoodleWSMethods.DELETE_POST_READING;
             ajax.call([{
                 methodname,
