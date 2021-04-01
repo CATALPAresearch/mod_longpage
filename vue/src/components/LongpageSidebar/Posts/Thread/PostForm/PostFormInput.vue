@@ -7,7 +7,7 @@
     rows="3"
     @click.stop=""
     @input="$emit('update:modelValue', $event.target.value)"
-    @keydown.enter.meta.exact.prevent="$emit('submit')"
+    @keydown.enter.ctrl.exact.prevent="$emit('submit')"
     @keydown.esc.exact.prevent="$emit('submit')"
   />
 </template>
