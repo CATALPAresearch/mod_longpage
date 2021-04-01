@@ -8,6 +8,7 @@ export class PostFilter extends FilterBase {
     static FUSE_OPTIONS = Object.freeze({
         includeMatches: true,
         keys: ['content'],
+        threshold: 0.1,
     });
 
     constructor(filterParams) {
