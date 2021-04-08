@@ -17,7 +17,6 @@ import {createApp} from 'vue';
 import {initStore} from '@/store';
 import {LONGPAGE_APP_CONTAINER_ID} from '@/config/constants';
 import {toIdSelector} from '@/util/style';
-import {useAnnotations} from './components/LongpageContent';
 import {i18n} from '@/config/i18n';
 
 export const init = (courseId, pageId, pageName, userId, content, scrollTop) => {
@@ -27,7 +26,6 @@ export const init = (courseId, pageId, pageName, userId, content, scrollTop) => 
             .use(store)
             .use(i18n)
             .mount(toIdSelector(LONGPAGE_APP_CONTAINER_ID));
-        useAnnotations(store);
     } catch (e) {
         /* eslint-disable no-console */
         console.error(e);

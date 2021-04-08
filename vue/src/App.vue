@@ -1,5 +1,6 @@
 <template>
   <div>
+    <annotation-toolbar-controller />
     <div
       v-if="!pageReady"
       class="row no-gutters vh-50"
@@ -43,6 +44,7 @@
 <script>
 import {ACT, GET} from './store/types';
 import {AnnotationType, LONGPAGE_CONTENT_ID, LONGPAGE_MAIN_ID} from '@/config/constants';
+import AnnotationToolbarController from '@/components/LongpageContent/AnnotationToolbarController';
 import {EventBus} from '@/lib/event-bus';
 import {getHighlightsAnchoredAt} from '@/lib/annotation/highlight-selection-listening';
 import Log from './lib/Logging';
@@ -57,6 +59,7 @@ import Utils from './util/utils';
 export default {
     name: 'App',
     components: {
+      AnnotationToolbarController,
       PostIndicators,
       LongpageSidebar,
     },

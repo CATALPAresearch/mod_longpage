@@ -56,7 +56,8 @@ export class AnnotationToolbarPopoverPositioner {
     const {left, top, arrowDirection} = this._calculateTarget(selectionRect, isRTLselection);
     const zIndex = this._findZindex(left, top);
     return {
-      ...this._toCoordsRelativeToNPA(left, top),
+      left,
+      top,
       arrowDirection,
       zIndex
     };

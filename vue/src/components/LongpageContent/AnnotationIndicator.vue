@@ -37,7 +37,7 @@
 
 
   export default {
-    name: 'PostIndicator',
+    name: 'AnnotationIndicator',
     props: {
       annotations: {type: Array, default: () => []},
       top: {type: Number},

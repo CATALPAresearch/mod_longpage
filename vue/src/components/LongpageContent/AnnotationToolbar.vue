@@ -112,7 +112,7 @@
 
 #annotation-toolbar-popover {
   display: inline-block;
-  position: absolute;
+  position: fixed;
   text-align: center;
   font-size: 1rem;
 
