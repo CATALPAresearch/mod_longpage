@@ -33,7 +33,7 @@
           class="col col-auto p-0 mx-1"
           style="width: 3em;"
         >
-          <post-indicators />
+          <annotation-indicator-sidebar />
         </div>
       </div>
       <longpage-sidebar class="col-auto" />
@@ -50,7 +50,7 @@ import {getHighlightsAnchoredAt} from '@/lib/annotation/highlight-selection-list
 import Log from './lib/Logging';
 import LongpageSidebar from '@/components/LongpageSidebar';
 import {mapActions, mapGetters} from 'vuex';
-import PostIndicators from '@/components/LongpageContent/AnnotationIndicatorSidebar';
+import AnnotationIndicatorSidebar from '@/components/LongpageContent/AnnotationIndicatorSidebar';
 import {ReadingTimeEstimator} from '@/lib/reading-time-estimator';
 import {throttle} from 'lodash';
 import {toIdSelector} from '@/util/style';
@@ -60,7 +60,7 @@ export default {
     name: 'App',
     components: {
       AnnotationToolbarController,
-      PostIndicators,
+      AnnotationIndicatorSidebar,
       LongpageSidebar,
     },
     props: {
