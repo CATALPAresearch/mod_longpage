@@ -18,7 +18,7 @@
  * Manage Post Subscriptions Task
  *
  * @package    mod_page
- * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@web.com>
+ * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

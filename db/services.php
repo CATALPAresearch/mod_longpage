@@ -26,8 +26,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-// TODO Capabilities and type checking
-
 $functions = array(
     'mod_page_update_reading_progress' => array(
         'classname'     => 'mod_page_external',
