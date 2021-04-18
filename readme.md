@@ -1,37 +1,47 @@
+# mod-longpage
 
+![Screenshot of the GUI to read and annotate](./screenshot.png)
 
-Longpage is a moodle plugin for representing longer HTML pages. It provides a table of content, a full-text search and comes with a reading-friendly design. 
+*Longpage* or *mod-longpage* is a [Moodle (Activity) plugin](https://docs.moodle.org/dev/Activity_modules)  for providing long and structured texts in HTML for courses paired up with functions to navigate, annotate and co-read the text with other users. It is based on the [Page](https://docs.moodle.org/310/en/Page_resource) or [mod_page module](https://docs.moodle.org/310/en/Page_resource) which is part of the standard installation of Moodle. *Page* by itself simply allows for providing texts included in a Moodle page with no further functionality attached. *Longpage* can be seen as an extension of *Page* with is to be used as a replacement of *Page* for providing users with extra functionality. The main features *Longpage* adds on top of *Page* are:
+* reading-friendly design,
+* automatic prediction and inclusion of time necessary for reading a chapter, section etc.,
+* automatic saving of last scroll position to be able to continue reading at the position where the text was last left,
+* automatic creation of interactive table of contents showing current reading position and allowing users to jump among sections of the text provided,
+* ability to highlight text in four different colors and underline text in red or black,
+* ability to set a bookmark for a selection of text to remember that selection and jump back to it,
+* ability to add a note to a selection of text that can contain mathematical formulas expressed in [TeX notation](https://docs.moodle.org/310/en/Using_TeX_Notation),
+* ability to share notes among users publicly and anonymously,
+* ability to start thread-based discussions from notes shared and contribute to them, e.g., answer a question by another user,
+* ability to subscribe to notifications regarding changes in threads, especially new posts/notes by other users,
+* ability to bookmark notes,
+* ability to like notes,
+* automatic determination if post has been read by user and ability to mark notes as read or unread,
+* ability to filter threads and posts by a set of filters regarding content, author, number of likes, status (read, liked, subscribed to, bookmarked), time created or last modified,
+* ability to sort threads by time last modified or created, position of anchor in text, relevance based on novelty, [collaborative filtering](https://en.wikipedia.org/wiki/Collaborative_filtering) and reading progress of user.
 
-The plugin ist based on the page module which is delivered with every moodle.
+## Installation
+Before you can install the plugin you should have a proper Moodle installation running. See [here](https://docs.moodle.org/310/en/Installing_Moodle) for a tutorial on how to install Moodle. Pay special attention to enabling [Cron](https://docs.moodle.org/310/en/Cron) since it is necessary for some functionality of the Longpage plugin (notifications on activity of other users, calculation of relevance of annotations/threads/posts for a user). The plugin has been developed with Moodle version 3.9 since it represent the current LTS but it has also been tested with other version between 3.5 and 3.10 so it should work with them as well. We cannot make any statements about other versions since we have not tested it. Just give it a try ;) 
 
-# Features
-- generates a table of content frome the HTML strcture (headings)
-- enables a full-text search by using *lunr*
-- tracks scrolling events using the (InteractionObserver)[https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API]
-- measure reading time for a page
+On installing the plugin itself:
+1. Clone this repository and rename the folder to `page`.
 
-# Installation
-* clone the repository and rename the folder to 'page'.
-* copy the page folder in your moodle inside the 'mod' folder
-* Have a look at the administration area unter 'Notification' and follow the update procedure
-* Inside a course you can add a long page as an activity called 'Page'
+The *Longpage* plugin just downloaded is going to replace the *Page* plugin probably already installed in your Moodle installation. Inside Moodle the *Longpage* plugin also goes under the name *Page* so don't wonder if you don't find the name *Longpage* mentioned anywhere except in the code. Since the *Longpage* plugin is currently lacking update scripts - feel free to add some ;) - but alters database tables already created by Moodle or, more specifically, the *Page* plugin, e.g. adding a column, you cannot simply replace the *Page* plugin by the *Longpage* plugin since tables would not be altered and you would end up in an inconsistent state unable to use the plugin. Instead you have to install the already installed *Page* plugin first and, then, do a fresh install of the *Longpage* plugin.
 
-# Dependencies
-* vue.js
-* elasticlunr http://elasticlunr.com/docs/index.html, https://github.com/weixsong/lunr-languages
-* d3.js
+2. To uninstall the *Page* plugin probably already installed, go to the folder your Moodle installation is located in and run
 
-# Roadmap
-- measure reading time for sections and subsections
-- determine readability
-- hightlight current section in the table of content, http://localhost/active-menu-link/example/index.html#first
-- enabled text highlighting: 
- - https://github.com/s010s/vue-text-selection
- - http://annotatorjs.org/
-- enable social media support, e.g. send with WhatsApp
-- visualize paragraphs that have been read already
-- make font-size, line-height, contrast configurable
-- adaptively present recomonadations for related courses by considering past enrolments and semantic textual similarity
+```shell
+php admin/cli/uninstall_plugins.php --plugins=mod_page --run
+```
 
-# Alternatives
-- Search: https://fusejs.io/
+3. To install the *Longpage* plugin afterwards, copy the repository downloaded in the 1. step into the `mod` folder in the folder your Moodle installation is located in replacing the current `mod/page` folder containing the regular *Page* plugin. Now, login to your Moodle running as an administrator. The install/update GUI should open automatically. Just follow the steps the GUI presents to you and you should have installed the *Longpage* plugin successfully afterwards. As an alternative to using the GUI for installation, you can also run the update script from within the folder of your Moodle installation:
+
+```shell
+php admin/cli/upgrade.php
+```
+
+## Usage
+
+You use the *Longpage* plugin exacly like as you would use the regular *Page* plugin since *Longapge* is simply the *Page* plugin with some functionality added on top. If you don't yet know how to use the *Page* plugin, have a look into the [official Moodle documentation](https://docs.moodle.org/310/en/Page_resource).
+
+## Licence
+[GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
