@@ -2,7 +2,6 @@ import {remove} from 'lodash';
 import {THREAD_CONTAINER_ID} from "@/config/constants";
 import {ACT} from "@/store/types";
 
-// TODO: Put these functions in general utils
 const entryIntersecting = (entry, root) => entry.isIntersecting || elementsIntersecting(entry.target, root)
 
 const elementsIntersecting = (element, root) => rectsIntersecting(element.getBoundingClientRect(), root.getBoundingClientRect())

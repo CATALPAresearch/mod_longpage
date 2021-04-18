@@ -18,7 +18,7 @@
  * Manage Post Subscriptions Task
  *
  * @package    mod_page
- * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
+ * @copyright  2021 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Manage Post Subscriptions Task
  *
- * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@web.de>
+ * @copyright  2021 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class manage_thread_subscriptions_task extends \core\task\adhoc_task {

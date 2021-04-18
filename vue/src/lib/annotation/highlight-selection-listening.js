@@ -1,14 +1,4 @@
-import {AnnotationType, HighlightingConfig, LONGPAGE_CONTENT_ID} from '../../config/constants';
-import {EventBus} from '@/lib/event-bus';
-import {toIdSelector} from '@/util/style';
-
-// Const contentContainer = document.querySelector(toIdSelector(LONGPAGE_CONTENT_ID));
-//
-//
-// contentContainer.addEventListener('click', event => {
-//     const highlightsAtClickCoords = getHighlightsAnchoredAt(event.target);
-//     EventBus.publish('highlights-selected', highlightsAtClickCoords);
-// });
+import {AnnotationType, HighlightingConfig} from '../../config/constants';
 
 /**
  * Return the annotations associated with any highlights that contain a given

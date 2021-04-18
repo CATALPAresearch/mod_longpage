@@ -18,7 +18,7 @@
  * Post Novelty Calculator
  *
  * @package    mod_page
- * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
+ * @copyright  2021 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +34,7 @@ require_once("$CFG->dirroot/mod/page/locallib.php");
  * Calculates the novelty of a post defined as the number of users who can acces the post but have not yet read the post divided by
  * the total number of users that can access the post.
  *
- * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@web.de>
+ * @copyright  2021 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class post_novelty_calculator {

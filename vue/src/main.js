@@ -1,13 +1,3 @@
-/**
- * See also https://github.com/zack24q/vue-navigation/
- *
- * @module     mod/longpage
- * @package    mod_longpage
- * @class      longpage
- * @copyright  2020 Niels Seidel <niels.seidel@fernuni-hagen.de>
- * @license    MIT
- * @since      3.1
- */
 import './components/LongpageContent/Footnote';
 import './lib/hashchange-listening';
 import './lib/page-ready-listening';

@@ -18,7 +18,7 @@
  * Post Recommendation Calculator
  *
  * @package    mod_page
- * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
+ * @copyright  2021 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +31,7 @@ require_once("$CFG->dirroot/mod/page/locallib.php");
 /**
  * Post Recommendation Calculator
  *
- * @copyright  2020 Adrian Stritzinger <adrian.stritzinger@web.de>
+ * @copyright  2021 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class post_recommendation_calculator {
