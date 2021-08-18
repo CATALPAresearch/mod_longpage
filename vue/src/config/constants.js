@@ -80,7 +80,8 @@ export const SidebarTabKeys = Object.freeze({
     BOOKMARKS: 'bookmarks',
     HIGHLIGHTS: 'highlights',
     POSTS: 'posts',
-    TOC: 'toc'
+    TOC: 'toc',
+    SEARCH: 'search',
 });
 
 export const SCROLL_INTO_VIEW_OPTIONS = {
