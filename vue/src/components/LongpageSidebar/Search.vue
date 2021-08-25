@@ -1,6 +1,8 @@
 <script>
 import elasticlunr from "elasticlunr";
-import { LONGPAGE_APP_CONTAINER_ID } from "@/config/constants";
+import { LONGPAGE_APP_CONTAINER_ID, SidebarTabKeys } from "@/config/constants";
+import { EventBus } from "@/lib/event-bus";
+
 
 export default {
   name: "Search",
@@ -8,8 +10,10 @@ export default {
     // hideTabContent,
     // log,
   },
+  emits: ['toggle-tab'],
   data: function () {
     return {
+      SidebarTabKeys,
       index: {},
       search: "",
       searchResults: "",
@@ -121,6 +125,9 @@ export default {
     hideSearchResults: function () {
       this.showSearchResults = false;
     },
+    test(){
+      EventBus.publish("toggle-tab");
+    },
   },
 };
 </script>
@@ -163,7 +170,7 @@ export default {
           type="button"
           class="close ml-auto align-self-center d-block"
           aria-label="Close"
-          v-on:click="$emit('hideTabContent')"
+          @click="test"
         >
           <span aria-hidden="true">&times;</span>
         </button>
