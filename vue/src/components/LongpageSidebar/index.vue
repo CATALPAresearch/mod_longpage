@@ -72,6 +72,7 @@ import {
   AnnotationType,
   LONGPAGE_APP_ID,
   SidebarTabKeys,
+  SidebarEvents,
 } from "@/config/constants";
 import { GET, MUTATE } from "@/store/types";
 import { mapGetters, mapMutations } from "vuex";
@@ -143,6 +144,7 @@ export default {
     return {
       LONGPAGE_SIDEBAR_ID,
       LONGPAGE_SIDEBAR_TAB_CONTENT,
+      SidebarEvents,
       tabs: [
         {
           key: SidebarTabKeys.TOC,
@@ -189,7 +191,7 @@ export default {
           break;
       }
     });
-    EventBus.subscribe("toggle-tab", (type) => {
+    EventBus.subscribe(SidebarEvents.TOGGLE_TABS, (type) => {
       this.toggleTab(type);
     });
   },

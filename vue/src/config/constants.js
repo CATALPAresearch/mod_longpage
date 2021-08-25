@@ -84,6 +84,10 @@ export const SidebarTabKeys = Object.freeze({
     SEARCH: 'search',
 });
 
+export const SidebarEvents = Object.freeze({
+    TOGGLE_TABS: 'toggle_tabs',
+});
+
 export const SCROLL_INTO_VIEW_OPTIONS = {
     behavior: 'smooth',
     block: 'start',
