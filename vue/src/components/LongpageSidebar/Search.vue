@@ -1,6 +1,6 @@
 <script>
-
-//import elasticlunr from "elasticlunr";
+import elasticlunr from "elasticlunr";
+import { LONGPAGE_APP_CONTAINER_ID } from "@/config/constants";
 
 export default {
   name: "Search",
@@ -19,59 +19,55 @@ export default {
   },
 
   mounted: function () {
-    console.log("a");
     this.setupSearch();
   },
 
   methods: {
     setupSearch: function () {
       let _this = this;
-      require(["elasticlunr"], function (
-        elasticlunr,
-      ) {
-        var customized_stop_words = ["an", "der", "die", "das"]; // add German stop words
-        elasticlunr.addStopWords(customized_stop_words);
 
-        _this.index = elasticlunr();
-        //index.use(de);
-        _this.index.addField("title");
-        _this.index.addField("body");
-        _this.index.setRef("id");
-        // collect index
-        $(
-          ".longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre"
-        ).each(function (i, val) {
+      var customized_stop_words = ["an", "der", "die", "das"]; // add German stop words
+      elasticlunr.addStopWords(customized_stop_words);
+
+      _this.index = elasticlunr();
+      //index.use(de);
+      _this.index.addField("title");
+      _this.index.addField("body");
+      _this.index.setRef("id");
+      // collect index
+      $(
+        "#longpage-app h2, #longpage-app h3, #longpage-app h4, #longpage-app div, #longpage-app p, #longpage-app ul, #longpage-app ol, #longpage-app pre"
+      ).each(function (i, val) {
+        _this.index.addDoc({
+          id: i,
+          title: $(val).text(),
+          body: "",
+          link: $(val).attr("id"),
+        });
+      });
+
+      $(
+        "#longpage-app h2, #longpage-app h3, #longpage-app h4, #longpage-app div, #longpage-app p, #longpage-app ul, #longpage-app ol, #longpage-app pre"
+      ).each(function (i, val) {
+        if ($(this).is("h2") || $(this).is("h3") || $(this).is("h4")) {
           _this.index.addDoc({
             id: i,
             title: $(val).text(),
             body: "",
             link: $(val).attr("id"),
           });
-        });
-
-        $(
-          ".longpage-container h2, .longpage-container h3, .longpage-container h4, .longpage-container div, .longpage-container p, .longpage-container ul, .longpage-container ol, .longpage-container pre"
-        ).each(function (i, val) {
-          if ($(this).is("h2") || $(this).is("h3") || $(this).is("h4")) {
-            _this.index.addDoc({
-              id: i,
-              title: $(val).text(),
-              body: "",
-              link: $(val).attr("id"),
-            });
-          } else {
-            let attr = $(this).attr("id");
-            if (typeof attr === typeof undefined || attr === false) {
-              $(val).attr("id", "search-" + i);
-            }
-            _this.index.addDoc({
-              id: i,
-              title: "",
-              body: $(val).text(),
-              link: $(val).attr("id"),
-            });
+        } else {
+          let attr = $(this).attr("id");
+          if (typeof attr === typeof undefined || attr === false) {
+            $(val).attr("id", "search-" + i);
           }
-        });
+          _this.index.addDoc({
+            id: i,
+            title: "",
+            body: $(val).text(),
+            link: $(val).attr("id"),
+          });
+        }
       });
     },
 
@@ -86,11 +82,15 @@ export default {
           },
         });
         this.searchResults = this.searchResults.map(function (res) {
-          let pos = res.doc.body.indexOf(_this.searchTerm);
+          let pos = _this.index.documentStore.docs[res.ref].body.indexOf(
+            _this.searchTerm
+          );
+          res.doc = new Object();
+          res.doc.link = _this.index.documentStore.docs[res.ref].link;
           res.doc.short =
             pos > 0
               ? "... " +
-                res.doc.body
+                _this.index.documentStore.docs[res.ref].body
                   .substr(pos - 20 > 0 ? pos - 20 : 0, 40)
                   .replace(
                     _this.searchTerm,
@@ -173,12 +173,9 @@ export default {
           {{ searchResults.length }} Suchtreffer für '{{ searchTerm }}':
         </div>
         <ul id="search-results" class="list-unstyled">
-          <li
-            class="mb-2"
-            v-for="res in searchResults"
-            v-if="res.doc.short.length > 0"
-          >
+          <li class="mb-2" v-for="res in searchResults">
             <a
+              v-if="res.doc.short.length > 0"
               class="underline"
               style="word-wrap: break-word; color: #004c97 !important"
               :href="'#' + res.doc.link"

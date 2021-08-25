@@ -80,7 +80,7 @@ import Highlights from '@/components/LongpageSidebar/Highlights';
 import Posts from '@/components/LongpageSidebar/Posts';
 import {debounce} from 'lodash';
 import TableOfContents from '@/components/LongpageSidebar/TableOfContents';
-//import Search from '@/components/LongpageSidebar/Search';
+import Search from '@/components/LongpageSidebar/Search';
 
 const LONGPAGE_SIDEBAR_ID = 'longpage-sidebar';
 const LONGPAGE_SIDEBAR_TAB_CONTENT = 'longpage-sidebar-tab-content';
@@ -127,7 +127,7 @@ export default {
     [SidebarTabKeys.HIGHLIGHTS]: Highlights,
     [SidebarTabKeys.POSTS]: Posts,
     [SidebarTabKeys.TOC]: TableOfContents,
-    //[SidebarTabKeys.SEARCH]: Search,
+    [SidebarTabKeys.SEARCH]: Search,
   },
   data() {
     return {
@@ -138,7 +138,7 @@ export default {
         {key: SidebarTabKeys.POSTS, id: 'sidebar-tab-posts', icon: ['fa', 'fa-comments-o', 'fa-fw']},
         {key: SidebarTabKeys.HIGHLIGHTS, id: 'sidebar-tab-highlights', icon: ['fa', 'fa-pencil', 'fa-fw']},
         {key: SidebarTabKeys.BOOKMARKS, id: 'sidebar-tab-bookmarks', icon: ['fa', 'fa-bookmark-o', 'fa-fw']},
-        //{key: SidebarTabKeys.SEARCH, id: 'sidebar-tab-search', icon: ['fa', 'fa-search', 'fa-fw']},
+        {key: SidebarTabKeys.SEARCH, id: 'sidebar-tab-search', icon: ['fa', 'fa-search', 'fa-fw']},
       ],
     };
   },
@@ -146,7 +146,6 @@ export default {
     ...mapGetters({tabOpenedKey: GET.SIDEBAR_TAB_OPENED_KEY}),
   },
   mounted() {
-    console.log("ah");
     EventBus.subscribe('annotations-selected', ({type}) => {
       switch (type) {
         case AnnotationType.HIGHLIGHT:

@@ -198,4 +198,13 @@ $functions = array(
         'capabilities'  => 'mod/page:view',
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
+    'mod_page_log' => array(
+        'classname'     => 'mod_page_external',
+        'methodname'    => 'log',
+        'description'   => 'Writes logdata to database',
+        'type'          => 'write',
+        'capabilities'  => 'mod/page:view',
+        //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+        'ajax'        => true
+    ),
 );
