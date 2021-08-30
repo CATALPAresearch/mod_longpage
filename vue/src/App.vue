@@ -98,7 +98,7 @@ export default {
     computed: {
       logger() {
         return this.context ? new Log(new Utils(), this.context.courseId, {
-          context: 'mod_page',
+          context: 'mod_longpage',
           outputType: 1
         }) : null;
       },

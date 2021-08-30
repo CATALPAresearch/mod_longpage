@@ -82,7 +82,7 @@ class message_builder {
 
     private static function get_message_base($userid) {
         $message = new \core\message\message();
-        $message->component = 'mod_page';
+        $message->component = 'mod_longpage';
         $message->name = 'posts';
         $message->userfrom = \core_user::get_noreply_user();
         $message->userto = \core_user::get_user($userid);

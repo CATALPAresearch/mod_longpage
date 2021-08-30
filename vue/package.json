@@ -1,5 +1,5 @@
 {
-  "name": "moodle-mod_page",
+  "name": "moodle-mod_longpage",
   "version": "0.1.0",
   "private": true,
   "scripts": {

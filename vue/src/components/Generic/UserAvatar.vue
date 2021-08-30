@@ -44,7 +44,7 @@
           alt: this.user.imageAlt || this.$i18n.tc('avatar.alt', 2, {fullName: this.user.fullName})
         } : {
           alt: this.$i18n.tc('avatar.alt', 1),
-          src: M.util.image_url('user-secret-avatar', 'mod_page'),
+          src: M.util.image_url('user-secret-avatar', 'mod_longpage'),
         };
       },
       profileLink() {

@@ -16,7 +16,7 @@
 
 // author: Marc Burchart <marc.burchart@fernuni-hagen.de>
 
-namespace mod_page;
+namespace mod_longpage;
 
 defined('MOODLE_INTERNAL') || die();
 

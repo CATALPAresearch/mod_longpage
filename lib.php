@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_page
+ * @package mod_longpage
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -88,7 +88,7 @@ function page_get_post_actions() {
 /**
  * Add page instance.
  * @param stdClass $data
- * @param mod_page_mod_form $mform
+ * @param mod_longpage_mod_form $mform
  * @return int new page instance id
  */
 function page_add_instance($data, $mform = null) {
@@ -112,7 +112,7 @@ function page_add_instance($data, $mform = null) {
         $data->contentformat = $data->page['format'];
     }
 
-    $data->id = $DB->insert_record('longpage', $data);
+    $data->id = $DB->insert_record('page', $data);
 
     // we need to use context now, so we need to make sure all needed info is already in db
     $DB->set_field('course_modules', 'instance', $data->id, array('id'=>$cmid));
@@ -120,12 +120,12 @@ function page_add_instance($data, $mform = null) {
 
     if ($mform and !empty($data->page['itemid'])) {
         $draftitemid = $data->page['itemid'];
-        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_page', 'content', 0, page_get_editor_options($context), $data->content);
-        $DB->update_record('longpage', $data);
+        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_longpage', 'content', 0, page_get_editor_options($context), $data->content);
+        $DB->update_record('page', $data);
     }
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
-    \core_completion\api::update_completion_date_event($cmid, 'longpage', $data->id, $completiontimeexpected);
+    \core_completion\api::update_completion_date_event($cmid, 'page', $data->id, $completiontimeexpected);
 
     return $data->id;
 }
@@ -159,16 +159,16 @@ function page_update_instance($data, $mform) {
     $data->content       = $data->page['text'];
     $data->contentformat = $data->page['format'];
 
-    $DB->update_record('longpage', $data);
+    $DB->update_record('page', $data);
 
     $context = context_module::instance($cmid);
     if ($draftitemid) {
-        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_page', 'content', 0, page_get_editor_options($context), $data->content);
-        $DB->update_record('longpage', $data);
+        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_longpage', 'content', 0, page_get_editor_options($context), $data->content);
+        $DB->update_record('page', $data);
     }
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
-    \core_completion\api::update_completion_date_event($cmid, 'longpage', $data->id, $completiontimeexpected);
+    \core_completion\api::update_completion_date_event($cmid, 'page', $data->id, $completiontimeexpected);
 
     return true;
 }
@@ -181,16 +181,16 @@ function page_update_instance($data, $mform) {
 function page_delete_instance($id) {
     global $DB;
 
-    if (!$page = $DB->get_record('longpage', array('id'=>$id))) {
+    if (!$page = $DB->get_record('page', array('id'=>$id))) {
         return false;
     }
 
-    $cm = get_coursemodule_from_instance('longpage', $id);
-    \core_completion\api::update_completion_date_event($cm->id, 'longpage', $id, null);
+    $cm = get_coursemodule_from_instance('page', $id);
+    \core_completion\api::update_completion_date_event($cm->id, 'page', $id, null);
 
     // note: all context files are deleted automatically
 
-    $DB->delete_records('longpage', array('id'=>$page->id));
+    $DB->delete_records('page', array('id'=>$page->id));
 
     return true;
 }
@@ -209,7 +209,7 @@ function page_get_coursemodule_info($coursemodule) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
-    if (!$page = $DB->get_record('longpage', array('id'=>$coursemodule->instance),
+    if (!$page = $DB->get_record('page', array('id'=>$coursemodule->instance),
             'id, name, display, displayoptions, intro, introformat')) {
         return NULL;
     }
@@ -219,7 +219,7 @@ function page_get_coursemodule_info($coursemodule) {
 
     if ($coursemodule->showdescription) {
         // Convert intro to html. Do not filter cached version, filters run at display time.
-        $info->content = format_module_intro('longpage', $page, $coursemodule->id, false);
+        $info->content = format_module_intro('page', $page, $coursemodule->id, false);
     }
 
     if ($page->display != RESOURCELIB_DISPLAY_POPUP) {
@@ -240,7 +240,7 @@ function page_get_coursemodule_info($coursemodule) {
 /**
  * Lists all browsable file areas
  *
- * @package  mod_page
+ * @package  mod_longpage
  * @category files
  * @param stdClass $course course object
  * @param stdClass $cm course module object
@@ -249,14 +249,14 @@ function page_get_coursemodule_info($coursemodule) {
  */
 function page_get_file_areas($course, $cm, $context) {
     $areas = array();
-    $areas['content'] = get_string('content', 'longpage');
+    $areas['content'] = get_string('content', 'page');
     return $areas;
 }
 
 /**
  * File browsing support for page module content area.
  *
- * @package  mod_page
+ * @package  mod_longpage
  * @category files
  * @param stdClass $browser file browser instance
  * @param stdClass $areas file areas
@@ -284,9 +284,9 @@ function page_get_file_info($browser, $areas, $course, $cm, $context, $filearea,
         $filename = is_null($filename) ? '.' : $filename;
 
         $urlbase = $CFG->wwwroot.'/pluginfile.php';
-        if (!$storedfile = $fs->get_file($context->id, 'mod_page', 'content', 0, $filepath, $filename)) {
+        if (!$storedfile = $fs->get_file($context->id, 'mod_longpage', 'content', 0, $filepath, $filename)) {
             if ($filepath === '/' and $filename === '.') {
-                $storedfile = new virtual_root_file($context->id, 'mod_page', 'content', 0);
+                $storedfile = new virtual_root_file($context->id, 'mod_longpage', 'content', 0);
             } else {
                 // not found
                 return null;
@@ -304,7 +304,7 @@ function page_get_file_info($browser, $areas, $course, $cm, $context, $filearea,
 /**
  * Serves the page files.
  *
- * @package  mod_page
+ * @package  mod_longpage
  * @category files
  * @param stdClass $course course object
  * @param stdClass $cm course module object
@@ -339,12 +339,12 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
         // serve page content
         $filename = $arg;
 
-        if (!$page = $DB->get_record('longpage', array('id'=>$cm->instance), '*', MUST_EXIST)) {
+        if (!$page = $DB->get_record('page', array('id'=>$cm->instance), '*', MUST_EXIST)) {
             return false;
         }
 
         // We need to rewrite the pluginfile URLs so the media filters can work.
-        $content = file_rewrite_pluginfile_urls($page->content, 'webservice/pluginfile.php', $context->id, 'mod_page', 'content',
+        $content = file_rewrite_pluginfile_urls($page->content, 'webservice/pluginfile.php', $context->id, 'mod_longpage', 'content',
                                                 $page->revision);
         $formatoptions = new stdClass;
         $formatoptions->noclean = true;
@@ -354,7 +354,7 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
 
         // Remove @@PLUGINFILE@@/.
         $options = array('reverse' => true);
-        $content = file_rewrite_pluginfile_urls($content, 'webservice/pluginfile.php', $context->id, 'mod_page', 'content',
+        $content = file_rewrite_pluginfile_urls($content, 'webservice/pluginfile.php', $context->id, 'mod_longpage', 'content',
                                                 $page->revision, $options);
         $content = str_replace('@@PLUGINFILE@@/', '', $content);
 
@@ -364,16 +364,16 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
         $relativepath = implode('/', $args);
         $fullpath = "/$context->id/mod_longpage/$filearea/0/$relativepath";
         if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            $page = $DB->get_record('longpage', array('id'=>$cm->instance), 'id, legacyfiles', MUST_EXIST);
+            $page = $DB->get_record('page', array('id'=>$cm->instance), 'id, legacyfiles', MUST_EXIST);
             if ($page->legacyfiles != RESOURCELIB_LEGACYFILES_ACTIVE) {
                 return false;
             }
-            if (!$file = resourcelib_try_file_migration('/'.$relativepath, $cm->id, $cm->course, 'mod_page', 'content', 0)) {
+            if (!$file = resourcelib_try_file_migration('/'.$relativepath, $cm->id, $cm->course, 'mod_longpage', 'content', 0)) {
                 return false;
             }
             //file migrate - update flag
             $page->legacyfileslast = time();
-            $DB->update_record('longpage', $page);
+            $DB->update_record('page', $page);
         }
 
         // finally send the file
@@ -388,7 +388,7 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
  * @param stdClass $currentcontext Current context of block
  */
 function page_page_type_list($pagetype, $parentcontext, $currentcontext) {
-    $module_pagetype = array('mod-page-*'=>get_string('page-mod-page-x', 'longpage'));
+    $module_pagetype = array('mod-page-*'=>get_string('page-mod-page-x', 'page'));
     return $module_pagetype;
 }
 
@@ -402,11 +402,11 @@ function page_export_contents($cm, $baseurl) {
     $contents = array();
     $context = context_module::instance($cm->id);
 
-    $page = $DB->get_record('longpage', array('id'=>$cm->instance), '*', MUST_EXIST);
+    $page = $DB->get_record('page', array('id'=>$cm->instance), '*', MUST_EXIST);
 
     // page contents
     $fs = get_file_storage();
-    $files = $fs->get_area_files($context->id, 'mod_page', 'content', 0, 'sortorder DESC, id ASC', false);
+    $files = $fs->get_area_files($context->id, 'mod_longpage', 'content', 0, 'sortorder DESC, id ASC', false);
     foreach ($files as $fileinfo) {
         $file = array();
         $file['type']         = 'file';
@@ -454,8 +454,8 @@ function page_export_contents($cm, $baseurl) {
  */
 function page_dndupload_register() {
     return array('types' => array(
-                     array('identifier' => 'text/html', 'message' => get_string('createpage', 'longpage')),
-                     array('identifier' => 'text', 'message' => get_string('createpage', 'longpage'))
+                     array('identifier' => 'text/html', 'message' => get_string('createpage', 'page')),
+                     array('identifier' => 'text', 'message' => get_string('createpage', 'page'))
                  ));
 }
 
@@ -481,7 +481,7 @@ function page_dndupload_handle($uploadinfo) {
     $data->coursemodule = $uploadinfo->coursemodule;
 
     // Set the display options to the site defaults.
-    $config = get_config('longpage');
+    $config = get_config('page');
     $data->display = $config->display;
     $data->popupheight = $config->popupheight;
     $data->popupwidth = $config->popupwidth;
@@ -511,7 +511,7 @@ function page_view($page, $course, $cm, $context) {
     $event = \mod_longpage\event\course_module_viewed::create($params);
     $event->add_record_snapshot('course_modules', $cm);
     $event->add_record_snapshot('course', $course);
-    $event->add_record_snapshot('longpage', $page);
+    $event->add_record_snapshot('page', $page);
     $event->trigger();
 
     // Completion.

@@ -18,7 +18,7 @@
 /**
  * Page configuration form
  *
- * @package mod_page
+ * @package mod_longpage
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -117,7 +117,7 @@ class mod_page_mod_form extends moodleform_mod {
         if ($this->current->instance) {
             $draftitemid = file_get_submitted_draft_itemid('longpage');
             $default_values['longpage']['format'] = $default_values['contentformat'];
-            $default_values['longpage']['text']   = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_page', 'content', 0, page_get_editor_options($this->context), $default_values['content']);
+            $default_values['longpage']['text']   = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_longpage', 'content', 0, page_get_editor_options($this->context), $default_values['content']);
             $default_values['longpage']['itemid'] = $draftitemid;
         }
         if (!empty($default_values['displayoptions'])) {

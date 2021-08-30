@@ -22,7 +22,7 @@ export default function () {
     this.get_ws = function (ws, params, cb, external) {
         external = external === undefined ? false : external;
         ajax.call([{
-            methodname: external ? ws : 'mod_page_' + ws,
+            methodname: external ? ws : 'mod_longpage_' + ws,
             args: params,
             done: function (msg) {
                 if (msg.hasOwnProperty('exception')) {

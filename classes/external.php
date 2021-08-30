@@ -17,7 +17,7 @@
 /**
  * Page external API
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @category   external
  * @copyright  2015 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -41,7 +41,7 @@ require_once("$CFG->dirroot/mod/longpage/locallib.php");
 /**
  * Page external functions
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @category   external
  * @copyright  2015 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -832,23 +832,23 @@ class mod_page_external extends external_api {
                     $page->intro,
                     $page->introformat,
                     $context->id,
-                    'mod_page',
+                    'mod_longpage',
                     'intro',
                     null
                 );
-                $page->introfiles = external_util::get_area_files($context->id, 'mod_page', 'intro', false, false);
+                $page->introfiles = external_util::get_area_files($context->id, 'mod_longpage', 'intro', false, false);
 
                 $options = array('noclean' => true);
                 list($page->content, $page->contentformat) = external_format_text(
                     $page->content,
                     $page->contentformat,
                     $context->id,
-                    'mod_page',
+                    'mod_longpage',
                     'content',
                     $page->revision,
                     $options
                 );
-                $page->contentfiles = external_util::get_area_files($context->id, 'mod_page', 'content');
+                $page->contentfiles = external_util::get_area_files($context->id, 'mod_longpage', 'content');
 
                 $returnedpages[] = $page;
             }
@@ -1349,8 +1349,8 @@ class mod_page_external extends external_api {
         global $CFG, $DB, $USER;
 
         $r = new stdClass();
-        $r->name = 'mod_page';
-        $r->component = 'mod_page';
+        $r->name = 'mod_longpage';
+        $r->component = 'mod_longpage';
         $r->eventname = '\mod_longpage\event\course_module_' . $data['action'];
         $r->action = $data['action'];
         $r->target = 'course_module';
