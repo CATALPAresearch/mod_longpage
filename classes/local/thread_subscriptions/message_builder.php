@@ -46,37 +46,37 @@ class message_builder {
 
     private static function build_post_in_thread_created_message($data) {
         $message = self::get_message_base($data->subscriberid);
-        $message->subject = get_string('messagesubjectpostcreated', 'page');
+        $message->subject = get_string('messagesubjectpostcreated', 'longpage');
         $substitutions = self::get_string_substitutions($data);
-        $message->fullmessage = get_string('messagefullpostcreated', 'page', $substitutions);
-        $message->fullmessagehtml = get_string('messagehtmlpostcreated', 'page', $substitutions);
-        $message->smallmessage = get_string('messagesmallpostcreated', 'page', $substitutions);
+        $message->fullmessage = get_string('messagefullpostcreated', 'longpage', $substitutions);
+        $message->fullmessagehtml = get_string('messagehtmlpostcreated', 'longpage', $substitutions);
+        $message->smallmessage = get_string('messagesmallpostcreated', 'longpage', $substitutions);
         $message->contexturl = (new \moodle_url('/mod/longpage/view.php', ['id' => $data->cmid], "post-{$data->postid}"))->out(false);
-        $message->contexturlname = get_string('messagecontexturlnamepostcreated', 'page');
+        $message->contexturlname = get_string('messagecontexturlnamepostcreated', 'longpage');
         return $message;
     }
 
     private static function build_post_in_thread_deleted_message($data) {
         $message = self::get_message_base($data->subscriberid);
-        $message->subject = get_string('messagesubjectpostdeleted', 'page');
+        $message->subject = get_string('messagesubjectpostdeleted', 'longpage');
         $substitutions = self::get_string_substitutions($data);
-        $message->fullmessage = get_string('messagefullpostdeleted', 'page', $substitutions);
-        $message->fullmessagehtml = get_string('messagehtmlpostdeleted', 'page', $substitutions);
-        $message->smallmessage = get_string('messagesmallpostdeleted', 'page', $substitutions);
+        $message->fullmessage = get_string('messagefullpostdeleted', 'longpage', $substitutions);
+        $message->fullmessagehtml = get_string('messagehtmlpostdeleted', 'longpage', $substitutions);
+        $message->smallmessage = get_string('messagesmallpostdeleted', 'longpage', $substitutions);
         $message->contexturl = (new \moodle_url('/mod/longpage/view.php', ['id' => $data->cmid], "thread-{$data->threadid}"))->out(false);
-        $message->contexturlname = get_string('messagecontexturlnamepostdeleted', 'page');
+        $message->contexturlname = get_string('messagecontexturlnamepostdeleted', 'longpage');
         return $message;
     }
 
     private static function build_post_in_thread_updated_message($data) {
         $message = self::get_message_base($data->subscriberid);
-        $message->subject = get_string('messagesubjectpostupdated', 'page');
+        $message->subject = get_string('messagesubjectpostupdated', 'longpage');
         $substitutions = self::get_string_substitutions($data);
-        $message->fullmessage = get_string('messagefullpostupdated', 'page', $substitutions);
-        $message->fullmessagehtml = get_string('messagehtmlpostupdated', 'page', $substitutions);
-        $message->smallmessage = get_string('messagesmallpostupdated', 'page', $substitutions);
+        $message->fullmessage = get_string('messagefullpostupdated', 'longpage', $substitutions);
+        $message->fullmessagehtml = get_string('messagehtmlpostupdated', 'longpage', $substitutions);
+        $message->smallmessage = get_string('messagesmallpostupdated', 'longpage', $substitutions);
         $message->contexturl = (new \moodle_url('/mod/longpage/view.php', ['id' => $data->cmid], "post-{$data->postid}"))->out(false);
-        $message->contexturlname = get_string('messagecontexturlnamepostupdated', 'page');
+        $message->contexturlname = get_string('messagecontexturlnamepostupdated', 'longpage');
         return $message;
     }
 

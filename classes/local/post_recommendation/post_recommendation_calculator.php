@@ -65,13 +65,13 @@ class post_recommendation_calculator {
         global $DB;
 
         $preferences = $DB->get_records(
-            'page_relative_post_prefs', ['pageid' => $pageid, 'userid' => $userid], 'postid, value'
+            'longpage_rel_post_prefs', ['pageid' => $pageid, 'userid' => $userid], 'postid, value'
         );
         if (count($preferences) < self::MIN_PREFERENCES_PER_USER_IN_NBH) {
             return;
         }
 
-        $prefprofile = $DB->get_record('page_post_pref_profiles', ['pageid' => $pageid, 'userid' => $userid], 'avg');
+        $prefprofile = $DB->get_record('longpage_post_pref_profiles', ['pageid' => $pageid, 'userid' => $userid], 'avg');
 
         $limitfrom = 0;
         $idsofpostswithprefs = array_map(function($pref) {
@@ -79,7 +79,7 @@ class post_recommendation_calculator {
         }, $preferences);
         list($select, $params) = self::get_select_and_params_for_posts_to_calc_rec_for($idsofpostswithprefs, $pageid);
         while (true) {
-            $posts = $DB->get_records_select('page_posts', $select, $params, 'timecreated ASC', 'id', $limitfrom, $batchsize);
+            $posts = $DB->get_records_select('longpage_posts', $select, $params, 'timecreated ASC', 'id', $limitfrom, $batchsize);
             $idsofpostswithoutprefs = array_map(function ($post) { return (int) $post->id; }, $posts);
             foreach ($idsofpostswithoutprefs as $postid) {
                 self::calculate_and_save_recommendation_for_user_for_post(
@@ -104,18 +104,18 @@ class post_recommendation_calculator {
         list($inpostidssql, $inpostidsparams) = $DB->get_in_or_equal($idsofpostswithprefs);
         $select = "(postaid $inpostidssql AND postbid = ?) OR (postaid = ? AND postbid $inpostidssql)";
         $relevantneighbourhood = $DB->get_records_select(
-            'page_post_similarities', $select, array_merge($inpostidsparams, [$postid, $postid], $inpostidsparams),
+            'longpage_post_similarities', $select, array_merge($inpostidsparams, [$postid, $postid], $inpostidsparams),
         );
         $recommendationbycollabfilter = count($relevantneighbourhood) < self::MIN_NEIGHBOURHOOD_SIZE ? (float) $avgpref :
             self::calculate_recommendation_from_preferences_and_neighbourhood($postid, $preferences, $relevantneighbourhood);
 
-        $postnovelty = $DB->get_record('page_post_novelties', ['postid' => $postid]);
+        $postnovelty = $DB->get_record('longpage_post_novelties', ['postid' => $postid]);
 
         $recommendation->value =
             self::WEIGHT_COLLAB_FILTER * $recommendationbycollabfilter + self::WEIGHT_NOVELTY_FACTOR * $postnovelty->value;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_post_recommendations', $recommendation, false, true);
+        $DB->insert_record('longpage_post_recomends', $recommendation, false, true);
         $transaction->allow_commit();
     }
 
@@ -143,7 +143,7 @@ class post_recommendation_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_recommendations', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_post_recomends', ['pageid' => $pageid]);
         $transaction->allow_commit();
     }
 

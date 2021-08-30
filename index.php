@@ -37,8 +37,8 @@ $event = \mod_longpage\event\course_module_instance_list_viewed::create(array('c
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
-$strpage         = get_string('modulename', 'page');
-$strpages        = get_string('modulenameplural', 'page');
+$strpage         = get_string('modulename', 'longpage');
+$strpages        = get_string('modulenameplural', 'longpage');
 $strname         = get_string('name');
 $strintro        = get_string('moduleintro');
 $strlastmodified = get_string('lastmodified');
@@ -49,7 +49,7 @@ $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add($strpages);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strpages);
-if (!$pages = get_all_instances_in_course('page', $course)) {
+if (!$pages = get_all_instances_in_course('longpage', $course)) {
     notice(get_string('thereareno', 'moodle', $strpages), "$CFG->wwwroot/course/view.php?id=$course->id");
     exit;
 }
@@ -92,7 +92,7 @@ foreach ($pages as $page) {
     $table->data[] = array (
         $printsection,
         "<a $class href=\"view.php?id=$cm->id\">".format_string($page->name)."</a>",
-        format_module_intro('page', $page, $cm->id));
+        format_module_intro('longpage', $page, $cm->id));
 }
 
 echo html_writer::table($table);

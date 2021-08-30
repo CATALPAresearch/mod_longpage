@@ -40,7 +40,7 @@ class post_similarity_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_similarities', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_post_similarities', ['pageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -103,7 +103,7 @@ class post_similarity_calculator {
             $postsim = self::get_post_similarity($postpair, $similarity, $pageid);
 
             $transaction = $DB->start_delegated_transaction();
-            $DB->insert_record('page_post_similarities', $postsim, false, true);
+            $DB->insert_record('longpage_post_similarities', $postsim, false, true);
             $transaction->allow_commit();
         }
     }
@@ -122,6 +122,6 @@ class post_similarity_calculator {
 
         $conditions = [$postpair->postaid, $postpair->postbid, $postpair->postbid, $postpair->postaid];
         $select = '(postaid = ? AND postbid = ?) OR (postaid = ? AND postbid = ?)';
-        return $DB->record_exists_select('page_post_similarities', $select, $conditions);
+        return $DB->record_exists_select('longpage_post_similarities', $select, $conditions);
     }
 }

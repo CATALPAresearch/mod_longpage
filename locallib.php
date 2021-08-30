@@ -31,8 +31,8 @@ require_once("$CFG->dirroot/mod/longpage/lib.php");
 function get_coursemodule_by_pageid($pageid) {
     global $DB;
 
-    $page = $DB->get_record('page', ['id' => $pageid], '*', MUST_EXIST);
-    return get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
+    $page = $DB->get_record('longpage', ['id' => $pageid], '*', MUST_EXIST);
+    return get_coursemodule_from_instance('longpage', $page->id, $page->course, false, MUST_EXIST);
 }
 
 function get_page_users_ids($pageid, $limitfrom = 0, $limitnum = 100) {

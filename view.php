@@ -34,16 +34,16 @@ $p       = optional_param('p', 0, PARAM_INT);  // Page instance ID
 $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
 
 if ($p) {
-    if (!$page = $DB->get_record('page', array('id'=>$p))) {
+    if (!$page = $DB->get_record('longpage', array('id'=>$p))) {
         print_error('invalidaccessparameter');
     }
-    $cm = get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
+    $cm = get_coursemodule_from_instance('longpage', $page->id, $page->course, false, MUST_EXIST);
 
 } else {
-    if (!$cm = get_coursemodule_from_id('page', $id)) {
+    if (!$cm = get_coursemodule_from_id('longpage', $id)) {
         print_error('invalidcoursemodule');
     }
-    $page = $DB->get_record('page', array('id'=>$cm->instance), '*', MUST_EXIST);
+    $page = $DB->get_record('longpage', array('id'=>$cm->instance), '*', MUST_EXIST);
 }
 
 $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
@@ -53,7 +53,7 @@ $context = context_module::instance($cm->id);
 require_capability('mod/longpage:view', $context);
 
 $scrolltop = $DB->get_field(
-    'page_reading_progress',
+    'longpage_reading_progress',
     'scrolltop',
     ['userid' => $USER->id, 'pageid' => $page->id],
 );
@@ -98,7 +98,7 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
         echo $OUTPUT->heading(format_string($page->name));
     }
     if (!isset($options['printintro']) || !empty($options['printintro'])) {
-        echo $OUTPUT->box(format_module_intro('page', $page, $cm->id), 'generalbox', 'intro');
+        echo $OUTPUT->box(format_module_intro('longpage', $page, $cm->id), 'generalbox', 'intro');
     }
     echo '<div id="longpage-app-container" class="border-top border-bottom">';
     echo '<div class="row no-gutters vh-50">';
@@ -106,7 +106,7 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     echo '</div></div>';
 
     $PAGE->requires->js_call_amd(
-        'mod_page/app-lazy',
+        'mod_longpage/app-lazy',
         'init',
         [
             $course->id,
