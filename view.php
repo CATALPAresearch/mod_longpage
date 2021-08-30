@@ -24,8 +24,8 @@
  */
 
 require('../../config.php');
-require_once($CFG->dirroot.'/mod/page/lib.php');
-require_once($CFG->dirroot.'/mod/page/locallib.php');
+require_once($CFG->dirroot.'/mod/longpage/lib.php');
+require_once($CFG->dirroot.'/mod/longpage/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 //header("Access-Control-Allow-Origin: *");
 
@@ -50,7 +50,7 @@ $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
 
 require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
-require_capability('mod/page:view', $context);
+require_capability('mod/longpage:view', $context);
 
 $scrolltop = $DB->get_field(
     'page_reading_progress',
@@ -61,8 +61,8 @@ $scrolltop = $DB->get_field(
 // Completion and trigger events.
 page_view($page, $course, $cm, $context);
 
-$PAGE->set_url('/mod/page/view.php', array('id' => $cm->id));
-$PAGE->requires->css('/mod/page/styles.css', true);
+$PAGE->set_url('/mod/longpage/view.php', array('id' => $cm->id));
+$PAGE->requires->css('/mod/longpage/styles.css', true);
 
 $options = empty($page->displayoptions) ? array() : unserialize($page->displayoptions);
 
@@ -119,7 +119,7 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     );
 } else {
     echo "Umleitung";
-    $url = new moodle_url('/mod/page/blocking-redirect.php');
+    $url = new moodle_url('/mod/longpage/blocking-redirect.php');
     redirect($url);
 }
 

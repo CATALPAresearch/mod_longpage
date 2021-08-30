@@ -26,7 +26,7 @@ namespace mod_page\local\post_recommendation;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->dirroot/mod/page/locallib.php");
+require_once("$CFG->dirroot/mod/longpage/locallib.php");
 
 /**
  * Post Novelty Calculator

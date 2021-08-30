@@ -31,7 +31,7 @@ $link = $CFG->wwwroot.'/course/format/ladtopics/policy.php';
 $context = context_system::instance();
 global $USER, $PAGE, $DB, $CFG;
 $PAGE->set_context($context);
-$PAGE->set_url($CFG->wwwroot.'/mod/page/blocking-redirect.php');
+$PAGE->set_url($CFG->wwwroot.'/mod/longpage/blocking-redirect.php');
 
 $PAGE->set_pagelayout('course');
 $PAGE->set_title("Kein Zugang");

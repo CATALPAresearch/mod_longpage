@@ -36,7 +36,7 @@ require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
 require_once("$CFG->dirroot/course/externallib.php");
 require_once("$CFG->dirroot/user/externallib.php");
-require_once("$CFG->dirroot/mod/page/locallib.php");
+require_once("$CFG->dirroot/mod/longpage/locallib.php");
 
 /**
  * Page external functions
@@ -1289,7 +1289,7 @@ class mod_page_external extends external_api {
      */
     public static function view_page($pageid) {
         global $DB, $CFG;
-        require_once($CFG->dirroot . "/mod/page/lib.php");
+        require_once($CFG->dirroot . "/mod/longpage/lib.php");
 
         $params = self::validate_parameters(
             self::view_page_parameters(),
@@ -1306,7 +1306,7 @@ class mod_page_external extends external_api {
         $context = context_module::instance($cm->id);
         self::validate_context($context);
 
-        require_capability('mod/page:view', $context);
+        require_capability('mod/longpage:view', $context);
 
         // Call the page/lib API.
         page_view($page, $course, $cm, $context);

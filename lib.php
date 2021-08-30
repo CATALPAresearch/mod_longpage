@@ -226,7 +226,7 @@ function page_get_coursemodule_info($coursemodule) {
         return $info;
     }
 
-    $fullurl = "$CFG->wwwroot/mod/page/view.php?id=$coursemodule->id&amp;inpopup=1";
+    $fullurl = "$CFG->wwwroot/mod/longpage/view.php?id=$coursemodule->id&amp;inpopup=1";
     $options = empty($page->displayoptions) ? array() : unserialize($page->displayoptions);
     $width  = empty($options['popupwidth'])  ? 620 : $options['popupwidth'];
     $height = empty($options['popupheight']) ? 450 : $options['popupheight'];
@@ -292,7 +292,7 @@ function page_get_file_info($browser, $areas, $course, $cm, $context, $filearea,
                 return null;
             }
         }
-        require_once("$CFG->dirroot/mod/page/locallib.php");
+        require_once("$CFG->dirroot/mod/longpage/locallib.php");
         return new page_content_file_info($browser, $context, $storedfile, $urlbase, $areas[$filearea], true, true, true, false);
     }
 
@@ -324,7 +324,7 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
     }
 
     require_course_login($course, true, $cm);
-    if (!has_capability('mod/page:view', $context)) {
+    if (!has_capability('mod/longpage:view', $context)) {
         return false;
     }
 
@@ -563,7 +563,7 @@ function mod_page_core_calendar_provide_event_action(calendar_event $event,
 
     return $factory->create_instance(
         get_string('view'),
-        new \moodle_url('/mod/page/view.php', ['id' => $cm->id]),
+        new \moodle_url('/mod/longpage/view.php', ['id' => $cm->id]),
         1,
         true
     );

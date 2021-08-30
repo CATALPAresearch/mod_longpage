@@ -24,20 +24,20 @@
  */
 
 $string['configdisplayoptions'] = 'Select all options that should be available, existing settings are not modified. Hold CTRL key to select multiple fields.';
-$string['content'] = 'Page content';
-$string['contentheader'] = 'Content';
-$string['createpage'] = 'Create a new page resource';
-$string['displayoptions'] = 'Available display options';
-$string['displayselect'] = 'Display';
-$string['displayselectexplain'] = 'Select display type.';
-$string['indicator:cognitivedepth'] = 'Page cognitive';
-$string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in a Page resource.';
-$string['indicator:socialbreadth'] = 'Page social';
+$string['content'] = 'Longoage Inhalt';
+$string['contentheader'] = 'Inhalt';
+$string['createpage'] = 'Eine neue Longpage anlegen';
+$string['displayoptions'] = 'Verfügbare Anzeigeoptionen';
+$string['displayselect'] = 'Darstellung';
+$string['displayselectexplain'] = 'Darstellungstyp wählen';
+$string['indicator:cognitivedepth'] = 'Longpage Verarbeitungstiefe';
+$string['indicator:cognitivedepth_help'] = 'Gibt die Verarbeitungtiefe für Lernende an';
+$string['indicator:socialbreadth'] = 'Longpage social';
 $string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in a Page resource.';
 $string['legacyfiles'] = 'Migration of old course file';
-$string['legacyfilesactive'] = 'Active';
-$string['legacyfilesdone'] = 'Finished';
-$string['loading'] = 'Loading...';
+$string['legacyfilesactive'] = 'Aktive';
+$string['legacyfilesdone'] = 'Abgeschlossen';
+$string['loading'] = 'Wird geladen...';
 
 $string['messageprovider:posts'] = 'Abonnierte Threads';
 
@@ -59,32 +59,24 @@ $string['messagehtmlpostupdated'] = '<p>{$a->firstname} {$a->lastname} hat folge
 $string['messagesmallpostupdated'] = '{$a->firstname} {$a->lastname}: {$a->content}';
 $string['messagecontexturlnamepostupdated'] = 'Bearbeiteter Beitrag';
 
-$string['modulename'] = 'Page';
-$string['modulename_help'] = 'The page module enables a teacher to create a web page resource using the text editor. A page can display text, images, sound, video, web links and embedded code, such as Google maps.
+$string['modulename'] = 'Longpage';
+$string['modulename_help'] = 'Longpage ermöglocht Lehrenden länge Tetxte in Form von HTML abzulegen.';
 
-Advantages of using the page module rather than the file module include the resource being more accessible (for example to users of mobile devices) and easier to update.
-
-For large amounts of content, it\'s recommended that a book is used rather than a page.
-
-A page may be used
-
-* To present the terms and conditions of a course or a summary of the course syllabus
-* To embed several videos or sound files together with some explanatory text';
-$string['modulename_link'] = 'mod/page/view';
-$string['modulenameplural'] = 'Pages';
-$string['optionsheader'] = 'Display options';
-$string['page-mod-page-x'] = 'Any page module page';
-$string['page:addinstance'] = 'Add a new page resource';
-$string['page:view'] = 'View page content';
-$string['pluginadministration'] = 'Page module administration';
-$string['pluginname'] = 'Page';
-$string['popupheight'] = 'Pop-up height (in pixels)';
-$string['popupheightexplain'] = 'Specifies default height of popup windows.';
-$string['popupwidth'] = 'Pop-up width (in pixels)';
-$string['popupwidthexplain'] = 'Specifies default width of popup windows.';
-$string['printheading'] = 'Display page name';
-$string['printheadingexplain'] = 'Display page name above content?';
-$string['printintro'] = 'Display page description';
-$string['printintroexplain'] = 'Display page description above content?';
-$string['privacy:metadata'] = 'The Page resource plugin does not store any personal data.';
-$string['search:activity'] = 'Page';
+$string['modulename_link'] = 'mod/longpage/view';
+$string['modulenameplural'] = 'Seiten';
+$string['optionsheader'] = 'Darstellungsoptionen';
+$string['page-mod-page-x'] = 'Jede Page/Longpage';
+$string['page:addinstance'] = 'Neue Seite als Ressource hinzufügen';
+$string['page:view'] = 'Seiteninhalt anzeigen';
+$string['pluginadministration'] = 'Page administrieren';
+$string['pluginname'] = 'Longpage';
+$string['popupheight'] = 'Pop-up Höhe (in Pixeln)';
+$string['popupheightexplain'] = 'Gibt die Standardhöhe von Pop-up Fenstern an.';
+$string['popupwidth'] = 'Pop-up Breite (in Pixeln)';
+$string['popupwidthexplain'] = 'Gibt die Standardbreite von Pop-up Fenstern an.';
+$string['printheading'] = 'Titel der Seite anzeigen';
+$string['printheadingexplain'] = 'Seitennamen oberhalb des Inhalts anzeigen?';
+$string['printintro'] = 'Seitenbeschreibung anzeigen?';
+$string['printintroexplain'] = 'Seitenbeschreibung oberhalb des Inhalts anzeigen?';
+$string['privacy:metadata'] = 'Longpage speichert auch personenbezogene Daten.';
+$string['search:activity'] = 'Longpage';

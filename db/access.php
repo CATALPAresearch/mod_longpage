@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 $capabilities = array(
-    'mod/page:view' => array(
+    'mod/longpage:view' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -33,7 +33,7 @@ $capabilities = array(
             'user' => CAP_ALLOW,
         )
     ),
-    'mod/page:addinstance' => array(
+    'mod/longpage:addinstance' => array(
         'riskbitmask' => RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
@@ -46,7 +46,7 @@ $capabilities = array(
 
 
 /* TODO: review public portfolio API first!
-    'mod/page:portfolioexport' => array(
+    'mod/longpage:portfolioexport' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,

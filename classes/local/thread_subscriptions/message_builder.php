@@ -24,7 +24,7 @@
 
 namespace mod_page\local\thread_subscriptions;
 
-require_once($CFG->dirroot.'/mod/page/locallib.php');
+require_once($CFG->dirroot.'/mod/longpage/locallib.php');
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -51,7 +51,7 @@ class message_builder {
         $message->fullmessage = get_string('messagefullpostcreated', 'page', $substitutions);
         $message->fullmessagehtml = get_string('messagehtmlpostcreated', 'page', $substitutions);
         $message->smallmessage = get_string('messagesmallpostcreated', 'page', $substitutions);
-        $message->contexturl = (new \moodle_url('/mod/page/view.php', ['id' => $data->cmid], "post-{$data->postid}"))->out(false);
+        $message->contexturl = (new \moodle_url('/mod/longpage/view.php', ['id' => $data->cmid], "post-{$data->postid}"))->out(false);
         $message->contexturlname = get_string('messagecontexturlnamepostcreated', 'page');
         return $message;
     }
@@ -63,7 +63,7 @@ class message_builder {
         $message->fullmessage = get_string('messagefullpostdeleted', 'page', $substitutions);
         $message->fullmessagehtml = get_string('messagehtmlpostdeleted', 'page', $substitutions);
         $message->smallmessage = get_string('messagesmallpostdeleted', 'page', $substitutions);
-        $message->contexturl = (new \moodle_url('/mod/page/view.php', ['id' => $data->cmid], "thread-{$data->threadid}"))->out(false);
+        $message->contexturl = (new \moodle_url('/mod/longpage/view.php', ['id' => $data->cmid], "thread-{$data->threadid}"))->out(false);
         $message->contexturlname = get_string('messagecontexturlnamepostdeleted', 'page');
         return $message;
     }
@@ -75,7 +75,7 @@ class message_builder {
         $message->fullmessage = get_string('messagefullpostupdated', 'page', $substitutions);
         $message->fullmessagehtml = get_string('messagehtmlpostupdated', 'page', $substitutions);
         $message->smallmessage = get_string('messagesmallpostupdated', 'page', $substitutions);
-        $message->contexturl = (new \moodle_url('/mod/page/view.php', ['id' => $data->cmid], "post-{$data->postid}"))->out(false);
+        $message->contexturl = (new \moodle_url('/mod/longpage/view.php', ['id' => $data->cmid], "post-{$data->postid}"))->out(false);
         $message->contexturlname = get_string('messagecontexturlnamepostupdated', 'page');
         return $message;
     }
