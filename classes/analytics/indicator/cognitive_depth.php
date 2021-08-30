@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\analytics\indicator;
+namespace mod_longpage\analytics\indicator;
 
 defined('MOODLE_INTERNAL') || die();
 

@@ -26,11 +26,11 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-use mod_page\local\constants\annotation_type as annotation_type;
-use mod_page\local\constants\selector as selector;
-use mod_page\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
-use mod_page\local\thread_subscriptions\manage_thread_subscriptions_task as manage_thread_subscriptions_task;
-use mod_page\local\thread_subscriptions\post_action as post_action;
+use mod_longpage\local\constants\annotation_type as annotation_type;
+use mod_longpage\local\constants\selector as selector;
+use mod_longpage\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
+use mod_longpage\local\thread_subscriptions\manage_thread_subscriptions_task as manage_thread_subscriptions_task;
+use mod_longpage\local\thread_subscriptions\post_action as post_action;
 
 require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
@@ -1351,7 +1351,7 @@ class mod_page_external extends external_api {
         $r = new stdClass();
         $r->name = 'mod_page';
         $r->component = 'mod_page';
-        $r->eventname = '\mod_page\event\course_module_' . $data['action'];
+        $r->eventname = '\mod_longpage\event\course_module_' . $data['action'];
         $r->action = $data['action'];
         $r->target = 'course_module';
         $r->objecttable = 'page';

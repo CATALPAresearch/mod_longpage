@@ -91,7 +91,7 @@ function get_formatted_page_content($page, $context) {
     return format_text($content, $page->contentformat, $formatoptions);
 }
 
-if (mod_page\blocking::tool_policy_accepted() == true) {
+if (mod_longpage\blocking::tool_policy_accepted() == true) {
     $content = get_formatted_page_content($page, $context);
 
     if (!isset($options['printheading']) || !empty($options['printheading'])) {

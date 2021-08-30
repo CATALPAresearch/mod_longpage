@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\local\thread_subscriptions;
+namespace mod_longpage\local\thread_subscriptions;
 
 defined('MOODLE_INTERNAL') || die();
 

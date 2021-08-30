@@ -508,7 +508,7 @@ function page_view($page, $course, $cm, $context) {
         'objectid' => $page->id
     );
 
-    $event = \mod_page\event\course_module_viewed::create($params);
+    $event = \mod_longpage\event\course_module_viewed::create($params);
     $event->add_record_snapshot('course_modules', $cm);
     $event->add_record_snapshot('course', $course);
     $event->add_record_snapshot('page', $page);

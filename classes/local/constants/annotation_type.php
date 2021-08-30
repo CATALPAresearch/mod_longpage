@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\local\constants;
+namespace mod_longpage\local\constants;
 
 defined('MOODLE_INTERNAL') || die();
 
