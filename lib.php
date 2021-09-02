@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die;
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed True if module supports feature, false if not, null if doesn't know
  */
-function page_supports($feature) {
+function longpage_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_RESOURCE;
         case FEATURE_GROUPS:                  return false;
@@ -49,7 +49,7 @@ function page_supports($feature) {
  * @param $data the data submitted from the reset course.
  * @return array status array
  */
-function page_reset_userdata($data) {
+function longpage_reset_userdata($data) {
 
     // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
     // See MDL-9367.
@@ -67,7 +67,7 @@ function page_reset_userdata($data) {
  *
  * @return array
  */
-function page_get_view_actions() {
+function longpage_get_view_actions() {
     return array('view','view all');
 }
 
@@ -81,7 +81,7 @@ function page_get_view_actions() {
  *
  * @return array
  */
-function page_get_post_actions() {
+function longpage_get_post_actions() {
     return array('update', 'add');
 }
 
@@ -91,7 +91,7 @@ function page_get_post_actions() {
  * @param mod_longpage_mod_form $mform
  * @return int new page instance id
  */
-function page_add_instance($data, $mform = null) {
+function longpage_add_instance($data, $mform = null) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
@@ -109,10 +109,12 @@ function page_add_instance($data, $mform = null) {
 
     if ($mform) {
         $data->content       = $data->page['text'];
-        $data->contentformat = $data->page['format'];
+        $data->contentformat = $data->longpage['format'];
     }
 
-    $data->id = $DB->insert_record('page', $data);
+    if(!$data->id = $DB->insert_record('longpage', $data)){
+        print_error("er1");
+    }
 
     // we need to use context now, so we need to make sure all needed info is already in db
     $DB->set_field('course_modules', 'instance', $data->id, array('id'=>$cmid));
@@ -120,12 +122,14 @@ function page_add_instance($data, $mform = null) {
 
     if ($mform and !empty($data->page['itemid'])) {
         $draftitemid = $data->page['itemid'];
-        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_longpage', 'content', 0, page_get_editor_options($context), $data->content);
-        $DB->update_record('page', $data);
+        print_error("er2");
+        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_longpage', 'content', 0, longpage_get_editor_options($context), $data->content);
+        $DB->update_record('longpage', $data);
+        print_error("er2");
     }
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
-    \core_completion\api::update_completion_date_event($cmid, 'page', $data->id, $completiontimeexpected);
+    \core_completion\api::update_completion_date_event($cmid, 'longpage', $data->id, $completiontimeexpected);
 
     return $data->id;
 }
@@ -136,7 +140,7 @@ function page_add_instance($data, $mform = null) {
  * @param object $mform
  * @return bool true
  */
-function page_update_instance($data, $mform) {
+function longpage_update_instance($data, $mform) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
@@ -159,16 +163,16 @@ function page_update_instance($data, $mform) {
     $data->content       = $data->page['text'];
     $data->contentformat = $data->page['format'];
 
-    $DB->update_record('page', $data);
+    $DB->update_record('longpage', $data);
 
     $context = context_module::instance($cmid);
     if ($draftitemid) {
-        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_longpage', 'content', 0, page_get_editor_options($context), $data->content);
-        $DB->update_record('page', $data);
+        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_longpage', 'content', 0, longpage_get_editor_options($context), $data->content);
+        $DB->update_record('longpage', $data);
     }
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
-    \core_completion\api::update_completion_date_event($cmid, 'page', $data->id, $completiontimeexpected);
+    \core_completion\api::update_completion_date_event($cmid, 'longpage', $data->id, $completiontimeexpected);
 
     return true;
 }
@@ -178,19 +182,19 @@ function page_update_instance($data, $mform) {
  * @param int $id
  * @return bool true
  */
-function page_delete_instance($id) {
+function longpage_delete_instance($id) {
     global $DB;
 
-    if (!$page = $DB->get_record('page', array('id'=>$id))) {
+    if (!$page = $DB->get_record('longpage', array('id'=>$id))) {
         return false;
     }
 
-    $cm = get_coursemodule_from_instance('page', $id);
-    \core_completion\api::update_completion_date_event($cm->id, 'page', $id, null);
+    $cm = get_coursemodule_from_instance('longpage', $id);
+    \core_completion\api::update_completion_date_event($cm->id, 'longpage', $id, null);
 
     // note: all context files are deleted automatically
 
-    $DB->delete_records('page', array('id'=>$page->id));
+    $DB->delete_records('longpage', array('id'=>$page->id));
 
     return true;
 }
@@ -205,11 +209,11 @@ function page_delete_instance($id) {
  * @param stdClass $coursemodule
  * @return cached_cm_info Info to customise main page display
  */
-function page_get_coursemodule_info($coursemodule) {
+function longpage_get_coursemodule_info($coursemodule) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
-    if (!$page = $DB->get_record('page', array('id'=>$coursemodule->instance),
+    if (!$page = $DB->get_record('longpage', array('id'=>$coursemodule->instance),
             'id, name, display, displayoptions, intro, introformat')) {
         return NULL;
     }
@@ -219,7 +223,7 @@ function page_get_coursemodule_info($coursemodule) {
 
     if ($coursemodule->showdescription) {
         // Convert intro to html. Do not filter cached version, filters run at display time.
-        $info->content = format_module_intro('page', $page, $coursemodule->id, false);
+        $info->content = format_module_intro('longpage', $page, $coursemodule->id, false);
     }
 
     if ($page->display != RESOURCELIB_DISPLAY_POPUP) {
@@ -247,9 +251,9 @@ function page_get_coursemodule_info($coursemodule) {
  * @param stdClass $context context object
  * @return array
  */
-function page_get_file_areas($course, $cm, $context) {
+function longpage_get_file_areas($course, $cm, $context) {
     $areas = array();
-    $areas['content'] = get_string('content', 'page');
+    $areas['content'] = get_string('content', 'longpage');
     return $areas;
 }
 
@@ -269,7 +273,7 @@ function page_get_file_areas($course, $cm, $context) {
  * @param string $filename file name
  * @return file_info instance or null if not found
  */
-function page_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
+function longpage_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
     global $CFG;
 
     if (!has_capability('moodle/course:managefiles', $context)) {
@@ -293,7 +297,7 @@ function page_get_file_info($browser, $areas, $course, $cm, $context, $filearea,
             }
         }
         require_once("$CFG->dirroot/mod/longpage/locallib.php");
-        return new page_content_file_info($browser, $context, $storedfile, $urlbase, $areas[$filearea], true, true, true, false);
+        return new longpage_content_file_info($browser, $context, $storedfile, $urlbase, $areas[$filearea], true, true, true, false);
     }
 
     // note: page_intro handled in file_browser automatically
@@ -315,7 +319,7 @@ function page_get_file_info($browser, $areas, $course, $cm, $context, $filearea,
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - just send the file
  */
-function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function longpage_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
@@ -339,7 +343,7 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
         // serve page content
         $filename = $arg;
 
-        if (!$page = $DB->get_record('page', array('id'=>$cm->instance), '*', MUST_EXIST)) {
+        if (!$page = $DB->get_record('longpage', array('id'=>$cm->instance), '*', MUST_EXIST)) {
             return false;
         }
 
@@ -364,7 +368,7 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
         $relativepath = implode('/', $args);
         $fullpath = "/$context->id/mod_longpage/$filearea/0/$relativepath";
         if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            $page = $DB->get_record('page', array('id'=>$cm->instance), 'id, legacyfiles', MUST_EXIST);
+            $page = $DB->get_record('longpage', array('id'=>$cm->instance), 'id, legacyfiles', MUST_EXIST);
             if ($page->legacyfiles != RESOURCELIB_LEGACYFILES_ACTIVE) {
                 return false;
             }
@@ -373,7 +377,7 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
             }
             //file migrate - update flag
             $page->legacyfileslast = time();
-            $DB->update_record('page', $page);
+            $DB->update_record('longpage', $page);
         }
 
         // finally send the file
@@ -387,8 +391,8 @@ function page_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
  * @param stdClass $parentcontext Block's parent context
  * @param stdClass $currentcontext Current context of block
  */
-function page_page_type_list($pagetype, $parentcontext, $currentcontext) {
-    $module_pagetype = array('mod-page-*'=>get_string('page-mod-page-x', 'page'));
+function longpage_page_type_list($pagetype, $parentcontext, $currentcontext) {
+    $module_pagetype = array('mod-page-*'=>get_string('page-mod-page-x', 'longpage'));
     return $module_pagetype;
 }
 
@@ -397,12 +401,12 @@ function page_page_type_list($pagetype, $parentcontext, $currentcontext) {
  *
  * @return array of file content
  */
-function page_export_contents($cm, $baseurl) {
+function longpage_export_contents($cm, $baseurl) {
     global $CFG, $DB;
     $contents = array();
     $context = context_module::instance($cm->id);
 
-    $page = $DB->get_record('page', array('id'=>$cm->instance), '*', MUST_EXIST);
+    $page = $DB->get_record('longpage', array('id'=>$cm->instance), '*', MUST_EXIST);
 
     // page contents
     $fs = get_file_storage();
@@ -452,10 +456,10 @@ function page_export_contents($cm, $baseurl) {
  * Register the ability to handle drag and drop file uploads
  * @return array containing details of the files / types the mod can handle
  */
-function page_dndupload_register() {
+function longpage_dndupload_register() {
     return array('types' => array(
-                     array('identifier' => 'text/html', 'message' => get_string('createpage', 'page')),
-                     array('identifier' => 'text', 'message' => get_string('createpage', 'page'))
+                     array('identifier' => 'text/html', 'message' => get_string('createpage', 'longpage')),
+                     array('identifier' => 'text', 'message' => get_string('createpage', 'longpage'))
                  ));
 }
 
@@ -464,7 +468,7 @@ function page_dndupload_register() {
  * @param object $uploadinfo details of the file / content that has been uploaded
  * @return int instance id of the newly created mod
  */
-function page_dndupload_handle($uploadinfo) {
+function longpage_dndupload_handle($uploadinfo) {
     // Gather the required info.
     $data = new stdClass();
     $data->course = $uploadinfo->course->id;
@@ -481,14 +485,14 @@ function page_dndupload_handle($uploadinfo) {
     $data->coursemodule = $uploadinfo->coursemodule;
 
     // Set the display options to the site defaults.
-    $config = get_config('page');
+    $config = get_config('longpage');
     $data->display = $config->display;
     $data->popupheight = $config->popupheight;
     $data->popupwidth = $config->popupwidth;
     $data->printheading = $config->printheading;
     $data->printintro = $config->printintro;
 
-    return page_add_instance($data, null);
+    return longpage_add_instance($data, null);
 }
 
 /**
@@ -500,7 +504,7 @@ function page_dndupload_handle($uploadinfo) {
  * @param  stdClass $context    context object
  * @since Moodle 3.0
  */
-function page_view($page, $course, $cm, $context) {
+function longpage_view($page, $course, $cm, $context) {
 
     // Trigger course_module_viewed event.
     $params = array(
@@ -511,7 +515,7 @@ function page_view($page, $course, $cm, $context) {
     $event = \mod_longpage\event\course_module_viewed::create($params);
     $event->add_record_snapshot('course_modules', $cm);
     $event->add_record_snapshot('course', $course);
-    $event->add_record_snapshot('page', $page);
+    $event->add_record_snapshot('longpage', $page);
     $event->trigger();
 
     // Completion.
@@ -528,7 +532,7 @@ function page_view($page, $course, $cm, $context) {
  * @return stdClass an object with the different type of areas indicating if they were updated or not
  * @since Moodle 3.2
  */
-function page_check_updates_since(cm_info $cm, $from, $filter = array()) {
+function longpage_check_updates_since(cm_info $cm, $from, $filter = array()) {
     $updates = course_check_module_updates_since($cm, $from, array('content'), $filter);
     return $updates;
 }
@@ -543,7 +547,7 @@ function page_check_updates_since(cm_info $cm, $from, $filter = array()) {
  * @param \core_calendar\action_factory $factory
  * @return \core_calendar\local\event\entities\action_interface|null
  */
-function mod_page_core_calendar_provide_event_action(calendar_event $event,
+function mod_longpage_core_calendar_provide_event_action(calendar_event $event,
                                                       \core_calendar\action_factory $factory, $userid = 0) {
     global $USER;
 
