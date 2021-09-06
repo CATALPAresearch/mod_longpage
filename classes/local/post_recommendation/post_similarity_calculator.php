@@ -40,7 +40,7 @@ class post_similarity_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('longpage_post_similarities', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_post_similarities', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -53,7 +53,7 @@ class post_similarity_calculator {
                     pb.postid AS postbid
                 FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
                 ON pa.userid = pb.userid AND pa.postid != pb.postid
-                WHERE pa.pageid = ? AND pb.pageid = ?
+                WHERE pa.longpageid = ? AND pb.longpageid = ?
                 GROUP BY pa.postid, pb.postid
                 HAVING COUNT(*) >= ?';
         $limitfrom = 0;
@@ -110,7 +110,7 @@ class post_similarity_calculator {
 
     private static function get_post_similarity($postpair, $similarity, $pageid) {
         $postsim = new \stdClass();
-        $postsim->pageid = $pageid;
+        $postsim->longpageid = $pageid;
         $postsim->postaid = $postpair->postaid;
         $postsim->postbid = $postpair->postbid;
         $postsim->value = $similarity;

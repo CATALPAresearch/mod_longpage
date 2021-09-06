@@ -151,7 +151,7 @@ export default {
 
             ajax.call([{
                 methodname: MoodleWSMethods.CREATE_POST,
-                args: MappingService.mapPostToArgs({...post, pageId: getters[GET.LONGPAGE_CONTEXT].pageId}),
+                args: MappingService.mapPostToArgs({...post, longpageid: getters[GET.LONGPAGE_CONTEXT].longpageid}),
                 done: (response) => {
                     const postUpdate = MappingService.mapResponseToPost(response.post);
                     commit(MUTATE.UPDATE_POST, {threadId: thread.id, postId: post.id, postUpdate});

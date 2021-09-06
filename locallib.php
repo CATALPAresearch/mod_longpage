@@ -94,7 +94,7 @@ function object_merge(...$objects) {
 /**
  * File browsing support class
  */
-class page_content_file_info extends file_info_stored {
+class longpage_content_file_info extends file_info_stored {
     public function get_parent() {
         if ($this->lf->get_filepath() === '/' and $this->lf->get_filename() === '.') {
             return $this->browser->get_file_info($this->context);
@@ -109,7 +109,7 @@ class page_content_file_info extends file_info_stored {
     }
 }
 
-function page_get_editor_options($context) {
+function longpage_get_editor_options($context) {
     global $CFG;
     return array('subdirs'=>1, 'maxbytes'=>$CFG->maxbytes, 'maxfiles'=>-1, 'changeformat'=>1, 'context'=>$context, 'noclean'=>1, 'trusttext'=>0);
 }

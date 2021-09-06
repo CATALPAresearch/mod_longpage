@@ -37,7 +37,7 @@ export default {
         [GET.ANNOTATION_FILTER]: ({annotationFilter}) => annotationFilter,
         [GET.ANNOTATION_WITH_CONTEXT]: (_, getters) => annotation => ({
             ...annotation,
-            pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
+            longpageid: getters[GET.LONGPAGE_CONTEXT].longpageid,
         }),
         [GET.ANNOTATIONS]: ({annotations}) => annotations,
         [GET.BOOKMARKS]: (_, getters) => {
@@ -54,7 +54,7 @@ export default {
         [GET.NEW_ANNOTATION]: (_, getters) => (params = {}) => {
             const annotation = new Annotation({
                 creatorId: getters[GET.LONGPAGE_CONTEXT].userId,
-                pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
+                longpageid: getters[GET.LONGPAGE_CONTEXT].longpageid,
                 ...params,
             });
             annotation.body =
@@ -152,7 +152,7 @@ export default {
                 methodname: MoodleWSMethods.GET_ANNOTATIONS,
                 args: {
                     parameters: {
-                        pageid: getters[GET.LONGPAGE_CONTEXT].pageId,
+                        longpageid: getters[GET.LONGPAGE_CONTEXT].longpageid,
                     },
                 },
                 done: (response) => {

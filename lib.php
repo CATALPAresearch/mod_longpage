@@ -108,7 +108,7 @@ function longpage_add_instance($data, $mform = null) {
     $data->displayoptions = serialize($displayoptions);
 
     if ($mform) {
-        $data->content       = $data->page['text'];
+        $data->content       = $data->longpage['text'];
         $data->contentformat = $data->longpage['format'];
     }
 
@@ -120,12 +120,10 @@ function longpage_add_instance($data, $mform = null) {
     $DB->set_field('course_modules', 'instance', $data->id, array('id'=>$cmid));
     $context = context_module::instance($cmid);
 
-    if ($mform and !empty($data->page['itemid'])) {
-        $draftitemid = $data->page['itemid'];
-        print_error("er2");
+    if ($mform and !empty($data->longpage['itemid'])) {
+        $draftitemid = $data->longpage['itemid'];
         $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_longpage', 'content', 0, longpage_get_editor_options($context), $data->content);
         $DB->update_record('longpage', $data);
-        print_error("er2");
     }
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
@@ -145,7 +143,7 @@ function longpage_update_instance($data, $mform) {
     require_once("$CFG->libdir/resourcelib.php");
 
     $cmid        = $data->coursemodule;
-    $draftitemid = $data->page['itemid'];
+    $draftitemid = $data->longpage['itemid'];
 
     $data->timemodified = time();
     $data->id           = $data->instance;
@@ -160,8 +158,8 @@ function longpage_update_instance($data, $mform) {
     $displayoptions['printintro']   = $data->printintro;
     $data->displayoptions = serialize($displayoptions);
 
-    $data->content       = $data->page['text'];
-    $data->contentformat = $data->page['format'];
+    $data->content       = $data->longpage['text'];
+    $data->contentformat = $data->longpage['format'];
 
     $DB->update_record('longpage', $data);
 

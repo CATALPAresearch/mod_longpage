@@ -65,13 +65,13 @@ class post_recommendation_calculator {
         global $DB;
 
         $preferences = $DB->get_records(
-            'longpage_rel_post_prefs', ['pageid' => $pageid, 'userid' => $userid], 'postid, value'
+            'longpage_rel_post_prefs', ['longpageid' => $pageid, 'userid' => $userid], 'postid, value'
         );
         if (count($preferences) < self::MIN_PREFERENCES_PER_USER_IN_NBH) {
             return;
         }
 
-        $prefprofile = $DB->get_record('longpage_post_pref_profiles', ['pageid' => $pageid, 'userid' => $userid], 'avg');
+        $prefprofile = $DB->get_record('longpage_post_pref_profiles', ['longpageid' => $pageid, 'userid' => $userid], 'avg');
 
         $limitfrom = 0;
         $idsofpostswithprefs = array_map(function($pref) {
@@ -143,7 +143,7 @@ class post_recommendation_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('longpage_post_recomends', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_post_recomends', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -159,7 +159,7 @@ class post_recommendation_calculator {
 
     private static function get_recommendation_base($pageid, $postid, $userid): \stdClass {
         $recommendation = new \stdClass();
-        $recommendation->pageid = $pageid;
+        $recommendation->longpageid = $pageid;
         $recommendation->postid = $postid;
         $recommendation->userid = $userid;
         return $recommendation;

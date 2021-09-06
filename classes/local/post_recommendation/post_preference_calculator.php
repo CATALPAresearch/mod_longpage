@@ -46,7 +46,7 @@ class post_preference_calculator {
         $fields = 'userid, avg, count';
         while (true) {
             $prefprofiles = $DB->get_records(
-                'longpage_post_pref_profiles', ['pageid' => $pageid], 'id ASC', $fields, $limitfrom, $batchsize
+                'longpage_post_pref_profiles', ['longpageid' => $pageid], 'id ASC', $fields, $limitfrom, $batchsize
             );
             if (!count($prefprofiles)) {
                 break;
@@ -67,7 +67,7 @@ class post_preference_calculator {
         global $DB;
 
         $fields = 'postid, value';
-        $conditions = ['pageid' => $pageid, 'userid' => $prefprofile->userid];
+        $conditions = ['longpageid' => $pageid, 'userid' => $prefprofile->userid];
         $limitfrom = 0;
         while (true) {
             $abspreferences = $DB->get_records(
@@ -94,7 +94,7 @@ class post_preference_calculator {
         $sql = 'SELECT AVG(avg) AS avg
                 FROM {page_post_pref_profiles} 
                 WHERE pageid = ?';
-        $avgpostpreference = $DB->get_field_sql($sql, ['pageid' => $pageid]);
+        $avgpostpreference = $DB->get_field_sql($sql, ['longpageid' => $pageid]);
         $transaction = $DB->start_delegated_transaction();
         $DB->update_record('longpage', ['id' => $pageid, 'avgpostpreference' => $avgpostpreference]);
         $transaction->allow_commit();
@@ -154,7 +154,7 @@ class post_preference_calculator {
     public static function get_preference_profile($userid, $pageid, $avg, $count) {
         $profile = new \stdClass();
         $profile->userid = $userid;
-        $profile->pageid = $pageid;
+        $profile->longpageid = $pageid;
         $profile->avg = $avg;
         $profile->count = $count;
 
@@ -165,7 +165,7 @@ class post_preference_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('longpage_abs_post_prefs', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_abs_post_prefs', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -173,7 +173,7 @@ class post_preference_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('longpage_post_pref_profiles', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_post_pref_profiles', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -181,7 +181,7 @@ class post_preference_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('longpage_rel_post_prefs', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_rel_post_prefs', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -190,7 +190,7 @@ class post_preference_calculator {
 
         $limitfrom = 0;
         $fields = 'id, pageid, threadid, creatorid';
-        $conditions = ['pageid' => $pageid, 'ispublic' => 1];
+        $conditions = ['longpageid' => $pageid, 'ispublic' => 1];
         while (true) {
             $posts = $DB->get_records('longpage_posts', $conditions, 'id ASC', $fields, $limitfrom, $batchsize);
             if (!count($posts)) {
@@ -245,7 +245,7 @@ class post_preference_calculator {
 
     private static function get_absolute_preference($post, $userid, $pageid) {
         $preference = new \stdClass();
-        $preference->pageid = $pageid;
+        $preference->longpageid = $pageid;
         $preference->postid = $post->id;
         $preference->userid = $userid;
         $preference->value = self::get_post_preference_of_user($post, $userid);
@@ -267,7 +267,7 @@ class post_preference_calculator {
     private static function map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences) {
         return array_map(function($abspreference) use ($prefprofile, $pageid) {
             $relpreference = new \stdClass();
-            $relpreference->pageid = $pageid;
+            $relpreference->longpageid = $pageid;
             $relpreference->postid = $abspreference->postid;
             $relpreference->userid = $prefprofile->userid;
             $relpreference->value = (float) $abspreference->value - (float) $prefprofile->avg;

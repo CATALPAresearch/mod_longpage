@@ -55,11 +55,11 @@ require_capability('mod/longpage:view', $context);
 $scrolltop = $DB->get_field(
     'longpage_reading_progress',
     'scrolltop',
-    ['userid' => $USER->id, 'pageid' => $page->id],
+    ['userid' => $USER->id, 'longpageid' => $page->id],
 );
 
 // Completion and trigger events.
-page_view($page, $course, $cm, $context);
+longpage_view($page, $course, $cm, $context);
 
 $PAGE->set_url('/mod/longpage/view.php', array('id' => $cm->id));
 $PAGE->requires->css('/mod/longpage/styles.css', true);

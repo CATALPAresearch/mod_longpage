@@ -70,7 +70,7 @@ const MappingService = {
     mapAnnotationToArgs(annotation) {
         return deepLowerCaseKeys({
             annotation: {
-                ...pick(annotation, ['pageId', 'type', 'isPublic']),
+                ...pick(annotation, ['longpageid', 'type', 'isPublic']),
                 target: {
                     selectors: this._mapSelectorsArgs(annotation.target.selectors),
                     styleClass: annotation.target.styleClass,
@@ -87,7 +87,7 @@ const MappingService = {
                   'anonymous',
                   'content',
                   'isPublic',
-                  'pageId',
+                  'longpageid',
               ])
           }
       });
@@ -109,7 +109,7 @@ const MappingService = {
             ...pick(response, ['id', 'type']),
             creatorId: response.creatorid,
             isPublic: response.ispublic,
-            pageId: response.pageid,
+            longpageid: response.longpageid,
             target: this.mapResponseToAnnotationTarget(response.target),
             timeCreated: this._mapTimeResponse(response.timecreated),
             timeModified: this._mapTimeResponse(response.timemodified),

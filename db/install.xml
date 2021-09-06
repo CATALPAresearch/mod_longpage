@@ -31,14 +31,14 @@
     <TABLE NAME="longpage_abs_post_prefs" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longpageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="longpage" REFFIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="longpageid" REFTABLE="longpage" REFFIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
         <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="longpage_posts" REFFIELDS="id"/>
       </KEYS>
@@ -46,14 +46,14 @@
     <TABLE NAME="longpage_rel_post_prefs" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longpageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="float" LENGTH="5" DECIMALS="4" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="longpage" REFFIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="longpageid" REFTABLE="longpage" REFFIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
         <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="longpage_posts" REFFIELDS="id"/>
       </KEYS>
@@ -61,27 +61,27 @@
     <TABLE NAME="longpage_post_novelties" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longpageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="float" LENGTH="5" DECIMALS="4" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="longpage" REFFIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="longpageid" REFTABLE="longpage" REFFIELDS="id"/>
         <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="longpage_posts" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="longpage_post_similarities" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longpageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="postaid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="postbid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="float" LENGTH="5" DECIMALS="4" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="longpage" REFFIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="longpageid" REFTABLE="longpage" REFFIELDS="id"/>
         <KEY NAME="posta" TYPE="foreign" FIELDS="postaid" REFTABLE="longpage_posts" REFFIELDS="id"/>
         <KEY NAME="postb" TYPE="foreign" FIELDS="postbid" REFTABLE="longpage_posts" REFFIELDS="id"/>
       </KEYS>
@@ -89,28 +89,28 @@
     <TABLE NAME="longpage_post_pref_profiles" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longpageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="avg" TYPE="float" LENGTH="5" DECIMALS="4" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="count" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="longpage" REFFIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="longpageid" REFTABLE="longpage" REFFIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="longpage_post_recomends" COMMENT="longpage_post_recommendations">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longpageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="float" LENGTH="5" DECIMALS="4" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="longpage" REFFIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="longpageid" REFTABLE="longpage" REFFIELDS="id"/>
         <KEY NAME="post" TYPE="foreign" FIELDS="postid" REFTABLE="longpage_posts" REFFIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
@@ -118,14 +118,14 @@
     <TABLE NAME="longpage_reading_progress" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longpageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="scrolltop" TYPE="float" LENGTH="7" DECIMALS="6" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="longpage" REFFIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="longpageid" REFTABLE="longpage" REFFIELDS="id"/>
         <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
@@ -133,7 +133,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longpageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="type" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="ispublic" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -142,7 +142,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="creator" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id"/>
-        <KEY NAME="context" TYPE="foreign" FIELDS="pageid" REFTABLE="longpage" REFFIELDS="id"/>
+        <KEY NAME="context" TYPE="foreign" FIELDS="longpageid" REFTABLE="longpage" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="longpage_annotation_targets" COMMENT="">
@@ -223,7 +223,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="threadid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="pageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longpageid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -235,7 +235,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="creator" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id"/>
         <KEY NAME="thread" TYPE="foreign" FIELDS="threadid" REFTABLE="longpage_thread" REFFIELDS="id"/>
-        <KEY NAME="page" TYPE="foreign" FIELDS="pageid" REFTABLE="longpage" REFFIELDS="id"/>
+        <KEY NAME="page" TYPE="foreign" FIELDS="longpageid" REFTABLE="longpage" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="longpage_post_likes" COMMENT="">

@@ -18,7 +18,7 @@
 /**
  * Page module admin settings and defaults
  *
- * @package mod_longpage
+ * @package mod_page
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,21 +32,21 @@ if ($ADMIN->fulltree) {
     $defaultdisplayoptions = array(RESOURCELIB_DISPLAY_OPEN);
 
     //--- general settings -----------------------------------------------------------------------------------
-    $settings->add(new admin_setting_configmultiselect('page/displayoptions',
+    $settings->add(new admin_setting_configmultiselect('longpage/displayoptions',
         get_string('displayoptions', 'longpage'), get_string('configdisplayoptions', 'longpage'),
         $defaultdisplayoptions, $displayoptions));
 
     //--- modedit defaults -----------------------------------------------------------------------------------
     $settings->add(new admin_setting_heading('pagemodeditdefaults', get_string('modeditdefaults', 'admin'), get_string('condifmodeditdefaults', 'admin')));
 
-    $settings->add(new admin_setting_configcheckbox('page/printheading',
+    $settings->add(new admin_setting_configcheckbox('longpage/printheading',
         get_string('printheading', 'longpage'), get_string('printheadingexplain', 'longpage'), 1));
-    $settings->add(new admin_setting_configcheckbox('page/printintro',
+    $settings->add(new admin_setting_configcheckbox('longpage/printintro',
         get_string('printintro', 'longpage'), get_string('printintroexplain', 'longpage'), 0));
-    $settings->add(new admin_setting_configselect('page/display',
+    $settings->add(new admin_setting_configselect('longpage/display',
         get_string('displayselect', 'longpage'), get_string('displayselectexplain', 'longpage'), RESOURCELIB_DISPLAY_OPEN, $displayoptions));
-    $settings->add(new admin_setting_configtext('page/popupwidth',
+    $settings->add(new admin_setting_configtext('longpage/popupwidth',
         get_string('popupwidth', 'longpage'), get_string('popupwidthexplain', 'longpage'), 620, PARAM_INT, 7));
-    $settings->add(new admin_setting_configtext('page/popupheight',
+    $settings->add(new admin_setting_configtext('longpage/popupheight',
         get_string('popupheight', 'longpage'), get_string('popupheightexplain', 'longpage'), 450, PARAM_INT, 7));
 }

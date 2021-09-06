@@ -29,7 +29,7 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/mod/longpage/locallib.php');
 require_once($CFG->libdir.'/filelib.php');
 
-class mod_page_mod_form extends moodleform_mod {
+class mod_longpage_mod_form extends moodleform_mod {
     function definition() {
         global $CFG, $DB;
 
@@ -51,7 +51,7 @@ class mod_page_mod_form extends moodleform_mod {
 
         //-------------------------------------------------------
         $mform->addElement('header', 'contentsection', get_string('contentheader', 'longpage'));
-        $mform->addElement('editor', 'longpage', get_string('content', 'longpage'), null, page_get_editor_options($this->context));
+        $mform->addElement('editor', 'longpage', get_string('content', 'longpage'), null, longpage_get_editor_options($this->context));
         $mform->addRule('longpage', get_string('required'), 'required', null, 'client');
 
         //-------------------------------------------------------
@@ -117,7 +117,7 @@ class mod_page_mod_form extends moodleform_mod {
         if ($this->current->instance) {
             $draftitemid = file_get_submitted_draft_itemid('longpage');
             $default_values['longpage']['format'] = $default_values['contentformat'];
-            $default_values['longpage']['text']   = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_longpage', 'content', 0, page_get_editor_options($this->context), $default_values['content']);
+            $default_values['longpage']['text']   = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_longpage', 'content', 0, longpage_get_editor_options($this->context), $default_values['content']);
             $default_values['longpage']['itemid'] = $draftitemid;
         }
         if (!empty($default_values['displayoptions'])) {

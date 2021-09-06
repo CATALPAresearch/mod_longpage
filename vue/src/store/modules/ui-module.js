@@ -46,7 +46,7 @@ export default {
             ajax.call([{
                 methodname: MoodleWSMethods.UPDATE_READING_PROGRESS,
                 args: {
-                    pageid: getters[GET.LONGPAGE_CONTEXT].pageId,
+                    longpageid: getters[GET.LONGPAGE_CONTEXT].longpageid,
                     scrolltop: scrollTop,
                 },
                 fail: (e) => {

@@ -45,7 +45,7 @@ class post_novelty_calculator {
 
         $limitfrom = 0;
         while (true) {
-            $posts = $DB->get_records('longpage_posts', ['pageid' => $pageid], 'id ASC', 'id', $limitfrom, $batchsize);
+            $posts = $DB->get_records('longpage_posts', ['longpageid' => $pageid], 'id ASC', 'id', $limitfrom, $batchsize);
             if (!count($posts)) {
                 break;
             }
@@ -56,7 +56,7 @@ class post_novelty_calculator {
                 $DB->insert_record(
                     'longpage_post_novelties',
                     [
-                        'pageid' => $pageid,
+                        'longpageid' => $pageid,
                         'postid' => $post->id,
                         'value' => ($totalnoofpageusers - $noofreadings) / (float) $totalnoofpageusers,
                     ],
@@ -77,7 +77,7 @@ class post_novelty_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('longpage_post_novelties', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_post_novelties', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
