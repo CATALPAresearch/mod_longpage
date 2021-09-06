@@ -44,7 +44,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-function xmldb_page_upgrade($oldversion) {
+function xmldb_longpage_upgrade($oldversion) {
     global $CFG;
 
     // Automatically generated Moodle v3.2.0 release upgrade line.

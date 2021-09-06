@@ -18,14 +18,14 @@
 /**
  * Page module version information
  *
- * @package mod_page
+ * @package mod_longpage
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require('../../config.php');
-require_once($CFG->dirroot.'/mod/page/lib.php');
-require_once($CFG->dirroot.'/mod/page/locallib.php');
+require_once($CFG->dirroot.'/mod/longpage/lib.php');
+require_once($CFG->dirroot.'/mod/longpage/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 //header("Access-Control-Allow-Origin: *");
 
@@ -34,35 +34,35 @@ $p       = optional_param('p', 0, PARAM_INT);  // Page instance ID
 $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
 
 if ($p) {
-    if (!$page = $DB->get_record('page', array('id'=>$p))) {
+    if (!$page = $DB->get_record('longpage', array('id'=>$p))) {
         print_error('invalidaccessparameter');
     }
-    $cm = get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
+    $cm = get_coursemodule_from_instance('longpage', $page->id, $page->course, false, MUST_EXIST);
 
 } else {
-    if (!$cm = get_coursemodule_from_id('page', $id)) {
+    if (!$cm = get_coursemodule_from_id('longpage', $id)) {
         print_error('invalidcoursemodule');
     }
-    $page = $DB->get_record('page', array('id'=>$cm->instance), '*', MUST_EXIST);
+    $page = $DB->get_record('longpage', array('id'=>$cm->instance), '*', MUST_EXIST);
 }
 
 $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
 
 require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
-require_capability('mod/page:view', $context);
+require_capability('mod/longpage:view', $context);
 
 $scrolltop = $DB->get_field(
-    'page_reading_progress',
+    'longpage_reading_progress',
     'scrolltop',
-    ['userid' => $USER->id, 'pageid' => $page->id],
+    ['userid' => $USER->id, 'longpageid' => $page->id],
 );
 
 // Completion and trigger events.
-page_view($page, $course, $cm, $context);
+longpage_view($page, $course, $cm, $context);
 
-$PAGE->set_url('/mod/page/view.php', array('id' => $cm->id));
-$PAGE->requires->css('/mod/page/styles.css', true);
+$PAGE->set_url('/mod/longpage/view.php', array('id' => $cm->id));
+$PAGE->requires->css('/mod/longpage/styles.css', true);
 
 $options = empty($page->displayoptions) ? array() : unserialize($page->displayoptions);
 
@@ -84,21 +84,21 @@ echo $OUTPUT->header();
  * @return content
  */
 function get_formatted_page_content($page, $context) {
-    $content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_page', 'content', $page->revision);
+    $content = file_rewrite_pluginfile_urls($page->content, 'pluginfile.php', $context->id, 'mod_longpage', 'content', $page->revision);
     $formatoptions = new stdClass;
     $formatoptions->noclean = true;
     $formatoptions->context = $context;
     return format_text($content, $page->contentformat, $formatoptions);
 }
 
-if (mod_page\blocking::tool_policy_accepted() == true) {
+if (mod_longpage\blocking::tool_policy_accepted() == true) {
     $content = get_formatted_page_content($page, $context);
 
     if (!isset($options['printheading']) || !empty($options['printheading'])) {
         echo $OUTPUT->heading(format_string($page->name));
     }
     if (!isset($options['printintro']) || !empty($options['printintro'])) {
-        echo $OUTPUT->box(format_module_intro('page', $page, $cm->id), 'generalbox', 'intro');
+        echo $OUTPUT->box(format_module_intro('longpage', $page, $cm->id), 'generalbox', 'intro');
     }
     echo '<div id="longpage-app-container" class="border-top border-bottom">';
     echo '<div class="row no-gutters vh-50">';
@@ -106,7 +106,7 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     echo '</div></div>';
 
     $PAGE->requires->js_call_amd(
-        'mod_page/app-lazy',
+        'mod_longpage/app-lazy',
         'init',
         [
             $course->id,
@@ -119,7 +119,7 @@ if (mod_page\blocking::tool_policy_accepted() == true) {
     );
 } else {
     echo "Umleitung";
-    $url = new moodle_url('/mod/page/blocking-redirect.php');
+    $url = new moodle_url('/mod/longpage/blocking-redirect.php');
     redirect($url);
 }
 

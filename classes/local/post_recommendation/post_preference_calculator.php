@@ -22,11 +22,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\local\post_recommendation;
+namespace mod_longpage\local\post_recommendation;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->dirroot/mod/page/locallib.php");
+require_once("$CFG->dirroot/mod/longpage/locallib.php");
 
 /**
  * Post Preference Calculator
@@ -46,7 +46,7 @@ class post_preference_calculator {
         $fields = 'userid, avg, count';
         while (true) {
             $prefprofiles = $DB->get_records(
-                'page_post_pref_profiles', ['pageid' => $pageid], 'id ASC', $fields, $limitfrom, $batchsize
+                'longpage_post_pref_profiles', ['longpageid' => $pageid], 'id ASC', $fields, $limitfrom, $batchsize
             );
             if (!count($prefprofiles)) {
                 break;
@@ -67,11 +67,11 @@ class post_preference_calculator {
         global $DB;
 
         $fields = 'postid, value';
-        $conditions = ['pageid' => $pageid, 'userid' => $prefprofile->userid];
+        $conditions = ['longpageid' => $pageid, 'userid' => $prefprofile->userid];
         $limitfrom = 0;
         while (true) {
             $abspreferences = $DB->get_records(
-                'page_absolute_post_prefs', $conditions, 'id ASC', $fields, $limitfrom, $batchsize,
+                'longpage_abs_post_prefs', $conditions, 'id ASC', $fields, $limitfrom, $batchsize,
             );
             if (count($abspreferences) < self::MIN_PREFERENCES_PER_USER) {
                 break;
@@ -80,7 +80,7 @@ class post_preference_calculator {
             $relpreferences = self::map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences);
 
             $transaction = $DB->start_delegated_transaction();
-            $DB->insert_records('page_relative_post_prefs', $relpreferences);
+            $DB->insert_records('longpage_rel_post_prefs', $relpreferences);
             $transaction->allow_commit();
             if (count($abspreferences) < $batchsize) {
                 break;
@@ -94,9 +94,9 @@ class post_preference_calculator {
         $sql = 'SELECT AVG(avg) AS avg
                 FROM {page_post_pref_profiles} 
                 WHERE pageid = ?';
-        $avgpostpreference = $DB->get_field_sql($sql, ['pageid' => $pageid]);
+        $avgpostpreference = $DB->get_field_sql($sql, ['longpageid' => $pageid]);
         $transaction = $DB->start_delegated_transaction();
-        $DB->update_record('page', ['id' => $pageid, 'avgpostpreference' => $avgpostpreference]);
+        $DB->update_record('longpage', ['id' => $pageid, 'avgpostpreference' => $avgpostpreference]);
         $transaction->allow_commit();
     }
 
@@ -133,7 +133,7 @@ class post_preference_calculator {
             array_push($profiles, self::get_preference_profile($userid, $pageid, $profile->avg, $profile->count));
         }
 
-        $table = 'page_post_pref_profiles';
+        $table = 'longpage_post_pref_profiles';
         $transaction = $DB->start_delegated_transaction();
         $DB->insert_records($table, $profiles);
         $transaction->allow_commit();
@@ -142,7 +142,7 @@ class post_preference_calculator {
     private static function did_user_participate_in_thread($threadid, $userid) {
         global $DB;
 
-        $postsinthread = $DB->get_records('page_posts', ['threadid' => $threadid]);
+        $postsinthread = $DB->get_records('longpage_posts', ['threadid' => $threadid]);
         foreach ($postsinthread as $post) {
             if ($post->creatorid == $userid) {
                 return true;
@@ -154,7 +154,7 @@ class post_preference_calculator {
     public static function get_preference_profile($userid, $pageid, $avg, $count) {
         $profile = new \stdClass();
         $profile->userid = $userid;
-        $profile->pageid = $pageid;
+        $profile->longpageid = $pageid;
         $profile->avg = $avg;
         $profile->count = $count;
 
@@ -165,7 +165,7 @@ class post_preference_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_absolute_post_prefs', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_abs_post_prefs', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -173,7 +173,7 @@ class post_preference_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_pref_profiles', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_post_pref_profiles', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -181,7 +181,7 @@ class post_preference_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_relative_post_prefs', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_rel_post_prefs', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -190,9 +190,9 @@ class post_preference_calculator {
 
         $limitfrom = 0;
         $fields = 'id, pageid, threadid, creatorid';
-        $conditions = ['pageid' => $pageid, 'ispublic' => 1];
+        $conditions = ['longpageid' => $pageid, 'ispublic' => 1];
         while (true) {
-            $posts = $DB->get_records('page_posts', $conditions, 'id ASC', $fields, $limitfrom, $batchsize);
+            $posts = $DB->get_records('longpage_posts', $conditions, 'id ASC', $fields, $limitfrom, $batchsize);
             if (!count($posts)) {
                 break;
             }
@@ -231,7 +231,7 @@ class post_preference_calculator {
         global $DB;
 
         $conditions = ['postid' => $post->id, 'userid' => $userid];
-        $userreadpost = $DB->record_exists('page_post_readings', $conditions);
+        $userreadpost = $DB->record_exists('longpage_post_readings', $conditions);
         if (!$userreadpost) {
             return;
         }
@@ -239,13 +239,13 @@ class post_preference_calculator {
         $preference = self::get_absolute_preference($post, $userid, $pageid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('page_absolute_post_prefs', (array) $preference, false, true);
+        $DB->insert_record('longpage_abs_post_prefs', (array) $preference, false, true);
         $transaction->allow_commit();
     }
 
     private static function get_absolute_preference($post, $userid, $pageid) {
         $preference = new \stdClass();
-        $preference->pageid = $pageid;
+        $preference->longpageid = $pageid;
         $preference->postid = $post->id;
         $preference->userid = $userid;
         $preference->value = self::get_post_preference_of_user($post, $userid);
@@ -256,18 +256,18 @@ class post_preference_calculator {
         global $DB;
 
         $conditions = ['postid' => $post->id, 'userid' => $userid];
-        $userlikespost = $DB->record_exists('page_post_likes', $conditions);
-        $userbookmarkedpost = $DB->record_exists('page_post_bookmarks', $conditions);
+        $userlikespost = $DB->record_exists('longpage_post_likes', $conditions);
+        $userbookmarkedpost = $DB->record_exists('longpage_post_bookmarks', $conditions);
         $userparticipatedinthread = self::did_user_participate_in_thread($post->threadid, $userid);
         $usersubscribedtothread =
-            $DB->record_exists('page_thread_subscriptions', ['threadid' => $post->threadid, 'userid' => $userid]);
+            $DB->record_exists('longpage_thread_subs', ['threadid' => $post->threadid, 'userid' => $userid]);
         return $userlikespost || $userbookmarkedpost || $userparticipatedinthread || $usersubscribedtothread ? 1 : 0;
     }
 
     private static function map_abs_prefs_to_rel_prefs($prefprofile, $pageid, $abspreferences) {
         return array_map(function($abspreference) use ($prefprofile, $pageid) {
             $relpreference = new \stdClass();
-            $relpreference->pageid = $pageid;
+            $relpreference->longpageid = $pageid;
             $relpreference->postid = $abspreference->postid;
             $relpreference->userid = $prefprofile->userid;
             $relpreference->value = (float) $abspreference->value - (float) $prefprofile->avg;

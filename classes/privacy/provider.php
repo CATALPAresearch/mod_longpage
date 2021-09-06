@@ -21,7 +21,7 @@
  * @copyright  2018 Zig Tan <zig@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace mod_page\privacy;
+namespace mod_longpage\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 

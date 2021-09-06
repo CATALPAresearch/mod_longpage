@@ -29,9 +29,9 @@ import {LONGPAGE_APP_CONTAINER_ID} from '@/config/constants';
 import {toIdSelector} from '@/util/style';
 import {i18n} from '@/config/i18n';
 
-export const init = (courseId, pageId, pageName, userId, content, scrollTop) => {
+export const init = (courseId, longpageid, pageName, userId, content, scrollTop) => {
     try {
-        const store = initStore({courseId: Number(courseId), pageId: Number(pageId), pageName, userId: Number(userId)});
+        const store = initStore({courseId: Number(courseId), longpageid: Number(longpageid), pageName, userId: Number(userId)});
         createApp(App, {content, scrollTop: Number(scrollTop)})
             .use(store)
             .use(i18n)

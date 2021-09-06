@@ -17,7 +17,7 @@
 /**
  * Page external API
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @category   external
  * @copyright  2015 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,35 +26,35 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-use mod_page\local\constants\annotation_type as annotation_type;
-use mod_page\local\constants\selector as selector;
-use mod_page\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
-use mod_page\local\thread_subscriptions\manage_thread_subscriptions_task as manage_thread_subscriptions_task;
-use mod_page\local\thread_subscriptions\post_action as post_action;
+use mod_longpage\local\constants\annotation_type as annotation_type;
+use mod_longpage\local\constants\selector as selector;
+use mod_longpage\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
+use mod_longpage\local\thread_subscriptions\manage_thread_subscriptions_task as manage_thread_subscriptions_task;
+use mod_longpage\local\thread_subscriptions\post_action as post_action;
 
 require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
 require_once("$CFG->dirroot/course/externallib.php");
 require_once("$CFG->dirroot/user/externallib.php");
-require_once("$CFG->dirroot/mod/page/locallib.php");
+require_once("$CFG->dirroot/mod/longpage/locallib.php");
 
 /**
  * Page external functions
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @category   external
  * @copyright  2015 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 3.0
  */
-class mod_page_external extends external_api {
+class mod_longpage_external extends external_api {
     private static function add_recommendations_to_post($post) {
         global $DB, $USER;
 
         if ($post->readbyuser) return;
 
-        $post->recommendation = $DB->get_field('page_post_recommendations', 'value', ['postid' => $post->id, 'userid' => $USER->id]) ?:
-            $DB->get_field('page', 'avgpostpreference', ['id' => $post->pageid]);
+        $post->recommendation = $DB->get_field('longpage_post_recomends', 'value', ['postid' => $post->id, 'userid' => $USER->id]) ?:
+            $DB->get_field('longpage', 'avgpostpreference', ['id' => $post->longpageid]);
     }
 
     private static function annotation_target_parameters_base() {
@@ -92,11 +92,11 @@ class mod_page_external extends external_api {
         global $DB, $USER;
 
         self::validate_parameters(self::create_annotation_parameters(), ['annotation' => $annotation]);
-        self::validate_cm_context($annotation['pageid']);
+        self::validate_cm_context($annotation['longpageid']);
 
         $transaction = $DB->start_delegated_transaction();
-        $id = $DB->insert_record('page_annotations', array_merge(
-            pick_keys($annotation, ['pageid', 'type']),
+        $id = $DB->insert_record('longpage_annotations', array_merge(
+            pick_keys($annotation, ['longpageid', 'type']),
             [
                 'timecreated' => time(),
                 'timemodified' => time(),
@@ -106,12 +106,12 @@ class mod_page_external extends external_api {
         ));
         self::create_annotation_target($annotation['target'], $id);
         if(isset($annotation['body'])) {
-            self::create_thread($annotation['body'], $id, $annotation['pageid']);
+            self::create_thread($annotation['body'], $id, $annotation['longpageid']);
         }
         $transaction->allow_commit();
 
         return [
-            'annotation' => self::get_annotations(['pageid' => $annotation['pageid'], 'annotationid' => $id])['annotations'][0]
+            'annotation' => self::get_annotations(['longpageid' => $annotation['longpageid'], 'annotationid' => $id])['annotations'][0]
         ];
     }
 
@@ -124,7 +124,7 @@ class mod_page_external extends external_api {
     public static function create_annotation_parameters() {
         return new external_function_parameters([
             'annotation' => new external_single_structure([
-                'pageid' => new external_value(PARAM_INT),
+                'longpageid' => new external_value(PARAM_INT),
                 'target' => self::create_annotation_target_parameters(),
                 'type' => new external_value(PARAM_INT),
                 'body' => new external_single_structure(self::create_thread_parameters_base(), '', VALUE_OPTIONAL),
@@ -147,7 +147,7 @@ class mod_page_external extends external_api {
         global $DB;
 
         $targetid = $DB->insert_record(
-            'page_annotation_targets',
+            'longpage_annotation_targets',
             ['annotationid' => $annotationid, 'styleclass' => $target['styleclass'] ?? null]
         );
         self::create_selectors($target['selectors'], $targetid);
@@ -163,16 +163,16 @@ class mod_page_external extends external_api {
     private static function delete_post_from_db($id): void {
         global $DB, $USER;
 
-        $post = $DB->get_record('page_posts', ['id' => $id]);
-        $DB->delete_records('page_post_likes', ['postid' => $id]);
-        $DB->delete_records('page_post_readings', ['postid' => $id]);
-        $DB->delete_records('page_post_bookmarks', ['postid' => $id]);
-        $DB->delete_records('page_posts', ['id' => $id]);
+        $post = $DB->get_record('longpage_posts', ['id' => $id]);
+        $DB->delete_records('longpage_post_likes', ['postid' => $id]);
+        $DB->delete_records('longpage_post_readings', ['postid' => $id]);
+        $DB->delete_records('longpage_post_bookmarks', ['postid' => $id]);
+        $DB->delete_records('longpage_posts', ['id' => $id]);
 
         self::update_annotation_by_thread($post->threadid);
 
         manage_thread_subscriptions_task::create_manage_thread_subscriptions_task(
-            get_coursemodule_by_pageid($post->pageid)->id,
+            get_coursemodule_by_pageid($post->longpageid)->id,
             $id,
             $post->threadid,
             $USER->id,
@@ -184,14 +184,14 @@ class mod_page_external extends external_api {
     private static function get_annotation_by_thread_id($threadid) {
         global $DB;
 
-        $thread = $DB->get_record('page_threads', ['id' => $threadid]);
-        return $DB->get_record('page_annotations', ['id' => $thread->annotationid]);
+        $thread = $DB->get_record('longpage_threads', ['id' => $threadid]);
+        return $DB->get_record('longpage_annotations', ['id' => $thread->annotationid]);
     }
 
     private static function get_annotation_by_post_id($id) {
         global $DB;
 
-        $post = $DB->get_record('page_posts', ['id' => $id]);
+        $post = $DB->get_record('longpage_posts', ['id' => $id]);
         return self::get_annotation_by_thread_id($post->threadid);
     }
 
@@ -200,23 +200,23 @@ class mod_page_external extends external_api {
 
         self::validate_parameters(self::create_post_parameters(), ['post' => $postparameters]);
         $postparameters = (object) $postparameters;
-        self::validate_cm_context($postparameters->pageid);
+        self::validate_cm_context($postparameters->longpageid);
 
         $transaction = $DB->start_delegated_transaction();
         $id = $DB->insert_record(
-            'page_posts',
+            'longpage_posts',
             object_merge($postparameters, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()]),
         );
         $transaction->allow_commit();
 
         self::update_annotation_by_thread($postparameters->threadid, $postparameters->ispublic);
         self::create_post_reading($id);
-        post_recommendation_calculation_task::create_from_pageid_and_queue($postparameters->pageid);
+        post_recommendation_calculation_task::create_from_pageid_and_queue($postparameters->longpageid);
 
         $posts = self::get_posts($postparameters->threadid, [$id]);
 
         manage_thread_subscriptions_task::create_manage_thread_subscriptions_task(
-            get_coursemodule_by_pageid($postparameters->pageid)->id,
+            get_coursemodule_by_pageid($postparameters->longpageid)->id,
             $id,
             $postparameters->threadid,
             $USER->id,
@@ -230,13 +230,13 @@ class mod_page_external extends external_api {
     public static function create_post_like($postid) {
         self::validate_post_write($postid);
 
-        self::create_post_reaction('page_post_likes', $postid);
+        self::create_post_reaction('longpage_post_likes', $postid);
     }
 
     private static function create_post_reaction($table, $postid) {
         global $DB, $USER;
 
-        $post = $DB->get_record('page_posts', ['id' => $postid]);
+        $post = $DB->get_record('longpage_posts', ['id' => $postid]);
 
         $keyconditions = ['postid' => $postid, 'userid' => $USER->id];
         $transaction = $DB->start_delegated_transaction();
@@ -245,7 +245,7 @@ class mod_page_external extends external_api {
         }
         $transaction->allow_commit();
 
-        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
+        post_recommendation_calculation_task::create_from_pageid_and_queue($post->longpageid);
     }
 
     public static function create_post_like_parameters() {
@@ -261,7 +261,7 @@ class mod_page_external extends external_api {
     public static function create_post_bookmark($postid) {
         self::validate_post_write($postid);
 
-        self::create_post_reaction('page_post_bookmarks', $postid);
+        self::create_post_reaction('longpage_post_bookmarks', $postid);
     }
 
     public static function create_post_bookmark_parameters() {
@@ -275,7 +275,7 @@ class mod_page_external extends external_api {
     public static function create_post_parameters() {
         return new external_function_parameters([
             'post' => new external_single_structure(
-                array_merge(omit_keys(self::post_parameters(), ['creatorid']), ['pageid' => new external_value(PARAM_INT)])
+                array_merge(omit_keys(self::post_parameters(), ['creatorid']), ['longpageid' => new external_value(PARAM_INT)])
             ),
         ]);
     }
@@ -283,7 +283,7 @@ class mod_page_external extends external_api {
     public static function create_post_reading($postid) {
         self::validate_post_write($postid);
 
-        self::create_post_reaction('page_post_readings', $postid);
+        self::create_post_reaction('longpage_post_readings', $postid);
     }
 
     public static function create_post_reading_parameters() {
@@ -304,7 +304,7 @@ class mod_page_external extends external_api {
         global $DB;
 
         foreach ($selectors as $selector) {
-            $selectorid = $DB->insert_record('page_selectors', ['annotationtargetid' => $annotationtargetid, 'type' => $selector['type']]);
+            $selectorid = $DB->insert_record('longpage_selectors', ['annotationtargetid' => $annotationtargetid, 'type' => $selector['type']]);
             $DB->insert_record(selector::map_type_to_table_name($selector['type']),
                 array_merge(omit_keys($selector, ['type']), ['selectorid' => $selectorid]));
         }
@@ -314,7 +314,7 @@ class mod_page_external extends external_api {
         global $DB, $USER;
 
         $id = $DB->insert_record(
-            'page_threads',
+            'longpage_threads',
             [
                 'annotationid' => $annotationid,
                 'creatorid' => $USER->id,
@@ -322,7 +322,7 @@ class mod_page_external extends external_api {
             ],
         );
         $postparameters = omit_keys($threadparameters, ['replyrequested']);
-        $postparameters['pageid'] = $pageid;
+        $postparameters['longpageid'] = $pageid;
         $postparameters['threadid'] = $id;
         self::create_post($postparameters);
         self::create_thread_subscription($id);
@@ -350,9 +350,9 @@ class mod_page_external extends external_api {
 
         self::validate_parameters(self::create_thread_subscription_parameters(), ['threadid' => $threadid]);
         $annotation = self::get_annotation_by_thread($threadid);
-        self::validate_cm_context($annotation->pageid);
+        self::validate_cm_context($annotation->longpageid);
 
-        $table = 'page_thread_subscriptions';
+        $table = 'longpage_thread_subs';
         $keyconditions = ['threadid' => $threadid, 'userid' => $USER->id];
         $transaction = $DB->start_delegated_transaction();
         if (!$DB->record_exists($table, $keyconditions)) {
@@ -360,7 +360,7 @@ class mod_page_external extends external_api {
         }
         $transaction->allow_commit();
 
-        post_recommendation_calculation_task::create_from_pageid_and_queue($annotation->pageid);
+        post_recommendation_calculation_task::create_from_pageid_and_queue($annotation->longpageid);
     }
 
     public static function create_thread_subscription_parameters() {
@@ -377,8 +377,8 @@ class mod_page_external extends external_api {
         global $DB;
 
         self::delete_post_from_db(self::get_posts($thread->id)[0]->id);
-        $DB->delete_records('page_thread_subscriptions', ['threadid' => $thread->id]);
-        $DB->delete_records('page_threads', ['id' => $thread->id]);
+        $DB->delete_records('longpage_thread_subs', ['threadid' => $thread->id]);
+        $DB->delete_records('longpage_threads', ['id' => $thread->id]);
 
         post_recommendation_calculation_task::create_from_pageid_and_queue($pageid);
     }
@@ -387,18 +387,18 @@ class mod_page_external extends external_api {
         global $DB;
 
         self::validate_parameters(self::delete_annotation_parameters(), ['id' => $id]);
-        $annotation = $DB->get_record('page_annotations', ['id' => $id]);
-        self::validate_cm_context($annotation->pageid);
+        $annotation = $DB->get_record('longpage_annotations', ['id' => $id]);
+        self::validate_cm_context($annotation->longpageid);
 
         // TODO validate that user can delete annotation and that annotation can be deleted (not part of a thread that others depend on), can be merged with validation of highlight & post
 
         $transaction = $DB->start_delegated_transaction();
         self::delete_annotation_target($id);
         if ($annotation->type == annotation_type::POST) {
-            $thread = $DB->get_record('page_threads', ['annotationid' => $annotation->id]);
-            self::delete_thread($thread, $annotation->pageid);
+            $thread = $DB->get_record('longpage_threads', ['annotationid' => $annotation->id]);
+            self::delete_thread($thread, $annotation->longpageid);
         }
-        $DB->delete_records('page_annotations', ['id' => $id]);
+        $DB->delete_records('longpage_annotations', ['id' => $id]);
         $transaction->allow_commit();
     }
 
@@ -416,9 +416,9 @@ class mod_page_external extends external_api {
         global $DB;
 
         $conditions = ['annotationid' => $annotationid];
-        $target = $DB->get_record('page_annotation_targets', $conditions);
+        $target = $DB->get_record('longpage_annotation_targets', $conditions);
         self::delete_selectors($target->id);
-        $DB->delete_records('page_annotation_targets', $conditions);
+        $DB->delete_records('longpage_annotation_targets', $conditions);
     }
 
     public static function delete_highlight($id) {
@@ -448,14 +448,14 @@ class mod_page_external extends external_api {
     private static function get_annotation_by_thread($threadid) {
         global $DB;
 
-        $thread = $DB->get_record('page_threads', ['id' => $threadid]);
-        return $DB->get_record('page_annotations', ['id' => $thread->annotationid]);
+        $thread = $DB->get_record('longpage_threads', ['id' => $threadid]);
+        return $DB->get_record('longpage_annotations', ['id' => $thread->annotationid]);
     }
 
     private static function is_post_thread_root($post) {
         global $DB;
 
-        $postsinthreadcount = $DB->count_records('page_posts', ['threadid' => $post->threadid]);
+        $postsinthreadcount = $DB->count_records('longpage_posts', ['threadid' => $post->threadid]);
         return $postsinthreadcount === 1;
     }
 
@@ -464,9 +464,9 @@ class mod_page_external extends external_api {
 
         self::validate_parameters(self::delete_post_parameters(), ['id' => $id]);
         $annotation = self::get_annotation_by_post_id($id);
-        self::validate_cm_context($annotation->pageid);
+        self::validate_cm_context($annotation->longpageid);
 
-        $post = $DB->get_record('page_posts', ['id' => $id]);
+        $post = $DB->get_record('longpage_posts', ['id' => $id]);
         // TODO Move getting the thread into validation
         $postisthreadroot = self::is_post_thread_root($post);
 
@@ -476,7 +476,7 @@ class mod_page_external extends external_api {
         self::delete_post_from_db($id);
         $transaction->allow_commit();
 
-        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
+        post_recommendation_calculation_task::create_from_pageid_and_queue($post->longpageid);
     }
 
     public static function delete_post_like($postid) {
@@ -485,7 +485,7 @@ class mod_page_external extends external_api {
         self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_likes', ['postid' => $postid, 'userid' => $USER->id]);
+        $DB->delete_records('longpage_post_likes', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
 
         self::schedule_post_recommendation_calculation_task_for_page_with_post($postid);
@@ -505,7 +505,7 @@ class mod_page_external extends external_api {
         self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_bookmarks', ['postid' => $postid, 'userid' => $USER->id]);
+        $DB->delete_records('longpage_post_bookmarks', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
 
         self::schedule_post_recommendation_calculation_task_for_page_with_post($postid);
@@ -529,7 +529,7 @@ class mod_page_external extends external_api {
         self::validate_post_write($postid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_readings', ['postid' => $postid, 'userid' => $USER->id]);
+        $DB->delete_records('longpage_post_readings', ['postid' => $postid, 'userid' => $USER->id]);
         $transaction->allow_commit();
 
         self::schedule_post_recommendation_calculation_task_for_page_with_post($postid);
@@ -551,12 +551,12 @@ class mod_page_external extends external_api {
         global $DB;
 
         $conditions = ['annotationtargetid' => $annotationtargetid];
-        $pageselectors = $DB->get_records('page_selectors', $conditions);
+        $pageselectors = $DB->get_records('longpage_selectors', $conditions);
         foreach ($pageselectors as $pageselector) {
             $tablename = selector::map_type_to_table_name($pageselector->type);
             $DB->delete_records($tablename, ['selectorid' => $pageselector->id]);
         }
-        $DB->delete_records('page_selectors', $conditions);
+        $DB->delete_records('longpage_selectors', $conditions);
     }
 
     public static function get_user_roles_by_pageid($pageid) {
@@ -566,7 +566,7 @@ class mod_page_external extends external_api {
 
     public static function get_user_roles_by_pageid_parameters() {
         return new external_function_parameters([
-            'pageid' => new external_value(PARAM_INT),
+            'longpageid' => new external_value(PARAM_INT),
         ]);
     }
 
@@ -626,9 +626,9 @@ class mod_page_external extends external_api {
     private static function schedule_post_recommendation_calculation_task_for_page_with_post($postid) {
         global $DB;
 
-        $post = $DB->get_record('page_posts', ['id' => $postid], 'pageid');
+        $post = $DB->get_record('longpage_posts', ['id' => $postid], 'longpageid');
 
-        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
+        post_recommendation_calculation_task::create_from_pageid_and_queue($post->longpageid);
     }
 
     private static function update_annotation_by_thread($threadid, $ispublic = null) {
@@ -641,7 +641,7 @@ class mod_page_external extends external_api {
         }
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->update_record('page_annotations', $update);
+        $DB->update_record('longpage_annotations', $update);
         $transaction->allow_commit();
     }
 
@@ -677,10 +677,10 @@ class mod_page_external extends external_api {
 
         self::validate_parameters(self::create_thread_subscription_parameters(), ['threadid' => $threadid]);
         $annotation = self::get_annotation_by_thread($threadid);
-        self::validate_cm_context($annotation->pageid);
+        self::validate_cm_context($annotation->longpageid);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_thread_subscriptions', ['threadid' => $threadid, 'userid' => $USER->id]);
+        $DB->delete_records('longpage_thread_subs', ['threadid' => $threadid, 'userid' => $USER->id]);
         $transaction->allow_commit();
     }
 
@@ -699,7 +699,7 @@ class mod_page_external extends external_api {
                 'body' => self::get_thread_returns(),
                 'creatorid' => new external_value(PARAM_INT),
                 'ispublic' => new external_value(PARAM_INT),
-                'pageid' => new external_value(PARAM_INT),
+                'longpageid' => new external_value(PARAM_INT),
                 'target' => self::get_annotation_target_parameters(),
                 'type' => new external_value(PARAM_INT),
             ],
@@ -714,7 +714,7 @@ class mod_page_external extends external_api {
     private static function get_annotation_target($annotationid) {
         global $DB;
 
-        $target = $DB->get_record('page_annotation_targets', ['annotationid' => $annotationid]);
+        $target = $DB->get_record('longpage_annotation_targets', ['annotationid' => $annotationid]);
         $target->selectors = self::get_selectors($target->id);
 
         return omit_keys($target, ['annotationid']);
@@ -729,12 +729,12 @@ class mod_page_external extends external_api {
 
     public static function get_annotations($parameters) {
         self::validate_parameters(self::get_annotations_parameters(), ['parameters' => $parameters]);
-        self::validate_cm_context($parameters['pageid']);
+        self::validate_cm_context($parameters['longpageid']);
 
         $annotations =
             isset($parameters['annotationid']) ?
                 self::get_annotations_by_annotation_id($parameters['annotationid']) :
-                self::get_annotations_by_page_id($parameters['pageid']);
+                self::get_annotations_by_page_id($parameters['longpageid']);
 
         foreach ($annotations as $annotation) {
             $annotation->target = self::get_annotation_target($annotation->id);
@@ -750,7 +750,7 @@ class mod_page_external extends external_api {
         global $DB, $USER;
 
         return $DB->get_records_select(
-            'page_annotations',
+            'longpage_annotations',
             'id = ? AND (creatorid = ? OR ispublic = 1)',
             ['id' => $annotationid, 'creatorid' => $USER->id],
         );
@@ -760,9 +760,9 @@ class mod_page_external extends external_api {
         global $DB, $USER;
 
         return $DB->get_records_select(
-            'page_annotations',
-            'pageid = ? AND (creatorid = ? OR ispublic = 1)',
-            ['pageid' => $pageid, 'creatorid' => $USER->id],
+            'longpage_annotations',
+            'longpageid = ? AND (creatorid = ? OR ispublic = 1)',
+            ['longpageid' => $pageid, 'creatorid' => $USER->id],
         );
     }
 
@@ -775,7 +775,7 @@ class mod_page_external extends external_api {
     public static function get_annotations_parameters() {
         return new external_function_parameters([
             'parameters' => new external_single_structure([
-                'pageid' => new external_value(PARAM_INT),
+                'longpageid' => new external_value(PARAM_INT),
                 'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
             ]),
         ]);
@@ -822,7 +822,7 @@ class mod_page_external extends external_api {
 
             // Get the pages in this course, this function checks users visibility permissions.
             // We can avoid then additional validate_context calls.
-            $pages = get_all_instances_in_courses("page", $courses);
+            $pages = get_all_instances_in_courses("longpage", $courses);
             foreach ($pages as $page) {
                 $context = context_module::instance($page->coursemodule);
                 // Entry to return.
@@ -832,23 +832,23 @@ class mod_page_external extends external_api {
                     $page->intro,
                     $page->introformat,
                     $context->id,
-                    'mod_page',
+                    'mod_longpage',
                     'intro',
                     null
                 );
-                $page->introfiles = external_util::get_area_files($context->id, 'mod_page', 'intro', false, false);
+                $page->introfiles = external_util::get_area_files($context->id, 'mod_longpage', 'intro', false, false);
 
                 $options = array('noclean' => true);
                 list($page->content, $page->contentformat) = external_format_text(
                     $page->content,
                     $page->contentformat,
                     $context->id,
-                    'mod_page',
+                    'mod_longpage',
                     'content',
                     $page->revision,
                     $options
                 );
-                $page->contentfiles = external_util::get_area_files($context->id, 'mod_page', 'content');
+                $page->contentfiles = external_util::get_area_files($context->id, 'mod_longpage', 'content');
 
                 $returnedpages[] = $page;
             }
@@ -957,7 +957,7 @@ class mod_page_external extends external_api {
             $params = array_merge($params, $inpostidsparams);
         }
 
-        $posts = $DB->get_records_select('page_posts', $select, $params, 'timemodified ASC');
+        $posts = $DB->get_records_select('longpage_posts', $select, $params, 'timemodified ASC');
 
         return array_map(function ($post) {
             self::anonymize_post($post);
@@ -970,14 +970,14 @@ class mod_page_external extends external_api {
     private static function add_reactions_to_post($post) {
         global $DB, $USER;
 
-        $post->likescount = $DB->count_records('page_post_likes', ['postid' => $post->id]);
-        $post->likedbyuser = $DB->record_exists('page_post_likes', ['postid' => $post->id, 'userid' => $USER->id]);
+        $post->likescount = $DB->count_records('longpage_post_likes', ['postid' => $post->id]);
+        $post->likedbyuser = $DB->record_exists('longpage_post_likes', ['postid' => $post->id, 'userid' => $USER->id]);
 
-        $post->readingscount = $DB->count_records('page_post_readings', ['postid' => $post->id]);
-        $post->readbyuser = $DB->record_exists('page_post_readings', ['postid' => $post->id, 'userid' => $USER->id]);
+        $post->readingscount = $DB->count_records('longpage_post_readings', ['postid' => $post->id]);
+        $post->readbyuser = $DB->record_exists('longpage_post_readings', ['postid' => $post->id, 'userid' => $USER->id]);
 
         $post->bookmarkedbyuser =
-            $DB->record_exists('page_post_bookmarks', ['postid' => $post->id, 'userid' => $USER->id]);
+            $DB->record_exists('longpage_post_bookmarks', ['postid' => $post->id, 'userid' => $USER->id]);
 
         return $post;
     }
@@ -985,7 +985,7 @@ class mod_page_external extends external_api {
     private static function get_selectors($annotationtargetid) {
         global $DB;
 
-        $selectors = $DB->get_records('page_selectors', ['annotationtargetid' => $annotationtargetid]);
+        $selectors = $DB->get_records('longpage_selectors', ['annotationtargetid' => $annotationtargetid]);
         return array_values(array_map(function ($selector) use ($DB) {
             $result = $DB->get_record(
                 selector::map_type_to_table_name($selector->type),
@@ -999,10 +999,10 @@ class mod_page_external extends external_api {
     public static function get_thread($annotationid) {
         global $DB, $USER;
 
-        $thread = $DB->get_record('page_threads', ['annotationid' => $annotationid]);
+        $thread = $DB->get_record('longpage_threads', ['annotationid' => $annotationid]);
         $thread->posts = self::get_posts($thread->id);
         $thread->subscribedtobyuser =
-            $DB->record_exists('page_thread_subscriptions', ['threadid' => $thread->id, 'userid' => $USER->id]);
+            $DB->record_exists('longpage_thread_subs', ['threadid' => $thread->id, 'userid' => $USER->id]);
 
         return $thread;
     }
@@ -1040,18 +1040,18 @@ class mod_page_external extends external_api {
         global $DB;
 
         self::validate_parameters(self::create_annotation_parameters(), ['id' => $id, 'styleclass' => $styleclass]);
-        $annotation = $DB->get_record('page_annotations', ['id' => $id]);
-        self::validate_cm_context($annotation->pageid);
+        $annotation = $DB->get_record('longpage_annotations', ['id' => $id]);
+        self::validate_cm_context($annotation->longpageid);
 
         self::validate_highlight_can_be_deleted_and_updated($annotation);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->update_record('page_annotation_targets', ['annotationid' => $id, 'styleclass' => $styleclass]);
-        $DB->update_record('page_annotations', ['id' => $id, 'timemodified' => time()]);
+        $DB->update_record('longpage_annotation_targets', ['annotationid' => $id, 'styleclass' => $styleclass]);
+        $DB->update_record('longpage_annotations', ['id' => $id, 'timemodified' => time()]);
         $transaction->allow_commit();
 
         return [
-            'annotation' => self::get_annotations(['pageid' => $annotation->pageid, 'annotationid' => $id])['annotations'][0]
+            'annotation' => self::get_annotations(['longpageid' => $annotation->longpageid, 'annotationid' => $id])['annotations'][0]
         ];
     }
 
@@ -1071,23 +1071,23 @@ class mod_page_external extends external_api {
 
         self::validate_parameters(self::update_post_parameters(), ['postupdate' => $postupdateparams]);
         $postupdate = (object) $postupdateparams;
-        $post = $DB->get_record('page_posts', ['id' => $postupdate->id]);
-        self::validate_cm_context($post->pageid);
+        $post = $DB->get_record('longpage_posts', ['id' => $postupdate->id]);
+        self::validate_cm_context($post->longpageid);
 
         $transaction = $DB->start_delegated_transaction();
         self::validate_post_can_be_updated($postupdate);
-        $DB->update_record('page_posts', array_merge((array) $postupdate, ['timemodified' => time()]));
+        $DB->update_record('longpage_posts', array_merge((array) $postupdate, ['timemodified' => time()]));
         if (isset($postupdate->content) && $post->content !== $postupdate->content) {
-            $DB->delete_records('page_post_readings', ['postid' => $post->id]);
-            $DB->insert_record('page_post_readings', ['postid' => $post->id, 'userid' => $USER->id, 'timecreated' => time()]);
+            $DB->delete_records('longpage_post_readings', ['postid' => $post->id]);
+            $DB->insert_record('longpage_post_readings', ['postid' => $post->id, 'userid' => $USER->id, 'timecreated' => time()]);
         }
         self::update_annotation_by_thread($post->threadid, isset($postupdate->ispublic) ? $postupdate->ispublic : $post->ispublic);
         $transaction->allow_commit();
 
-        post_recommendation_calculation_task::create_from_pageid_and_queue($post->pageid);
+        post_recommendation_calculation_task::create_from_pageid_and_queue($post->longpageid);
         if (isset($postupdate->content) && $post->content !== $postupdate->content) {
             manage_thread_subscriptions_task::create_manage_thread_subscriptions_task(
-                get_coursemodule_by_pageid($post->pageid)->id,
+                get_coursemodule_by_pageid($post->longpageid)->id,
                 $post->id,
                 $post->threadid,
                 $USER->id,
@@ -1123,22 +1123,22 @@ class mod_page_external extends external_api {
 
         self::validate_parameters(
             self::update_reading_progress_parameters(),
-            ['pageid' => $pageid, 'scrolltop' => $scrolltop],
+            ['longpageid' => $pageid, 'scrolltop' => $scrolltop],
         );
         self::validate_cm_context($pageid);
 
         $transaction = $DB->start_delegated_transaction();
         self::update_or_create(
-            'page_reading_progress',
-            ['pageid' => $pageid, 'userid' => $USER->id],
-            ['pageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 'timemodified' => time()]
+            'longpage_reading_progress',
+            ['longpageid' => $pageid, 'userid' => $USER->id],
+            ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 'timemodified' => time()]
         );
         $transaction->allow_commit();
     }
 
     public static function update_reading_progress_parameters() {
         return new external_function_parameters([
-            'pageid' => new external_value(PARAM_INT),
+            'longpageid' => new external_value(PARAM_INT),
             'scrolltop' => new external_value(PARAM_FLOAT),
         ]);
     }
@@ -1194,14 +1194,14 @@ class mod_page_external extends external_api {
 
         self::validate_post_not_referenced_by_other_post($post);
 
-        $isliked = $DB->record_exists('page_post_likes', ['postid' => $post->id]);
+        $isliked = $DB->record_exists('longpage_post_likes', ['postid' => $post->id]);
         if ($isliked) {
             throw new invalid_parameter_exception('Post is liked by others. 
                 It cannot be deleted/updated since others might depend on it.');
         }
 
         $isbookmarked = $DB->record_exists_select(
-            'page_post_bookmarks',
+            'longpage_post_bookmarks',
             'postid = ? AND userid != ?',
             ['postid' => $post->id, 'userid' => $post->creatorid]
         );
@@ -1212,7 +1212,7 @@ class mod_page_external extends external_api {
 
         // TODO: Validation
 /*        $threadhassubscription = $DB->record_exists_select(
-            'page_thread_subscriptions',
+            'longpage_thread_subs',
             'threadid = ? AND userid != ?',
             ['threadid' => $post->threadid, 'userid' => $post->creatorid]
         );
@@ -1230,9 +1230,9 @@ class mod_page_external extends external_api {
         // TODO: Check if user has capability for updating postIntern
         // TODO: Enable validation again
 
-        //$post = $DB->get_record('page_posts', ['id' => $postupdate->id]);
-        //$thread = $DB->get_record('page_threads', ['id' => $post->threadid]);
-        //$rootpost = $DB->get_record('page_posts', ['id' => $thread->rootid]);
+        //$post = $DB->get_record('longpage_posts', ['id' => $postupdate->id]);
+        //$thread = $DB->get_record('longpage_threads', ['id' => $post->threadid]);
+        //$rootpost = $DB->get_record('longpage_posts', ['id' => $thread->rootid]);
         //$postisthreadroot = $post->threadid === $thread->rootid;
         //if (($post->ispublic && !$postupdate->ispublic) || $post->content !== $postupdate->content) {
         //    self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
@@ -1260,7 +1260,7 @@ class mod_page_external extends external_api {
         global $DB;
 
         $islastpost = !($DB->record_exists_select(
-            'page_posts',
+            'longpage_posts',
             'threadid = ? AND timecreated > ?',
             ['threadid' => $post->threadid, 'timecreated' => $post->timecreated]
         ));
@@ -1276,7 +1276,7 @@ class mod_page_external extends external_api {
     private static function validate_post_write($postid): void {
         self::validate_parameters(self::create_post_like_parameters(), ['postid' => $postid]);
         $annotation = self::get_annotation_by_post_id($postid);
-        self::validate_cm_context($annotation->pageid);
+        self::validate_cm_context($annotation->longpageid);
     }
 
     /**
@@ -1289,27 +1289,27 @@ class mod_page_external extends external_api {
      */
     public static function view_page($pageid) {
         global $DB, $CFG;
-        require_once($CFG->dirroot . "/mod/page/lib.php");
+        require_once($CFG->dirroot . "/mod/longpage/lib.php");
 
         $params = self::validate_parameters(
             self::view_page_parameters(),
             array(
-                'pageid' => $pageid
+                'longpageid' => $pageid
             )
         );
         $warnings = array();
 
         // Request and permission validation.
-        $page = $DB->get_record('page', array('id' => $params['pageid']), '*', MUST_EXIST);
-        list($course, $cm) = get_course_and_cm_from_instance($page, 'page');
+        $page = $DB->get_record('longpage', array('id' => $params['longpageid']), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
 
         $context = context_module::instance($cm->id);
         self::validate_context($context);
 
-        require_capability('mod/page:view', $context);
+        require_capability('mod/longpage:view', $context);
 
         // Call the page/lib API.
-        page_view($page, $course, $cm, $context);
+        longpage_view($page, $course, $cm, $context);
 
         $result = array();
         $result['status'] = true;
@@ -1326,7 +1326,7 @@ class mod_page_external extends external_api {
     public static function view_page_parameters() {
         return new external_function_parameters(
             array(
-                'pageid' => new external_value(PARAM_INT, 'page instance id')
+                'longpageid' => new external_value(PARAM_INT, 'page instance id')
             )
         );
     }
@@ -1349,12 +1349,12 @@ class mod_page_external extends external_api {
         global $CFG, $DB, $USER;
 
         $r = new stdClass();
-        $r->name = 'mod_page';
-        $r->component = 'mod_page';
-        $r->eventname = '\mod_page\event\course_module_' . $data['action'];
+        $r->name = 'mod_longpage';
+        $r->component = 'mod_longpage';
+        $r->eventname = '\mod_longpage\event\course_module_' . $data['action'];
         $r->action = $data['action'];
         $r->target = 'course_module';
-        $r->objecttable = 'page';
+        $r->objecttable = 'longpage';
         $r->objectid = 0;
         $r->crud = 'r';
         $r->edulevel = 2;
@@ -1383,11 +1383,11 @@ class mod_page_external extends external_api {
             $s->sectionoffset = (int) $d->value->scrollYDistance;
             $s->userid = (int) $USER->id;
             $s->courseid = (int) $data['courseid'];
-            $s->pageid = (int) $d->value->pageid;
+            $s->longpageid = (int) $d->value->longpageid;
             $s->creationdate = (int) $d->utc;
 
             $transaction = $DB->start_delegated_transaction();
-            $res2 = $DB->insert_record("page_reading", (array) $s);
+            $res2 = $DB->insert_record("longpage_reading", (array) $s);
             $transaction->allow_commit();
         }
         return array('response' => json_encode($res));

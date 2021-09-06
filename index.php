@@ -18,7 +18,7 @@
 /**
  * List of all pages in course
  *
- * @package mod_page
+ * @package mod_longpage
  * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,23 +33,23 @@ require_course_login($course, true);
 $PAGE->set_pagelayout('incourse');
 
 // Trigger instances list viewed event.
-$event = \mod_page\event\course_module_instance_list_viewed::create(array('context' => context_course::instance($course->id)));
+$event = \mod_longpage\event\course_module_instance_list_viewed::create(array('context' => context_course::instance($course->id)));
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
-$strpage         = get_string('modulename', 'page');
-$strpages        = get_string('modulenameplural', 'page');
+$strpage         = get_string('modulename', 'longpage');
+$strpages        = get_string('modulenameplural', 'longpage');
 $strname         = get_string('name');
 $strintro        = get_string('moduleintro');
 $strlastmodified = get_string('lastmodified');
 
-$PAGE->set_url('/mod/page/index.php', array('id' => $course->id));
+$PAGE->set_url('/mod/longpage/index.php', array('id' => $course->id));
 $PAGE->set_title($course->shortname.': '.$strpages);
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add($strpages);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strpages);
-if (!$pages = get_all_instances_in_course('page', $course)) {
+if (!$pages = get_all_instances_in_course('longpage', $course)) {
     notice(get_string('thereareno', 'moodle', $strpages), "$CFG->wwwroot/course/view.php?id=$course->id");
     exit;
 }
@@ -92,7 +92,7 @@ foreach ($pages as $page) {
     $table->data[] = array (
         $printsection,
         "<a $class href=\"view.php?id=$cm->id\">".format_string($page->name)."</a>",
-        format_module_intro('page', $page, $cm->id));
+        format_module_intro('longpage', $page, $cm->id));
 }
 
 echo html_writer::table($table);

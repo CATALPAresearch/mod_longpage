@@ -11,7 +11,7 @@ import ajax from 'core/ajax';
 export default function (utils, courseId, options) {
     this.utils = utils;
     this.courseId = courseId;
-    this.name = 'log_page';
+    this.name = 'log_longpage';
     this.options = utils.mergeObjects({
         outputType: 1, // -1: no logging, 0: console.log(), 1: server log,
         prefix: '',
@@ -110,7 +110,7 @@ export default function (utils, courseId, options) {
     this.sendLog = function (entry) {
         let _this = this;
         ajax.call([{
-            methodname: 'mod_page_log',
+            methodname: 'mod_longpage_log',
             args: {
                 data: {
                     courseid: _this.courseId,

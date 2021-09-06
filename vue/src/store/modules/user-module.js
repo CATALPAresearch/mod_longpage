@@ -43,13 +43,14 @@ export default {
             ajax.call([{
                 methodname: MoodleWSMethods.GET_ENROLLED_USERS,
                 args: {
-                    pageid: context.pageId,
+                    longpageid: context.longpageid,
                 },
                 done: ({users}) => {
                     commit(MUTATE.SET_ENROLLED_USERS, users.map(response => MappingService.mapResponseToUser(response)));
                 },
                 fail: (e) => {
                     console.error(`"${MoodleWSMethods.GET_ENROLLED_USERS}" failed`, e);
+                    console.log(context);
                 }
             }]);
         },
@@ -58,13 +59,14 @@ export default {
             ajax.call([{
                 methodname: MoodleWSMethods.GET_USER_ROLES_FOR_MODULE,
                 args: {
-                    pageid: context.pageId,
+                    longpageid: context.longpageid,
                 },
                 done: ({userroles}) => {
                     commit(MUTATE.SET_USER_ROLES, userroles.map(response => MappingService.mapResponseToUserRole(response)));
                 },
                 fail: (e) => {
                     console.error(`"${MoodleWSMethods.GET_USER_ROLES_FOR_MODULE}" failed`, e);
+                    console.log(context);
                 }
             }]);
         },

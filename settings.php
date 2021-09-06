@@ -32,21 +32,21 @@ if ($ADMIN->fulltree) {
     $defaultdisplayoptions = array(RESOURCELIB_DISPLAY_OPEN);
 
     //--- general settings -----------------------------------------------------------------------------------
-    $settings->add(new admin_setting_configmultiselect('page/displayoptions',
-        get_string('displayoptions', 'page'), get_string('configdisplayoptions', 'page'),
+    $settings->add(new admin_setting_configmultiselect('longpage/displayoptions',
+        get_string('displayoptions', 'longpage'), get_string('configdisplayoptions', 'longpage'),
         $defaultdisplayoptions, $displayoptions));
 
     //--- modedit defaults -----------------------------------------------------------------------------------
     $settings->add(new admin_setting_heading('pagemodeditdefaults', get_string('modeditdefaults', 'admin'), get_string('condifmodeditdefaults', 'admin')));
 
-    $settings->add(new admin_setting_configcheckbox('page/printheading',
-        get_string('printheading', 'page'), get_string('printheadingexplain', 'page'), 1));
-    $settings->add(new admin_setting_configcheckbox('page/printintro',
-        get_string('printintro', 'page'), get_string('printintroexplain', 'page'), 0));
-    $settings->add(new admin_setting_configselect('page/display',
-        get_string('displayselect', 'page'), get_string('displayselectexplain', 'page'), RESOURCELIB_DISPLAY_OPEN, $displayoptions));
-    $settings->add(new admin_setting_configtext('page/popupwidth',
-        get_string('popupwidth', 'page'), get_string('popupwidthexplain', 'page'), 620, PARAM_INT, 7));
-    $settings->add(new admin_setting_configtext('page/popupheight',
-        get_string('popupheight', 'page'), get_string('popupheightexplain', 'page'), 450, PARAM_INT, 7));
+    $settings->add(new admin_setting_configcheckbox('longpage/printheading',
+        get_string('printheading', 'longpage'), get_string('printheadingexplain', 'longpage'), 1));
+    $settings->add(new admin_setting_configcheckbox('longpage/printintro',
+        get_string('printintro', 'longpage'), get_string('printintroexplain', 'longpage'), 0));
+    $settings->add(new admin_setting_configselect('longpage/display',
+        get_string('displayselect', 'longpage'), get_string('displayselectexplain', 'longpage'), RESOURCELIB_DISPLAY_OPEN, $displayoptions));
+    $settings->add(new admin_setting_configtext('longpage/popupwidth',
+        get_string('popupwidth', 'longpage'), get_string('popupwidthexplain', 'longpage'), 620, PARAM_INT, 7));
+    $settings->add(new admin_setting_configtext('longpage/popupheight',
+        get_string('popupheight', 'longpage'), get_string('popupheightexplain', 'longpage'), 450, PARAM_INT, 7));
 }

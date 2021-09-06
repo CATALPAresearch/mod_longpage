@@ -17,7 +17,7 @@
 /**
  * Page external functions and service definitions.
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @category   external
  * @copyright  2015 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,183 +27,183 @@
 defined('MOODLE_INTERNAL') || die;
 
 $functions = array(
-    'mod_page_update_reading_progress' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_update_reading_progress' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'update_reading_progress',
         'description'   => 'Update reading progress of the user for one page',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_get_user_roles_by_pageid' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_get_user_roles_by_pageid' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'get_user_roles_by_pageid',
         'description'   => 'Get roles of users participating in a page instance',
         'type'          => 'read',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_get_enrolled_users_with_roles_by_pageid' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_get_enrolled_users_with_roles_by_pageid' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'get_enrolled_users_with_roles_by_pageid',
         'description'   => 'Get enrolled users with roles (ids) by page id',
         'type'          => 'read',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_create_annotation' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_create_annotation' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'create_annotation',
         'description'   => 'Create an annotation',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_delete_annotation' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_delete_annotation' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'delete_annotation',
         'description'   => 'Delete annotation',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_get_annotations' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_get_annotations' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'get_annotations',
         'description'   => 'Get annotations by page',
         'type'          => 'read',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
 
-    'mod_page_delete_highlight' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_delete_highlight' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'delete_highlight',
         'description'   => 'Delete highlight',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_update_highlight' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_update_highlight' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'update_highlight',
         'description'   => 'Update highlight',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
 
-    'mod_page_create_post' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_create_post' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'create_post',
         'description'   => 'Create postIntern',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_delete_post' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_delete_post' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'delete_post',
         'description'   => 'Delete postIntern',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_update_post' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_update_post' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'update_post',
         'description'   => 'Update post',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_create_post_like' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_create_post_like' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'create_post_like',
         'description'   => 'Create postIntern like',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_delete_post_like' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_delete_post_like' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'delete_post_like',
         'description'   => 'Delete postIntern like',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_create_post_bookmark' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_create_post_bookmark' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'create_post_bookmark',
         'description'   => 'Create postIntern mark',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_delete_post_bookmark' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_delete_post_bookmark' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'delete_post_bookmark',
         'description'   => 'Delete postIntern mark',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_create_post_reading' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_create_post_reading' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'create_post_reading',
         'description'   => 'Create postIntern reading',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_delete_post_reading' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_delete_post_reading' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'delete_post_reading',
         'description'   => 'Delete postIntern reading',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_create_thread_subscription' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_create_thread_subscription' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'create_thread_subscription',
         'description'   => 'Create thread subscription',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_delete_thread_subscription' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_delete_thread_subscription' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'delete_thread_subscription',
         'description'   => 'Delete thread subscription',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
-    'mod_page_get_pages_by_courses' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_get_pages_by_courses' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'get_pages_by_courses',
         'description'   => 'Returns a list of pages in a provided list of courses, if no list is provided all pages that the user
                             can view will be returned.',
         'type'          => 'read',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
     ),
-    'mod_page_view_page' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_view_page' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'view_page',
         'description'   => 'Simulate the view.php web interface page: trigger events, completion, etc...',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
-    'mod_page_log' => array(
-        'classname'     => 'mod_page_external',
+    'mod_longpage_log' => array(
+        'classname'     => 'mod_longpage_external',
         'methodname'    => 'log',
         'description'   => 'Writes logdata to database',
         'type'          => 'write',
-        'capabilities'  => 'mod/page:view',
+        'capabilities'  => 'mod/longpage:view',
         //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
         'ajax'        => true
     ),

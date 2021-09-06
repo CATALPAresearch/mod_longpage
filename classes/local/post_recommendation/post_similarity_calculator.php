@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\local\post_recommendation;
+namespace mod_longpage\local\post_recommendation;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -40,7 +40,7 @@ class post_similarity_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_similarities', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_post_similarities', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 
@@ -53,7 +53,7 @@ class post_similarity_calculator {
                     pb.postid AS postbid
                 FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
                 ON pa.userid = pb.userid AND pa.postid != pb.postid
-                WHERE pa.pageid = ? AND pb.pageid = ?
+                WHERE pa.longpageid = ? AND pb.longpageid = ?
                 GROUP BY pa.postid, pb.postid
                 HAVING COUNT(*) >= ?';
         $limitfrom = 0;
@@ -103,14 +103,14 @@ class post_similarity_calculator {
             $postsim = self::get_post_similarity($postpair, $similarity, $pageid);
 
             $transaction = $DB->start_delegated_transaction();
-            $DB->insert_record('page_post_similarities', $postsim, false, true);
+            $DB->insert_record('longpage_post_similarities', $postsim, false, true);
             $transaction->allow_commit();
         }
     }
 
     private static function get_post_similarity($postpair, $similarity, $pageid) {
         $postsim = new \stdClass();
-        $postsim->pageid = $pageid;
+        $postsim->longpageid = $pageid;
         $postsim->postaid = $postpair->postaid;
         $postsim->postbid = $postpair->postbid;
         $postsim->value = $similarity;
@@ -122,6 +122,6 @@ class post_similarity_calculator {
 
         $conditions = [$postpair->postaid, $postpair->postbid, $postpair->postbid, $postpair->postaid];
         $select = '(postaid = ? AND postbid = ?) OR (postaid = ? AND postbid = ?)';
-        return $DB->record_exists_select('page_post_similarities', $select, $conditions);
+        return $DB->record_exists_select('longpage_post_similarities', $select, $conditions);
     }
 }

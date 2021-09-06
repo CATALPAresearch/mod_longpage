@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\local\constants;
+namespace mod_longpage\local\constants;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,9 +37,9 @@ abstract class selector {
     const TYPE_TEXT_POSITION_SELECTOR = 1;
     const TYPE_RANGE_SELECTOR = 2;
 
-    const TABLE_NAME_TEXT_QUOTE_SELECTOR = 'page_text_quote_selectors';
-    const TABLE_NAME_TEXT_POSITION_SELECTOR = 'page_text_position_selectors';
-    const TABLE_NAME_RANGE_SELECTOR = 'page_range_selectors';
+    const TABLE_NAME_TEXT_QUOTE_SELECTOR = 'longpage_text_quote_selectrs';
+    const TABLE_NAME_TEXT_POSITION_SELECTOR = 'longpage_text_pos_selectors';
+    const TABLE_NAME_RANGE_SELECTOR = 'longpage_range_selectors';
 
     private static $TYPE_TO_TABLE_NAME_MAPPING = array(
         self::TYPE_TEXT_QUOTE_SELECTOR => self::TABLE_NAME_TEXT_QUOTE_SELECTOR,

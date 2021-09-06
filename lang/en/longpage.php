@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'page', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'longpage', language 'en', branch 'MOODLE_20_STABLE'
  *
  * @package   mod_page
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
@@ -59,7 +59,7 @@ $string['messagehtmlpostupdated'] = '<p>{$a->firstname} {$a->lastname} hat folge
 $string['messagesmallpostupdated'] = '{$a->firstname} {$a->lastname}: {$a->content}';
 $string['messagecontexturlnamepostupdated'] = 'Bearbeiteter Beitrag';
 
-$string['modulename'] = 'Page';
+$string['modulename'] = 'longpage';
 $string['modulename_help'] = 'The page module enables a teacher to create a web page resource using the text editor. A page can display text, images, sound, video, web links and embedded code, such as Google maps.
 
 Advantages of using the page module rather than the file module include the resource being more accessible (for example to users of mobile devices) and easier to update.
@@ -70,14 +70,14 @@ A page may be used
 
 * To present the terms and conditions of a course or a summary of the course syllabus
 * To embed several videos or sound files together with some explanatory text';
-$string['modulename_link'] = 'mod/page/view';
+$string['modulename_link'] = 'mod/longpage/view';
 $string['modulenameplural'] = 'Pages';
 $string['optionsheader'] = 'Display options';
 $string['page-mod-page-x'] = 'Any page module page';
 $string['page:addinstance'] = 'Add a new page resource';
 $string['page:view'] = 'View page content';
 $string['pluginadministration'] = 'Page module administration';
-$string['pluginname'] = 'Page';
+$string['pluginname'] = 'longpage';
 $string['popupheight'] = 'Pop-up height (in pixels)';
 $string['popupheightexplain'] = 'Specifies default height of popup windows.';
 $string['popupwidth'] = 'Pop-up width (in pixels)';
@@ -87,4 +87,4 @@ $string['printheadingexplain'] = 'Display page name above content?';
 $string['printintro'] = 'Display page description';
 $string['printintroexplain'] = 'Display page description above content?';
 $string['privacy:metadata'] = 'The Page resource plugin does not store any personal data.';
-$string['search:activity'] = 'Page';
+$string['search:activity'] = 'longpage';

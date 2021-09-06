@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\local\thread_subscriptions;
+namespace mod_longpage\local\thread_subscriptions;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -40,7 +40,7 @@ class manage_thread_subscriptions_task extends \core\task\adhoc_task {
         $threadid = $data->threadid;
         mtrace('Started delivering messages regarding updates of thread '.$threadid.' to subscribers.');
 
-        $subscriptions = $DB->get_records('page_thread_subscriptions', ['threadid' => $threadid]);
+        $subscriptions = $DB->get_records('longpage_thread_subs', ['threadid' => $threadid]);
         foreach($subscriptions as $subscription) {
             $data->subscriberid = $subscription->userid;
             if ((int) $data->subscriberid === (int) $data->actorid) continue;

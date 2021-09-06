@@ -17,7 +17,7 @@
 /**
  * Private page module utility functions
  *
- * @package mod_page
+ * @package mod_longpage
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,13 +26,13 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once("$CFG->libdir/filelib.php");
 require_once("$CFG->libdir/resourcelib.php");
-require_once("$CFG->dirroot/mod/page/lib.php");
+require_once("$CFG->dirroot/mod/longpage/lib.php");
 
 function get_coursemodule_by_pageid($pageid) {
     global $DB;
 
-    $page = $DB->get_record('page', ['id' => $pageid], '*', MUST_EXIST);
-    return get_coursemodule_from_instance('page', $page->id, $page->course, false, MUST_EXIST);
+    $page = $DB->get_record('longpage', ['id' => $pageid], '*', MUST_EXIST);
+    return get_coursemodule_from_instance('longpage', $page->id, $page->course, false, MUST_EXIST);
 }
 
 function get_page_users_ids($pageid, $limitfrom = 0, $limitnum = 100) {
@@ -94,7 +94,7 @@ function object_merge(...$objects) {
 /**
  * File browsing support class
  */
-class page_content_file_info extends file_info_stored {
+class longpage_content_file_info extends file_info_stored {
     public function get_parent() {
         if ($this->lf->get_filepath() === '/' and $this->lf->get_filename() === '.') {
             return $this->browser->get_file_info($this->context);
@@ -109,7 +109,7 @@ class page_content_file_info extends file_info_stored {
     }
 }
 
-function page_get_editor_options($context) {
+function longpage_get_editor_options($context) {
     global $CFG;
     return array('subdirs'=>1, 'maxbytes'=>$CFG->maxbytes, 'maxfiles'=>-1, 'changeformat'=>1, 'context'=>$context, 'noclean'=>1, 'trusttext'=>0);
 }

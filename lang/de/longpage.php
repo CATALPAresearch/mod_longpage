@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'page', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'longpage', language 'en', branch 'MOODLE_20_STABLE'
  *
  * @package   mod_page
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
@@ -62,7 +62,7 @@ $string['messagecontexturlnamepostupdated'] = 'Bearbeiteter Beitrag';
 $string['modulename'] = 'Longpage';
 $string['modulename_help'] = 'Longpage ermöglocht Lehrenden länge Tetxte in Form von HTML abzulegen.';
 
-$string['modulename_link'] = 'mod/page/view';
+$string['modulename_link'] = 'mod/longpage/view';
 $string['modulenameplural'] = 'Seiten';
 $string['optionsheader'] = 'Darstellungsoptionen';
 $string['page-mod-page-x'] = 'Jede Page/Longpage';

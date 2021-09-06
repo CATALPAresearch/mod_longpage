@@ -117,7 +117,7 @@ export class UserRole {
 //         this.body = body;
 //         this.creatorId = creatorId;
 //         this.isPublic = isPublic;
-//         this.pageId = pageId;
+//         this.longpageid = pageId;
 //         this.target = target;
 //         this.timeCreated = timeCreated;
 //         this.timeModified = timeModified;
@@ -3458,7 +3458,7 @@ export class UserRole {
 //     mapAnnotationToArgs(annotation) {
 //         return deepLowerCaseKeys({
 //             annotation: {
-//                 ...pick(annotation, ['pageId', 'type', 'isPublic']),
+//                 ...pick(annotation, ['longpageid', 'type', 'isPublic']),
 //                 target: {
 //                     selectors: this._mapSelectorsArgs(annotation.target.selectors),
 //                     styleClass: annotation.target.styleClass,
@@ -3475,7 +3475,7 @@ export class UserRole {
 //                   'anonymous',
 //                   'content',
 //                   'isPublic',
-//                   'pageId',
+//                   'longpageid',
 //               ])
 //           }
 //       });
@@ -3497,7 +3497,7 @@ export class UserRole {
 //             ...pick(response, ['id', 'type']),
 //             creatorId: response.creatorid,
 //             isPublic: response.ispublic,
-//             pageId: response.pageid,
+//             pageId: response.longpageid,
 //             target: this.mapResponseToAnnotationTarget(response.target),
 //             timeCreated: this._mapTimeResponse(response.timecreated),
 //             timeModified: this._mapTimeResponse(response.timemodified),
@@ -3708,7 +3708,7 @@ export class UserRole {
 //             ajax.call([{
 //                 methodname: MoodleWSMethods.GET_ENROLLED_USERS,
 //                 args: {
-//                     pageid: context.pageId,
+//                     pageid: context.longpageid,
 //                 },
 //                 done: ({users}) => {
 //                     commit(MUTATE.SET_ENROLLED_USERS, users.map(response => MappingService.mapResponseToUser(response)));
@@ -3723,7 +3723,7 @@ export class UserRole {
 //             ajax.call([{
 //                 methodname: MoodleWSMethods.GET_USER_ROLES_FOR_MODULE,
 //                 args: {
-//                     pageid: context.pageId,
+//                     pageid: context.longpageid,
 //                 },
 //                 done: ({userroles}) => {
 //                     commit(MUTATE.SET_USER_ROLES, userroles.map(response => MappingService.mapResponseToUserRole(response)));
@@ -3771,7 +3771,7 @@ export class UserRole {
 //             ajax.call([{
 //                 methodname: MoodleWSMethods.UPDATE_READING_PROGRESS,
 //                 args: {
-//                     pageid: getters[GET.LONGPAGE_CONTEXT].pageId,
+//                     pageid: getters[GET.LONGPAGE_CONTEXT].longpageid,
 //                     scrolltop: scrollTop,
 //                 },
 //                 fail: (e) => {
@@ -3918,7 +3918,7 @@ export class UserRole {
 
 //             ajax.call([{
 //                 methodname: MoodleWSMethods.CREATE_POST,
-//                 args: MappingService.mapPostToArgs({...post, pageId: getters[GET.LONGPAGE_CONTEXT].pageId}),
+//                 args: MappingService.mapPostToArgs({...post, pageId: getters[GET.LONGPAGE_CONTEXT].longpageid}),
 //                 done: (response) => {
 //                     const postUpdate = MappingService.mapResponseToPost(response.post);
 //                     commit(MUTATE.UPDATE_POST, {threadId: thread.id, postId: post.id, postUpdate});
@@ -4091,7 +4091,7 @@ export class UserRole {
 //         [GET.ANNOTATION_FILTER]: ({annotationFilter}) => annotationFilter,
 //         [GET.ANNOTATION_WITH_CONTEXT]: (_, getters) => annotation => ({
 //             ...annotation,
-//             pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
+//             pageId: getters[GET.LONGPAGE_CONTEXT].longpageid,
 //         }),
 //         [GET.ANNOTATIONS]: ({annotations}) => annotations,
 //         [GET.BOOKMARKS]: (_, getters) => {
@@ -4108,7 +4108,7 @@ export class UserRole {
 //         [GET.NEW_ANNOTATION]: (_, getters) => (params = {}) => {
 //             const annotation = new Annotation({
 //                 creatorId: getters[GET.LONGPAGE_CONTEXT].userId,
-//                 pageId: getters[GET.LONGPAGE_CONTEXT].pageId,
+//                 pageId: getters[GET.LONGPAGE_CONTEXT].longpageid,
 //                 ...params,
 //             });
 //             annotation.body =
@@ -4206,7 +4206,7 @@ export class UserRole {
 //                 methodname: MoodleWSMethods.GET_ANNOTATIONS,
 //                 args: {
 //                     parameters: {
-//                         pageid: getters[GET.LONGPAGE_CONTEXT].pageId,
+//                         pageid: getters[GET.LONGPAGE_CONTEXT].longpageid,
 //                     },
 //                 },
 //                 done: (response) => {

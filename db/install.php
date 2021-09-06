@@ -30,7 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-function xmldb_page_install() {
+function xmldb_longpage_install() {
     global $CFG;
 
 }

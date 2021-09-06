@@ -22,11 +22,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\local\post_recommendation;
+namespace mod_longpage\local\post_recommendation;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->dirroot/mod/page/locallib.php");
+require_once("$CFG->dirroot/mod/longpage/locallib.php");
 
 /**
  * Post Novelty Calculator
@@ -45,18 +45,18 @@ class post_novelty_calculator {
 
         $limitfrom = 0;
         while (true) {
-            $posts = $DB->get_records('page_posts', ['pageid' => $pageid], 'id ASC', 'id', $limitfrom, $batchsize);
+            $posts = $DB->get_records('longpage_posts', ['longpageid' => $pageid], 'id ASC', 'id', $limitfrom, $batchsize);
             if (!count($posts)) {
                 break;
             }
 
             foreach ($posts as $post) {
-                $noofreadings = $DB->count_records('page_post_readings', ['postid' => $post->id]);
+                $noofreadings = $DB->count_records('longpage_post_readings', ['postid' => $post->id]);
                 $transaction = $DB->start_delegated_transaction();
                 $DB->insert_record(
-                    'page_post_novelties',
+                    'longpage_post_novelties',
                     [
-                        'pageid' => $pageid,
+                        'longpageid' => $pageid,
                         'postid' => $post->id,
                         'value' => ($totalnoofpageusers - $noofreadings) / (float) $totalnoofpageusers,
                     ],
@@ -77,7 +77,7 @@ class post_novelty_calculator {
         global $DB;
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('page_post_novelties', ['pageid' => $pageid]);
+        $DB->delete_records('longpage_post_novelties', ['longpageid' => $pageid]);
         $transaction->allow_commit();
     }
 

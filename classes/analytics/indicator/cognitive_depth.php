@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_page\analytics\indicator;
+namespace mod_longpage\analytics\indicator;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -43,7 +43,7 @@ class cognitive_depth extends activity_base {
      * @return \lang_string
      */
     public static function get_name() : \lang_string {
-        return new \lang_string('indicator:cognitivedepth', 'mod_page');
+        return new \lang_string('indicator:cognitivedepth', 'mod_longpage');
     }
 
     public function get_indicator_type() {
