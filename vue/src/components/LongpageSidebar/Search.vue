@@ -129,13 +129,18 @@ export default {
     publishEvent(EventType){
       EventBus.publish(EventType);
     },
+    deleteSearchResults(){
+      this.searchResults = "";
+      this.searchTerm = "";
+    }
   },
 };
+//@click="publishEvent(SidebarEvents.TOGGLE_TABS)"
 </script>
 
 <template>
-  <div class="form-inline w-md-75 w-xs-100">
-    <div class="w-100 mb-1 text-right">
+  <div class="w-md-75 w-xs-100">
+    <div class="d-flex w-100 mb-1 text-right">
       <input
         v-model="searchTerm"
         v-on:keyup.enter="doFulltextSearch"
@@ -143,9 +148,7 @@ export default {
         class="
           form-control form-control-sm
           mr-sm-2
-          d-inline
           w-md-50 w-xs-75
-          d-inline
           ml-auto
         "
         type="search"
@@ -155,7 +158,7 @@ export default {
       <button
         @click="doFulltextSearch"
         id="search-full-text"
-        class="btn btn-light btn-sm d-inline mr-0"
+        class="btn btn-light btn-sm mr-0"
         type="button"
       >
         <i class="fa fa-search"></i>
@@ -163,22 +166,26 @@ export default {
     </div>
     <div
       v-if="showSearchResults"
-      class="row w-md-50 w-xs-100 ml-auto px-0 mx-0"
+      class="h-100 w-md-50 w-xs-100 ml-auto px-0 mx-0"
       style="z-index: 3000"
     >
-      <div class="w-100 text-right">
+      
+      <div class="p-3 bg-light" style="max-height: 80vh; overflow: auto">
+        <div class = "d-flex">
+        <div class="mb-2 w-75">
+          {{ searchResults.length }} Suchtreffer für '{{ searchTerm }}':
+          
+        </div>
+        <div class="w-25">
         <button
           type="button"
           class="close ml-auto align-self-center d-block"
           aria-label="Close"
-          @click="publishEvent(SidebarEvents.TOGGLE_TABS)"
+          @click="deleteSearchResults()"
         >
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="p-3 bg-light" style="max-height: 80vh; overflow: auto">
-        <div class="mb-2">
-          {{ searchResults.length }} Suchtreffer für '{{ searchTerm }}':
         </div>
         <ul id="search-results" class="list-unstyled">
           <li class="mb-2" v-for="res in searchResults">
