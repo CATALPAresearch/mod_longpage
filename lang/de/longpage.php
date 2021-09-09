@@ -24,7 +24,7 @@
  */
 
 $string['configdisplayoptions'] = 'Select all options that should be available, existing settings are not modified. Hold CTRL key to select multiple fields.';
-$string['content'] = 'Longoage Inhalt';
+$string['content'] = 'Longpage Inhalt';
 $string['contentheader'] = 'Inhalt';
 $string['createpage'] = 'Eine neue Longpage anlegen';
 $string['displayoptions'] = 'Verfügbare Anzeigeoptionen';
@@ -68,7 +68,7 @@ $string['optionsheader'] = 'Darstellungsoptionen';
 $string['page-mod-page-x'] = 'Jede Page/Longpage';
 $string['page:addinstance'] = 'Neue Seite als Ressource hinzufügen';
 $string['page:view'] = 'Seiteninhalt anzeigen';
-$string['pluginadministration'] = 'Page administrieren';
+$string['pluginadministration'] = 'Longpage administrieren';
 $string['pluginname'] = 'Longpage';
 $string['popupheight'] = 'Pop-up Höhe (in Pixeln)';
 $string['popupheightexplain'] = 'Gibt die Standardhöhe von Pop-up Fenstern an.';

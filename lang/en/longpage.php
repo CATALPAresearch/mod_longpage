@@ -24,16 +24,16 @@
  */
 
 $string['configdisplayoptions'] = 'Select all options that should be available, existing settings are not modified. Hold CTRL key to select multiple fields.';
-$string['content'] = 'Page content';
+$string['content'] = 'Longpage content';
 $string['contentheader'] = 'Content';
-$string['createpage'] = 'Create a new page resource';
+$string['createpage'] = 'Create a new Longpage resource';
 $string['displayoptions'] = 'Available display options';
 $string['displayselect'] = 'Display';
 $string['displayselectexplain'] = 'Select display type.';
-$string['indicator:cognitivedepth'] = 'Page cognitive';
-$string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in a Page resource.';
-$string['indicator:socialbreadth'] = 'Page social';
-$string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in a Page resource.';
+$string['indicator:cognitivedepth'] = 'Longpage cognitive';
+$string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in a Longpage resource.';
+$string['indicator:socialbreadth'] = 'Longpage social';
+$string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in a Longpage resource.';
 $string['legacyfiles'] = 'Migration of old course file';
 $string['legacyfilesactive'] = 'Active';
 $string['legacyfilesdone'] = 'Finished';
@@ -60,31 +60,31 @@ $string['messagesmallpostupdated'] = '{$a->firstname} {$a->lastname}: {$a->conte
 $string['messagecontexturlnamepostupdated'] = 'Bearbeiteter Beitrag';
 
 $string['modulename'] = 'longpage';
-$string['modulename_help'] = 'The page module enables a teacher to create a web page resource using the text editor. A page can display text, images, sound, video, web links and embedded code, such as Google maps.
+$string['modulename_help'] = 'The Longpage module enables a teacher to create a web Longpage resource using the text editor. A Longpage can display text, images, sound, video, web links and embedded code, such as Google maps.
 
-Advantages of using the page module rather than the file module include the resource being more accessible (for example to users of mobile devices) and easier to update.
+Advantages of using the Longpage module rather than the file module include the resource being more accessible (for example to users of mobile devices) and easier to update.
 
-For large amounts of content, it\'s recommended that a book is used rather than a page.
+For large amounts of content, it\'s recommended that a book is used rather than a Longpage.
 
-A page may be used
+A Longpage may be used
 
 * To present the terms and conditions of a course or a summary of the course syllabus
 * To embed several videos or sound files together with some explanatory text';
 $string['modulename_link'] = 'mod/longpage/view';
-$string['modulenameplural'] = 'Pages';
+$string['modulenameplural'] = 'Longpages';
 $string['optionsheader'] = 'Display options';
-$string['page-mod-page-x'] = 'Any page module page';
-$string['page:addinstance'] = 'Add a new page resource';
-$string['page:view'] = 'View page content';
-$string['pluginadministration'] = 'Page module administration';
+$string['page-mod-page-x'] = 'Any Longpage module Longpage';
+$string['page:addinstance'] = 'Add a new Longpage resource';
+$string['page:view'] = 'View Longpage content';
+$string['pluginadministration'] = 'Longpage module administration';
 $string['pluginname'] = 'longpage';
 $string['popupheight'] = 'Pop-up height (in pixels)';
 $string['popupheightexplain'] = 'Specifies default height of popup windows.';
 $string['popupwidth'] = 'Pop-up width (in pixels)';
 $string['popupwidthexplain'] = 'Specifies default width of popup windows.';
-$string['printheading'] = 'Display page name';
-$string['printheadingexplain'] = 'Display page name above content?';
-$string['printintro'] = 'Display page description';
-$string['printintroexplain'] = 'Display page description above content?';
-$string['privacy:metadata'] = 'The Page resource plugin does not store any personal data.';
+$string['printheading'] = 'Display Longpage name';
+$string['printheadingexplain'] = 'Display Longpage name above content?';
+$string['printintro'] = 'Display Longpage description';
+$string['printintroexplain'] = 'Display Longpage description above content?';
+$string['privacy:metadata'] = 'The Longpage resource plugin does not store any personal data.';
 $string['search:activity'] = 'longpage';
