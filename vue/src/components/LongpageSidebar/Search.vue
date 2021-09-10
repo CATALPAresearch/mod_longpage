@@ -40,16 +40,17 @@ export default {
       _this.index.addField("body");
       _this.index.setRef("id");
       // collect index
-      $(
-        "#longpage-app h2, #longpage-app h3, #longpage-app h4, #longpage-app div, #longpage-app p, #longpage-app ul, #longpage-app ol, #longpage-app pre"
-      ).each(function (i, val) {
-        _this.index.addDoc({
-          id: i,
-          title: $(val).text(),
-          body: "",
-          link: $(val).attr("id"),
-        });
-      });
+                            //commented section below because it produces double data entries
+      // $(
+      //   "#longpage-app h2, #longpage-app h3, #longpage-app h4, #longpage-app div, #longpage-app p, #longpage-app ul, #longpage-app ol, #longpage-app pre"
+      // ).each(function (i, val) {
+      //   _this.index.addDoc({
+      //     id: i,
+      //     title: $(val).text(),
+      //     body: "",
+      //     link: $(val).attr("id"),
+      //   });
+      // });
 
       $(
         "#longpage-app h2, #longpage-app h3, #longpage-app h4, #longpage-app div, #longpage-app p, #longpage-app ul, #longpage-app ol, #longpage-app pre"
@@ -105,22 +106,25 @@ export default {
           //console.log(pos, _this.searchTerm, res.doc.short)
           return res;
         });
-        _this.$emit("log", "searchterm", {
-          searchterm: this.searchTerm,
-          results: this.searchResults.length,
-        });
+              EventBus.publish('searchterm-entered', {searchTerm: this.searchTerm, searchResults: this.searchResults.length});
+
+        // _this.$emit("log", "searchterm", {
+        //   searchterm: this.searchTerm,
+        //   results: this.searchResults.length,
+        // });
       }
       e.preventDefault();
     },
 
     searchResultClick: function (doc) {
-      this.hideSearchResults();
-      this.$emit("log", "searchresultselected", {
-        searchterm: this.term,
-        results: this.searchResults.length,
-        selected: doc.link,
-        title: doc.title,
-      });
+      //this.hideSearchResults();     disabled this functionality for now
+      // this.$emit("log", "searchresultselected", {
+      //   searchterm: this.term,
+      //   results: this.searchResults.length,
+      //   selected: doc.link,
+      //   title: doc.title,
+      // });
+      EventBus.publish('searchresult-selected', {searchTerm: this.searchTerm, searchResults: this.searchResults.length, link: doc.link, short: doc.short});
     },
 
     hideSearchResults: function () {

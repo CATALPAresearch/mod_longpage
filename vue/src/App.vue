@@ -114,6 +114,12 @@ export default {
           }, 1000, {leading: false}));
         });
       });
+      EventBus.subscribe('searchresult-selected', (logdata) => {
+        _this.logger.add('searchresult_selected', logdata);
+      });
+      EventBus.subscribe('searchterm-entered', (logdata) => {
+        _this.logger.add('searchterm_entered', logdata);
+      });
       this.$refs.mainRef.addEventListener('click', event => {
         const highlightsAtClickCoords = getHighlightsAnchoredAt(event.target);
         EventBus.publish('annotations-selected', {
