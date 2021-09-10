@@ -135,7 +135,8 @@ export default {
     },
     deleteSearchResults(){
       this.searchResults = "";
-      this.searchTerm = "";
+      this.showSearchResults = false;
+      //this.searchTerm = "";
     }
   },
 };
