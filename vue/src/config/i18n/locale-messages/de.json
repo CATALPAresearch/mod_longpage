@@ -83,7 +83,8 @@
         "bookmarks": "Lesezeichen ein-/ausblenden",
         "highlights": "Markierungen ein-/ausblenden",
         "posts": "Anmerkungen ein-/ausblenden",
-        "toc": "Inhaltsverzeichnis ein-/ausblenden"
+        "toc": "Inhaltsverzeichnis ein-/ausblenden",
+        "search": "Suche ein-/ausblenden"
       }
     },
     "tabs": {
