@@ -131,6 +131,7 @@ module.exports = (env, options) => {
     if (options.mode === 'production') {
         exports.devtool = false;
         // http://vue-loader.vuejs.org/en/workflow/production.html
+        // exp
         exports.plugins = (exports.plugins || []).concat([
             new webpack.DefinePlugin({
                 'process.env': {
