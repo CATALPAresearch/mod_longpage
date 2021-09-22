@@ -99,10 +99,10 @@ export default {
         // findAllMatches: false,
         minMatchCharLength: 3,
         // location: 0,
-        threshold: 0.5,
+        threshold: 0.01,
         // distance: 100,
         // useExtendedSearch: false,
-        // ignoreLocation: false,
+         ignoreLocation: true,
         // ignoreFieldNorm: false,
         keys: ["title", "body"],
       };
