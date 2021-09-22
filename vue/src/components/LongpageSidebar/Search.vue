@@ -114,9 +114,11 @@ export default {
       this.showSearchResults = true;
       let index = this.fuse.getIndex();
 
-      this.searchResults = this.fuse.search(this.searchTerm);
+      // please dont crucify me for this. its a one liner to create deep copies
+      this.searchResults = JSON.parse(JSON.stringify(this.fuse.search(this.searchTerm)));
 
-      this.searchResults = this.searchResults.map(function (res) {
+
+      this.searchResults = this.searchResults.map(function (res) {    
         let changelist = [];
         let pos = _this.index[res.refIndex].body.indexOf(_this.searchTerm);
         res.doc = new Object();
@@ -134,18 +136,17 @@ export default {
           } else {
             res.matches[0].indices.forEach((element) => {
               changelist.push(
-                _this.index[res.refIndex].body.substr(
+                res.item.body.substr(
                   element[0],
                   element[1] - element[0] + 1
                 )
               );
             });
             changelist.forEach((el) => {
-              _this.index[res.refIndex].body = _this.index[
-                res.refIndex
-              ].body.replace(el, "<strong>" + el + "</strong>");
+              res.item.body = res.item.
+              body.replace(el, "<strong>" + el + "</strong>");
             });
-            res.doc.short = _this.index[res.refIndex].body;
+            res.doc.short = res.item.body;
           }
         } else if (res.item.title != "") {
           if (pos > 0) {
@@ -160,18 +161,16 @@ export default {
           } else {
             res.matches[0].indices.forEach((element) => {
               changelist.push(
-                _this.index[res.refIndex].title.substr(
+                res.item.title.substr(
                   element[0],
                   element[1] - element[0] + 1
                 )
               );
             });
             changelist.forEach((el) => {
-              _this.index[res.refIndex].title = _this.index[
-                res.refIndex
-              ].title.replace(el, "<strong>" + el + "</strong>");
+              res.item.title = res.item.title.replace(el, "<strong>" + el + "</strong>");
             });
-            res.doc.short = _this.index[res.refIndex].title;
+            res.doc.short = res.item.title;
           }
         }
         return res;
