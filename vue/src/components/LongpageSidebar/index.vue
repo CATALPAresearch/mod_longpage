@@ -147,6 +147,11 @@ export default {
       SidebarEvents,
       tabs: [
         {
+          key: SidebarTabKeys.SEARCH,
+          id: "sidebar-tab-search",
+          icon: ["fa", "fa-search", "fa-fw"],
+        },
+        {
           key: SidebarTabKeys.TOC,
           id: "sidebar-tab-table-of-contents",
           icon: ["fa", "fa-list", "fa-fw"],
@@ -165,11 +170,6 @@ export default {
           key: SidebarTabKeys.BOOKMARKS,
           id: "sidebar-tab-bookmarks",
           icon: ["fa", "fa-bookmark-o", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.SEARCH,
-          id: "sidebar-tab-search",
-          icon: ["fa", "fa-search", "fa-fw"],
         },
       ],
     };
