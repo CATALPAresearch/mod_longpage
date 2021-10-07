@@ -25,7 +25,7 @@
         <div
           id="longpage-content"
           ref="contentRef"
-          class="generalbox center clearfix col"
+          class="generalbox center clearfix col w-100"
           lang="de"
           v-html="content"
         />
