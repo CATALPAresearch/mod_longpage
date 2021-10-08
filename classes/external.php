@@ -70,10 +70,10 @@ class mod_longpage_external extends external_api {
                     'endoffset' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
                     'exact' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
                     'prefix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
-                    'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+                    'suffix' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL)
                 ]), '', VALUE_OPTIONAL
             ),
-            'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
+            'styleclass' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL)
         ];
     }
 
@@ -101,7 +101,7 @@ class mod_longpage_external extends external_api {
                 'timecreated' => time(),
                 'timemodified' => time(),
                 'creatorid' => $USER->id,
-                'ispublic' => isset($annotation['ispublic']) && $annotation['ispublic'],
+                'ispublic' => isset($annotation['ispublic']) && $annotation['ispublic']
             ]
         ));
         self::create_annotation_target($annotation['target'], $id);
@@ -128,7 +128,7 @@ class mod_longpage_external extends external_api {
                 'target' => self::create_annotation_target_parameters(),
                 'type' => new external_value(PARAM_INT),
                 'body' => new external_single_structure(self::create_thread_parameters_base(), '', VALUE_OPTIONAL),
-                'ispublic' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT, ),
+                'ispublic' => new external_value(PARAM_BOOL, '', VALUE_DEFAULT)
             ]),
         ]);
     }
@@ -177,7 +177,7 @@ class mod_longpage_external extends external_api {
             $post->threadid,
             $USER->id,
             post_action::DELETE,
-            $post->content,
+            $post->content
         );
     }
 
@@ -205,7 +205,7 @@ class mod_longpage_external extends external_api {
         $transaction = $DB->start_delegated_transaction();
         $id = $DB->insert_record(
             'longpage_posts',
-            object_merge($postparameters, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()]),
+            object_merge($postparameters, ['creatorid' => $USER->id, 'timecreated' => time(), 'timemodified' => time()])
         );
         $transaction->allow_commit();
 
@@ -221,7 +221,7 @@ class mod_longpage_external extends external_api {
             $postparameters->threadid,
             $USER->id,
             post_action::CREATE,
-            $postparameters->content,
+            $postparameters->content
         );
 
         return ['post' => array_shift($posts)];
@@ -319,7 +319,7 @@ class mod_longpage_external extends external_api {
                 'annotationid' => $annotationid,
                 'creatorid' => $USER->id,
                 'replyrequested' => isset($threadparameters['replyrequested']) && $threadparameters['replyrequested'],
-            ],
+            ]
         );
         $postparameters = omit_keys($threadparameters, ['replyrequested']);
         $postparameters['longpageid'] = $pageid;
@@ -566,7 +566,7 @@ class mod_longpage_external extends external_api {
 
     public static function get_user_roles_by_pageid_parameters() {
         return new external_function_parameters([
-            'longpageid' => new external_value(PARAM_INT),
+            'longpageid' => new external_value(PARAM_INT)
         ]);
     }
 
@@ -576,8 +576,8 @@ class mod_longpage_external extends external_api {
               new external_single_structure([
                   'id' => new external_value(PARAM_INT),
                   'localname' => new external_value(PARAM_TEXT),
-                  'shortname' => new external_value(PARAM_TEXT),
-              ]),
+                  'shortname' => new external_value(PARAM_TEXT)
+              ])
             ),
         ]);
     }
@@ -666,7 +666,7 @@ class mod_longpage_external extends external_api {
                 'The family name of the user',
                 VALUE_OPTIONAL),
             'roles' => new external_multiple_structure(
-                new external_value(PARAM_INT),
+                new external_value(PARAM_INT)
             ),
         ];
         return new external_single_structure($userfields);
@@ -703,7 +703,7 @@ class mod_longpage_external extends external_api {
                 'target' => self::get_annotation_target_parameters(),
                 'type' => new external_value(PARAM_INT),
             ],
-            self::timestamp_parameters(),
+            self::timestamp_parameters()
         ));
     }
 
@@ -723,7 +723,7 @@ class mod_longpage_external extends external_api {
     public static function get_annotation_target_parameters() {
         return new external_single_structure(array_merge(
             ['id' => new external_value(PARAM_INT)],
-            self::annotation_target_parameters_base(),
+            self::annotation_target_parameters_base()
         ));
     }
 
@@ -752,7 +752,7 @@ class mod_longpage_external extends external_api {
         return $DB->get_records_select(
             'longpage_annotations',
             'id = ? AND (creatorid = ? OR ispublic = 1)',
-            ['id' => $annotationid, 'creatorid' => $USER->id],
+            ['id' => $annotationid, 'creatorid' => $USER->id]
         );
     }
 
@@ -762,7 +762,7 @@ class mod_longpage_external extends external_api {
         return $DB->get_records_select(
             'longpage_annotations',
             'longpageid = ? AND (creatorid = ? OR ispublic = 1)',
-            ['longpageid' => $pageid, 'creatorid' => $USER->id],
+            ['longpageid' => $pageid, 'creatorid' => $USER->id]
         );
     }
 
@@ -776,7 +776,7 @@ class mod_longpage_external extends external_api {
         return new external_function_parameters([
             'parameters' => new external_single_structure([
                 'longpageid' => new external_value(PARAM_INT),
-                'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
             ]),
         ]);
     }
@@ -789,7 +789,7 @@ class mod_longpage_external extends external_api {
      */
     public static function get_annotations_returns() {
         return new external_function_parameters([
-            'annotations' => new external_multiple_structure(self::get_annotation_returns()),
+            'annotations' => new external_multiple_structure(self::get_annotation_returns())
         ]);
     }
 
@@ -1093,7 +1093,7 @@ class mod_longpage_external extends external_api {
                 $USER->id,
                 post_action::UPDATE,
                 $postupdate->content,
-                $post->content,
+                $post->content
             );
         }
 
@@ -1109,7 +1109,7 @@ class mod_longpage_external extends external_api {
                 [
                     'content' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
                     'markedasrequestedreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
-                ],
+                ]
             )),
         ]);
     }
@@ -1123,7 +1123,7 @@ class mod_longpage_external extends external_api {
 
         self::validate_parameters(
             self::update_reading_progress_parameters(),
-            ['longpageid' => $pageid, 'scrolltop' => $scrolltop],
+            ['longpageid' => $pageid, 'scrolltop' => $scrolltop]
         );
         self::validate_cm_context($pageid);
 
@@ -1139,7 +1139,7 @@ class mod_longpage_external extends external_api {
     public static function update_reading_progress_parameters() {
         return new external_function_parameters([
             'longpageid' => new external_value(PARAM_INT),
-            'scrolltop' => new external_value(PARAM_FLOAT),
+            'scrolltop' => new external_value(PARAM_FLOAT)
         ]);
     }
 
