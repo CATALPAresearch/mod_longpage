@@ -18,7 +18,7 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import './components/LongpageContent/Footnote';
+//import './components/LongpageContent/Footnote';
 import './lib/hashchange-listening';
 import './lib/page-ready-listening';
 import './lib/scroll-snapping';
