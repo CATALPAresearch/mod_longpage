@@ -43,6 +43,11 @@ php admin/cli/upgrade.php
 
 You use the *Longpage* plugin exacly like as you would use the regular *Page* plugin since *Longapge* is simply the *Page* plugin with some functionality added on top. If you don't yet know how to use the *Page* plugin, have a look into the [official Moodle documentation](https://docs.moodle.org/310/en/Page_resource).
 
+## Troubleshooting
+
+* remove, install or reinstall node_modules (npm install)
+* moodle: purge caches and disable caching (use search: 'cache' on moodle site administration)
+
 ## Contributing
 
 To contribute to the plugin you should study the [Moodle documentation on plugin development](https://docs.moodle.org/dev/Main_Page) deeply. The plugin is very similar to a regular [Activity plugin](https://docs.moodle.org/dev/Activity_modules). The main difference regards the client or asynchronous javascript modules (AMD) (`amd` directory). Instead of creating javascript files inside `amd` in [require.js](https://requirejs.org/) format from scratch, working with [Grunt](https://gruntjs.com/) etc., the main part of the client which is a [SPA](https://en.wikipedia.org/wiki/Single-page_application) for reading, annotating and navigating the text, is developed with [Vue.js v3](https://v3.vuejs.org/). The files are located inside the `vue` directory which is where you mainly develop the client like you would develop a regular SPA with Vue.js. Sadly, you do not have hot reload like you are maybe used to from other projects with Vue.js. Instead you run
