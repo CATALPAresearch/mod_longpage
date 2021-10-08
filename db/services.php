@@ -35,6 +35,7 @@ $functions = array(
         'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
     ),
+    /*
     'mod_longpage_get_reading_progress' => array(
         'classname'     => 'mod_longpage_external',
         'methodname'    => 'get_reading_progress',
@@ -42,7 +43,8 @@ $functions = array(
         'type'          => 'read',
         'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
-    )
+    ),
+    */
     'mod_longpage_get_user_roles_by_pageid' => array(
         'classname'     => 'mod_longpage_external',
         'methodname'    => 'get_user_roles_by_pageid',

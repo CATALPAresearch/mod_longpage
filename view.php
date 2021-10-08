@@ -55,7 +55,7 @@ require_capability('mod/longpage:view', $context);
 $scrolltop = $DB->get_field(
     'longpage_reading_progress',
     'scrolltop',
-    ['userid' => $USER->id, 'longpageid' => $page->id],
+    ['userid' => $USER->id, 'longpageid' => $page->id]
 );
 
 // Completion and trigger events.
@@ -104,6 +104,10 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     echo '<div class="row no-gutters vh-50">';
     echo '<div class="spinner-border m-auto " role="status"><span class="sr-only">'.get_string('loading').'</span></div>';
     echo '</div></div>';
+    echo '<div id="longpage-tmp" style="display:none;" lang="de" />';
+    echo $content;
+    echo '</div>';
+
 
     $PAGE->requires->js_call_amd(
         'mod_longpage/app-lazy',
@@ -113,8 +117,8 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
             $page->id,
             format_string($page->name),
             $USER->id,
-            $content,
-            $scrolltop,
+            "",
+            $scrolltop
         ]
     );
 } else {

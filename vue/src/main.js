@@ -32,6 +32,7 @@ import {i18n} from '@/config/i18n';
 export const init = (courseId, longpageid, pageName, userId, content, scrollTop) => {
     try {
         const store = initStore({courseId: Number(courseId), longpageid: Number(longpageid), pageName, userId: Number(userId)});
+        content = $('#longpage-tmp').html();
         createApp(App, {content, scrollTop: Number(scrollTop)})
             .use(store)
             .use(i18n)
