@@ -38,6 +38,9 @@
       </div>
       <longpage-sidebar class="col-auto" />
     </div>
+    <ReadingProgress
+    :context="context">
+    </ReadingProgress>
   </div>
 </template>
 
@@ -76,12 +79,15 @@ import {throttle} from 'lodash';
 import {toIdSelector} from '@/util/style';
 import Utils from './util/utils';
 
+import ReadingProgress from '@/components/Generic/ReadingProgress';
+
 export default {
     name: 'App',
     components: {
       AnnotationToolbarController,
       AnnotationIndicatorSidebar,
       LongpageSidebar,
+      ReadingProgress
     },
     props: {
       content: {type: String, required: true},
@@ -127,9 +133,9 @@ export default {
           selection: highlightsAtClickCoords,
         });
       });
-      Y.use('mathjax', () => {
-        MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
-      });
+      // Y.use('mathjax', () => {
+      //   MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
+      // });
       this[ACT.FETCH_USER_ROLES]();
       this[ACT.FETCH_ENROLLED_USERS]();
       var _this = this;

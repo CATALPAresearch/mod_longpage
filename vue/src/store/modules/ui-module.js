@@ -42,12 +42,15 @@ export default {
     actions: {
         [ACT.UPDATE_READING_PROGRESS]({commit, getters}, scrollTop) {
             const oldScrollTop = getters[GET.SCROLL_TOP];
+            console.log("update");
+            console.log(getters[GET.LONGPAGE_CONTEXT].courseId);
             commit(MUTATE.RESET_SCROLL_TOP, scrollTop);
             ajax.call([{
                 methodname: MoodleWSMethods.UPDATE_READING_PROGRESS,
                 args: {
                     longpageid: getters[GET.LONGPAGE_CONTEXT].longpageid,
                     scrolltop: scrollTop,
+                    courseId: getters[GET.LONGPAGE_CONTEXT].courseId
                 },
                 fail: (e) => {
                     console.error(`"${MoodleWSMethods.UPDATE_READING_PROGRESS}" failed`, e);

@@ -1118,33 +1118,85 @@ class mod_longpage_external extends external_api {
         return self::create_post_returns();
     }
 
-    public static function update_reading_progress($pageid, $scrolltop) {
+    public static function update_reading_progress($pageid, $scrolltop, $courseId) {
         global $DB, $USER;
 
         self::validate_parameters(
             self::update_reading_progress_parameters(),
-            ['longpageid' => $pageid, 'scrolltop' => $scrolltop]
+            ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'courseId' => $courseId]
         );
         self::validate_cm_context($pageid);
 
+        try {
         $transaction = $DB->start_delegated_transaction();
-        self::update_or_create(
-            'longpage_reading_progress',
-            ['longpageid' => $pageid, 'userid' => $USER->id],
-            ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 'timemodified' => time()]
-        );
+        // self::update_or_create(
+        //     'longpage_reading_progress',
+        //     ['longpageid' => $pageid, 'userid' => $USER->id],
+        //     ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 'timemodified' => time(), 'course' => $courseId]
+        // );
+        $DB->update_record('longpage_reading_progress', ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 
+        'timemodified' => time(), 'course' => $courseId]);
         $transaction->allow_commit();
+        error_log("updatescroll good" + "cid" + $courseId);
+    } catch (Exception $e) {
+        $transaction->rollback($e);
+                 error_log("updatescroll failed");
+    }
     }
 
     public static function update_reading_progress_parameters() {
         return new external_function_parameters([
             'longpageid' => new external_value(PARAM_INT),
-            'scrolltop' => new external_value(PARAM_FLOAT)
+            'scrolltop' => new external_value(PARAM_FLOAT),
+            'courseId' => new external_value(PARAM_INT)
         ]);
     }
 
     public static function update_reading_progress_returns() {
         return null;
+    }
+
+    public static function get_reading_progress($data) {
+        global $CFG, $DB, $USER;
+        
+        $r = new stdClass();
+        $r->userid = $USER->id;
+        $r->courseid = $data['courseid'];
+        $r->pageid = $data['pageid'];
+        
+        $query = '
+            SELECT section, count(section) as count
+            FROM (SELECT * FROM '.$CFG->prefix.'longpage_reading_progress AS m WHERE userid=? AND course=? AND longpageid=?) as mm
+            GROUP by section
+            ';
+            
+        $transaction = $DB->start_delegated_transaction();
+        $res = $DB->get_records_sql($query, array($USER->id, $courseid, $longpageid));
+        $transaction->allow_commit();
+
+        return array('response'=> json_encode($res));
+
+    }
+
+    public static function get_reading_progress_parameters() {
+        return new external_function_parameters(
+            array(
+                'data' =>
+                    new external_single_structure(
+                        array(
+                            'courseid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                            'longpageid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
+                        )
+                    )
+            )
+        );
+
+    }
+
+    public static function get_reading_progress_returns() {
+        return new external_single_structure(
+            array( 'response' => new external_value(PARAM_RAW, 'All bookmarks of an user') )
+        );
     }
 
     private static function update_or_create($table, $conditions, $dataobject) {
@@ -1384,11 +1436,21 @@ class mod_longpage_external extends external_api {
             $s->userid = (int) $USER->id;
             $s->courseid = (int) $data['courseid'];
             $s->longpageid = (int) $d->value->longpageid;
-            $s->creationdate = (int) $d->utc;
+            $s->timemodified = (int) $d->utc;
+            $s->scrolltop = (int) $d->scrolltop;
 
+            try {
+
+            
             $transaction = $DB->start_delegated_transaction();
-            $res2 = $DB->insert_record("longpage_reading", (array) $s);
+            $res2 = $DB->insert_record("longpage_reading_progress", (array) $s);
             $transaction->allow_commit();
+                error_log("scrolldb good");
+            }
+             catch (Exception $e) {
+                 $transaction->rollback($e);
+                 error_log("scrolldb failed");
+             }
         }
         return array('response' => json_encode($res));
     }
