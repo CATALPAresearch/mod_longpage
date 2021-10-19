@@ -115,20 +115,13 @@ export default {
                   document.body.parentNode ||
                   document.body
                 ).scrollTop;
-
-                console.log(window.pageYOffset);
-
-                console.log((
-                  document.documentElement ||
-                  document.body.parentNode ||
-                  document.body
-                ).scrollTop);
+                
                 
 
               var logentry = {
                 utc: now.getTime(),
-                pageid: _this.context.pageid,
-                course: _this.context.courseid,
+                longpageid: _this.context.longpageid,
+                courseid: _this.context.courseId,
                 relativeTime: entry.time, // ??
                 targetID: entry.target.id,
                 targetTag: entry.target.localName,
@@ -145,8 +138,6 @@ export default {
                 containerWidth: containerWidth,
                 behavior: null, // read, scroll, inactive
               };
-              console.log(scrollYDistance);
-              console.log(logentry.scrolltop);
 
               // reading detection
               time_diff = (now.getTime() - last_entry.utc) / 1000; // in seconds
@@ -163,20 +154,41 @@ export default {
               // output
               //console.log(last_entry.targetID + '\t', time_diff + '\t', last_entry.targetWordCount + '\t', ratio.toFixed(1) + '\t', last_entry.behavior, _this.percentageSeen(entry.target.id));
               //_this.$emit("log", "scroll", last_entry);
-              console.log(logentry.targetID);
+              // ajax.call([
+              //   {
+              //     methodname: "mod_longpage_log",
+              //     args: {
+              //       data: {
+              //         entry: JSON.stringify(logentry),
+              //         action: "scroll",
+              //         utc: Math.ceil(now.getTime() / 1000),
+              //         courseid: _this.context.courseId
+              //       },
+              //     },
+              //     done: function (reads) {
+              //       console.log(reads);
+              //     },
+              //     fail: function (e) {
+              //       console.error("fail", e);
+              //     },
+              //   },
+              // ]);
+var hashCode = function(s){
+  return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
+}
+              console.log(hashCode(entry.target.id));
               ajax.call([
                 {
-                  methodname: "mod_longpage_log",
+                  methodname: "mod_longpage_update_reading_progress",
                   args: {
-                    data: {
-                      entry: JSON.stringify(last_entry),
-                      action: "scroll",
-                      utc: Math.ceil(now.getTime() / 1000),
-                      courseid: _this.context.courseid
-                    },
+                      longpageid: _this.context.longpageid,
+                      courseid: _this.context.courseId,
+                      scrolltop: scrollYDistance === undefined ? 0 : scrollYDistance,
+                      section: entry.target.id,
+                      sectionhash: hashCode(entry.target.id)
                   },
                   done: function (reads) {
-                    console.log(reads);
+                    console.log("update");
                   },
                   fail: function (e) {
                     console.error("fail", e);
@@ -299,20 +311,20 @@ export default {
 
     visualizeReadingProgress: function () {
       let _this = this;
-      console.log(this.context);
+      console.log(_this.context);
       ajax.call([
         {
           methodname: "mod_longpage_get_reading_progress",
           args: {
-            data: {
+            
               courseid: _this.context.courseId,
               longpageid: _this.context.longpageid,
-            },
+            
           },
           done: function (reads) {
-            console.log(reads);
             try {
-              let data = Object.values(JSON.parse(reads));
+              let data = Object.values(JSON.parse(reads.response));
+              console.log(data);
               let max_arr = data.map(function (d) {
                 return d.count;
               });

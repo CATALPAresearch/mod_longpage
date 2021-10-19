@@ -52,11 +52,11 @@ require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/longpage:view', $context);
 
-$scrolltop = $DB->get_field(
-    'longpage_reading_progress',
-    'scrolltop',
-    ['userid' => $USER->id, 'longpageid' => $page->id]
-);
+// $scrolltop = $DB->get_field(
+//     'longpage_reading_progress',
+//     'scrolltop',
+//     ['userid' => $USER->id, 'longpageid' => $page->id]
+// );
 
 // Completion and trigger events.
 longpage_view($page, $course, $cm, $context);

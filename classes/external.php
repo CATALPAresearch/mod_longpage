@@ -1118,24 +1118,24 @@ class mod_longpage_external extends external_api {
         return self::create_post_returns();
     }
 
-    public static function update_reading_progress($pageid, $scrolltop, $courseId) {
+    public static function update_reading_progress($pageid, $scrolltop, $courseId, $section, $sectionhash) {
         global $DB, $USER;
 
         self::validate_parameters(
             self::update_reading_progress_parameters(),
-            ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'courseId' => $courseId]
+            ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'courseid' => $courseId, 'section' => $section, 'sectionhash' => $sectionhash]
         );
         self::validate_cm_context($pageid);
 
         try {
         $transaction = $DB->start_delegated_transaction();
-        // self::update_or_create(
-        //     'longpage_reading_progress',
-        //     ['longpageid' => $pageid, 'userid' => $USER->id],
-        //     ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 'timemodified' => time(), 'course' => $courseId]
-        // );
-        $DB->update_record('longpage_reading_progress', ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 
-        'timemodified' => time(), 'course' => $courseId]);
+        self::update_or_create(
+            'longpage_reading_progress',
+            ['longpageid' => $pageid, 'userid' => $USER->id, 'sectionhash' => $sectionhash],
+            ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 'timemodified' => time(), 'course' => $courseId, 'section' => $section, 'sectionhash' => $sectionhash]
+        );
+        // $DB->update_record('longpage_reading_progress', ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 
+        // 'timemodified' => time(), 'course' => $courseId]);
         $transaction->allow_commit();
         error_log("updatescroll good" + "cid" + $courseId);
     } catch (Exception $e) {
@@ -1148,7 +1148,9 @@ class mod_longpage_external extends external_api {
         return new external_function_parameters([
             'longpageid' => new external_value(PARAM_INT),
             'scrolltop' => new external_value(PARAM_FLOAT),
-            'courseId' => new external_value(PARAM_INT)
+            'courseid' => new external_value(PARAM_INT),
+            'section' => new external_value(PARAM_TEXT),
+            'sectionhash' => new external_value(PARAM_INT)
         ]);
     }
 
@@ -1156,46 +1158,47 @@ class mod_longpage_external extends external_api {
         return null;
     }
 
-    public static function get_reading_progress($data) {
+    public static function get_reading_progress($courseid, $longpageid) {
         global $CFG, $DB, $USER;
         
         $r = new stdClass();
         $r->userid = $USER->id;
         $r->courseid = $data['courseid'];
-        $r->pageid = $data['pageid'];
+        $r->pageid = $data['longpageid'];
+
+        self::validate_parameters(
+            self::get_reading_progress_parameters(),
+            ['courseid' => $courseid, 'longpageid' => $longpageid]
+        );
         
         $query = '
-            SELECT section, count(section) as count
-            FROM (SELECT * FROM '.$CFG->prefix.'longpage_reading_progress AS m WHERE userid=? AND course=? AND longpageid=?) as mm
+            SELECT section, count(sectionhash) as count
+            FROM (SELECT * FROM '.$CFG->prefix.'longpage_reading_progress AS m WHERE course=? AND longpageid=?) as mm
             GROUP by section
             ';
             
-        $transaction = $DB->start_delegated_transaction();
-        $res = $DB->get_records_sql($query, array($USER->id, $courseid, $longpageid));
-        $transaction->allow_commit();
+        //$transaction = $DB->start_delegated_transaction();
+        $res = $DB->get_records_sql($query, array($courseid, $longpageid));
+        //$transaction->allow_commit();
 
         return array('response'=> json_encode($res));
-
     }
 
     public static function get_reading_progress_parameters() {
         return new external_function_parameters(
-            array(
-                'data' =>
-                    new external_single_structure(
                         array(
                             'courseid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
                             'longpageid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
                         )
-                    )
-            )
+                    
+            
         );
 
     }
 
     public static function get_reading_progress_returns() {
         return new external_single_structure(
-            array( 'response' => new external_value(PARAM_RAW, 'All bookmarks of an user') )
+            array('response' => new external_value(PARAM_RAW, 'All bookmarks of an user'))
         );
     }
 
@@ -1431,11 +1434,11 @@ class mod_longpage_external extends external_api {
         if ($data['action'] == "scroll") {
             $d = json_decode($data['entry']);
             $s = new stdClass();
-            $s->section = $d->value->targetID;
-            $s->sectionoffset = (int) $d->value->scrollYDistance;
+            $s->section = (String)$d->targetID;
+            //$s->sectionoffset = (int) $d->value->scrollYDistance;
             $s->userid = (int) $USER->id;
-            $s->courseid = (int) $data['courseid'];
-            $s->longpageid = (int) $d->value->longpageid;
+            $s->course = (int) $data['courseid'];
+            $s->longpageid = (int) $d->longpageid;
             $s->timemodified = (int) $d->utc;
             $s->scrolltop = (int) $d->scrolltop;
 

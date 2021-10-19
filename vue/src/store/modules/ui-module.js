@@ -41,6 +41,7 @@ export default {
     },
     actions: {
         [ACT.UPDATE_READING_PROGRESS]({commit, getters}, scrollTop) {
+            return 0;
             const oldScrollTop = getters[GET.SCROLL_TOP];
             console.log("update");
             console.log(getters[GET.LONGPAGE_CONTEXT].courseId);
