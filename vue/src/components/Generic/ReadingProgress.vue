@@ -337,8 +337,19 @@ export default {
                   // let store = [...$("#"+data[i].section).contents()];
                   // console.log(arr);
 
-                  //$("#" + data[i].section).replaceWith(() => {"<div>"+[...$("#" + data[i].section).contents()]+"</div>"})
-                  $("#" + data[i].section).append(
+                  $("#" + data[i].section).wrap("<div class='wrapper'></div>");
+                  // $(".wrapper").find("#" + data[i].section).append($("<span></span>")
+                  //     .attr(
+                  //       "title",
+                  //       "Der Abschnitt wurde bislang " +
+                  //         data[i].count +
+                  //         " mal gelesen"
+                  //     )
+                  //     .addClass(
+                  //       "reading-progress progress-" +
+                  //         Math.ceil((data[i].count / max) * 5)
+                  //     ))
+                  $("#" + data[i].section).parent().append(
                     $("<span></span>")
                       .attr(
                         "title",
