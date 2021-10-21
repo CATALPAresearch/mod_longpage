@@ -333,11 +333,11 @@ export default {
                 if ($("#" + data[i].section)) {
                   // let arr = new Array();
 
-                  arr.push(...$("#" + data[i].section).contents());
-                  let store = [...$("#"+data[i].section).contents()];
-                  console.log(arr);
+                  // arr.push(...$("#" + data[i].section).contents());
+                  // let store = [...$("#"+data[i].section).contents()];
+                  // console.log(arr);
 
-                  $("#" + data[i].section).replaceWith(() => {"<div>"+[...$("#" + data[i].section).contents()]+"</div>"})
+                  //$("#" + data[i].section).replaceWith(() => {"<div>"+[...$("#" + data[i].section).contents()]+"</div>"})
                   $("#" + data[i].section).append(
                     $("<span></span>")
                       .attr(
