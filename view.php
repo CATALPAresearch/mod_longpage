@@ -57,6 +57,8 @@ require_capability('mod/longpage:view', $context);
 //     'scrolltop',
 //     ['userid' => $USER->id, 'longpageid' => $page->id]
 // );
+// TODO get replacement function
+$scrolltop = 0;
 
 // Completion and trigger events.
 longpage_view($page, $course, $cm, $context);

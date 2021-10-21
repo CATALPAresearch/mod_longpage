@@ -115,8 +115,6 @@ export default {
                   document.body.parentNode ||
                   document.body
                 ).scrollTop;
-                
-                
 
               var logentry = {
                 utc: now.getTime(),
@@ -173,19 +171,23 @@ export default {
               //     },
               //   },
               // ]);
-var hashCode = function(s){
-  return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
-}
+              var hashCode = function (s) {
+                return s.split("").reduce(function (a, b) {
+                  a = (a << 5) - a + b.charCodeAt(0);
+                  return a & a;
+                }, 0);
+              };
               console.log(hashCode(entry.target.id));
               ajax.call([
                 {
                   methodname: "mod_longpage_update_reading_progress",
                   args: {
-                      longpageid: _this.context.longpageid,
-                      courseid: _this.context.courseId,
-                      scrolltop: scrollYDistance === undefined ? 0 : scrollYDistance,
-                      section: entry.target.id,
-                      sectionhash: hashCode(entry.target.id)
+                    longpageid: _this.context.longpageid,
+                    courseid: _this.context.courseId,
+                    scrolltop:
+                      scrollYDistance === undefined ? 0 : scrollYDistance,
+                    section: entry.target.id,
+                    sectionhash: hashCode(entry.target.id),
                   },
                   done: function (reads) {
                     console.log("update");
@@ -316,23 +318,26 @@ var hashCode = function(s){
         {
           methodname: "mod_longpage_get_reading_progress",
           args: {
-            
-              courseid: _this.context.courseId,
-              longpageid: _this.context.longpageid,
-            
+            courseid: _this.context.courseId,
+            longpageid: _this.context.longpageid,
           },
           done: function (reads) {
             try {
               let data = Object.values(JSON.parse(reads.response));
-              console.log(data);
               let max_arr = data.map(function (d) {
                 return d.count;
               });
               let max = max_arr.reduce((a, b) => Math.max(a, b), -Infinity);
-
               for (var i = 0; i < data.length; i++) {
+                //console.log(...$("#" + data[i].section).contents());
                 if ($("#" + data[i].section)) {
-                  // console.log('section', data[i])
+                  // let arr = new Array();
+
+                  arr.push(...$("#" + data[i].section).contents());
+                  let store = [...$("#"+data[i].section).contents()];
+                  console.log(arr);
+
+                  $("#" + data[i].section).replaceWith(() => {"<div>"+[...$("#" + data[i].section).contents()]+"</div>"})
                   $("#" + data[i].section).append(
                     $("<span></span>")
                       .attr(
