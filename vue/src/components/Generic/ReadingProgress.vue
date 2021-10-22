@@ -177,7 +177,6 @@ export default {
                   return a & a;
                 }, 0);
               };
-              console.log(hashCode(entry.target.id));
               ajax.call([
                 {
                   methodname: "mod_longpage_update_reading_progress",
@@ -190,7 +189,6 @@ export default {
                     sectionhash: hashCode(entry.target.id),
                   },
                   done: function (reads) {
-                    console.log("update");
                   },
                   fail: function (e) {
                     console.error("fail", e);
@@ -313,7 +311,6 @@ export default {
 
     visualizeReadingProgress: function () {
       let _this = this;
-      console.log(_this.context);
       ajax.call([
         {
           methodname: "mod_longpage_get_reading_progress",
