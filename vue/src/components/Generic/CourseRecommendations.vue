@@ -374,12 +374,10 @@ export default {
       $(this.parantSelector).append(
         '<h3 style="display:inline; color:#fff; font-size:7;" class="dummy-heading">.</h3>'
       );
-      console.log(numerOfHeadings);
       // iterate over all headings and determine the text length and number of images
       for (var j = 0; j < numerOfHeadings; j++) {
         var data = this.recommendations["ke1"][j];
         if (data === undefined) {
-            console.log("break");
           break;
         }
         let courseRecommendationList = $(

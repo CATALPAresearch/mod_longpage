@@ -44,6 +44,7 @@
         />
       </a>
     </div>
+    <course-recomm :style="'display:none'"></course-recomm>
   </div>
 </template>
 
@@ -83,7 +84,7 @@ import Posts from "@/components/LongpageSidebar/Posts";
 import { debounce } from "lodash";
 import TableOfContents from "@/components/LongpageSidebar/TableOfContents";
 import Search from "@/components/LongpageSidebar/Search";
-import Course_Recomm from "@/components/Generic/CourseRecommendations";
+import CourseRecommendation from "@/components/Generic/CourseRecommendations";
 
 const LONGPAGE_SIDEBAR_ID = "longpage-sidebar";
 const LONGPAGE_SIDEBAR_TAB_CONTENT = "longpage-sidebar-tab-content";
@@ -140,7 +141,7 @@ export default {
     [SidebarTabKeys.POSTS]: Posts,
     [SidebarTabKeys.TOC]: TableOfContents,
     [SidebarTabKeys.SEARCH]: Search,
-    [SidebarTabKeys.COURSE_RECOMMENDATIONS]: Course_Recomm
+    [SidebarTabKeys.COURSE_RECOMMENDATIONS]: CourseRecommendation,
   },
   data() {
     return {
@@ -173,11 +174,11 @@ export default {
           id: "sidebar-tab-bookmarks",
           icon: ["fa", "fa-bookmark-o", "fa-fw"],
         },
-        {
-          key: SidebarTabKeys.COURSE_RECOMMENDATIONS,
-          id: "sidebar-tab-recomm",
-          icon: ["fa", "fa-map", "fa-fw"],
-        },
+        // {        // deactivated sidebar tab for now
+        //   key: SidebarTabKeys.COURSE_RECOMMENDATIONS,
+        //   id: "sidebar-tab-recomm",
+        //   icon: ["fa", "fa-map", "fa-fw"],
+        // },
       ],
     };
   },
