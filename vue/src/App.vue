@@ -20,8 +20,9 @@
       <div
         id="longpage-main"
         ref="mainRef"
-        class="col vh-100-wo-nav overflow-y-auto row no-gutters justify-content-center p-3"
+        class="col overflow-y-auto row no-gutters justify-content-center p-3"
       >
+      <!-- removed from longpage-pain: vh-100-wo-nav -->
         <div
           id="longpage-content"
           ref="contentRef"
