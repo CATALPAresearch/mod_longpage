@@ -76,6 +76,7 @@ $string['optionsheader'] = 'Display options';
 $string['page-mod-page-x'] = 'Any Longpage module Longpage';
 $string['longpage:addinstance'] = 'Add a new Longpage resource';
 $string['longpage:view'] = 'View Longpage content';
+$string['longpage:modannotations'] = 'edit and delete annotations';
 $string['pluginadministration'] = 'Longpage module administration';
 $string['pluginname'] = 'longpage';
 $string['popupheight'] = 'Pop-up height (in pixels)';

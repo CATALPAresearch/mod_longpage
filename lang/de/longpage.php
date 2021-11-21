@@ -68,6 +68,7 @@ $string['optionsheader'] = 'Darstellungsoptionen';
 $string['page-mod-page-x'] = 'Jede Page/Longpage';
 $string['longpage:addinstance'] = 'Neue Seite als Ressource hinzufügen';
 $string['longpage:view'] = 'Seiteninhalt anzeigen';
+$string['longpage:modannotations'] = 'Annotations editieren und löschen';
 $string['pluginadministration'] = 'Longpage administrieren';
 $string['pluginname'] = 'Longpage';
 $string['popupheight'] = 'Pop-up Höhe (in Pixeln)';

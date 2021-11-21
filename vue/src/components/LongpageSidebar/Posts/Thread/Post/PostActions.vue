@@ -1,26 +1,43 @@
 <template>
-  <div
-    v-if="show"
-    class="post-actions"
-  >
+  <div v-if="show" class="post-actions">
     <div class="float-left">
       <a
         href="javascript:void(0)"
         role="button"
-        :class="{'disabled': userIsCreator}"
+        :class="{ disabled: userIsCreator }"
         @click="togglePostLike"
       >
         <i
           class="icon fa fa-fw mr-1"
-          :title="userIsCreator ? undefined : $t(postIntern.likedByUser ? 'post.action.rmLike' : 'post.action.like')"
-          :aria-label="userIsCreator ? undefined : $t(postIntern.likedByUser ? 'post.action.rmLike' : 'post.action.like')"
+          :title="
+            userIsCreator
+              ? undefined
+              : $t(
+                  postIntern.likedByUser
+                    ? 'post.action.rmLike'
+                    : 'post.action.like'
+                )
+          "
+          :aria-label="
+            userIsCreator
+              ? undefined
+              : $t(
+                  postIntern.likedByUser
+                    ? 'post.action.rmLike'
+                    : 'post.action.like'
+                )
+          "
           :class="[postIntern.likedByUser ? 'fa-thumbs-up' : 'fa-thumbs-o-up']"
         />
       </a>
       <span
         class="mr-1"
-        :class="{'font-weight-bold': postIntern.likedByUser, 'text-primary': postIntern.likedByUser}"
-      >{{ postIntern.likesCount }}</span>
+        :class="{
+          'font-weight-bold': postIntern.likedByUser,
+          'text-primary': postIntern.likedByUser,
+        }"
+        >{{ postIntern.likesCount }}</span
+      >
     </div>
     <div
       v-if="post === thread.root && post.isPublic"
@@ -28,10 +45,7 @@
       role="button"
       @click="toggleRepliesOrReply"
     >
-      <a
-        href="javascript:void(0)"
-        class="text-dark"
-      >
+      <a href="javascript:void(0)" class="text-dark">
         <i
           :title="$t('post.action.answer')"
           :aria-label="$t('post.action.answer')"
@@ -40,9 +54,7 @@
       </a>
       <span v-if="thread.replyCount">{{ thread.replyCount }}</span>
     </div>
-    <div
-      class="float-left ml-3"
-    >
+    <div class="float-left ml-3">
       <a
         href="javascript:void(0)"
         class="text-dark"
@@ -50,8 +62,16 @@
         @click="toggleBookmark"
       >
         <i
-          :title="post.bookmarkedByUser ? $t('post.action.rmMarkWithStar') : $t('post.action.markWithStar')"
-          :aria-label="post.bookmarkedByUser ? $t('post.action.rmMarkWithStar') : $t('post.action.markWithStar')"
+          :title="
+            post.bookmarkedByUser
+              ? $t('post.action.rmMarkWithStar')
+              : $t('post.action.markWithStar')
+          "
+          :aria-label="
+            post.bookmarkedByUser
+              ? $t('post.action.rmMarkWithStar')
+              : $t('post.action.markWithStar')
+          "
           class="icon fa fa-fw m-0"
           :class="[post.bookmarkedByUser ? 'fa-star' : 'fa-star-o']"
         />
@@ -68,8 +88,16 @@
         @click="toggleThreadSubscription"
       >
         <i
-          :title="thread.subscribedToByUser ? $t('post.action.unsubscribe') : $t('post.action.subscribe')"
-          :aria-label="thread.subscribedToByUser ? $t('post.action.unsubscribe') : $t('post.action.subscribe')"
+          :title="
+            thread.subscribedToByUser
+              ? $t('post.action.unsubscribe')
+              : $t('post.action.subscribe')
+          "
+          :aria-label="
+            thread.subscribedToByUser
+              ? $t('post.action.unsubscribe')
+              : $t('post.action.subscribe')
+          "
           class="icon fa fa-fw m-0"
           :class="[thread.subscribedToByUser ? 'fa-bell' : 'fa-bell-o']"
         />
@@ -78,7 +106,7 @@
     <div
       v-if="dropdownMenuItems && dropdownMenuItems.length"
       class="dropdown"
-      style="float: right;"
+      style="float: right"
     >
       <a
         href="javascript:void(0)"
@@ -136,65 +164,83 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import {ACT, GET} from '@/store/types';
-import {mapActions, mapGetters} from 'vuex';
-import {Post} from '@/types/post';
-import {Thread} from '@/types/thread';
+import { ACT, GET } from "@/store/types";
+import { mapActions, mapGetters } from "vuex";
+import { Post } from "@/types/post";
+import { Thread } from "@/types/thread";
 
 export default {
-  name: 'PostActions',
+  name: "PostActions",
   props: {
-    post: {type: Post, required: true},
-    thread: {type: Thread, required: true},
-    show: {type: Boolean, default: true},
+    post: { type: Post, required: true },
+    thread: { type: Thread, required: true },
+    show: { type: Boolean, default: true },
   },
-  emits: ['edit-clicked', 'toggle-replies'],
+  emits: ["edit-clicked", "toggle-replies"],
   computed: {
-    ...mapGetters([GET.USER]),
+    ...mapGetters([GET.USER] ,[GET.CAN_USER_MOD_ANNOTATION]),
     dropdownMenuItems() {
       const items = [];
       if (this.post.id !== this.thread.root.id) {
         if (this.thread.subscribedToByUser) {
           items.push({
-            iconClasses: ['fa', 'fa-bell-o', 'fa-fw'],
+            iconClasses: ["fa", "fa-bell-o", "fa-fw"],
             handler: this.toggleThreadSubscription,
-            text: this.$i18n.t('post.action.unsubscribe'),
+            text: this.$i18n.t("post.action.unsubscribe"),
           });
         } else {
           items.push({
-            iconClasses: ['fa', 'fa-bell', 'fa-fw'],
+            iconClasses: ["fa", "fa-bell", "fa-fw"],
             handler: this.toggleThreadSubscription,
-            text: this.$i18n.t('post.action.subscribe'),
+            text: this.$i18n.t("post.action.subscribe"),
           });
         }
       }
-
       if (this.userIsCreator) {
         items.push({
-          iconClasses: ['fa', 'fa-pencil', 'fa-fw'],
+          iconClasses: ["fa", "fa-pencil", "fa-fw"],
           handler: this.openEditor,
-          text: this.$i18n.t('post.action.edit'),
+          text: this.$i18n.t("post.action.edit"),
         });
 
         if (this.postIsLastPostInThread) {
           items.push({
-            iconClasses: ['fa', 'fa-trash', 'fa-fw'],
+            iconClasses: ["fa", "fa-trash", "fa-fw"],
             handler: this.deletePost,
-            text: this.$i18n.t('post.action.delete'),
+            text: this.$i18n.t("post.action.delete"),
           });
         }
       }
+        if (this.$store.state.UserModule.userCanMod) {
+          items.push({
+            iconClasses: ["fa", "fa-trash", "fa-fw"],
+            handler: this.deletePost,
+            text: 'admin delete',
+          });
+        }
+      
 
-      if (!this.userIsCreator &&
-          !this.post.likedByUser &&
-          !this.post.bookmarkedByUser &&
-          (this.post !== this.thread.root || !this.thread.subscribedToByUser) &&
-          !this.thread.getPostsAfter(this.post.id).find(post => post.creatorId === this.userId)
+      if (
+        !this.userIsCreator &&
+        !this.post.likedByUser &&
+        !this.post.bookmarkedByUser &&
+        (this.post !== this.thread.root || !this.thread.subscribedToByUser) &&
+        !this.thread
+          .getPostsAfter(this.post.id)
+          .find((post) => post.creatorId === this.userId)
       ) {
         items.push({
-          iconClasses: ['fa', this.post.readByUser ? 'fa-eye-slash' : 'fa-eye', 'fa-fw'],
+          iconClasses: [
+            "fa",
+            this.post.readByUser ? "fa-eye-slash" : "fa-eye",
+            "fa-fw",
+          ],
           handler: this.togglePostReading,
-          text: this.$i18n.t(`post.action.${this.post.readByUser ? 'markAsUnread' : 'markAsRead'}`),
+          text: this.$i18n.t(
+            `post.action.${
+              this.post.readByUser ? "markAsUnread" : "markAsRead"
+            }`
+          ),
         });
       }
 
@@ -212,6 +258,13 @@ export default {
     userIsCreator() {
       return this.userId === this.post.creatorId;
     },
+    userCanMod() {
+      return this[GET.CAN_USER_MOD_ANNOTATION];
+    }
+  },
+  mounted: function () {
+    console.log(this);
+    //this.canUserMod();
   },
   methods: {
     ...mapActions([
@@ -222,28 +275,46 @@ export default {
       ACT.TOGGLE_POST_READING,
       ACT.TOGGLE_THREAD_SUBSCRIPTION,
     ]),
+    canUserMod() {
+      console.log(this.$store.state.UserModule.userCanMod);
+      //return this.$store.state.UserModule.userCanMod;
+      console.log(this[GET.CAN_USER_MOD_ANNOTATION]);
+      console.log(this.computed);
+      return this[GET.CAN_USER_MOD_ANNOTATION];
+    },
     deletePost() {
       this[ACT.DELETE_POST](this.post);
     },
     openEditor() {
-      this.$emit('edit-clicked');
+      this.$emit("edit-clicked");
     },
     toggleBookmark() {
-      this[ACT.TOGGLE_POST_BOOKMARK]({postId: this.post.id, threadId: this.post.threadId});
+      this[ACT.TOGGLE_POST_BOOKMARK]({
+        postId: this.post.id,
+        threadId: this.post.threadId,
+      });
     },
     togglePostLike() {
-      if (!this.userIsCreator) this[ACT.TOGGLE_POST_LIKE]({postId: this.post.id, threadId: this.post.threadId});
+      if (!this.userIsCreator)
+        this[ACT.TOGGLE_POST_LIKE]({
+          postId: this.post.id,
+          threadId: this.post.threadId,
+        });
     },
     togglePostReading() {
-      this[ACT.TOGGLE_POST_READING]({postId: this.post.id, threadId: this.post.threadId});
+      this[ACT.TOGGLE_POST_READING]({
+        postId: this.post.id,
+        threadId: this.post.threadId,
+      });
     },
     async toggleRepliesOrReply() {
-      if (!this.thread.replyCount) await this[ACT.CREATE_POST]({threadId: this.thread.id});
-      this.$emit('toggle-replies');
+      if (!this.thread.replyCount)
+        await this[ACT.CREATE_POST]({ threadId: this.thread.id });
+      this.$emit("toggle-replies");
     },
     toggleThreadSubscription() {
       this[ACT.TOGGLE_THREAD_SUBSCRIPTION](this.post.threadId);
     },
-  }
+  },
 };
 </script>

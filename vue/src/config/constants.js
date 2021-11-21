@@ -74,6 +74,7 @@ export const MoodleWSMethods = Object.freeze({
     UPDATE_ANNOTATION: 'mod_longpage_update_annotation',
     UPDATE_POST: 'mod_longpage_update_post',
     UPDATE_READING_PROGRESS: 'mod_longpage_update_reading_progress',
+    USER_CAN_MOD_ANNOTATION: 'mod_longpage_can_madify_annotations'
 });
 
 export const SidebarTabKeys = Object.freeze({

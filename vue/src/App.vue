@@ -139,6 +139,7 @@ export default {
       // });
       this[ACT.FETCH_USER_ROLES]();
       this[ACT.FETCH_ENROLLED_USERS]();
+      this[ACT.USER_CAN_MOD_ANNOTATION]();
       var _this = this;
       // Log bootstrap interactions
       $('.longpage-citation').click(function() {
@@ -165,7 +166,7 @@ export default {
       });
     },
     methods: {
-      ...mapActions([ACT.FETCH_ENROLLED_USERS, ACT.FETCH_USER_ROLES, ACT.UPDATE_READING_PROGRESS]),
+      ...mapActions([ACT.FETCH_ENROLLED_USERS, ACT.FETCH_USER_ROLES, ACT.UPDATE_READING_PROGRESS, ACT.USER_CAN_MOD_ANNOTATION]),
       log(key, values) {
         this.logger.add(key, values);
       },

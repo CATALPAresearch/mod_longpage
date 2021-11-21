@@ -27,6 +27,7 @@ export default {
     state: {
         enrolledUsers: [],
         userRoles: [],
+        userCanMod: [],
     },
     getters: {
         [GET.USER]: (_, getters) => id => getters[GET.USERS].find(
@@ -36,6 +37,9 @@ export default {
             role => getters[GET.USER](userId).roles.includes(role.id)
         ),
         [GET.USERS]: ({enrolledUsers}) => enrolledUsers,
+
+        [GET.CAN_USER_MOD_ANNOTATION]: ({state}) => state.userCanMod
+        
     },
     actions: {
         [ACT.FETCH_ENROLLED_USERS]({commit, getters}) {
@@ -70,6 +74,22 @@ export default {
                 }
             }]);
         },
+        [ACT.USER_CAN_MOD_ANNOTATION]({commit, getters}){
+            const context = getters[GET.LONGPAGE_CONTEXT];
+            ajax.call([{
+                methodname: 'mod_longpage_can_madify_annotations',
+                args: {
+                    longpageid: context.longpageid,
+                },
+                done: (result) => {
+                    commit(MUTATE.SET_USER_CAN_MOD_ANNOTATION, result);
+                },
+                fail: (e) => {
+                    console.error(`"${MoodleWSMethods.USER_CAN_MOD_ANNOTATION}" failed`, e);
+                    console.log(context);
+                }
+            }]);
+        }
     },
     mutations: {
         [MUTATE.SET_ENROLLED_USERS](state, enrolledUsers) {
@@ -78,5 +98,8 @@ export default {
         [MUTATE.SET_USER_ROLES](state, userRoles) {
             state.userRoles = userRoles;
         },
+        [MUTATE.SET_USER_CAN_MOD_ANNOTATION](state, result){
+            state.userCanMod = result;
+        }
     },
 };

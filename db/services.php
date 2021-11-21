@@ -215,4 +215,13 @@ $functions = array(
         //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
         'ajax'        => true
     ),
+    'mod_longpage_can_madify_annotations' => array(
+        'classname'     => 'mod_longpage_external',
+        'methodname'    => 'can_madify_annotations',
+        'description'   => 'Returns true if user can modify annotations (delete, edit)',
+        'type'          => 'read',
+        'capabilities'  => 'mod/longpage:view',
+        'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+        'ajax'          => true
+    )
 );

@@ -1481,4 +1481,43 @@ class mod_longpage_external extends external_api {
             array('response' => new external_value(PARAM_RAW, 'Server respons to the incomming log'))
         );
     }
+
+    public static function can_madify_annotations($longpageid){
+        global $DB, $USER;
+
+        $params = self::validate_parameters(
+            self::can_madify_annotations_parameters(),
+            array(
+                'longpageid' => $longpageid
+            )
+        );
+        $warnings = array();
+
+        // Request and permission validation.
+        $page = $DB->get_record('longpage', array('id' => $params['longpageid']), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
+
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+
+        if (has_capability('mod/longpage:modannotations', $context)) {
+            return array('canmodannotations' => true);
+        } else {
+            return array('canmodannotations' => false);
+        }
+    }
+
+    public static function can_madify_annotations_parameters(){
+        return new external_function_parameters(
+            array(
+                'longpageid' => new external_value(PARAM_INT, 'page instance id')
+            )
+        );
+    }
+
+    public static function can_madify_annotations_returns(){
+        return new external_single_structure(
+            array('canmodannotations' => new external_value(PARAM_BOOL))
+        ); 
+    }
 }
