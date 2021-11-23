@@ -28,6 +28,7 @@
   "post": {
     "action": {
       "delete": "Beitrag löschen",
+      "admindelete": "Studentenbeitrag löschen",
       "edit": "Beitrag bearbeiten",
       "like": "Mit „Gefällt mir“ markieren",
       "answer": "Antworten und Antwortformular ein-/ausblenden",

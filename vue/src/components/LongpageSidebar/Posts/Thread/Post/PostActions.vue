@@ -211,11 +211,11 @@ export default {
           });
         }
       }
-        if (this.$store.state.UserModule.userCanMod) {
+        if (this.$store.state.UserModule.userCanMod && !this.userIsCreator) {
           items.push({
             iconClasses: ["fa", "fa-trash", "fa-fw"],
             handler: this.deletePost,
-            text: 'admin delete',
+            text: this.$i18n.t("post.action.admindelete"),
           });
         }
       
