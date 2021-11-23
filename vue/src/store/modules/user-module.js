@@ -27,7 +27,7 @@ export default {
     state: {
         enrolledUsers: [],
         userRoles: [],
-        userCanMod: [],
+        userCanMod: false,
     },
     getters: {
         [GET.USER]: (_, getters) => id => getters[GET.USERS].find(
@@ -38,7 +38,7 @@ export default {
         ),
         [GET.USERS]: ({enrolledUsers}) => enrolledUsers,
 
-        [GET.CAN_USER_MOD_ANNOTATION]: ({state}) => state.userCanMod
+        [GET.CAN_USER_MOD_ANNOTATION]: (state) => {return state.userCanMod}
         
     },
     actions: {
@@ -99,7 +99,7 @@ export default {
             state.userRoles = userRoles;
         },
         [MUTATE.SET_USER_CAN_MOD_ANNOTATION](state, result){
-            state.userCanMod = result;
+            state.userCanMod = result.canmodannotations;
         }
     },
 };

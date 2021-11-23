@@ -178,7 +178,7 @@ export default {
   },
   emits: ["edit-clicked", "toggle-replies"],
   computed: {
-    ...mapGetters([GET.USER] ,[GET.CAN_USER_MOD_ANNOTATION]),
+    ...mapGetters([GET.USER]),
     dropdownMenuItems() {
       const items = [];
       if (this.post.id !== this.thread.root.id) {
@@ -258,13 +258,8 @@ export default {
     userIsCreator() {
       return this.userId === this.post.creatorId;
     },
-    userCanMod() {
-      return this[GET.CAN_USER_MOD_ANNOTATION];
-    }
   },
   mounted: function () {
-    console.log(this);
-    //this.canUserMod();
   },
   methods: {
     ...mapActions([
@@ -275,13 +270,6 @@ export default {
       ACT.TOGGLE_POST_READING,
       ACT.TOGGLE_THREAD_SUBSCRIPTION,
     ]),
-    canUserMod() {
-      console.log(this.$store.state.UserModule.userCanMod);
-      //return this.$store.state.UserModule.userCanMod;
-      console.log(this[GET.CAN_USER_MOD_ANNOTATION]);
-      console.log(this.computed);
-      return this[GET.CAN_USER_MOD_ANNOTATION];
-    },
     deletePost() {
       this[ACT.DELETE_POST](this.post);
     },
