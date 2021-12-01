@@ -100,6 +100,7 @@ const MappingService = {
                     'anonymous',
                     'content',
                     'isPublic',
+                    'creatorid'
                 ]),
             }
         });

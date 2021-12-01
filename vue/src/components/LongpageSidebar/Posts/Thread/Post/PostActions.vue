@@ -168,6 +168,7 @@ import { ACT, GET } from "@/store/types";
 import { mapActions, mapGetters } from "vuex";
 import { Post } from "@/types/post";
 import { Thread } from "@/types/thread";
+import {cloneDeep} from 'lodash';
 
 export default {
   name: "PostActions",
@@ -181,6 +182,11 @@ export default {
     ...mapGetters([GET.USER]),
     dropdownMenuItems() {
       const items = [];
+      // items.push({           //diagnostic: prints post to console
+      //       iconClasses: ["fa", "fa-trash", "fa-fw"],
+      //       handler: this.info,
+      //       text: "trashinfo",
+      //     });
       if (this.post.id !== this.thread.root.id) {
         if (this.thread.subscribedToByUser) {
           items.push({
@@ -211,14 +217,15 @@ export default {
           });
         }
       }
-        if (this.$store.state.UserModule.userCanMod && !this.userIsCreator) {
+      if (this.$store.state.UserModule.userCanMod && !this.userIsCreator) {
+        if (true) {
           items.push({
             iconClasses: ["fa", "fa-trash", "fa-fw"],
-            handler: this.deletePost,
+            handler: this.censorPost,
             text: this.$i18n.t("post.action.admindelete"),
           });
         }
-      
+      }
 
       if (
         !this.userIsCreator &&
@@ -259,12 +266,12 @@ export default {
       return this.userId === this.post.creatorId;
     },
   },
-  mounted: function () {
-  },
+  mounted: function () {},
   methods: {
     ...mapActions([
       ACT.CREATE_POST,
       ACT.DELETE_POST,
+      ACT.UPDATE_POST,
       ACT.TOGGLE_POST_BOOKMARK,
       ACT.TOGGLE_POST_LIKE,
       ACT.TOGGLE_POST_READING,
@@ -272,6 +279,15 @@ export default {
     ]),
     deletePost() {
       this[ACT.DELETE_POST](this.post);
+    },
+    info(){
+      console.log(this.post);
+    },
+    censorPost(){
+      let postUpdate = cloneDeep(this.post);
+      postUpdate.content = this.$i18n.t("post.action.censored");
+      postUpdate.creatorid = this.userId;
+      this[ACT.UPDATE_POST](postUpdate);
     },
     openEditor() {
       this.$emit("edit-clicked");

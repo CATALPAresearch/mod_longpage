@@ -957,7 +957,7 @@ class mod_longpage_external extends external_api {
             $params = array_merge($params, $inpostidsparams);
         }
 
-        $posts = $DB->get_records_select('longpage_posts', $select, $params, 'timemodified ASC');
+        $posts = $DB->get_records_select('longpage_posts', $select, $params, 'timecreated ASC');
 
         return array_map(function ($post) {
             self::anonymize_post($post);
@@ -1109,6 +1109,7 @@ class mod_longpage_external extends external_api {
                 [
                     'content' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
                     'markedasrequestedreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+                    'creatorid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
                 ]
             )),
         ]);
@@ -1247,23 +1248,28 @@ class mod_longpage_external extends external_api {
         //        It cannot be deleted/updated since others might depend on it.');
         //}
 
-        self::validate_post_not_referenced_by_other_post($post);
+        // test remove validation begin
 
-        $isliked = $DB->record_exists('longpage_post_likes', ['postid' => $post->id]);
-        if ($isliked) {
-            throw new invalid_parameter_exception('Post is liked by others. 
-                It cannot be deleted/updated since others might depend on it.');
-        }
+        // self::validate_post_not_referenced_by_other_post($post);
 
-        $isbookmarked = $DB->record_exists_select(
-            'longpage_post_bookmarks',
-            'postid = ? AND userid != ?',
-            ['postid' => $post->id, 'userid' => $post->creatorid]
-        );
-        if ($isbookmarked) {
-            throw new invalid_parameter_exception('Post is marked by others. 
-                It cannot be deleted/updated since others might depend on it.');
-        }
+        // $isliked = $DB->record_exists('longpage_post_likes', ['postid' => $post->id]);
+        // if ($isliked) {
+        //     throw new invalid_parameter_exception('Post is liked by others. 
+        //         It cannot be deleted/updated since others might depend on it.');
+        // }
+
+        // $isbookmarked = $DB->record_exists_select(
+        //     'longpage_post_bookmarks',
+        //     'postid = ? AND userid != ?',
+        //     ['postid' => $post->id, 'userid' => $post->creatorid]
+        // );
+        // if ($isbookmarked) {
+        //     throw new invalid_parameter_exception('Post is marked by others. 
+        //         It cannot be deleted/updated since others might depend on it.');
+        // }
+
+        // test remove validation end
+
 
         // TODO: Validation
 /*        $threadhassubscription = $DB->record_exists_select(

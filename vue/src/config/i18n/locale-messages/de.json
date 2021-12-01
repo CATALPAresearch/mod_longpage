@@ -29,6 +29,7 @@
     "action": {
       "delete": "Beitrag löschen",
       "admindelete": "Studentenbeitrag löschen",
+      "censored": "Dieser Beitrag wurde von den Moderator:innen entfernt",
       "edit": "Beitrag bearbeiten",
       "like": "Mit „Gefällt mir“ markieren",
       "answer": "Antworten und Antwortformular ein-/ausblenden",
