@@ -202,7 +202,7 @@ export default {
           });
         }
       }
-      if (this.userIsCreator) {
+      if (this.userIsCreator && !this.postIsLocked) {
         items.push({
           iconClasses: ["fa", "fa-pencil", "fa-fw"],
           handler: this.openEditor,
@@ -259,6 +259,12 @@ export default {
     postIsLastPostInThread() {
       return this.thread.lastPost.id === this.post.id;
     },
+    postIsLocked(){
+      if (this.post.islocked === true){
+        return true;
+      }
+      return false;     // islocked is false or undefined
+    },
     userId() {
       return this[GET.USER]() && this[GET.USER]().id;
     },
@@ -286,7 +292,8 @@ export default {
     censorPost(){
       let postUpdate = cloneDeep(this.post);
       postUpdate.content = this.$i18n.t("post.action.censored");
-      postUpdate.creatorid = this.userId;
+      postUpdate.islocked = true;
+      //postUpdate.creatorid = this.userId;
       this[ACT.UPDATE_POST](postUpdate);
     },
     openEditor() {

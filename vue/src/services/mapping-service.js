@@ -100,7 +100,8 @@ const MappingService = {
                     'anonymous',
                     'content',
                     'isPublic',
-                    'creatorid'
+                    'creatorid',
+                    'islocked',
                 ]),
             }
         });
@@ -110,6 +111,7 @@ const MappingService = {
             ...pick(response, ['id', 'type']),
             creatorId: response.creatorid,
             isPublic: response.ispublic,
+            islocked: response.islocked,
             longpageid: response.longpageid,
             target: this.mapResponseToAnnotationTarget(response.target),
             timeCreated: this._mapTimeResponse(response.timecreated),
@@ -151,6 +153,7 @@ const MappingService = {
             ...pick(response, ['id', 'anonymous', 'content', 'recommendation']),
             creatorId: response.creatorid,
             isPublic: response.ispublic,
+            islocked: response.islocked,
             bookmarkedByUser: response.bookmarkedbyuser,
             likedByUser: response.likedbyuser,
             likesCount: response.likescount,

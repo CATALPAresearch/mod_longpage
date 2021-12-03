@@ -1029,6 +1029,7 @@ class mod_longpage_external extends external_api {
             'anonymous' => new external_value(PARAM_BOOL),
             'content' => new external_value(PARAM_TEXT, ''),
             'ispublic' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),
+            'islocked' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL)
         ];
     }
 
@@ -1068,6 +1069,8 @@ class mod_longpage_external extends external_api {
 
     public static function update_post($postupdateparams) {
         global $DB, $USER;
+        
+       
 
         self::validate_parameters(self::update_post_parameters(), ['postupdate' => $postupdateparams]);
         $postupdate = (object) $postupdateparams;
@@ -1105,7 +1108,7 @@ class mod_longpage_external extends external_api {
         return new external_function_parameters([
             'postupdate' =>  new external_single_structure(array_merge(
                 self::id_parameter(),
-                pick_keys(self::post_parameters(), ['anonymous', 'ispublic']),
+                pick_keys(self::post_parameters(), ['anonymous', 'ispublic', 'islocked']),
                 [
                     'content' => new external_value(PARAM_TEXT, '', VALUE_OPTIONAL),
                     'markedasrequestedreply' => new external_value(PARAM_BOOL, '', VALUE_OPTIONAL),

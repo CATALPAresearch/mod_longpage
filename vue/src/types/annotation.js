@@ -34,6 +34,7 @@ export class Annotation {
         body,
         creatorId,
         isPublic = false,
+        islocked = false,
         longpageid,
         target = new AnnotationTarget({}),
         timeCreated,
@@ -45,6 +46,7 @@ export class Annotation {
         this.body = body;
         this.creatorId = creatorId;
         this.isPublic = isPublic;
+        this.islocked = islocked;
         this.longpageid = longpageid;
         this.target = target;
         this.timeCreated = timeCreated;

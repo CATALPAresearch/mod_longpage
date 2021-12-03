@@ -33,6 +33,7 @@ export class Post {
         content = '',
         highlighted = {},
         isPublic = false,
+        islocked = false,
         likedByUser = false,
         likesCount = 0,
         bookmarkedByUser = false,
@@ -52,6 +53,7 @@ export class Post {
         this.content = content;
         this.highlighted = highlighted;
         this.isPublic = isPublic;
+        this.islocked = islocked;
         this.likesCount = likesCount;
         this.bookmarkedByUser = bookmarkedByUser;
         this.readingsCount = readingsCount;
