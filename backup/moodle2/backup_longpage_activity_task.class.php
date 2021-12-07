@@ -26,12 +26,12 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot . '/mod/page/backup/moodle2/backup_page_stepslib.php');
+require_once($CFG->dirroot . '/mod/longpage/backup/moodle2/backup_longpage_stepslib.php');
 
 /**
  * Provides the steps to perform one complete backup of the Page instance
  */
-class backup_page_activity_task extends backup_activity_task {
+class backup_longpage_activity_task extends backup_activity_task {
 
     /**
      * No specific settings for this activity
@@ -43,7 +43,7 @@ class backup_page_activity_task extends backup_activity_task {
      * Defines a backup step to store the instance data in the page.xml file
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_page_activity_structure_step('page_structure', 'page.xml'));
+        $this->add_step(new backup_longpage_activity_structure_step('longpage_structure', 'longpage.xml'));
     }
 
     /**
@@ -58,12 +58,12 @@ class backup_page_activity_task extends backup_activity_task {
         $base = preg_quote($CFG->wwwroot,"/");
 
         // Link to the list of pages
-        $search="/(".$base."\/mod\/page\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@PAGEINDEX*$2@$', $content);
+        $search="/(".$base."\/mod\/longpage\/index.php\?id\=)([0-9]+)/";
+        $content= preg_replace($search, '$@LONGPAGEINDEX*$2@$', $content);
 
         // Link to page view by moduleid
-        $search="/(".$base."\/mod\/page\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@PAGEVIEWBYID*$2@$', $content);
+        $search="/(".$base."\/mod\/longpage\/view.php\?id\=)([0-9]+)/";
+        $content= preg_replace($search, '$@LONGPAGEVIEWBYID*$2@$', $content);
 
         return $content;
     }
