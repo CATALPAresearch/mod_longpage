@@ -28,7 +28,7 @@
   "post": {
     "action": {
       "delete": "Beitrag löschen",
-      "admindelete": "Studentenbeitrag löschen",
+      "admindelete": "Studentenbeitrag zensieren",
       "censored": "Dieser Beitrag wurde von den Moderator:innen entfernt",
       "edit": "Beitrag bearbeiten",
       "like": "Mit „Gefällt mir“ markieren",

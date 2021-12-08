@@ -217,12 +217,23 @@ export default {
           });
         }
       }
-      if (this.$store.state.UserModule.userCanMod && !this.userIsCreator) {
-        if (true) {
+      if (this.$store.state.UserModule.userCanMod) {
+        if (!this.userIsCreator && this.post.isPublic) {
           items.push({
             iconClasses: ["fa", "fa-trash", "fa-fw"],
             handler: this.censorPost,
             text: this.$i18n.t("post.action.admindelete"),
+          });
+        } else if (!this.post.isPublic){          // case for private annotation+post written by unenrolled admin user 
+          items.push({
+          iconClasses: ["fa", "fa-pencil", "fa-fw"],
+          handler: this.openEditor,
+          text: this.$i18n.t("post.action.edit"),
+        });
+        items.push({
+            iconClasses: ["fa", "fa-trash", "fa-fw"],
+            handler: this.deletePost,
+            text: this.$i18n.t("post.action.delete"),
           });
         }
       }
@@ -269,6 +280,9 @@ export default {
       return this[GET.USER]() && this[GET.USER]().id;
     },
     userIsCreator() {
+      if (typeof this.userId === 'undefined' || typeof this.post.creatorId === 'undefined'){  // impossible to determine if user is creator
+        return false;                                                                           // test needed because userIsCreator() = true if
+      }                                                                                         // both Ids are undefined
       return this.userId === this.post.creatorId;
     },
   },
