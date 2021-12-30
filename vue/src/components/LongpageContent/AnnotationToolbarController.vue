@@ -129,6 +129,7 @@ export default {
       });
     },
     getSelectors(range) {
+      console.log(describe(this.targetRoot, range));
       return describe(this.targetRoot, range);
     },
     onClearSelection() {

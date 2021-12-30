@@ -168,7 +168,7 @@ import { ACT, GET } from "@/store/types";
 import { mapActions, mapGetters } from "vuex";
 import { Post } from "@/types/post";
 import { Thread } from "@/types/thread";
-import {cloneDeep} from 'lodash';
+import { cloneDeep } from "lodash";
 
 export default {
   name: "PostActions",
@@ -202,19 +202,21 @@ export default {
           });
         }
       }
-      if (this.userIsCreator && !this.postIsLocked) {
-        items.push({
-          iconClasses: ["fa", "fa-pencil", "fa-fw"],
-          handler: this.openEditor,
-          text: this.$i18n.t("post.action.edit"),
-        });
-
-        if (this.postIsLastPostInThread) {
+      if (!this.$store.state.UserModule.userCanMod) {
+        if (this.userIsCreator && !this.postIsLocked) {
           items.push({
-            iconClasses: ["fa", "fa-trash", "fa-fw"],
-            handler: this.deletePost,
-            text: this.$i18n.t("post.action.delete"),
+            iconClasses: ["fa", "fa-pencil", "fa-fw"],
+            handler: this.openEditor,
+            text: this.$i18n.t("post.action.edit"),
           });
+
+          if (this.postIsLastPostInThread) {
+            items.push({
+              iconClasses: ["fa", "fa-trash", "fa-fw"],
+              handler: this.deletePost,
+              text: this.$i18n.t("post.action.delete"),
+            });
+          }
         }
       }
       if (this.$store.state.UserModule.userCanMod) {
@@ -224,13 +226,14 @@ export default {
             handler: this.censorPost,
             text: this.$i18n.t("post.action.admindelete"),
           });
-        } else if (!this.post.isPublic){          // case for private annotation+post written by unenrolled admin user 
+        } else if (!this.post.isPublic) {
+          // case for private annotation+post written by unenrolled admin user
           items.push({
-          iconClasses: ["fa", "fa-pencil", "fa-fw"],
-          handler: this.openEditor,
-          text: this.$i18n.t("post.action.edit"),
-        });
-        items.push({
+            iconClasses: ["fa", "fa-pencil", "fa-fw"],
+            handler: this.openEditor,
+            text: this.$i18n.t("post.action.edit"),
+          });
+          items.push({
             iconClasses: ["fa", "fa-trash", "fa-fw"],
             handler: this.deletePost,
             text: this.$i18n.t("post.action.delete"),
@@ -270,19 +273,23 @@ export default {
     postIsLastPostInThread() {
       return this.thread.lastPost.id === this.post.id;
     },
-    postIsLocked(){
-      if (this.post.islocked === true){
+    postIsLocked() {
+      if (this.post.islocked === true) {
         return true;
       }
-      return false;     // islocked is false or undefined
+      return false; // islocked is false or undefined
     },
     userId() {
       return this[GET.USER]() && this[GET.USER]().id;
     },
     userIsCreator() {
-      if (typeof this.userId === 'undefined' || typeof this.post.creatorId === 'undefined'){  // impossible to determine if user is creator
-        return false;                                                                           // test needed because userIsCreator() = true if
-      }                                                                                         // both Ids are undefined
+      if (
+        typeof this.userId === "undefined" ||
+        typeof this.post.creatorId === "undefined"
+      ) {
+        // impossible to determine if user is creator
+        return false; // test needed because userIsCreator() = true if
+      } // both Ids are undefined
       return this.userId === this.post.creatorId;
     },
   },
@@ -300,10 +307,10 @@ export default {
     deletePost() {
       this[ACT.DELETE_POST](this.post);
     },
-    info(){
+    info() {
       console.log(this.post);
     },
-    censorPost(){
+    censorPost() {
       let postUpdate = cloneDeep(this.post);
       postUpdate.content = this.$i18n.t("post.action.censored");
       postUpdate.islocked = true;

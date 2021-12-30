@@ -108,6 +108,9 @@ import {mapActions} from 'vuex';
 import SidebarTab from '@/components/LongpageSidebar/SidebarTab';
 import {scrollTextElementIntoView} from '@/util/misc';
 
+import {HighlightingConfig} from '@/config/constants';
+
+
 export default {
   name: 'HighlightsTab',
   components: {DateTimes, ExpandableHighlightExcerpt, SidebarTab},
@@ -142,6 +145,9 @@ export default {
       this.selectedHighlights = [];
     },
     scrollTextElementIntoView(id) {
+      console.log(id);
+      console.log(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME));
+
       scrollTextElementIntoView(getHighlightByAnnotationId(id));
     },
   },

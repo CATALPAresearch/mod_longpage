@@ -41,7 +41,7 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-//import {applyMathjaxFilterToNodes} from '@/util/moodle';
+import {applyMathjaxFilterToNodes} from '@/util/moodle';
 import {Post} from '@/types/post';
 import {PostReadingStatusEstimator} from '@/lib/annotation/post-reading-status-estimator';
 import {THREAD_CONTAINER_ID} from '@/config/constants';
@@ -57,14 +57,14 @@ export default {
     };
   },
   watch: {
-    // 'post.content': {
-    //   handler() {
-    //     this.$nextTick(() => {
-    //       applyMathjaxFilterToNodes(this.$refs.postContent);
-    //     });
-    //   },
-    //   immediate: true,
-    // },
+    'post.content': {
+      handler() {
+        this.$nextTick(() => {
+          applyMathjaxFilterToNodes(this.$refs.postContent);
+        });
+      },
+      immediate: true,
+    },
     'post.readByUser': {
       handler(readByUser) { // TODO You can't mark something as unread
         if (!readByUser) {

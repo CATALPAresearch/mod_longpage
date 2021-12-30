@@ -19,7 +19,7 @@
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-import {HighlightingConfig} from '../../config/constants';
+import { HighlightingConfig } from '../../config/constants';
 
 /**
  * Subset of the `NormalizedRange` class defined in `range.js` that this
@@ -48,11 +48,61 @@ export function highlightRange(normedRange, cssClass) {
   let textNodeSpans = [];
   let prevNode = null;
   let currentSpan = null;
+  
+  let modstring;
+  let filterout = "MJXp";
 
-  textNodes.forEach(node => {
+  textNodes.forEach((node,index) => {
     if (prevNode && prevNode.nextSibling === node) {
       currentSpan.push(node);
+      console.log(node);
     } else {
+      if ((typeof (node) === 'object') && (typeof (prevNode) === 'object' && prevNode)) {   // 
+
+        // console.log(node.wholeText, node.wholeText.length);
+        // console.log(prevNode.wholeText, prevNode.wholeText.length);
+        // console.dir(node);
+        // console.dir(prevNode);
+        if (filterout.indexOf(node.parentNode.parentNode.id) != -1){
+          // currentSpan = [node];
+          // textNodeSpans.push(currentSpan);
+          console.log(node.wholeText);
+        } else {
+        }
+        // if (node.wholeText.slice(-1) === ' '){
+        //   console.log("whitespace");
+        // }
+
+        // use of this highlighting.js lib conflicts with MathJax filter (custom and moodles)
+        // leading to 2 "copies" of formula string beeing extracted
+        
+        /** expected pattern: 
+         * 1   n
+         * 2   -
+         * 3   1
+         * 4   n-1 (often including whitespaces)
+         *
+         *  4 = original string, 1-3 = chopped up mathjax preview elements  */
+          
+        if (node.wholeText.length > 1 && prevNode.wholeText.length == 1){     // possible candidate
+          modstring = node.wholeText.trim();
+          //console.log("pre: "+node.wholeText);
+          if (modstring.slice(-1) === prevNode.wholeText){  // pattern found ?
+          //   console.log(node.wholeText);
+          // console.log("0:"+textNodes[index-1].wholeText, " -1:"+textNodes[index-2].wholeText);
+          // remove whitespaces and mathjaxstyle
+          } 
+        }
+        try {
+          if (prevNode.valueOf() === node.valueOf().slice(-1)) {
+            //console.log(node);
+          }
+        } catch (err) {
+          //console.log(err);
+        }
+
+      }
+      //console.log(typeof (node));
       currentSpan = [node];
       textNodeSpans.push(currentSpan);
     }
@@ -107,7 +157,7 @@ function replaceWith(node, replacements) {
  */
 export function removeAllHighlights(root) {
   const highlights = Array.from(root.querySelectorAll(HighlightingConfig.HL_TAG_NAME));
-  removeHighlights(/** @type {HighlightElement[]} */ (highlights));
+  removeHighlights(/** @type {HighlightElement[]} */(highlights));
 }
 
 /**
@@ -155,7 +205,7 @@ export function getHighlightsContainingNode(node) {
 
   while (el) {
     if (el.classList.contains(HighlightingConfig.HL_CLASS_NAME)) {
-      highlights.push(/** @type {HighlightElement} */ (el));
+      highlights.push(/** @type {HighlightElement} */(el));
     }
     el = el.parentElement;
   }
