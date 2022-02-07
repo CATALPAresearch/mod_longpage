@@ -85,6 +85,7 @@ import { debounce } from "lodash";
 import TableOfContents from "@/components/LongpageSidebar/TableOfContents";
 import Search from "@/components/LongpageSidebar/Search";
 import CourseRecommendation from "@/components/Generic/CourseRecommendations";
+import Quiz from "@/components/LongpageSidebar/Quiz";
 
 const LONGPAGE_SIDEBAR_ID = "longpage-sidebar";
 const LONGPAGE_SIDEBAR_TAB_CONTENT = "longpage-sidebar-tab-content";
@@ -142,6 +143,7 @@ export default {
     [SidebarTabKeys.TOC]: TableOfContents,
     [SidebarTabKeys.SEARCH]: Search,
     [SidebarTabKeys.COURSE_RECOMMENDATIONS]: CourseRecommendation,
+    [SidebarTabKeys.QUIZ]: Quiz,
   },
   data() {
     return {
@@ -173,6 +175,11 @@ export default {
           key: SidebarTabKeys.BOOKMARKS,
           id: "sidebar-tab-bookmarks",
           icon: ["fa", "fa-bookmark-o", "fa-fw"],
+        },
+        {
+          key: SidebarTabKeys.QUIZ,
+          id: "sidebar-tab-quiz",
+          icon: ["fa", "fa-question", "fa-fw"],
         },
         // {        // deactivated sidebar tab for now
         //   key: SidebarTabKeys.COURSE_RECOMMENDATIONS,

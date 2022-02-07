@@ -22,12 +22,14 @@ export const AnnotationType = Object.freeze({
     HIGHLIGHT: 0,
     POST: 1,
     BOOKMARK: 2,
+    QUIZ: 3
 });
 
 export const AnnotationTypeIcon = Object.freeze({
     [AnnotationType.BOOKMARK]: 'fa-bookmark-o',
     [AnnotationType.HIGHLIGHT]: 'fa-pencil',
     [AnnotationType.POST]: 'fa-comment-o',
+    [AnnotationType.QUIZ]: 'fa-question'
 });
 
 /**
@@ -83,7 +85,8 @@ export const SidebarTabKeys = Object.freeze({
     POSTS: 'posts',
     TOC: 'toc',
     SEARCH: 'search',
-    COURSE_RECOMMENDATIONS: 'course-recomm'
+    COURSE_RECOMMENDATIONS: 'course-recomm',
+    QUIZ: "quiz"
 });
 
 export const SidebarEvents = Object.freeze({

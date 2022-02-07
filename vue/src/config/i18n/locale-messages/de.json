@@ -138,6 +138,13 @@
       },
       "tableOfContents": {
         "heading": "Inhaltsverzeichnis"
+      },
+      "quiz": {
+        "heading": "Fragen",
+        "message": {
+          "noneCreated": "Es wurden noch keine Fragen erstellt.",
+          "showAll": "Alle zeigen"
+        }
       }
     },
     "util": {

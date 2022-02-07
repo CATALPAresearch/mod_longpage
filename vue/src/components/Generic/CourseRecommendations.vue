@@ -41,7 +41,7 @@ export default {
   data: () => {
     return {
       serverPath: "http://127.0.0.1:8080/course-recommender",
-      parantSelector: "#longpage-app",
+      parantSelector: "#longpage-main",
       courses: [],
       recommendations: [],
       blacklist: [
