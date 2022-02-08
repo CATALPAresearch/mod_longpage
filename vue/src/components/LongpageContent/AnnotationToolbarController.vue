@@ -139,8 +139,9 @@ export default {
       const selectorsInSelectors = await Promise.all(
         this.selectedRanges.map(this.getSelectors)
       );
+      //console.log(this.selectedRanges);
       this.cleanUpAnnotationText(selectorsInSelectors, this.selectedRanges[0]);
-      console.log(selectorsInSelectors, this.selectedRanges);
+      //console.log(selectorsInSelectors, this.selectedRanges);
       return new AnnotationTarget({
         selectors: selectorsInSelectors[0],
         styleClass,
@@ -154,12 +155,13 @@ export default {
     // hypothesis.js (for creating highlights and annotations) extracts all available text
     // example: ...\(n-1\)... -> annotation then contains ...n-1n-1...
     cleanUpAnnotationText(selectors, range) {
+      //console.log(document.getSelection().toString());
       let mathjaxcontents = [];
       let tempElement;
       let preAncestorStartContainer, preAncestorEndContainer;
       let walkingSiblings;
       let replacedExact = 0;
-      console.log(range);
+      //console.log(range);
       preAncestorStartContainer = range.startContainer; //.parentElement
       preAncestorEndContainer = range.endContainer;
       let i = 0;
@@ -199,15 +201,14 @@ export default {
       walkingSiblings = preAncestorStartContainer;
       i = 0;
 
-      console.dir(preAncestorStartContainer);
-      console.dir(preAncestorEndContainer);
+      //console.dir(preAncestorStartContainer);
+      //console.dir(preAncestorEndContainer);
 
       do {
         // nodeType 3 is a textnode
         if (walkingSiblings.nodeType != 3) {
           tempElement =
             walkingSiblings.getElementsByClassName("MathJax_Preview");
-          console.log(i);
 
           // do an extra check and reset if walkingSiblings didnt have an element with that class
           if (tempElement.length != 0) {
@@ -218,7 +219,7 @@ export default {
         if (walkingSiblings == preAncestorEndContainer) {
           break;
         }
-        console.log(walkingSiblings);
+        ////console.log(walkingSiblings);
         // nextElementSibling: ignores non-element nodes (text or comment nodes)
         //  text nodes dont have other typical element methods, like getElementsbyClassName
         // UPDATE: changed it back to nextSibling because sometimes preAncestorEndContainer is a text node
@@ -230,32 +231,42 @@ export default {
         tempElement = 0;
         i++;
         if (i > 50) {
-          console.log("emergency break");
+          //console.log("emergency break");
           break;
         }
         // end of tree
       } while (walkingSiblings.nextSibling != null);
 
       let patternfound = 0;
-      console.log(mathjaxcontents);
+      //console.log(mathjaxcontents);
+
       // we have collected mathjax elements, now we extract their text contents and look for their appearance in
       //  selectors[0][2].exact, which contains the default extracted strings from which we remove the double mathjax
 
       // mathjaxcontents is an array containing HTMLCollections which themselves are also arrays...or objects
-
-
-
       for (let i = 0; i < mathjaxcontents.length; i++) {
         for (let j = 0; j < mathjaxcontents[i].length; j++) {
+          selectors[0][0].endOffset += 10;
+          selectors[0][1].end += 10;
+          //console.log(mathjaxcontents[i][j].innerText + " " +
+                  mathjaxcontents[i][j].nextSibling.innerText);
+          if (
+            mathjaxcontents[i][j].nextSibling &&
+            mathjaxcontents[i][j].nextSibling.nodeName == "SCRIPT"
+          ) {
+          }
           if (mathjaxcontents[i][j].innerText.length > 1) {
             if (
               (patternfound =
-                selectors[0][2].exact.search(mathjaxcontents[i][j].innerText) !=
-                -1)
+                selectors[0][2].exact.indexOf(
+                  mathjaxcontents[i][j].innerText +
+                    mathjaxcontents[i][j].nextSibling.innerText
+                ) != -1)
             ) {
               selectors[0][2].exact = selectors[0][2].exact.replace(
-                mathjaxcontents[i][j].innerText,
-                ""
+                mathjaxcontents[i][j].innerText +
+                  mathjaxcontents[i][j].nextSibling.innerText,
+                mathjaxcontents[i][j].innerText // + this.fillerspace(mathjaxcontents[i][j].nextSibling.innerText.length)
               );
             }
 
@@ -263,26 +274,27 @@ export default {
           } else {
             if (
               (patternfound =
-                selectors[0][2].exact.search(mathjaxcontents[i][j].innerText) !=
-                -1)
+                selectors[0][2].exact.indexOf(
+                  mathjaxcontents[i][j].innerText +
+                    mathjaxcontents[i][j].nextSibling.innerText
+                ) != -1)
             ) {
               selectors[0][2].exact = selectors[0][2].exact.replace(
                 mathjaxcontents[i][j].innerText +
                   mathjaxcontents[i][j].innerText,
-                mathjaxcontents[i][j].innerText
+                mathjaxcontents[i][j].innerText  //+ this.fillerspace(mathjaxcontents[i][j].nextSibling.innerText.length)
               );
             }
           }
           if (patternfound != -1) {
-            console.log(mathjaxcontents[i][j].innerText.length);
-            selectors[0][2].exact += this.fillerspace(
-              mathjaxcontents[i][j].innerText.length
-            );
+            //console.log(mathjaxcontents[i][j].nextSibling.innerText.length);
+            // selectors[0][2].exact += this.fillerspace(
+            //   mathjaxcontents[i][j].nextSibling.innerText.length
+            // );
           }
           patternfound = 0;
         }
       }
-      console.log(selectors[0][2].exact);
     },
     fillerspace(size) {
       let fillerspace = " ";
@@ -290,7 +302,7 @@ export default {
       for (let i = 0; i < size; i++) {
         returnstring += fillerspace;
       }
-      console.log(returnstring.length);
+      //console.log(returnstring.length);
       return returnstring;
     },
     onClearSelection() {
