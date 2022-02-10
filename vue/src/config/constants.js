@@ -83,7 +83,6 @@ export const SidebarTabKeys = Object.freeze({
     POSTS: 'posts',
     TOC: 'toc',
     SEARCH: 'search',
-    COURSE_RECOMMENDATIONS: 'course-recomm'
 });
 
 export const SidebarEvents = Object.freeze({

@@ -3,14 +3,14 @@
 </template>
 
 <script>
-import {LONGPAGE_APP_CONTAINER_ID} from '@/config/constants';
+import { LONGPAGE_APP_CONTAINER_ID } from "@/config/constants";
 
 export default {
   name: "ReadingTime",
   props: {},
   data() {
     return {
-      parentSelector: "." + LONGPAGE_APP_CONTAINER_ID,
+      parentSelector: "#" + LONGPAGE_APP_CONTAINER_ID,
       language: "de",
       readingSpeedPerLanguage: {
         // 200 word per Minute https://de.wikipedia.org/wiki/Lesegeschwindigkeit
@@ -31,7 +31,7 @@ export default {
   methods: {
     calcH2: function () {
       let numberOfHeadings = $(this.parentSelector + " h2").length;
-      console.log(numberOfHeadings);
+      //console.log(numberOfHeadings);
       // add a dummy heading at the end.
       $(this.parentSelector).append(
         '<h2 style="display:inline; color:#fff; font-size:7;" class="dummy-heading">.</h2>'
@@ -75,6 +75,7 @@ export default {
 
     calcH3: function () {
       let numberOfHeadings = $(this.parentSelector + " h3").length;
+      //console.log(numberOfHeadings);
       // add a dummy heading at the end.
       $(this.parentSelector).append(
         '<h3 style="display:inline;color:#fff;" class="dummy-heading-3">ENDE</h3>'
@@ -110,7 +111,7 @@ export default {
 
     estimateTime: function (text, numImg) {
       if (text === "undefined" || text.length < 1) {
-        console.log("problem");
+        //console.log("problem");
         return;
       }
       let textlength = text.match(/([\s]+)/g).length;

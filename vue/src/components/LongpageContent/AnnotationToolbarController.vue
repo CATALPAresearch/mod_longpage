@@ -249,7 +249,7 @@ export default {
           selectors[0][0].endOffset += 10;
           selectors[0][1].end += 10;
           //console.log(mathjaxcontents[i][j].innerText + " " +
-                  mathjaxcontents[i][j].nextSibling.innerText);
+                  //mathjaxcontents[i][j].nextSibling.innerText);
           if (
             mathjaxcontents[i][j].nextSibling &&
             mathjaxcontents[i][j].nextSibling.nodeName == "SCRIPT"

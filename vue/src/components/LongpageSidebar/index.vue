@@ -44,7 +44,6 @@
         />
       </a>
     </div>
-    <course-recomm :style="'display:none'"></course-recomm>
   </div>
 </template>
 
@@ -84,7 +83,6 @@ import Posts from "@/components/LongpageSidebar/Posts";
 import { debounce } from "lodash";
 import TableOfContents from "@/components/LongpageSidebar/TableOfContents";
 import Search from "@/components/LongpageSidebar/Search";
-import CourseRecommendation from "@/components/Generic/CourseRecommendations";
 
 const LONGPAGE_SIDEBAR_ID = "longpage-sidebar";
 const LONGPAGE_SIDEBAR_TAB_CONTENT = "longpage-sidebar-tab-content";
@@ -141,7 +139,6 @@ export default {
     [SidebarTabKeys.POSTS]: Posts,
     [SidebarTabKeys.TOC]: TableOfContents,
     [SidebarTabKeys.SEARCH]: Search,
-    [SidebarTabKeys.COURSE_RECOMMENDATIONS]: CourseRecommendation,
   },
   data() {
     return {
