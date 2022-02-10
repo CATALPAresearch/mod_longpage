@@ -3,13 +3,15 @@
     <template #append-header> </template>
     <template #body> 
       <div id="question"></div>     
-      <div class="submitbtns" style="float: right; display: none;">
-        <input type="submit" value="Submit" class="mod_quiz-next-nav btn btn-primary">
-        </div>
     </template>
   </sidebar-tab>
 </template>
-
+<style>
+#longpage-main .filter_embedquestion-iframe
+{
+  height: 0 !important;
+}
+</style>
 <script>
 // This file is part of Moodle - http://moodle.org/
 //
@@ -51,60 +53,28 @@ export default {
   },
   mounted() 
   {
-    let longpageid = this.context.longpageid;
-    let questions = {};
-
     $(document).ready(function() 
     {
-      
-      ajax.call([
+      var observer = new IntersectionObserver(function(entries) 
       {
-        methodname: "mod_longpage_get_questions_by_page_id",
-        args: {
-          longpageid: longpageid
-        },
-        done: function (reads)
+        if(entries[0].isIntersecting === true)
         {
-          questions = reads["questions"].reduce(function(rv, x) {
-            (rv[x["tagname"]] = rv[x["tagname"]] || []).push(x);
-            return rv;
-          }, {});
+          $("#question").html("");
+          $(entries[0].target).clone().appendTo("#question"); 
+          return;
         }
-      }]); 
-      
+
+        $("#question").html("");
+      }, { threshold: [0.1] });
+
+      $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) {
+        observer.observe(el);
+      });
+     
+        
       $("#longpage-main").scroll(_.debounce(function()
       {
-        
-        function elementScrolled(elem)
-        {
-          var docViewTop = $(window).scrollTop();
-          var docViewBottom = docViewTop + $(window).height();
-          var elemTop = $(elem).offset().top;
-          return ((elemTop <= docViewBottom) && (elemTop >= docViewTop));
-        }
-
-        $("p,span,div,h1,h2,h3,h4,h5,h6","#longpage-content .wrapper").each(function(i, el)
-        {
-          if(elementScrolled(el) )
-          {
-            var id = $(el).attr("id");
-            if(id in questions)
-            {
-                var question = questions[id][0]
-                var html = question.html;
-                var tag = $("<div></div>");
-                $(tag).html(html);
-                $(tag).find("script").remove();
-                $(tag).find(".questionflag").remove();
-                $("#question").html($(tag).html());  
-                $("#question").next(".submitbtns").show();
-                return false;
-            }     
-          }
-          $("#question").html("");
-          $("#question").next(".submitbtns").hide();
-        });
-
+          //
       }, 1000));
     });
   }

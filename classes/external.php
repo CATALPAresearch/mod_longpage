@@ -1542,7 +1542,6 @@ class mod_longpage_external extends external_api {
                 'longpageid' => $longpageid
             )
         );
-        $warnings = array();
 
         // Request and permission validation.
         $page = $DB->get_record('longpage', array('id' => $params['longpageid']), '*', MUST_EXIST);
