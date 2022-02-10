@@ -36,14 +36,14 @@
 </template>
 
 <script>
-import { LONGPAGE_APP_CONTAINER_ID } from "@/config/constants";
+import { LONGPAGE_CONTENT_ID } from "@/config/constants";
 
 export default {
   name: "CourseRecommendation",
   data: () => {
     return {
       serverPath: "http://127.0.0.1:8080/course-recommender",
-      parantSelector: "#"+LONGPAGE_APP_CONTAINER_ID,
+      parantSelector: "#"+LONGPAGE_CONTENT_ID,
       courses: [],
       recommendations: [],
       blacklist: [

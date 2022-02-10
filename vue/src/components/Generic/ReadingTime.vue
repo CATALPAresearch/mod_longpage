@@ -3,14 +3,14 @@
 </template>
 
 <script>
-import { LONGPAGE_APP_CONTAINER_ID } from "@/config/constants";
+import { LONGPAGE_CONTENT_ID } from "@/config/constants";
 
 export default {
   name: "ReadingTime",
   props: {},
   data() {
     return {
-      parentSelector: "#" + LONGPAGE_APP_CONTAINER_ID,
+      parentSelector: "#" + LONGPAGE_CONTENT_ID,
       language: "de",
       readingSpeedPerLanguage: {
         // 200 word per Minute https://de.wikipedia.org/wiki/Lesegeschwindigkeit
