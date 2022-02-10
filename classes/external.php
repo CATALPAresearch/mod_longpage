@@ -32,11 +32,14 @@ use mod_longpage\local\post_recommendation\post_recommendation_calculation_task 
 use mod_longpage\local\thread_subscriptions\manage_thread_subscriptions_task as manage_thread_subscriptions_task;
 use mod_longpage\local\thread_subscriptions\post_action as post_action;
 
+
+
 require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
 require_once("$CFG->dirroot/course/externallib.php");
 require_once("$CFG->dirroot/user/externallib.php");
 require_once("$CFG->dirroot/mod/longpage/locallib.php");
+require_once("$CFG->dirroot/question/engine/lib.php");
 
 /**
  * Page external functions
@@ -1529,4 +1532,76 @@ class mod_longpage_external extends external_api {
             array('canmodannotations' => new external_value(PARAM_BOOL))
         ); 
     }
+
+    public static function get_questions_by_page_id($longpageid){
+        global $DB, $USER, $PAGE, $CFG;
+
+        $params = self::validate_parameters(
+            self::get_questions_by_page_id_parameters(),
+            array(
+                'longpageid' => $longpageid
+            )
+        );
+        $warnings = array();
+
+        // Request and permission validation.
+        $page = $DB->get_record('longpage', array('id' => $params['longpageid']), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
+
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+
+        
+        $params = $params ? $params : array();
+
+        $query = "SELECT it.id, t.name as tagname
+                    FROM {question} it INNER JOIN {tag_instance} tt ON it.id = tt.itemid INNER JOIN {tag} t on tt.tagid = t.id
+                   WHERE tt.itemtype=? AND t.name LIKE ? AND tt.component=? ORDER BY it.id";
+
+        $questions = $DB->get_records_sql($query, array('question', 'q:'.$cm->id.':%', 'core_question'));
+
+        $quba = question_engine::make_questions_usage_by_activity("core_question", $context);
+        $options = new question_display_options();
+        $quba->set_preferred_behaviour("manualgraded");
+
+        $res = array();
+        $i = 1;
+        foreach($questions as $id => $question)
+        {
+            $q = question_bank::load_question($question->id);
+            $entry = array();
+            $quba->add_question($q);
+            $quba->start_question($i);
+            $html = $quba->render_question($i, $options);
+            $entry["tagname"] = str_replace('q:'.$cm->id.':', "", $question->tagname);
+            $entry["html"] = $html;
+            $i++;
+            $res[] = $entry;
+        }
+
+        $return = array(
+            'questions' => $res
+        );
+        return $return;
+    }
+
+    public static function get_questions_by_page_id_parameters(){
+        return new external_function_parameters(
+            array(
+                'longpageid' => new external_value(PARAM_INT, 'page instance id')
+            )
+        );
+    }
+
+    public static function get_questions_by_page_id_returns(){
+        return new external_single_structure(
+            array(
+                "questions" =>  new external_multiple_structure(
+                    new external_single_structure(
+                    array(
+                        'tagname' => new external_value(PARAM_RAW),
+                        'html' => new external_value(PARAM_RAW),
+        )))));
+    }
+
 }

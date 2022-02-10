@@ -223,5 +223,13 @@ $functions = array(
         'capabilities'  => 'mod/longpage:view',
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
         'ajax'          => true
+    ),
+    'mod_longpage_get_questions_by_page_id' => array(
+        'classname'     => 'mod_longpage_external',
+        'methodname'    => 'get_questions_by_page_id',
+        'description'   => 'Get questions for page',
+        'type'          => 'read',
+        'capabilities'  => 'mod/longpage:view',
+        'ajax'          => true
     )
 );

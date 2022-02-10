@@ -35,72 +35,7 @@ import { AnnotationType } from "@/config/constants";
 import { GET } from "@/store/types";
 import { mapGetters } from "vuex";
 import SidebarTab from "@/components/LongpageSidebar/SidebarTab";
-
-$(document).ready(function() {
-  window.questions = null;
-  window.quizzes = null;
-  
-  $.post(window.location.origin + "/webservice/rest/server.php", 
-  {
-    wstoken: "279655fc72c378cbf120a1b6e68a0cf8", 
-    wsfunction: "mod_quiz_get_quizzes_by_courses",
-    moodlewsrestformat: "json",
-    courseids: [2]
-  }, function (data) {
-    window.quizzes = {};
-    data["quizzes"].forEach((el, index) => window.quizzes[el.intro] = el);
-  });
-
-  $.post(window.location.origin + "/webservice/rest/server.php", 
-  {
-    wstoken: "279655fc72c378cbf120a1b6e68a0cf8", 
-    wsfunction: "mod_quiz_get_attempt_data",
-    moodlewsrestformat: "json",
-    attemptid: 5,
-    page: 0
-  }, function (data) {
-    window.questions = {};
-    var quizid = data["attempt"]["quiz"];
-    if (!(quizid in  window.questions))
-    {
-      window.questions[quizid] = [];
-    }
-    data["questions"].forEach((el, index) => window.questions[quizid].push(el));
-  });
-
-  $("#longpage-main").scroll(_.debounce(function()
-  {
-    function elementScrolled(elem)
-    {
-      var docViewTop = $(window).scrollTop();
-      var docViewBottom = docViewTop + $(window).height();
-      var elemTop = $(elem).offset().top;
-      return ((elemTop <= docViewBottom) && (elemTop >= docViewTop));
-    }
-
-    $("#longpage-content .wrapper p").each(function(i, el)
-    {
-      if(elementScrolled(el) )
-      {
-        var id = $(el).attr("id");
-        if(id in window.quizzes)
-        {
-          var questions = window.questions[window.quizzes[id].id]
-          var html = questions[0].html;
-          var tag = $("<div></div>");
-          $(tag).html(html);
-          $(tag).find("script").remove();
-          $(tag).find(".questionflag").remove();
-          $("#question").html($(tag).html());  
-          $("#question .submitbtns").show();
-          return false;
-        }     
-      }
-      $("#question").html("");
-    });
-
-  }, 1000));
-});
+import ajax from "core/ajax";
 
 export default {
   name: "Quiz",
@@ -108,11 +43,71 @@ export default {
   computed: {
     ...mapGetters({
       highlights: GET.QUIZ,
+      context: GET.LONGPAGE_CONTEXT
     }),
     type() {
       return AnnotationType.QUIZ;
-    },
+    }
   },
+  mounted() 
+  {
+    let longpageid = this.context.longpageid;
+    let questions = {};
+
+    $(document).ready(function() 
+    {
+      
+      ajax.call([
+      {
+        methodname: "mod_longpage_get_questions_by_page_id",
+        args: {
+          longpageid: longpageid
+        },
+        done: function (reads)
+        {
+          questions = reads["questions"].reduce(function(rv, x) {
+            (rv[x["tagname"]] = rv[x["tagname"]] || []).push(x);
+            return rv;
+          }, {});
+        }
+      }]); 
+      
+      $("#longpage-main").scroll(_.debounce(function()
+      {
+        
+        function elementScrolled(elem)
+        {
+          var docViewTop = $(window).scrollTop();
+          var docViewBottom = docViewTop + $(window).height();
+          var elemTop = $(elem).offset().top;
+          return ((elemTop <= docViewBottom) && (elemTop >= docViewTop));
+        }
+
+        $("p,span,div,h1,h2,h3,h4,h5,h6","#longpage-content .wrapper").each(function(i, el)
+        {
+          if(elementScrolled(el) )
+          {
+            var id = $(el).attr("id");
+            if(id in questions)
+            {
+                var question = questions[id][0]
+                var html = question.html;
+                var tag = $("<div></div>");
+                $(tag).html(html);
+                $(tag).find("script").remove();
+                $(tag).find(".questionflag").remove();
+                $("#question").html($(tag).html());  
+                $("#question").next(".submitbtns").show();
+                return false;
+            }     
+          }
+          $("#question").html("");
+          $("#question").next(".submitbtns").hide();
+        });
+
+      }, 1000));
+    });
+  }
 };
 </script>
 
