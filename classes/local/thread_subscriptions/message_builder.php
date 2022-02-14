@@ -108,7 +108,8 @@ class message_builder {
     private static function shorten_content($content) {
         $returnval;
         if (strlen($content) >= 10) {
-            $returnval = substr($content, 0 ,7) + "...";
+            $returnval = substr($content, 0 ,7);
+            $returnval .= "...";
         } else {
             $returnval = $content;
         }
