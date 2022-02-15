@@ -231,5 +231,13 @@ $functions = array(
         'type'          => 'read',
         'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
+    ),
+    'mod_longpage_get_reading_comprehension' => array(
+        'classname'     => 'mod_longpage_external',
+        'methodname'    => 'get_reading_comprehension',
+        'description'   => 'Get reading comprehension data for page',
+        'type'          => 'read',
+        'capabilities'  => 'mod/longpage:view',
+        'ajax'          => true
     )
 );

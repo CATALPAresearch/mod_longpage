@@ -53,6 +53,70 @@ export default {
   },
   mounted() 
   {
+    let _this = this;
+
+    function waitForElm(selector) {
+        return new Promise(resolve => {
+            if (document.querySelector(selector)) {
+                return resolve(document.querySelector(selector));
+            }
+
+            const observer = new MutationObserver(mutations => {
+                if (document.querySelector(selector)) {
+                    resolve(document.querySelector(selector));
+                    observer.disconnect();
+                }
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    }
+
+    waitForElm('.reading-progress').then((elm) => {
+      ajax.call([
+        {
+          methodname: "mod_longpage_get_reading_comprehension",
+          args: {
+            longpageid: _this.context.longpageid,
+          },
+          done: function (reads) {
+            try {
+              let data = JSON.parse(reads.response);
+
+              for (const [id, value] of Object.entries(data)) {
+                var idFixed = id.replace("/", "\\/");
+                if ($("#" + idFixed)) {
+                  $("#longpage-content #" + idFixed).parents(".wrapper").prev().prepend(
+                    $("<span></span>")
+                      .attr(
+                        "title",
+                        "Das geschätzte Leseverständnis beträgt " +
+                          100*value.toFixed(2) +
+                          "%"
+                      )
+                      .addClass(
+                        "reading-progress progress-" +
+                          Math.round(value) * 5
+                      ).css("background-color", "green").css("opacity", value)
+                  );
+                } else {
+                  console.log("Section not found", id);
+                }
+              }
+            } catch (e) {
+              console.log(e);
+            }
+          },
+          fail: function (e) {
+            console.error("fail", e);
+          },
+        },
+      ]);
+    });
+
     $(document).ready(function() 
     {
       var observer = new IntersectionObserver(function(entries) 
@@ -67,7 +131,9 @@ export default {
         $("#question").html("");
       }, { threshold: [0.1] });
 
-      $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) {
+      $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) 
+      {
+        $(el).data("paragraph", $(el).parent().prev().attr("id"))
         observer.observe(el);
       });
      

@@ -26,6 +26,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_question\statistics\questions\calculator;
+use filter_embedquestion\embed_id;
+use filter_embedquestion\utils;
 use mod_longpage\local\constants\annotation_type as annotation_type;
 use mod_longpage\local\constants\selector as selector;
 use mod_longpage\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
@@ -1534,7 +1537,7 @@ class mod_longpage_external extends external_api {
     }
 
     public static function get_questions_by_page_id($longpageid){
-        global $DB, $USER, $PAGE, $CFG;
+        global $DB;
 
         $params = self::validate_parameters(
             self::get_questions_by_page_id_parameters(),
@@ -1549,9 +1552,6 @@ class mod_longpage_external extends external_api {
 
         $context = context_module::instance($cm->id);
         self::validate_context($context);
-
-        
-        $params = $params ? $params : array();
 
         $query = "SELECT it.id, t.name as tagname
                     FROM {question} it INNER JOIN {tag_instance} tt ON it.id = tt.itemid INNER JOIN {tag} t on tt.tagid = t.id
@@ -1601,6 +1601,76 @@ class mod_longpage_external extends external_api {
                         'tagname' => new external_value(PARAM_RAW),
                         'html' => new external_value(PARAM_RAW),
         )))));
+    }
+
+
+    public static function get_reading_comprehension($longpageid){
+        global $DB, $USER;
+
+        $params = self::validate_parameters(
+            self::get_questions_by_page_id_parameters(),
+            array(
+                'longpageid' => $longpageid
+            )
+        );
+
+        // Request and permission validation.
+        $page = $DB->get_record('longpage', array('id' => $params['longpageid']), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
+
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+
+        $options = array('noclean' => true);
+        list($page->content, $page->contentformat) = external_format_text(
+            $page->content,
+            $page->contentformat,
+            $context->id,
+            'mod_longpage',
+            'content',
+            $page->revision,
+            $options
+        );
+        
+        $context = \context_course::instance($course->id);
+        $result = array();
+
+        preg_match_all('/<iframe[\S\s]+class=\"filter_embedquestion-iframe\"[\S\s]+id=\"(?<catid>\w+)\/(?<qid>\w+)\"/iU', $page->content, $matches);
+        for ($i=0; $i<count($matches[1]); $i++) {
+            $embed = new embed_id($matches["catid"][$i], $matches["qid"][$i]);
+            $category = utils::get_category_by_idnumber($context, $embed->categoryidnumber);
+            $question = utils::get_question_by_idnumber(intval($category->id), $embed->questionidnumber);
+            $qubaids = $DB->get_fieldset_sql("SELECT DISTINCT questionusageid FROM {question_attempts} qa 
+                                                LEFT JOIN {question_attempt_steps} qas 
+                                                ON qas.questionattemptid = qa.id
+                                                WHERE qas.userid = ? AND qas.state <> 'todo' and qa.questionid = ?", 
+                                        array($USER->id, $question->id));
+            $calc = new calculator([1 => $question]);
+            $stats = $calc->calculate(new qubaid_list($qubaids));
+            
+            $result[strval($embed)] = $stats->questionstats[1]->markaverage;
+        }
+        
+
+        $return = array(
+            'response' => json_encode($result)
+        );
+        return $return;
+
+    }
+
+    public static function get_reading_comprehension_parameters(){
+        return new external_function_parameters(
+            array(
+                'longpageid' => new external_value(PARAM_INT, 'page instance id')
+            )
+        );
+    }
+
+    public static function get_reading_comprehension_returns(){
+        return new external_single_structure(
+            array(
+                "response" =>  new external_value(PARAM_RAW)));
     }
 
 }
