@@ -106,5 +106,6 @@ export const SAVE_ACTIONS = [
     {key: 'publish', iconClasses: ['fa-users'], accessClass: ['']},
     {key: 'publishAnonymously', iconClasses: ['fa-user-secret'], accessClass: ['']},
     {key: 'save', iconClasses: ['fa-lock']},
-    {key: 'saveDisabled', iconClasses: ['fa-lock'], accessClass: ['disabled']}
+    {key: 'saveDisabled', iconClasses: ['fa-lock'], accessClass: ['disabled']}      // added 'accessClass', sole purpose is to add 
+                                                                                        //a disabled button in place of 'save' for user experience
 ];
