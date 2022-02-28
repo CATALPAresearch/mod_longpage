@@ -182,11 +182,11 @@ export default {
     ...mapGetters([GET.USER]),
     dropdownMenuItems() {
       const items = [];
-      // items.push({           //diagnostic: prints post to console
-      //       iconClasses: ["fa", "fa-trash", "fa-fw"],
-      //       handler: this.info,
-      //       text: "trashinfo",
-      //     });
+      items.push({           //diagnostic: prints post to console
+            iconClasses: ["fa", "fa-trash", "fa-fw"],
+            handler: this.info,
+            text: "trashinfo",
+          });
       if (this.post.id !== this.thread.root.id) {
         if (this.thread.subscribedToByUser) {
           items.push({
@@ -309,6 +309,7 @@ export default {
     },
     info() {
       console.log(this.post);
+      console.log(this.thread);
     },
     censorPost() {
       let postUpdate = cloneDeep(this.post);

@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="show"
-    class="text-right"
-  >
+  <div v-if="show" class="text-right">
     <post-form-input
       v-model="postUpdate.content"
       @cancel="cancel"
@@ -14,44 +11,42 @@
       @click="cancel"
     >
       <i class="icon fa fa-fw fa-times m-0" />
-      {{ $t('post.form.action.cancel') }}
+      {{ $t("post.form.action.cancel") }}
     </button>
-    <div
-      class="btn-group ml-2 my-2"
-      role="group"
-    >
+    <div class="btn-group ml-2 my-2" role="group">
       <button
         type="button"
         class="btn btn-primary btn-sm"
         @click="createOrUpdatePost"
       >
-        <i
-          class="icon fa fa-fw m-0"
-          :class="selectedSaveAction.iconClasses"
-        />
+        <i class="icon fa fa-fw m-0" :class="selectedSaveAction.iconClasses" />
         {{ $t(`post.form.action.${selectedSaveAction.key}`) }}
       </button>
       <button
         type="button"
-        class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split"
+        class="
+          btn btn-outline-primary btn-sm
+          dropdown-toggle dropdown-toggle-split
+        "
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <span class="sr-only">{{ $t('generic.toggleDropdown') }}</span>
+        <span class="sr-only">{{ $t("generic.toggleDropdown") }}</span>
       </button>
       <div class="dropdown-menu">
         <a
           v-for="action in saveActions"
           :key="action.key"
           class="dropdown-item"
+          :class="action.accessClass"
           href="javascript:void(0)"
-          @click="selectedSaveAction = action; createOrUpdatePost()"
+          @click="
+            selectedSaveAction = action;
+            createOrUpdatePost();
+          "
         >
-          <i
-            class="icon fa fa-fw"
-            :class="action.iconClasses"
-          />
+          <i class="icon fa fa-fw" :class="action.iconClasses" />
           {{ $t(`post.form.action.${action.key}`) }}
         </a>
       </div>
@@ -80,23 +75,23 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import {ACT, GET, MUTATE} from '@/store/types';
-import {mapActions, mapGetters, mapMutations} from 'vuex';
-import {cloneDeep} from 'lodash';
-import {Post} from '@/types/post';
-import PostFormInput from '@/components/LongpageSidebar/Posts/Thread/PostForm/PostFormInput';
-import {SAVE_ACTIONS} from '@/config/constants';
-import {Thread} from '@/types/thread';
+import { ACT, GET, MUTATE } from "@/store/types";
+import { mapActions, mapGetters, mapMutations } from "vuex";
+import { cloneDeep } from "lodash";
+import { Post } from "@/types/post";
+import PostFormInput from "@/components/LongpageSidebar/Posts/Thread/PostForm/PostFormInput";
+import { SAVE_ACTIONS } from "@/config/constants";
+import { Thread } from "@/types/thread";
 
 export default {
-  name: 'PostForm',
-  components: {PostFormInput},
+  name: "PostForm",
+  components: { PostFormInput },
   props: {
-    show: {type: Boolean, default: false},
-    post: {type: Post, required: true},
-    thread: {type: Thread, required: true},
+    show: { type: Boolean, default: false },
+    post: { type: Post, required: true },
+    thread: { type: Thread, required: true },
   },
-  emits: ['update:show'],
+  emits: ["update:show"],
   data() {
     return {
       postUpdate: null,
@@ -107,8 +102,18 @@ export default {
     ...mapGetters([GET.ANNOTATION]),
     saveActions() {
       return SAVE_ACTIONS.filter(
-          ({key}) => key !== 'save' || this.post === this.thread.root && (!this.post.created || !this.post.isPublic)
-      );
+        ({ key }) =>
+        {
+        if (key === "save"){
+          if (this.post === this.thread.root && this.thread.replyCount == 0) return true;
+          else return false;
+        }
+        if (key === "saveDisabled") {
+          if (this.post === this.thread.root && this.thread.replyCount > 0) return true;
+         else return false;
+        }
+        return true;
+        });
     },
     selectedSaveAction: {
       get() {
@@ -117,10 +122,13 @@ export default {
         return this.saveActions[2];
       },
       set(action) {
-        this.postUpdate.anonymous = action.key === 'publishAnonymously';
-        this.postUpdate.isPublic = action.key !== 'save';
+        this.postUpdate.anonymous = action.key === "publishAnonymously";
+        this.postUpdate.isPublic = action.key !== "save";
         this.selectedSaveActionInternal = action;
-      }
+      },
+    },
+    savingDisabled() {
+      return this.thread.replyCount > 0 ? true : false;
     },
   },
   mounted() {
@@ -128,11 +136,7 @@ export default {
     this.postUpdate.isPublic = this.thread.isPublic;
   },
   methods: {
-    ...mapActions([
-      ACT.CREATE_ANNOTATION,
-      ACT.CREATE_POST,
-      ACT.UPDATE_POST,
-    ]),
+    ...mapActions([ACT.CREATE_ANNOTATION, ACT.CREATE_POST, ACT.UPDATE_POST]),
     ...mapMutations([
       MUTATE.REMOVE_ANNOTATIONS,
       MUTATE.REMOVE_POSTS_FROM_THREAD,
@@ -141,14 +145,19 @@ export default {
     cancel() {
       if (!this.thread.created) {
         this[MUTATE.REMOVE_THREADS]([this.thread]);
-        this[MUTATE.REMOVE_ANNOTATIONS]([this[GET.ANNOTATION](this.thread.annotationId)]);
+        this[MUTATE.REMOVE_ANNOTATIONS]([
+          this[GET.ANNOTATION](this.thread.annotationId),
+        ]);
       } else if (!this.post.created) {
-        this[MUTATE.REMOVE_POSTS_FROM_THREAD]({threadId: this.thread.id, posts: [this.post]});
+        this[MUTATE.REMOVE_POSTS_FROM_THREAD]({
+          threadId: this.thread.id,
+          posts: [this.post],
+        });
       }
       this.closeForm();
     },
     closeForm() {
-      this.$emit('update:show');
+      this.$emit("update:show");
     },
     async createOrUpdatePost() {
       if (!this.postUpdate.content) return;
@@ -157,6 +166,6 @@ export default {
       else this[ACT.CREATE_POST](this.postUpdate);
       this.closeForm();
     },
-  }
+  },
 };
 </script>
