@@ -36,6 +36,7 @@ import {
   ArrowDirection,
   LONGPAGE_APP_ID,
   LONGPAGE_CONTENT_ID,
+  LONGPAGE_MAIN_ID,
   SidebarTabKeys,
 } from "@/config/constants";
 import { AnnotationTarget } from "@/types/annotation-target";
@@ -46,6 +47,8 @@ import { describe } from "@/lib/annotation/hypothesis/anchoring/html"; // Intere
 import { Anchoring } from "@/lib/annotation/anchoring"; // Interesting for architecture
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import { setHighlightsVisible } from "@/lib/annotation/highlighting";
+import { throttle } from "lodash";
+import * as rangeUtil from "@/lib/annotation/hypothesis/range-util";
 
 export default {
   name: "AnnotationToolbarController",
@@ -104,6 +107,33 @@ export default {
       this.anchoring = new Anchoring(this.targetRoot, this.$store);
       setHighlightsVisible(document.getElementById(LONGPAGE_APP_ID), true);
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
+
+      // this part adds dynamic positioning to the AnnotationToolbar:
+      //  sticks the toolbar to the selected text when scrolling
+      //  rangeUtil is part of hypothesis.js lib, used to position the Toolbar when a selection is made
+      document.getElementById(LONGPAGE_MAIN_ID).addEventListener(
+        "scroll",
+        throttle(
+          () => {
+            if (this.annotationToolbarPopoverProps.visible == true) {
+              const selection = /** @type {Selection} */ (
+                document.getSelection()
+              );
+              const isBackwards = rangeUtil.isSelectionBackwards(selection);
+              const focusRect = rangeUtil.selectionFocusRect(selection);
+
+              this.setPositionProps(
+                this.annotationToolbarPopoverPositioner.calculatePositionProps(
+                  focusRect,
+                  isBackwards
+                )
+              );
+            }
+          },
+          100,                    // throttled the calling frequency to 100ms, can be adjusted further for better UX
+          { leading: false }
+        )
+      );
     });
   },
   beforeUnmount() {
@@ -153,7 +183,7 @@ export default {
     // workaround method to clean up double Mathjax elements
     // why? Mathjax filter creates 2 elements: span and script element
     // hypothesis.js (for creating highlights and annotations) extracts all available text
-    // example: ...\(n-1\)... -> annotation then contains ...n-1n-1...
+    // example: (in html)...\(n-1\)... -> annotation then contains ...n-1n-1...
     cleanUpAnnotationText(selectors, range) {
       //console.log(document.getSelection().toString());
       let mathjaxcontents = [];
@@ -249,7 +279,7 @@ export default {
           selectors[0][0].endOffset += 10;
           selectors[0][1].end += 10;
           //console.log(mathjaxcontents[i][j].innerText + " " +
-                  //mathjaxcontents[i][j].nextSibling.innerText);
+          //mathjaxcontents[i][j].nextSibling.innerText);
           if (
             mathjaxcontents[i][j].nextSibling &&
             mathjaxcontents[i][j].nextSibling.nodeName == "SCRIPT"
@@ -282,7 +312,7 @@ export default {
               selectors[0][2].exact = selectors[0][2].exact.replace(
                 mathjaxcontents[i][j].innerText +
                   mathjaxcontents[i][j].innerText,
-                mathjaxcontents[i][j].innerText  //+ this.fillerspace(mathjaxcontents[i][j].nextSibling.innerText.length)
+                mathjaxcontents[i][j].innerText //+ this.fillerspace(mathjaxcontents[i][j].nextSibling.innerText.length)
               );
             }
           }

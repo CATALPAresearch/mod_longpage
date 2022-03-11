@@ -1,12 +1,11 @@
 <template>
   <div>
-    <annotation-toolbar-controller />
     <div v-if="!pageReady" class="row no-gutters vh-50">
       <div class="spinner-border m-auto" role="status">
         <span class="sr-only" />
       </div>
     </div>
-    <div v-show="pageReady" id="longpage-app" class="row no-gutters w-100">
+    <div v-show="pageReady" id="longpage-app" class="row no-gutters w-100" tabindex="0">
       <div
         id="longpage-main"
         ref="mainRef"
@@ -21,6 +20,8 @@
         "
       >
         <!-- removed from longpage-pain: vh-100-wo-nav -->
+            <annotation-toolbar-controller />
+
         <div
           id="longpage-content"
           ref="contentRef"
