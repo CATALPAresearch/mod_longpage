@@ -5,6 +5,11 @@
 <script>
 import ajax from "core/ajax";
 
+
+/**
+ * This Module visualizes the collective reading progress on the course/longpage text
+ * Every user can see how many times a text section has been read by other users 
+ */
 export default {
   name: "ReadingProgress",
   props: ["context"],
