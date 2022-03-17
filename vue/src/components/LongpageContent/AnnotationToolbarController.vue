@@ -38,6 +38,7 @@ import {
   LONGPAGE_CONTENT_ID,
   LONGPAGE_MAIN_ID,
   SidebarTabKeys,
+  LONGPAGE_APP_CONTAINER_ID,
 } from "@/config/constants";
 import { AnnotationTarget } from "@/types/annotation-target";
 import AnnotationToolbar from "./AnnotationToolbar.vue";
@@ -96,9 +97,19 @@ export default {
         )
       );
     },
+    AnnotationToolbarTopLimitReached() {
+      if (this.annotationToolbarPopoverProps.top != 0 && this.annotationToolbarPopoverProps.top < this.offsetTopLimit){
+        return true;
+      } else return false;
+    },
+    offsetTopLimit(){
+      return document.getElementById(LONGPAGE_APP_CONTAINER_ID).offsetParent.offsetTop;
+
+    },
   },
   mounted() {
     this.$nextTick(() => {
+      console.dir(document.getElementById("longpage-app-container"));
       this.targetRoot = document.getElementById(LONGPAGE_CONTENT_ID);
       this.selectionListener.subscribe(
         this.onSelection.bind(this),
@@ -121,7 +132,7 @@ export default {
               );
               const isBackwards = rangeUtil.isSelectionBackwards(selection);
               const focusRect = rangeUtil.selectionFocusRect(selection);
-
+              console.log(this.annotationToolbarPopoverProps.left, this.annotationToolbarPopoverProps.top)
               this.setPositionProps(
                 this.annotationToolbarPopoverPositioner.calculatePositionProps(
                   focusRect,
@@ -359,6 +370,7 @@ export default {
     setPositionProps({ arrowDirection, left, top, zIndex }) {
       this.annotationToolbarPopoverProps.arrowDirection = arrowDirection;
       this.annotationToolbarPopoverProps.left = left;
+      if (top < this.offsetTopLimit) top = this.offsetTopLimit;
       this.annotationToolbarPopoverProps.top = top;
       this.annotationToolbarPopoverProps.zIndex = zIndex;
     },
