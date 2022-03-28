@@ -145,9 +145,6 @@ export default {
       this.selectedHighlights = [];
     },
     scrollTextElementIntoView(id) {
-      console.log(id);
-      console.log(document.getElementsByTagName(HighlightingConfig.HL_TAG_NAME));
-
       scrollTextElementIntoView(getHighlightByAnnotationId(id));
     },
   },

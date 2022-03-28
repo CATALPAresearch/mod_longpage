@@ -95,6 +95,7 @@ export default {
             }
 
             const lastEntry = entries[entries.length - 1];
+            console.log(lastEntry.boundingClientRect.y, root.getBoundingClientRect().y)
             if (lastEntry.boundingClientRect.y > root.getBoundingClientRect().y) {
               this.activeTOCEntryIndex = this.tocEntries.findIndex(e => e.hId === lastEntry.target.id) - 1;
             }
