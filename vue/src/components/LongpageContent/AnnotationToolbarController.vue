@@ -78,6 +78,7 @@ export default {
       selectionListener: new SelectionListener(),
       selectedRanges: [],
       targetRoot: null,
+      contentContainer: null,     // used in constriction of annotationtoolbar
     };
   },
   computed: {
@@ -97,20 +98,11 @@ export default {
         )
       );
     },
-    AnnotationToolbarTopLimitReached() {
-      if (this.annotationToolbarPopoverProps.top != 0 && this.annotationToolbarPopoverProps.top < this.offsetTopLimit){
-        return true;
-      } else return false;
-    },
-    offsetTopLimit(){
-      return document.getElementById(LONGPAGE_APP_CONTAINER_ID).offsetParent.offsetTop;
-
-    },
   },
   mounted() {
     this.$nextTick(() => {
-      console.dir(document.getElementById("longpage-app-container"));
       this.targetRoot = document.getElementById(LONGPAGE_CONTENT_ID);
+      this.contentContainer = document.getElementById(LONGPAGE_MAIN_ID);
       this.selectionListener.subscribe(
         this.onSelection.bind(this),
         this.onClearSelection.bind(this)
@@ -132,7 +124,6 @@ export default {
               );
               const isBackwards = rangeUtil.isSelectionBackwards(selection);
               const focusRect = rangeUtil.selectionFocusRect(selection);
-              console.log(this.annotationToolbarPopoverProps.left, this.annotationToolbarPopoverProps.top)
               this.setPositionProps(
                 this.annotationToolbarPopoverPositioner.calculatePositionProps(
                   focusRect,
@@ -141,7 +132,7 @@ export default {
               );
             }
           },
-          100,                    // throttled the calling frequency to 100ms, can be adjusted further for better UX
+          100, // throttled the calling frequency to 100ms, can be adjusted further for better UX
           { leading: false }
         )
       );
@@ -180,9 +171,7 @@ export default {
       const selectorsInSelectors = await Promise.all(
         this.selectedRanges.map(this.getSelectors)
       );
-      //console.log(this.selectedRanges);
       this.cleanUpAnnotationText(selectorsInSelectors, this.selectedRanges[0]);
-      //console.log(selectorsInSelectors, this.selectedRanges);
       return new AnnotationTarget({
         selectors: selectorsInSelectors[0],
         styleClass,
@@ -193,7 +182,7 @@ export default {
     },
     // workaround method to clean up double Mathjax elements
     // why? Mathjax filter creates 2 elements: span and script element
-    // hypothesis.js (for creating highlights and annotations) extracts all available text
+    // hypothesis.js (for creating highlights and annotations) extracts all available text, creating duplicated text in annotation
     // example: (in html)...\(n-1\)... -> annotation then contains ...n-1n-1...
     cleanUpAnnotationText(selectors, range) {
       //console.log(document.getSelection().toString());
@@ -367,10 +356,22 @@ export default {
       );
       this.annotationToolbarPopoverProps.visible = true;
     },
+    /**
+     * Since AnnotationToolbar now stays with the selected text when scrolling,
+     * we need these two functions to constrict AnnotationToolbar to the boundaries of the content window
+     */
+    offsetTopLimit() {
+      let top = this.contentContainer.getBoundingClientRect().top;
+      return top > 50 ? top : 50;             // 50 is the height of the moodle navbar
+    },
+    offsetBottomLimit() {
+      return this.contentContainer.getBoundingClientRect().bottom - 37;   // 37 is the height of the AnnotationToolbar
+    },
     setPositionProps({ arrowDirection, left, top, zIndex }) {
       this.annotationToolbarPopoverProps.arrowDirection = arrowDirection;
       this.annotationToolbarPopoverProps.left = left;
-      if (top < this.offsetTopLimit) top = this.offsetTopLimit;
+      if (top < this.offsetTopLimit()) top = this.offsetTopLimit();
+      if (top > this.offsetBottomLimit()) top = this.offsetBottomLimit();
       this.annotationToolbarPopoverProps.top = top;
       this.annotationToolbarPopoverProps.zIndex = zIndex;
     },
