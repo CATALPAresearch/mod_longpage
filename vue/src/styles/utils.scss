@@ -28,4 +28,5 @@
 
 .vh-100-wo-nav {
   height: calc(100vh - #{$moodle-navbar-height});
+  //height: 100%;
 }

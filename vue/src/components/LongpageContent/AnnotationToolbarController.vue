@@ -276,8 +276,8 @@ export default {
       // mathjaxcontents is an array containing HTMLCollections which themselves are also arrays...or objects
       for (let i = 0; i < mathjaxcontents.length; i++) {
         for (let j = 0; j < mathjaxcontents[i].length; j++) {
-          selectors[0][0].endOffset += 10;
-          selectors[0][1].end += 10;
+          //selectors[0][0].endOffset += 10;
+          //selectors[0][1].end += 10;
           //console.log(mathjaxcontents[i][j].innerText + " " +
           //mathjaxcontents[i][j].nextSibling.innerText);
           if (

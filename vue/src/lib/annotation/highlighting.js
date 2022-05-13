@@ -43,6 +43,7 @@ export function highlightRange(normedRange, cssClass) {
   // Find text nodes within the range to highlight.
   const textNodes = normedRange.textNodes();
 
+
   // Group text nodes into spans of adjacent nodes. If a group of text nodes are
   // adjacent, we only need to create one highlight element for the group.
   let textNodeSpans = [];
