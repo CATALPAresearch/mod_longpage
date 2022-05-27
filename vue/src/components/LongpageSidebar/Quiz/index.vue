@@ -1,22 +1,32 @@
 <template>
-  <sidebar-tab :title="$t('sidebar.tabs.quiz.heading')">
-    <template #append-header> </template>
-    <template #body> 
-      <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
-        <ol class="carousel-indicators">
-          <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-          <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-          <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-        </ol>
-        <div id="question" class="carousel-inner"></div>     
-        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="sr-only">Next</span>
-        </a>
+  <sidebar-tab>
+  <template #body> 
+    <div class="row p-3 bg-white">
+      <h3
+          class="m-0 tab-title"
+        >
+          {{$t('sidebar.tabs.quiz.heading')}}
+        </h3>
+      <div class="col-auto px-0">
+        <i class="fa fa-dashboard fa-fw fa-2x" />
+        <a href="javascript:void(0)" id="nextQuestion"><i class="fa fa-arrow-down fa-fw fa-2x" /></a>
+        <a href="javascript:void(0)" id="prevQuestion"><i class="fa fa-arrow-up fa-fw fa-2x" /></a>  
+      </div>
+    <hr class="my-0 mx-3">
+    </div>
+        <div id="quiz-placeholder">Zu diesem Abschnitt gibt es keine Fragen.</div>
+        <div id="carousel" class="carousel slide" data-interval="false">
+          <ol id="carousel-indicators" class="carousel-indicators">
+          </ol>
+          <div id="question" class="carousel-inner"></div>     
+          <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">&lt;-</span>
+          </a>
+          <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">-&gt;</span>
+          </a>
     </div>
     </template>
   </sidebar-tab>
@@ -27,9 +37,20 @@
   height: 0 !important;
 }
 
+#carousel
+{
+  display: none;
+}
+
 #question
 {
-  height: 700px;
+  min-height: 400px;
+  text-align: center;
+}
+
+.carousel-indicators li
+{
+  background-color: #ccc;
 }
 
 .carousel-control-prev, .carousel-control-next 
@@ -37,6 +58,12 @@
   width: 15px;
   filter: invert(100%);
 }
+
+.carousel-control-prev:focus, .carousel-control-next:focus
+{
+  box-shadow: none;
+}
+
 .carousel-item
 {
   padding-left: 15px;
@@ -181,20 +208,31 @@ export default {
           var idFixed = "#" + entry.target.id.replace("/", "\\/");
           if(entry.isIntersecting === true)
           {
-            var cl = "carousel-item";
-            if(i == 0)
-            {
-              cl += " active"
-            }
-            var div = $(`<div class="${cl}"></div>`);
+            var div = $(`<div class="carousel-item ${i == 0 ? "active" : ""}"></div>`);
             $($("#longpage-main " + idFixed)[0]).clone().appendTo(div);
             $(div).appendTo("#question");
+            div = $(`<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`);
+            $(div).appendTo("#carousel-indicators");
+            $("#longpage-main iframe").removeClass("last-visible");
+            $("#longpage-main " + idFixed).addClass("last-visible");
           }
           else
           {
             $("#question " + idFixed).parent().remove();
           }
           
+        }
+
+        if($("#question").children().length > 0)
+        {
+          $("#quiz-placeholder").hide();
+          $("#carousel").show();
+        }
+        else
+        {
+          $("#carousel").hide();
+          $("#quiz-placeholder").show();
+          $("#carousel-indicators").children().remove();
         }
     
       }, { threshold: [0.1] });
@@ -217,6 +255,11 @@ export default {
       {
         readfun();
         $(".filter_embedquestion-iframe").contents().find(".que .outcome").hide();
+      });
+
+      $("#nextQuestion").click(function()
+      {
+        $("#longpage-main").animate({ scrollTop:$("#longpage-main .filter_embedquestion-iframe:not(.last-visible):nth(0)").offset().top}, 'slow');
       });
     });
   }
