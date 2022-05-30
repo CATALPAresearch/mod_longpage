@@ -86,7 +86,8 @@
         "highlights": "Markierungen ein-/ausblenden",
         "posts": "Anmerkungen ein-/ausblenden",
         "toc": "Inhaltsverzeichnis ein-/ausblenden",
-        "search": "Suche ein-/ausblenden"
+        "search": "Suche ein-/ausblenden",
+        "quiz": "Leseverständnis ein-/ausblenden"
       }
     },
     "tabs": {

@@ -1,20 +1,25 @@
 <template>
   <sidebar-tab>
   <template #body> 
-    <div class="row p-3 bg-white">
+    <div class="row pr-3">
       <h3
-          class="m-0 tab-title" style="width: 70%"
+          class="col m-0 tab-title" style="width: 70%"
         >
           {{$t('sidebar.tabs.quiz.heading')}}
         </h3>
       <div class="col-auto px-0">
         <p id="total-reading-comprehension" title="Ihr geschätztes Leseverständnis für die ganze Seite" style="display: inline;"></p>
-        <a href="javascript:void(0)" id="nextQuestion" title="Nächste Frage"><i class="fa fa-arrow-down fa-fw fa-2x" /></a>
-        <a href="javascript:void(0)" id="prevQuestion" title="Vorherige Frage"><i class="fa fa-arrow-up fa-fw fa-2x" /></a>  
       </div>
-    <hr class="my-0 mx-3">
-    </div>
-        <div id="quiz-placeholder">Zu diesem Abschnitt gibt es keine Fragen.</div>
+      <div class="col-auto px-0">
+        <a href="javascript:void(0)" id="nextQuestion" title="Nächste Frage"><i class="fa fa-arrow-down fa-fw fa-2x" /></a>
+      </div>
+      <div class="col-auto px-0">
+        <a href="javascript:void(0)" id="prevQuestion" title="Vorherige Frage"><i class="fa fa-arrow-up fa-fw fa-2x" /></a> 
+      </div>
+    </div> 
+    <hr class="my-3">
+    
+        <p id="quiz-placeholder" class="p-3">Zu diesem Abschnitt gibt es keine Fragen.</p>
         <div id="carousel" class="carousel slide" data-interval="false">
           <ol id="carousel-indicators" class="carousel-indicators">
           </ol>
@@ -68,6 +73,12 @@
 {
   padding-left: 15px;
   padding-right: 15px;
+}
+
+.reading-comprehension
+{
+  background-color: green !important;
+  cursor: pointer;
 }
 
 </style>
@@ -185,8 +196,7 @@ export default {
                       $(progress).attr("title").substr(0, $(progress).attr("title").indexOf("gelesen")+7) + ".\nIhr geschätztes Leseverständnis beträgt " +
                         (100*value).toFixed(2) +
                         "%."
-                    )
-                    .css("background-color", "green").css("opacity", value);
+                    ).css("opacity", value).addClass("reading-comprehension");
                     $(paragraph).attr("data-reading-comprehension-count", "");
                 }
               });
@@ -280,6 +290,12 @@ export default {
         {
           $("#longpage-main").animate({ scrollTop:$(`#longpage-main .filter_embedquestion-iframe:nth(${i})`).position().top-200}, 'fast');
         }
+      });
+
+
+      $(document).on("click", ".reading-comprehension", function()
+      {
+        $(".fa-dashboard").trigger("click");
       });
     });
   }
