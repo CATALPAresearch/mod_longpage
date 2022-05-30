@@ -3,14 +3,14 @@
   <template #body> 
     <div class="row p-3 bg-white">
       <h3
-          class="m-0 tab-title"
+          class="m-0 tab-title" style="width: 70%"
         >
           {{$t('sidebar.tabs.quiz.heading')}}
         </h3>
       <div class="col-auto px-0">
-        <i class="fa fa-dashboard fa-fw fa-2x" />
-        <a href="javascript:void(0)" id="nextQuestion"><i class="fa fa-arrow-down fa-fw fa-2x" /></a>
-        <a href="javascript:void(0)" id="prevQuestion"><i class="fa fa-arrow-up fa-fw fa-2x" /></a>  
+        <p id="total-reading-comprehension" title="Ihr geschätztes Leseverständnis für die ganze Seite" style="display: inline;"></p>
+        <a href="javascript:void(0)" id="nextQuestion" title="Nächste Frage"><i class="fa fa-arrow-down fa-fw fa-2x" /></a>
+        <a href="javascript:void(0)" id="prevQuestion" title="Vorherige Frage"><i class="fa fa-arrow-up fa-fw fa-2x" /></a>  
       </div>
     <hr class="my-0 mx-3">
     </div>
@@ -55,7 +55,7 @@
 
 .carousel-control-prev, .carousel-control-next 
 {
-  width: 15px;
+  width: 18px;
   filter: invert(100%);
 }
 
@@ -170,12 +170,15 @@ export default {
                 
               }
 
+              var sum = 0;
+
               $(".wrapper").each(function(index, paragraph)
               {
                 if($(paragraph).attr("data-reading-comprehension-count"))
                 {
                   var progress = $(paragraph).find(".reading-progress");
                   var value = parseFloat($(paragraph).attr("data-reading-comprehension-sum"))/parseInt($(paragraph).attr("data-reading-comprehension-count"));
+                  sum += value;
                   $(progress)
                     .attr(
                       "title",
@@ -187,6 +190,9 @@ export default {
                     $(paragraph).attr("data-reading-comprehension-count", "");
                 }
               });
+
+              $("#sidebar-tab-quiz #total-reading-comprehension").text((100*sum/Object.entries(data).length).toFixed(0) + " %");
+   
             } catch (e) {
               console.log(e);
             }
@@ -213,8 +219,8 @@ export default {
             $(div).appendTo("#question");
             div = $(`<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`);
             $(div).appendTo("#carousel-indicators");
-            $("#longpage-main iframe").removeClass("last-visible");
-            $("#longpage-main " + idFixed).addClass("last-visible");
+            $("#longpage-main .filter_embedquestion-iframe").removeClass("last-visible");
+            entry.target.classList.add("last-visible");
           }
           else
           {
@@ -230,7 +236,7 @@ export default {
         }
         else
         {
-          $("#carousel").hide();
+           $("#carousel").hide();
           $("#quiz-placeholder").show();
           $("#carousel-indicators").children().remove();
         }
@@ -249,7 +255,7 @@ export default {
       var readfun = _.debounce(function()
         {
             get_reading_comprehension();
-        }, 1000);
+        }, 5000);
 
       $(".filter_embedquestion-iframe").on("load", function()
       {
@@ -259,7 +265,21 @@ export default {
 
       $("#nextQuestion").click(function()
       {
-        $("#longpage-main").animate({ scrollTop:$("#longpage-main .filter_embedquestion-iframe:not(.last-visible):nth(0)").offset().top}, 'slow');
+        var l = $("#longpage-main .filter_embedquestion-iframe").length;
+        var i = $("#longpage-main .filter_embedquestion-iframe").index($("#longpage-main .filter_embedquestion-iframe.last-visible"))+1;
+        if(i < l)
+        {
+          $("#longpage-main").animate({ scrollTop:$(`#longpage-main .filter_embedquestion-iframe:nth(${i})`).position().top-200}, 'fast');
+        }
+      });
+
+      $("#prevQuestion").click(function()
+      {
+        var i = $("#longpage-main .filter_embedquestion-iframe").index($("#longpage-main .filter_embedquestion-iframe.last-visible"))-1;
+        if(i > 0)
+        {
+          $("#longpage-main").animate({ scrollTop:$(`#longpage-main .filter_embedquestion-iframe:nth(${i})`).position().top-200}, 'fast');
+        }
       });
     });
   }

@@ -179,7 +179,7 @@ export default {
         {
           key: SidebarTabKeys.QUIZ,
           id: "sidebar-tab-quiz",
-          icon: ["fa", "fa-question", "fa-fw"],
+          icon: ["fa", "fa-dashboard", "fa-fw"],
         },
         // {        // deactivated sidebar tab for now
         //   key: SidebarTabKeys.COURSE_RECOMMENDATIONS,

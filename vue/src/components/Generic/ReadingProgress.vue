@@ -334,7 +334,7 @@ export default {
                   // let store = [...$("#"+data[i].section).contents()];
                   // console.log(arr);
 
-                  $("#" + data[i].section).wrap("<div class='wrapper'></div>");
+                  $("#longpage-main #" + data[i].section).wrap("<div class='wrapper'></div>");
                   // $(".wrapper").find("#" + data[i].section).append($("<span></span>")
                   //     .attr(
                   //       "title",
@@ -346,7 +346,7 @@ export default {
                   //       "reading-progress progress-" +
                   //         Math.ceil((data[i].count / max) * 5)
                   //     ))
-                  $("#" + data[i].section).parent().append(
+                  $("#longpage-main #" + data[i].section).parent().append(
                     $("<span></span>")
                       .attr(
                         "title",
@@ -360,7 +360,7 @@ export default {
                       )
                   );
                   if (_this.debug) {
-                    $("#" + data[i].section).append(
+                    $("#longpage-main #" + data[i].section).append(
                       $(
                         '<span style="position:absolute; right:-40px; font-size:8px; background-color:red; padding:1px 2px; color:#fff;">' +
                           data[i].section.replace("longpage-paragraph-", "") +
