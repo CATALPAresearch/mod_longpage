@@ -129,26 +129,6 @@ export default {
   {
     let _this = this;
 
-    function waitForElm(selector) {
-        return new Promise(resolve => {
-            if (document.querySelector(selector)) {
-                return resolve(document.querySelector(selector));
-            }
-
-            const observer = new MutationObserver(mutations => {
-                if (document.querySelector(selector)) {
-                    resolve(document.querySelector(selector));
-                    observer.disconnect();
-                }
-            });
-
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        });
-    }
-
     function get_reading_comprehension()
     {
       ajax.call([
@@ -216,6 +196,13 @@ export default {
 
     $(document).ready(function() 
     {
+      var readfun = _.debounce(function()
+        {
+            get_reading_comprehension();
+      }, 5000);
+
+      readfun();
+        
       var observer = new IntersectionObserver(function(entries) 
       {
         for(var i=0; i<entries.length; i++)
@@ -231,6 +218,9 @@ export default {
             $(div).appendTo("#carousel-indicators");
             $("#longpage-main .filter_embedquestion-iframe").removeClass("last-visible");
             entry.target.classList.add("last-visible");
+            $("#question iframe").on("load", function () {
+              readfun();
+            });
           }
           else
           {
@@ -253,7 +243,7 @@ export default {
     
       }, { threshold: [0.1] });
 
-      
+
       $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) 
       {
         
@@ -262,15 +252,9 @@ export default {
         observer.observe(el);
       });
 
-      var readfun = _.debounce(function()
-        {
-            get_reading_comprehension();
-        }, 5000);
-
       $(".filter_embedquestion-iframe").on("load", function()
       {
-        readfun();
-        $(".filter_embedquestion-iframe").contents().find(".que .outcome").hide();
+        $(this).contents().find(".que .outcome").hide();
       });
 
       $("#nextQuestion").click(function()
