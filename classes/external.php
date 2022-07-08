@@ -1642,8 +1642,11 @@ class mod_longpage_external extends external_api {
             $question = utils::get_question_by_idnumber(intval($category->id), $embed->questionidnumber);
             $qubaids = $DB->get_fieldset_sql("SELECT DISTINCT questionusageid FROM {question_attempts} qa 
                                                 LEFT JOIN {question_attempt_steps} qas 
-                                                ON qas.questionattemptid = qa.id
-                                                WHERE qas.userid = ? AND qas.state <> 'todo' and qa.questionid = ?", 
+                                                ON qas.questionattemptid = qa.id 
+                                                WHERE qas.userid = ? AND qas.state <> 'todo' and qa.questionid = ? 
+                                                and FROM_UNIXTIME(qas.timecreated) > DATE_ADD(CURRENT_DATE(), INTERVAL -3 MONTH)
+                                                ORDER BY qas.timecreated DESC 
+                                                LIMIT 5", 
                                         array($USER->id, $question->id));
             $calc = new calculator([1 => $question]);
             $stats = $calc->calculate(new qubaid_list($qubaids));
