@@ -1648,10 +1648,14 @@ class mod_longpage_external extends external_api {
                                                 ORDER BY qas.timecreated DESC 
                                                 LIMIT 5", 
                                         array($USER->id, $question->id));
-            $calc = new calculator([1 => $question]);
-            $stats = $calc->calculate(new qubaid_list($qubaids));
-            
-            $result[strval($embed)] = $stats->questionstats[1]->markaverage;
+
+            if(count($qubaids) > 0)
+            {
+                $calc = new calculator([1 => $question]);
+                $stats = $calc->calculate(new qubaid_list($qubaids));
+                
+                $result[strval($embed)] = $stats->questionstats[1]->markaverage;
+            }
         }
         
 

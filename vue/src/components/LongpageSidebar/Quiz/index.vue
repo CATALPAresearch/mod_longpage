@@ -20,7 +20,7 @@
     <hr class="my-3">
     
         <p id="quiz-placeholder" class="p-3">Zu diesem Abschnitt gibt es keine Fragen.</p>
-        <div id="carousel" class="carousel slide" data-interval="false">
+        <div id="carousel" class="carousel slide" data-interval="false" style="display:none">
           <ol id="carousel-indicators" class="carousel-indicators">
           </ol>
           <div id="question" class="carousel-inner"></div>     
@@ -140,6 +140,10 @@ export default {
           done: function (reads) {
             try {
               let data = JSON.parse(reads.response);
+
+              var wrapper = $("#longpage-main .filter_embedquestion-iframe").parents(".wrapper");
+              $(wrapper).height("0px");
+              $(wrapper).css("padding", "0px");
             
               for (const [id, value] of Object.entries(data)) 
               {
@@ -162,6 +166,7 @@ export default {
               }
 
               var sum = 0;
+              var len = 0;
 
               $(".wrapper").each(function(index, paragraph)
               {
@@ -170,6 +175,7 @@ export default {
                   var progress = $(paragraph).find(".reading-progress");
                   var value = parseFloat($(paragraph).attr("data-reading-comprehension-sum"))/parseInt($(paragraph).attr("data-reading-comprehension-count"));
                   sum += value;
+                  len += 1;
                   $(progress)
                     .attr(
                       "title",
@@ -180,8 +186,14 @@ export default {
                     $(paragraph).attr("data-reading-comprehension-count", "");
                 }
               });
+              
+              var rc = 0;
+              if (len > 0)
+              {
+                rc = (100 * sum / len).toFixed(0);
+              }
 
-              $("#sidebar-tab-quiz #total-reading-comprehension").text((100*sum/Object.entries(data).length).toFixed(0) + " %");
+              $("#sidebar-tab-quiz #total-reading-comprehension").text(rc + " %");
    
             } catch (e) {
               console.log(e);
@@ -194,6 +206,24 @@ export default {
       ]);
     }
 
+    function isElementInViewport(element, index, array)
+    {
+      // Special bonus for those using jQuery
+      if (typeof jQuery === "function" && element instanceof jQuery) {
+          element = element[0];
+      }
+
+      var rectEl = element.getBoundingClientRect();
+      var rectApp = document.querySelector('#longpage-app').getBoundingClientRect();
+ 
+      return (
+          rectEl.top >= rectApp.top &&
+          rectEl.left >= rectApp.left &&
+          rectEl.bottom <= rectApp.bottom &&
+          rectEl.right <= rectApp.right
+      );
+    } 
+
     $(document).ready(function() 
     {
       var readfun = _.debounce(function()
@@ -205,43 +235,77 @@ export default {
         
       var observer = new IntersectionObserver(function(entries) 
       {
-        for(var i=0; i<entries.length; i++)
+        var added = {};
+        for (var i = 0; i < entries.length; i++)
         {
           var entry = entries[i];
-          var idFixed = "#" + entry.target.id.replace("/", "\\/");
-          if(entry.isIntersecting === true)
+                
+          if (entry.isIntersecting === true)
           {
-            var div = $(`<div class="carousel-item ${i == 0 ? "active" : ""}"></div>`);
+            $("#longpage-main .filter_embedquestion-iframe").removeClass("last-visible");
+            var idFixed = "#" + entry.target.id.replace("/", "\\/");
+            entry.target.classList.add("last-visible");
+            added[idFixed] = 1;
+                        
+            var div = $(`<div class="carousel-item"></div>`);            
             $($("#longpage-main " + idFixed)[0]).clone().appendTo(div);
             $(div).appendTo("#question");
-            div = $(`<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`);
-            $(div).appendTo("#carousel-indicators");
-            $("#longpage-main .filter_embedquestion-iframe").removeClass("last-visible");
-            entry.target.classList.add("last-visible");
+            
             $("#question iframe").on("load", function () {
               readfun();
             });
+          }          
+        }
+
+        var found = false;
+        var visible = {};
+        $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
+        {
+          var idFixed = "#" + el.id.replace("/", "\\/");
+          visible[idFixed] = (idFixed in visible && visible[idFixed]) || isElementInViewport(el);
+        });
+         
+        $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
+        {
+          var idFixed = "#" + el.id.replace("/", "\\/");
+
+          if (!(idFixed in added) && !visible[idFixed])
+          {
+            $("#question").find(idFixed).parents(".carousel-item").remove();
           }
           else
           {
-            $("#question " + idFixed).parent().remove();
+            found = true;
           }
-          
+        });
+
+        if (!found)
+        {
+          $("#question").children().remove();  
+          $("#carousel-indicators").children().remove(); 
         }
 
         if($("#question").children().length > 0)
         {
           $("#quiz-placeholder").hide();
           $("#carousel").show();
+          $("#question .carousel-item").removeClass("active");
+          $("#question .carousel-item:first").addClass("active");
+          $("#carousel-indicators").children().remove(); 
+          for (var i = 0; i < $("#question").children().length; i++)
+          {
+            var div = $(`<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`);
+            $(div).appendTo("#carousel-indicators");
+          }
         }
         else
         {
-           $("#carousel").hide();
+          $("#carousel").hide();
           $("#quiz-placeholder").show();
           $("#carousel-indicators").children().remove();
         }
     
-      }, { threshold: [0.1] });
+      }, { threshold: [0.1], root: document.querySelector('#longpage-main') });
 
 
       $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) 
@@ -259,21 +323,28 @@ export default {
 
       $("#nextQuestion").click(function()
       {
-        var l = $("#longpage-main .filter_embedquestion-iframe").length;
-        var i = $("#longpage-main .filter_embedquestion-iframe").index($("#longpage-main .filter_embedquestion-iframe.last-visible"))+1;
-        if(i < l)
+        var t = $("#longpage-main").scrollTop();
+        $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
         {
-          $("#longpage-main").animate({ scrollTop:$(`#longpage-main .filter_embedquestion-iframe:nth(${i})`).position().top-200}, 'fast');
-        }
+          if ($(el).position().top > t+300)
+          {
+            $("#longpage-main").animate({ scrollTop: $(el).position().top - 200 }, 'fast');
+            return false;
+          }
+        })
       });
 
       $("#prevQuestion").click(function()
       {
-        var i = $("#longpage-main .filter_embedquestion-iframe").index($("#longpage-main .filter_embedquestion-iframe.last-visible"))-1;
-        if(i > 0)
+        var t = $("#longpage-main").scrollTop();
+        $($("#longpage-main .filter_embedquestion-iframe").get().reverse()).each(function (i, el)
         {
-          $("#longpage-main").animate({ scrollTop:$(`#longpage-main .filter_embedquestion-iframe:nth(${i})`).position().top-200}, 'fast');
-        }
+          if ($(el).position().top < t)
+          {
+            $("#longpage-main").animate({ scrollTop: $(el).position().top - 200 }, 'fast');
+            return false;
+          }
+        })
       });
 
 
