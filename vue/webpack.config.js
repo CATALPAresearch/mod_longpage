@@ -87,7 +87,7 @@ module.exports = (env, options) => {
         performance: {
             hints: false
         },
-        devtool: '#eval-source-map',
+        devtool: '#source-map',
         plugins: [
             new BundleAnalyzerPlugin(),
             new VueLoaderPlugin(),
@@ -129,7 +129,7 @@ module.exports = (env, options) => {
         }
     };
     if (options.mode === 'production') {
-        exports.devtool = false;
+        //exports.devtool = false;
         // http://vue-loader.vuejs.org/en/workflow/production.html
         // exp
         exports.plugins = (exports.plugins || []).concat([

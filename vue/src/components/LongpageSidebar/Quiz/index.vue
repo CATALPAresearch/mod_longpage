@@ -32,7 +32,7 @@
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="sr-only">-&gt;</span>
           </a>
-    </div>
+        </div>
     </template>
   </sidebar-tab>
 </template>
@@ -226,9 +226,20 @@ export default {
 
     $(document).ready(function() 
     {
+      if ($("body").hasClass("drawer-open-left"))
+      {
+        $("button[data-action='toggle-drawer']").click();
+      }
+
+      $(".fa-dashboard").click();
+
+      var wrapper = $("#longpage-main .filter_embedquestion-iframe").parents(".wrapper");
+      $(wrapper).height("0px");
+      $(wrapper).css("padding", "0px");
+
       var readfun = _.debounce(function()
-        {
-            get_reading_comprehension();
+      {
+        get_reading_comprehension();
       }, 5000);
 
       readfun();

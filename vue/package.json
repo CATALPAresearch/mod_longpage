@@ -5,7 +5,7 @@
   "scripts": {
     "build": "cross-env webpack --mode production --progress --hide-modules",
     "dev": "cross-env webpack --mode development --progress --hide-modules",
-    "watch": "cross-env webpack --mode development --watch --hide-modules"
+    "watch": "cross-env webpack --mode production --watch --hide-modules"
   },
   "dependencies": {
     "@juggle/resize-observer": "3.2.0",
