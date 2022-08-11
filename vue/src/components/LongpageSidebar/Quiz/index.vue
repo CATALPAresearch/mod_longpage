@@ -140,11 +140,7 @@ export default {
           done: function (reads) {
             try {
               let data = JSON.parse(reads.response);
-
-              var wrapper = $("#longpage-main .filter_embedquestion-iframe").parents(".wrapper");
-              $(wrapper).height("0px");
-              $(wrapper).css("padding", "0px");
-            
+           
               for (const [id, value] of Object.entries(data)) 
               {
                 var idFixed = id.replace("/", "\\/");
@@ -232,10 +228,6 @@ export default {
       }
 
       $(".fa-dashboard").click();
-
-      var wrapper = $("#longpage-main .filter_embedquestion-iframe").parents(".wrapper");
-      $(wrapper).height("0px");
-      $(wrapper).css("padding", "0px");
 
       var readfun = _.debounce(function()
       {
