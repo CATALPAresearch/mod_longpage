@@ -302,12 +302,18 @@ export default {
           $("#carousel").show();
           $("#question .carousel-item").removeClass("active");
           $("#question .carousel-item:first").addClass("active");
-          $("#carousel-indicators").children().remove(); 
-          for (var i = 0; i < $("#question").children().length; i++)
+          $("#carousel-indicators").children().remove();
+          $(".carousel-control-prev, .carousel-control-next").hide();
+
+          if ($("#question").children().length > 1)
           {
-            var div = $(`<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`);
-            $(div).appendTo("#carousel-indicators");
-          }
+            $(".carousel-control-prev, .carousel-control-next").show();
+            for (var i = 0; i < $("#question").children().length; i++)
+            {
+              var div = $(`<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`);
+              $(div).appendTo("#carousel-indicators");
+            }
+          }  
         }
         else
         {
