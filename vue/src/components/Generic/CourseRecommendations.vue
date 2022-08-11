@@ -36,12 +36,14 @@
 </template>
 
 <script>
+import { LONGPAGE_CONTENT_ID } from "@/config/constants";
+
 export default {
   name: "CourseRecommendation",
   data: () => {
     return {
       serverPath: "http://127.0.0.1:8080/course-recommender",
-      parantSelector: "#longpage-main",
+      parantSelector: "#"+LONGPAGE_CONTENT_ID,
       courses: [],
       recommendations: [],
       blacklist: [
@@ -427,10 +429,10 @@ export default {
           .append(courseRecommendationList);
         $(this.parantSelector + " h3:nth(" + j + ")")
           .css("position", "relative")
-          //.next("span")
+          .next("span")
           .after("<br>")
           .after(wrapper)
-          .after('<span class="mx-3">|</span>');
+          .after('<span class="mx-3 d-inline">|</span>');
       }
     },
 

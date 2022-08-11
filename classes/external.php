@@ -1259,7 +1259,7 @@ class mod_longpage_external extends external_api {
 
         // test remove validation begin
 
-        // self::validate_post_not_referenced_by_other_post($post);
+        self::validate_post_not_referenced_by_other_post($post);
 
         // $isliked = $DB->record_exists('longpage_post_likes', ['postid' => $post->id]);
         // if ($isliked) {
@@ -1304,9 +1304,9 @@ class mod_longpage_external extends external_api {
         //$thread = $DB->get_record('longpage_threads', ['id' => $post->threadid]);
         //$rootpost = $DB->get_record('longpage_posts', ['id' => $thread->rootid]);
         //$postisthreadroot = $post->threadid === $thread->rootid;
-        //if (($post->ispublic && !$postupdate->ispublic) || $post->content !== $postupdate->content) {
-        //    self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
-        //}
+        if (($post->ispublic && !$postupdate->ispublic) || $post->content !== $postupdate->content) {
+           self::validate_post_can_be_deleted_and_udpated($post, $postisthreadroot);
+        }
         //if ($postupdate->markedasrequestedreply) {
         //    if ($rootpost->creatorid !== $USER->id) {
         //        throw new invalid_parameter_exception('The postIntern can only be marked as the reply requested by the user who requested

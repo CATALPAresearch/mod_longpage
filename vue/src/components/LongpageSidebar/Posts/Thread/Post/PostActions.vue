@@ -226,7 +226,7 @@ export default {
             handler: this.censorPost,
             text: this.$i18n.t("post.action.admindelete"),
           });
-        } else if (!this.post.isPublic) {
+        } else {     // } else if (!this.post.isPublic) {
           // case for private annotation+post written by unenrolled admin user
           items.push({
             iconClasses: ["fa", "fa-pencil", "fa-fw"],
@@ -309,6 +309,7 @@ export default {
     },
     info() {
       console.log(this.post);
+      console.log(this.thread);
     },
     censorPost() {
       let postUpdate = cloneDeep(this.post);

@@ -383,6 +383,27 @@ code {
   font-family: monospace;
 }
 
+#page-navbar .breadcrumb {
+  display: none;
+}
+#page-header .card {
+  border:none;
+}
+#page-header .card-body {
+  padding: 0rem 1.25rem;
+}
+#page-header .page-context-header {
+  padding: 0;
+}
+
+#page-header .col-12.pt-3.pb-3 {
+  padding-bottom: 0!important;
+}
+
+/* #page-header .page-context-header h1 {
+  font-size: 1.3rem;
+}
+*/
 /* Medium devices (tablets, 768px and up) */
 
 @media (min-width: 768px) and (max-width: 991.98px) {

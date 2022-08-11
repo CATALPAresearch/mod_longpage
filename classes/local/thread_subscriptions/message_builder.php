@@ -46,8 +46,9 @@ class message_builder {
 
     private static function build_post_in_thread_created_message($data) {
         $message = self::get_message_base($data->subscriberid);
-        $message->subject = get_string('messagesubjectpostcreated', 'longpage');
         $substitutions = self::get_string_substitutions($data);
+        //$message->subject = get_string('messagesubjectpostcreated', 'longpage');
+        $message->subject = get_string('messagesubjectpostcreated_shortcontent', 'longpage', $substitutions);
         $message->fullmessage = get_string('messagefullpostcreated', 'longpage', $substitutions);
         $message->fullmessagehtml = get_string('messagehtmlpostcreated', 'longpage', $substitutions);
         $message->smallmessage = get_string('messagesmallpostcreated', 'longpage', $substitutions);
@@ -58,8 +59,8 @@ class message_builder {
 
     private static function build_post_in_thread_deleted_message($data) {
         $message = self::get_message_base($data->subscriberid);
-        $message->subject = get_string('messagesubjectpostdeleted', 'longpage');
         $substitutions = self::get_string_substitutions($data);
+        $message->subject = get_string('messagesubjectpostdeleted_shortcontent', 'longpage', $substitutions);
         $message->fullmessage = get_string('messagefullpostdeleted', 'longpage', $substitutions);
         $message->fullmessagehtml = get_string('messagehtmlpostdeleted', 'longpage', $substitutions);
         $message->smallmessage = get_string('messagesmallpostdeleted', 'longpage', $substitutions);
@@ -70,8 +71,8 @@ class message_builder {
 
     private static function build_post_in_thread_updated_message($data) {
         $message = self::get_message_base($data->subscriberid);
-        $message->subject = get_string('messagesubjectpostupdated', 'longpage');
         $substitutions = self::get_string_substitutions($data);
+        $message->subject = get_string('messagesubjectpostupdated_shortcontent', 'longpage', $substitutions);
         $message->fullmessage = get_string('messagefullpostupdated', 'longpage', $substitutions);
         $message->fullmessagehtml = get_string('messagehtmlpostupdated', 'longpage', $substitutions);
         $message->smallmessage = get_string('messagesmallpostupdated', 'longpage', $substitutions);
@@ -93,12 +94,25 @@ class message_builder {
 
     private static function get_string_substitutions($data) {
         $actor = \core_user::get_user($data->actorid);
+        $shortcontent = self::shorten_content($data->content);
         $substitutions = [
             'firstname' => $actor->firstname,
             'lastname' => $actor->lastname,
             'content' => $data->content,
             'oldcontent' => $data->oldcontent,
+            'shortcontent' => $shortcontent
         ];
         return $substitutions;
+    }
+
+    private static function shorten_content($content) {
+        $returnval;
+        if (strlen($content) >= 15) {
+            $returnval = substr($content, 0 ,12);
+            $returnval .= "...";
+        } else {
+            $returnval = $content;
+        }
+        return $returnval;
     }
 }

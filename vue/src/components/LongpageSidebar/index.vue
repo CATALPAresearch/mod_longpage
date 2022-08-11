@@ -44,7 +44,6 @@
         />
       </a>
     </div>
-    <course-recomm :style="'display:none'"></course-recomm>
   </div>
 </template>
 

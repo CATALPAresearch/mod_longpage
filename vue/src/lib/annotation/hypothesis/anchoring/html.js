@@ -73,6 +73,7 @@ export function anchor(root, selectors, options = {}) {
    * @param {Range} range
    */
   const maybeAssertQuote = range => {
+    return range;                             // TODO once MathJax and Hypothesis.js wont cause double formulas anymore, this can be put back in
     if (quote && quote.exact && range.toString() !== quote.exact) {
       throw new Error('quote mismatch');
     } else {

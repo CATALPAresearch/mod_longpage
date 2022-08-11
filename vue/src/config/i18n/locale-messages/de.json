@@ -50,7 +50,8 @@
         "cancel": "Verwerfen",
         "publish": "Veröffentlichen",
         "publishAnonymously": "Anonym veröffentlichen",
-        "save": "Speichern ohne Veröffentlichen"
+        "save": "Speichern ohne Veröffentlichen",
+        "saveDisabled": "Privat speichern nicht mehr möglich - Anmerkung wurde referenziert"
       }
     },
     "state": {
