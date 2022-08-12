@@ -49,7 +49,7 @@
 
 #question
 {
-  min-height: 400px;
+  min-height: 350px;
   text-align: center;
 }
 
@@ -73,6 +73,13 @@
 {
   padding-left: 15px;
   padding-right: 15px;
+}
+
+.carousel-caption
+{
+  color: black;
+  font-style: italic;
+  font-size: 12px;
 }
 
 .reading-comprehension
@@ -258,7 +265,7 @@ export default {
             entry.target.classList.add("last-visible");
             added[idFixed] = 1;
                         
-            var div = $(`<div class="carousel-item"></div>`);            
+            var div = $(`<div class="carousel-item"><div class="carousel-caption d-none d-md-block"></div></div>`);            
             $($("#longpage-main " + idFixed)[0]).clone().appendTo(div);
             $(div).appendTo("#question");
             
@@ -305,12 +312,16 @@ export default {
           $("#carousel-indicators").children().remove();
           $(".carousel-control-prev, .carousel-control-next").hide();
 
+          $(".carousel-caption").each(function (i, el) {
+            $(el).text(`Frage ${i + 1}/${$("#question").children().length}`);
+          });
+
           if ($("#question").children().length > 1)
           {
             $(".carousel-control-prev, .carousel-control-next").show();
             for (var i = 0; i < $("#question").children().length; i++)
             {
-              var div = $(`<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`);
+              var div = `<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`;
               $(div).appendTo("#carousel-indicators");
             }
           }  
@@ -331,11 +342,6 @@ export default {
         $(el).data("paragraph", $(el).parent().prev().attr("id"));
         
         observer.observe(el);
-      });
-
-      $(".filter_embedquestion-iframe").on("load", function()
-      {
-        $(this).contents().find(".que .outcome").hide();
       });
 
       $("#nextQuestion").click(function()
