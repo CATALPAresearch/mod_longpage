@@ -80,6 +80,7 @@
   color: black;
   font-style: italic;
   font-size: 12px;
+  left: 0;
 }
 
 .reading-comprehension
@@ -265,7 +266,7 @@ export default {
             entry.target.classList.add("last-visible");
             added[idFixed] = 1;
                         
-            var div = $(`<div class="carousel-item"><div class="carousel-caption d-none d-md-block"></div></div>`);            
+            var div = $(`<div class="carousel-item"><div class="carousel-caption sticky-top float-left"></div></div>`);            
             $($("#longpage-main " + idFixed)[0]).clone().appendTo(div);
             $(div).appendTo("#question");
             
