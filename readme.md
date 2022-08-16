@@ -47,7 +47,7 @@ You use the *Longpage* plugin exacly like as you would use the regular *Page* pl
 
 * remove, install or reinstall node_modules (npm install)
 * moodle: purge caches and disable caching (use search: 'cache' on moodle site administration)
-* If there is a javascript error that app-lazy.js could not be loaded, try to create a symbolic link from app-lazy.min.js to app-lazy.js. For windows users:
+* If there is a javascript error that app-lazy.js could not be loaded, try to create a symbolic link from app-lazy.min.js to app-lazy.js. For Windows users:
 ```shell
 mklink mod\longpage\amd\src\app-lazy.min.js mod\longpage\amd\build\app-lazy.min.js
 ```
