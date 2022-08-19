@@ -92,6 +92,9 @@ class mod_longpage_mod_form extends moodleform_mod {
         $mform->setDefault('printheading', $config->printheading);
         $mform->addElement('advcheckbox', 'printintro', get_string('printintro', 'longpage'));
         $mform->setDefault('printintro', $config->printintro);
+        $mform->addElement('advcheckbox', 'showreadingcomprehension', get_string('showreadingcomprehension', 'longpage'));
+        $mform->setType('showreadingcomprehension', PARAM_INT);
+        $mform->setDefault('showreadingcomprehension', $config->showreadingcomprehension);
 
         // add legacy files flag only if used
         if (isset($this->current->legacyfiles) and $this->current->legacyfiles != RESOURCELIB_LEGACYFILES_NO) {

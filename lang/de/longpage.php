@@ -84,3 +84,7 @@ $string['printintro'] = 'Seitenbeschreibung anzeigen?';
 $string['printintroexplain'] = 'Seitenbeschreibung oberhalb des Inhalts anzeigen?';
 $string['privacy:metadata'] = 'Longpage speichert auch personenbezogene Daten.';
 $string['search:activity'] = 'Longpage';
+$string['activatefunctionalities'] = 'Longpage-Funktionen (de-)aktivieren';
+$string['activatefunctionalitiesexplain'] = 'Longpage-Funktionen für eine Longpage-Instanz (de-)aktivieren';
+$string['showreadingcomprehension'] = 'Visualisierung des Leseverständnisses anzeigen';
+$string['showreadingcomprehensionexplain'] = 'Die Visualisierung des Leseverständnisses anzeigen';

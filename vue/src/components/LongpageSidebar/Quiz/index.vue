@@ -139,6 +139,9 @@ export default {
 
     function get_reading_comprehension()
     {
+      if (!_this.context.showreadingcomprehension)
+        return;
+
       ajax.call([
         {
           methodname: "mod_longpage_get_reading_comprehension",
@@ -338,10 +341,8 @@ export default {
 
 
       $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) 
-      {
-        
+      {   
         $(el).data("paragraph", $(el).parent().prev().attr("id"));
-        
         observer.observe(el);
       });
 

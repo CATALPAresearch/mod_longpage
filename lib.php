@@ -31,8 +31,8 @@ defined('MOODLE_INTERNAL') || die;
 function longpage_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_RESOURCE;
-        case FEATURE_GROUPS:                  return false;
-        case FEATURE_GROUPINGS:               return false;
+        case FEATURE_GROUPS:                  return true;
+        case FEATURE_GROUPINGS:               return true;
         case FEATURE_MOD_INTRO:               return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
         case FEATURE_GRADE_HAS_GRADE:         return false;
@@ -112,6 +112,14 @@ function longpage_add_instance($data, $mform = null) {
         $data->contentformat = $data->longpage['format'];
     }
 
+    if ($data->showreadingcomprehension == "1") {
+        $data->showreadingcomprehension = 1;
+    }
+    else
+    {
+        $data->showreadingcomprehension = 0;
+    }
+
     if(!$data->id = $DB->insert_record('longpage', $data)){
         print_error("er1");
     }
@@ -160,6 +168,14 @@ function longpage_update_instance($data, $mform) {
 
     $data->content       = $data->longpage['text'];
     $data->contentformat = $data->longpage['format'];
+
+    if ($data->showreadingcomprehension == "1") {
+        $data->showreadingcomprehension = 1;
+    }
+    else
+    {
+        $data->showreadingcomprehension = 0;
+    }
 
     $DB->update_record('longpage', $data);
 

@@ -92,3 +92,7 @@ $string['printintro'] = 'Display Longpage description';
 $string['printintroexplain'] = 'Display Longpage description above content?';
 $string['privacy:metadata'] = 'The Longpage resource plugin does not store any personal data.';
 $string['search:activity'] = 'longpage';
+$string['activatefunctionalities'] = '(De-)activate Longpage functionalities';
+$string['activatefunctionalitiesexplain'] = '(De-)activate Longpage functionalities for one Longpage instance';
+$string['showreadingcomprehension'] = 'Display visualization of reading comprehension';
+$string['showreadingcomprehensionexplain'] = 'Display visualization of reading comprehension';

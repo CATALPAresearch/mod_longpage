@@ -316,6 +316,10 @@ export default {
 
     visualizeReadingProgress: function () {
       let _this = this;
+
+      if (!_this.context.showreadingcomprehension)
+        return;
+        
       ajax.call([
         {
           methodname: "mod_longpage_get_reading_progress",

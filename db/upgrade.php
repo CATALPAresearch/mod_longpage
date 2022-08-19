@@ -45,7 +45,8 @@
 defined('MOODLE_INTERNAL') || die;
 
 function xmldb_longpage_upgrade($oldversion) {
-    global $CFG;
+    global $CFG, $DB;
+    $dbman = $DB->get_manager();
 
     // Automatically generated Moodle v3.2.0 release upgrade line.
     // Put any upgrade step following this.
@@ -58,6 +59,20 @@ function xmldb_longpage_upgrade($oldversion) {
 
     // Automatically generated Moodle v3.5.0 release upgrade line.
     // Put any upgrade step following this.
+    $version = 2022081810;
+    if ($oldversion < $version) {
+         // Define field id to be added to longpage.
+         $table = new xmldb_table('longpage');
+         $field = new xmldb_field('showreadingcomprehension', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
+ 
+         // Conditionally launch add field id.
+         if (!$dbman->field_exists($table, $field)) {
+             $dbman->add_field($table, $field);
+         }
+ 
+         // Longpage savepoint reached.
+         upgrade_mod_savepoint(true, $version, 'longpage');
+    }
 
     return true;
 }

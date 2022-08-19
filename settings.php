@@ -49,4 +49,9 @@ if ($ADMIN->fulltree) {
         get_string('popupwidth', 'longpage'), get_string('popupwidthexplain', 'longpage'), 620, PARAM_INT, 7));
     $settings->add(new admin_setting_configtext('longpage/popupheight',
         get_string('popupheight', 'longpage'), get_string('popupheightexplain', 'longpage'), 450, PARAM_INT, 7));
+
+    //--- (de-)activate functionalities -----------------------------------------------------------------------------------
+    $settings->add(new admin_setting_heading('longpage/activatefunctionalities', get_string('activatefunctionalities', 'longpage'), get_string('activatefunctionalitiesexplain', 'longpage')));
+    $settings->add(new admin_setting_configcheckbox('longpage/showreadingcomprehension',
+        get_string('showreadingcomprehension', 'longpage'), get_string('showreadingcomprehension', 'longpage'), 1));
 }

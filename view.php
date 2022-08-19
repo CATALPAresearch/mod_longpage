@@ -120,7 +120,8 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
             format_string($page->name),
             $USER->id,
             "",
-            $scrolltop
+            $scrolltop,
+            $page->showreadingcomprehension == 1
         ]
     );
 } else {
