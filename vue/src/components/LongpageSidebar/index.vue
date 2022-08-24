@@ -21,7 +21,7 @@
       />
     </div>
     <div
-      id="lonpage-sidebar-tab"
+      :id="LONGPAGE_SIDEBAR_TAB"
       class="col-auto border-left p-0 h-100 nav flex-column nav-pills"
       aria-orientation="vertical"
     >
@@ -85,6 +85,7 @@ import TableOfContents from "@/components/LongpageSidebar/TableOfContents";
 import Search from "@/components/LongpageSidebar/Search";
 
 const LONGPAGE_SIDEBAR_ID = "longpage-sidebar";
+const LONGPAGE_SIDEBAR_TAB = "longpage-sidebar-tab";
 const LONGPAGE_SIDEBAR_TAB_CONTENT = "longpage-sidebar-tab-content";
 
 const resizeData = {
@@ -211,6 +212,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+#longpage-sidebar .nav-link:hover {
+  background-color: #0f6cbf;
+  color: #fff !important;
+}
+
 .max-w-80 {
   max-width: 80%;
 }
