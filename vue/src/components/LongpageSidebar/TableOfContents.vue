@@ -90,16 +90,18 @@ export default {
           const intersectionObserver = new IntersectionObserver(entries => {
             const lastIntersectingEntry = findLast(entries, e => e.isIntersecting);
             if (lastIntersectingEntry) {
-             this.activeTOCEntryIndex = this.tocEntries.findIndex(e => e.hId === lastIntersectingEntry.target.id);
+              this.activeTOCEntryIndex = this.tocEntries.findIndex(e => e.hId === lastIntersectingEntry.target.id);
+              $(`a.nav-link[href='#h-in-toc-${this.activeTOCEntryIndex}']`).get(0).scrollIntoView(false);
              return;
             }
 
             const lastEntry = entries[entries.length - 1];
             if (lastEntry.boundingClientRect.y > root.getBoundingClientRect().y) {
               this.activeTOCEntryIndex = this.tocEntries.findIndex(e => e.hId === lastEntry.target.id) - 1;
+              $(`a.nav-link[href='#h-in-toc-${this.activeTOCEntryIndex}']`).get(0).scrollIntoView(false);
             }
           }, {root});
-          this.tocEntries.map(entry => entry.hEl).forEach(targetEl => intersectionObserver.observe(targetEl));
+        this.tocEntries.map(entry => entry.hEl).forEach(targetEl => intersectionObserver.observe(targetEl));
         },
         initTOC() {
             $(this.allHeadingsSelector).each((index, el) => {
