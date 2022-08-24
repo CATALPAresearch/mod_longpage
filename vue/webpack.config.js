@@ -19,11 +19,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+// const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 var path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const {VueLoaderPlugin} = require('vue-loader');
 var webpack = require('webpack');
+
 
 module.exports = (env, options) => {
     const exports = {
@@ -46,8 +47,12 @@ module.exports = (env, options) => {
                     test: /\.(sa|sc|c)ss$/,
                     use: [
                         'vue-style-loader',
-                        'css-loader',
-                        'sass-loader',
+                        // Creates `style` nodes from JS strings
+                        "css-loader",
+                        // Translates CSS into CommonJS
+                        "css-loader",
+                        // Compiles Sass to CSS
+                        "sass-loader"
                     ],
                 },
                 {
@@ -89,7 +94,7 @@ module.exports = (env, options) => {
         },
         devtool: '#eval-source-map',
         plugins: [
-            new BundleAnalyzerPlugin(),
+            //new BundleAnalyzerPlugin(),
             new VueLoaderPlugin(),
         ],
         watchOptions: {

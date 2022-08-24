@@ -2,9 +2,10 @@
  * Based on Hypothesis client's styles (see https://github.com/hypothesis/client):
  *   - src/styles/annotator/highlights.scss
  */
+@use 'sass:color';
 @import '../variables.scss';
 @import '../mixins/a11y.scss';
-@use 'sass:color';
+
 
 @mixin colorized-bg-highlight($color) {
   cursor: pointer;
