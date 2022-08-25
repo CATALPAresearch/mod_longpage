@@ -116,3 +116,17 @@ export default {
     },
 };
 </script>
+
+<style scoped lang="scss">
+#sidebar-tab-table-of-contents .nav-link:hover {
+  z-index: 1;
+  color: #495057;
+  text-decoration: none;
+  background-color: #f8f9fa;
+}
+
+#sidebar-tab-table-of-contents .nav-link.active {
+  background-color: #0f6cbf;
+  color: #fff !important;
+}
+</style>
