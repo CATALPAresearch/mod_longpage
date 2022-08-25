@@ -168,7 +168,7 @@ import { ACT, GET } from "@/store/types";
 import { mapActions, mapGetters } from "vuex";
 import { Post } from "@/types/post";
 import { Thread } from "@/types/thread";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 export default {
   name: "PostActions",

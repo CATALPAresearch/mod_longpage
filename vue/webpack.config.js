@@ -19,8 +19,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 var path = require('path');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); 
 const TerserPlugin = require('terser-webpack-plugin');
 const {VueLoaderPlugin} = require('vue-loader');
 var webpack = require('webpack');
@@ -92,9 +93,9 @@ module.exports = (env, options) => {
         performance: {
             hints: false
         },
-        devtool: '#eval-source-map',
+        devtool: 'eval-source-map',
         plugins: [
-            //new BundleAnalyzerPlugin(),
+            new BundleAnalyzerPlugin(),
             new VueLoaderPlugin(),
         ],
         watchOptions: {
@@ -149,6 +150,13 @@ module.exports = (env, options) => {
         ]);
         exports.optimization = {
             minimizer: [
+                new UglifyJsPlugin({
+                    uglifyOptions: {
+                      output: {
+                        comments: false
+                      }
+                    }
+                }),
                 new TerserPlugin({
                     cache: true,
                     parallel: true,

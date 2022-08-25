@@ -52,7 +52,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 import {LONGPAGE_CONTENT_ID, LONGPAGE_MAIN_ID} from '@/config/constants';
-import {findLast} from 'lodash';
+import findLast from 'lodash/findLast';
 import {toIdSelector} from '@/util/style';
 import {scrollTextElementIntoView} from '@/util/misc';
 

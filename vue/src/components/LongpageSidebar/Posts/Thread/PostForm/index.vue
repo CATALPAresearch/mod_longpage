@@ -77,7 +77,7 @@
  */
 import { ACT, GET, MUTATE } from "@/store/types";
 import { mapActions, mapGetters, mapMutations } from "vuex";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import { Post } from "@/types/post";
 import PostFormInput from "@/components/LongpageSidebar/Posts/Thread/PostForm/PostFormInput";
 import { SAVE_ACTIONS } from "@/config/constants";

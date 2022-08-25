@@ -19,7 +19,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 import {ACT, GET, MUTATE} from '../types';
-import {flatten, pick} from 'lodash';
+import flatten from 'lodash/flatten';
+import pick from 'lodash/pick';
 import {AnnotationCompareFunction} from '@/util/comparing';
 import ajax from 'core/ajax';
 import MappingService from '@/services/mapping-service';

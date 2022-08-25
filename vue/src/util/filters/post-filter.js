@@ -21,7 +21,7 @@
 import {FilterBase} from "@/util/filters/filter-base";
 import Fuse from 'fuse.js';
 import {mapResultToHighlightedDoc} from "@/util/fuse";
-import {pick} from 'lodash';
+import pick from 'lodash/pick';
 import {Post} from "@/types/post";
 
 export class PostFilter extends FilterBase {

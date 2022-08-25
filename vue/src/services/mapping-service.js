@@ -21,7 +21,8 @@
 import {Annotation} from '@/types/annotation';
 import {deepLowerCaseKeys} from '@/util/misc';
 import {MoodleWSMethods, SelectorType} from '@/config/constants';
-import {invert, omit, pick} from 'lodash';
+import invert from 'lodash/invert';
+import pick from 'lodash/pick';
 import {AnnotationTarget} from '@/types/annotation-target';
 import {Thread} from '@/types/thread';
 import {Post} from '@/types/post';

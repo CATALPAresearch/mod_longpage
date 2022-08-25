@@ -80,7 +80,7 @@ import Bookmarks from "@/components/LongpageSidebar/Bookmarks";
 import { EventBus } from "@/lib/event-bus";
 import Highlights from "@/components/LongpageSidebar/Highlights";
 import Posts from "@/components/LongpageSidebar/Posts";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import TableOfContents from "@/components/LongpageSidebar/TableOfContents";
 import Search from "@/components/LongpageSidebar/Search";
 
