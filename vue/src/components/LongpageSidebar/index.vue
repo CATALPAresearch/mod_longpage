@@ -213,6 +213,13 @@ export default {
 
 <style scoped lang="scss">
 #longpage-sidebar .nav-link:hover {
+  z-index: 1;
+  color: #495057;
+  text-decoration: none;
+  background-color: #f8f9fa;
+}
+
+#longpage-sidebar .nav-link.active, #longpage-sidebar .nav-link:focus {
   background-color: #0f6cbf;
   color: #fff !important;
 }
