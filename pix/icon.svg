@@ -29,7 +29,7 @@
      showgrid="false"
      inkscape:zoom="26.041667"
      inkscape:cx="12.0192"
-     inkscape:cy="11.1168"
+     inkscape:cy="11.616"
      inkscape:window-width="1312"
      inkscape:window-height="847"
      inkscape:window-x="0"
@@ -80,7 +80,7 @@
      fill="url(#b)"
      d="M12.1 1H1v22h18V8.3"
      id="path838"
-     style="fill:#808080" />
+     style="fill:#004c97;fill-opacity:1" />
   <linearGradient
      id="c"
      gradientUnits="userSpaceOnUse"
@@ -101,16 +101,7 @@
      fill="url(#c)"
      d="M11.6 2H2v20h16V8.7"
      id="path845"
-     style="fill:#cccccc" />
-  <path
-     d="M16 21H4v-1h12v1zm0-3H4v1h12v-1zm0-2H4v1h12v-1zm0-2H4v1h12v-1z"
-     fill="#FFF"
-     id="path847" />
-  <path
-     d="M 16,13 H 4 v -1 h 12 z m 0,-3 H 4 v 1 H 16 Z M 16,8 H 4 V 9 H 16 Z M 15.6544,6.0768 4,6 v 1 h 12 z"
-     fill="#ffffff"
-     id="path847-6"
-     sodipodi:nodetypes="cccccccccccccccccccc" />
+     style="fill:#e6e6e6" />
   <linearGradient
      id="d"
      gradientUnits="userSpaceOnUse"
@@ -264,14 +255,14 @@
   </linearGradient>
   <text
      xml:space="preserve"
-     style="font-size:22.2864px;line-height:1.25;font-family:sans-serif;stroke-width:1.3929"
-     x="1.5246793"
-     y="20.294464"
+     style="font-size:27.6889px;line-height:1.25;font-family:sans-serif;stroke-width:1.73056;fill:#004c97;fill-opacity:1"
+     x="0.95511872"
+     y="24.508993"
      id="text1984"
-     transform="scale(1.055069,0.9478053)"><tspan
+     transform="scale(1.1799507,0.84749303)"><tspan
        sodipodi:role="line"
        id="tspan1982"
-       x="1.5246793"
-       y="20.294464"
-       style="stroke-width:1.3929">L</tspan></text>
+       x="0.95511872"
+       y="24.508993"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:27.6889px;font-family:Futura;-inkscape-font-specification:'Futura, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:1.73056;fill:#004c97;fill-opacity:1">L</tspan></text>
 </svg>
