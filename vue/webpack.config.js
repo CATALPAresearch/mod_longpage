@@ -95,7 +95,7 @@ module.exports = (env, options) => {
         },
         devtool: 'eval-source-map',
         plugins: [
-            new BundleAnalyzerPlugin(),
+            //new BundleAnalyzerPlugin(),
             new VueLoaderPlugin(),
         ],
         watchOptions: {
