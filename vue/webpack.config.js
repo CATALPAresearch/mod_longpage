@@ -20,6 +20,7 @@
  */
 
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 var path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); 
 const TerserPlugin = require('terser-webpack-plugin');
@@ -97,6 +98,18 @@ module.exports = (env, options) => {
         plugins: [
             //new BundleAnalyzerPlugin(),
             new VueLoaderPlugin(),
+            new FileManagerPlugin({
+                events: {
+                  onEnd: {
+                    copy: [
+                      {source: path.resolve(__dirname, '../amd/build'), destination: path.resolve(__dirname, '../amd/src')},
+                    ],
+                    move: [
+                        {source: path.resolve(__dirname, '../amd/src/app-lazy.min.js'), destination: path.resolve(__dirname, '../amd/src/app-lazy.js')},
+                      ],
+                  },
+                }
+              }),
         ],
         watchOptions: {
             ignored: /node_modules/
