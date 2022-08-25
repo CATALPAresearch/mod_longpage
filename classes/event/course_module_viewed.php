@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_page course module viewed event.
+ * The mod_longpage course module viewed event.
  *
  * @package    mod_page
  * @copyright  2013 Ankit Agarwal
@@ -26,7 +26,7 @@ namespace mod_longpage\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_page course module viewed event class.
+ * The mod_longpage course module viewed event class.
  *
  * @package    mod_page
  * @since      Moodle 2.6

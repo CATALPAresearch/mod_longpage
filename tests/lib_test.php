@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for mod_page lib
+ * Unit tests for mod_longpage lib
  *
  * @package    mod_page
  * @category   external
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Unit tests for mod_page lib
+ * Unit tests for mod_longpage lib
  *
  * @package    mod_page
  * @category   external

@@ -30,7 +30,7 @@ The *Longpage* plugin just downloaded is going to replace the *Page* plugin prob
 2. To uninstall the *Page* plugin probably already installed, go to the folder your Moodle installation is located in and run
 
 ```shell
-php admin/cli/uninstall_plugins.php --plugins=mod_page --run
+php admin/cli/uninstall_plugins.php --plugins=mod_longpage --run
 ```
 
 3. To install the *Longpage* plugin afterwards, copy the repository downloaded in the 1. step into the `mod` folder in the folder your Moodle installation is located in replacing the current `mod/longpage` folder containing the regular *Page* plugin. Now, login to your Moodle running as an administrator. The install/update GUI should open automatically. Just follow the steps the GUI presents to you and you should have installed the *Longpage* plugin successfully afterwards. As an alternative to using the GUI for installation, you can also run the update script from within the folder of your Moodle installation:

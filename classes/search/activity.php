@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Search area for mod_page activities.
+ * Search area for mod_longpage activities.
  *
  * @package    mod_page
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
@@ -27,7 +27,7 @@ namespace mod_longpage\search;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Search area for mod_page activities.
+ * Search area for mod_longpage activities.
  *
  * @package    mod_page
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
