@@ -49,13 +49,13 @@ function xmldb_longpage_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
     
-    if ($oldversion < 2021082511) {
+    if ($oldversion < 2021120311) {
         
         // longpage_posts
         // add: <FIELD NAME="islocked" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         $table = new xmldb_table('longpage_posts');
         // $name, $type=null, $precision=null, $unsigned=null, $notnull=null, $sequence=null, $default=null, $previous=null
-        $field = new xmldb_field('islocked', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, null, null, 0, null);
+        $field = new xmldb_field('islocked', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0, null);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -65,13 +65,15 @@ function xmldb_longpage_upgrade($oldversion) {
         // add field <FIELD NAME="sectionhash" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         $table = new xmldb_table('longpage_reading_progress');
         $field1 = new xmldb_field('section', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null);
-        $field2 = new xmldb_field('sectionhash', XMLDB_TYPE_INT, '10', null, XMLDB_NOTNULL, null, null, null);
+        $field2 = new xmldb_field('sectionhash', XMLDB_TYPE_INT, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null);
         if (!$dbman->field_exists($table, $field1)) {
             $dbman->add_field($table, $field1);
         }
         if (!$dbman->field_exists($table, $field2)) {
             $dbman->add_field($table, $field2);
         }
+
+        upgrade_plugin_savepoint(true, 2021120311, 'mod', 'longpage');
 
     /*    
         $table = new xmldb_table('enrol_flatfile');
@@ -94,7 +96,7 @@ function xmldb_longpage_upgrade($oldversion) {
             $dbman->create_table($table);
         }
         */
-        upgrade_plugin_savepoint(true, 2021082511, 'mod', 'longpage');
+        
         
     }
     
