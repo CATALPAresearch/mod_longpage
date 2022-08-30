@@ -47,17 +47,57 @@ defined('MOODLE_INTERNAL') || die;
 function xmldb_longpage_upgrade($oldversion) {
     global $CFG;
 
-    // Automatically generated Moodle v3.2.0 release upgrade line.
-    // Put any upgrade step following this.
+    $dbman = $DB->get_manager();
+    
+    if ($oldversion < 2021082511) {
+        
+        // longpage_posts
+        // add: <FIELD NAME="islocked" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        $table = new xmldb_table('longpage_posts');
+        // $name, $type=null, $precision=null, $unsigned=null, $notnull=null, $sequence=null, $default=null, $previous=null
+        $field = new xmldb_field('islocked', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, null, null, 0, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
-    // Automatically generated Moodle v3.3.0 release upgrade line.
-    // Put any upgrade step following this.
+        // longpage_reading_progress
+        // add field <FIELD NAME="section" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        // add field <FIELD NAME="sectionhash" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        $table = new xmldb_table('longpage_reading_progress');
+        $field1 = new xmldb_field('section', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null);
+        $field2 = new xmldb_field('sectionhash', XMLDB_TYPE_INT, '10', null, XMLDB_NOTNULL, null, null, null);
+        if (!$dbman->field_exists($table, $field1)) {
+            $dbman->add_field($table, $field1);
+        }
+        if (!$dbman->field_exists($table, $field2)) {
+            $dbman->add_field($table, $field2);
+        }
 
-    // Automatically generated Moodle v3.4.0 release upgrade line.
-    // Put any upgrade step following this.
-
-    // Automatically generated Moodle v3.5.0 release upgrade line.
-    // Put any upgrade step following this.
+    /*    
+        $table = new xmldb_table('enrol_flatfile');
+        // Adding fields to table enrol_flatfile
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('action', XMLDB_TYPE_CHAR, '30', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('roleid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $table->add_field('timestart', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timeend', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        // Adding keys to table enrol_flatfile
+        $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('courseid-id', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+        $table->add_key('userid-id', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        $table->add_key('roleid-id', XMLDB_KEY_FOREIGN, array('roleid'), 'role', array('id'));
+        // Conditionally launch create table for enrol_flatfile
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        */
+        upgrade_plugin_savepoint(true, 2021082511, 'mod', 'longpage');
+        
+    }
+    
 
     return true;
 }
