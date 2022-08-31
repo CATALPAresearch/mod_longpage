@@ -45,11 +45,12 @@
 defined('MOODLE_INTERNAL') || die;
 
 function xmldb_longpage_upgrade($oldversion) {
-    global $CFG;
+    global $CFG, $DB;
 
     $dbman = $DB->get_manager();
     
-    if ($oldversion < 2021120311) {
+    $newversion = 2021120311;
+    if ($oldversion < $newversion) {
         
         // longpage_posts
         // add: <FIELD NAME="islocked" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -64,8 +65,8 @@ function xmldb_longpage_upgrade($oldversion) {
         // add field <FIELD NAME="section" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         // add field <FIELD NAME="sectionhash" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         $table = new xmldb_table('longpage_reading_progress');
-        $field1 = new xmldb_field('section', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null);
-        $field2 = new xmldb_field('sectionhash', XMLDB_TYPE_INT, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null);
+        $field1 = new xmldb_field('section', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, '', null);
+        $field2 = new xmldb_field('sectionhash', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
         if (!$dbman->field_exists($table, $field1)) {
             $dbman->add_field($table, $field1);
         }
@@ -73,7 +74,7 @@ function xmldb_longpage_upgrade($oldversion) {
             $dbman->add_field($table, $field2);
         }
 
-        upgrade_plugin_savepoint(true, 2021120311, 'mod', 'longpage');
+        upgrade_plugin_savepoint(true,  $newversion, 'mod', 'longpage');
 
     /*    
         $table = new xmldb_table('enrol_flatfile');
