@@ -48,7 +48,7 @@ import { describe } from "@/lib/annotation/hypothesis/anchoring/html"; // Intere
 import { Anchoring } from "@/lib/annotation/anchoring"; // Interesting for architecture
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import { setHighlightsVisible } from "@/lib/annotation/highlighting";
-import { throttle } from "lodash";
+import throttle from "lodash/throttle";
 import * as rangeUtil from "@/lib/annotation/hypothesis/range-util";
 
 export default {

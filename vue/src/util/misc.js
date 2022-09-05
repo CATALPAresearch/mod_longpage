@@ -18,14 +18,16 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import {camelCase, flow, upperFirst} from 'lodash';
+import camelCase from 'lodash/camelCase';
+import flow from 'lodash/flow';
+import upperFirst from 'lodash/upperFirst';
 import {LONGPAGE_MAIN_ID, SCROLL_INTO_VIEW_OPTIONS} from '@/config/constants';
 import deepRenameKeys from 'deep-rename-keys';
 import scrollIntoView from 'scroll-into-view-if-needed';
 
 export const deepLowerCaseKeys = object => deepRenameKeys(object, key => key.toLowerCase());
 
-export {snakeCase} from 'lodash';
+export {snakeCase} from 'lodash/snakeCase';
 
 export const capitalize = flow(camelCase, upperFirst);
 

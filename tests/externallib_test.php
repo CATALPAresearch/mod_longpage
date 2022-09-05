@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * External mod_page functions unit tests
+ * External mod_longpage functions unit tests
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @category   external
  * @copyright  2015 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,7 +31,7 @@ global $CFG;
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
 /**
- * External mod_page functions unit tests
+ * External mod_longpage functions unit tests
  *
  * @package    mod_page
  * @category   external
@@ -58,7 +58,7 @@ class mod_page_external_testcase extends externallib_advanced_testcase {
         // Test invalid instance id.
         try {
             mod_page_external::view_page(0);
-            $this->fail('Exception expected due to invalid mod_page instance id.');
+            $this->fail('Exception expected due to invalid mod_longpage instance id.');
         } catch (moodle_exception $e) {
             $this->assertEquals('invalidrecord', $e->errorcode);
         }

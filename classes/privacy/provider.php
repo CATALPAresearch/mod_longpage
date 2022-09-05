@@ -26,7 +26,7 @@ namespace mod_longpage\privacy;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_page module does not store any data.
+ * The mod_longpage module does not store any data.
  *
  * @copyright  2018 Zig Tan <zig@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

@@ -115,7 +115,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
   import {ACT, GET} from '@/store/types';
-  import {debounce, isEmpty, set} from 'lodash';
+  import debounce from 'lodash/debounce';
+  import isEmpty from 'lodash/isEmpty';
+  import set from 'lodash/set';
   import {mapActions, mapGetters} from 'vuex';
   import {getDateTimeFormat} from '@/config/i18n/date-time-utils';
   import MultiSelectCheckboxGroup from '@/components/Generic/MultiSelectCheckboxGroup';

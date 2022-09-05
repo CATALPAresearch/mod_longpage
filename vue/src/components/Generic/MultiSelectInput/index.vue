@@ -89,7 +89,8 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import {compact, without} from 'lodash';
+import compact from 'lodash/compact';
+import without from 'lodash/without';
 import Fuse from 'fuse.js';
 import {mapResultToHighlightedDoc} from '@/util/fuse';
 import {tagin} from './tagin';

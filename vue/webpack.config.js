@@ -21,9 +21,11 @@
 
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 var path = require('path');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); 
 const TerserPlugin = require('terser-webpack-plugin');
 const {VueLoaderPlugin} = require('vue-loader');
 var webpack = require('webpack');
+
 
 module.exports = (env, options) => {
     const exports = {
@@ -46,8 +48,12 @@ module.exports = (env, options) => {
                     test: /\.(sa|sc|c)ss$/,
                     use: [
                         'vue-style-loader',
-                        'css-loader',
-                        'sass-loader',
+                        // Creates `style` nodes from JS strings
+                        "css-loader",
+                        // Translates CSS into CommonJS
+                        "css-loader",
+                        // Compiles Sass to CSS
+                        "sass-loader"
                     ],
                 },
                 {
@@ -87,9 +93,9 @@ module.exports = (env, options) => {
         performance: {
             hints: false
         },
-        devtool: '#source-map',
+        devtool: 'source-map',
         plugins: [
-            new BundleAnalyzerPlugin(),
+            //new BundleAnalyzerPlugin(),
             new VueLoaderPlugin(),
         ],
         watchOptions: {
@@ -144,6 +150,13 @@ module.exports = (env, options) => {
         ]);
         exports.optimization = {
             minimizer: [
+                new UglifyJsPlugin({
+                    uglifyOptions: {
+                      output: {
+                        comments: false
+                      }
+                    }
+                }),
                 new TerserPlugin({
                     cache: true,
                     parallel: true,

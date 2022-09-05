@@ -39,7 +39,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
   import Slider from 'bootstrap-slider';
-  import {debounce, uniqueId} from 'lodash';
+  import debounce from 'lodash/debounce'; 
+  import uniqueId from 'lodash/uniqueId';
   import {toIdSelector} from '@/util/style';
 
   export default {

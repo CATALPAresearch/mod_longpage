@@ -76,7 +76,7 @@ import LongpageSidebar from "@/components/LongpageSidebar";
 import { mapActions, mapGetters } from "vuex";
 import AnnotationIndicatorSidebar from "@/components/LongpageContent/AnnotationIndicatorSidebar";
 //import { ReadingTimeEstimator } from "@/lib/reading-time-estimator";
-import { throttle } from "lodash";
+import throttle from 'lodash/throttle';
 import { toIdSelector } from "@/util/style";
 import Utils from "./util/utils";
 

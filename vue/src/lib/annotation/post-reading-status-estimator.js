@@ -18,7 +18,7 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import {remove} from 'lodash';
+import remove from 'lodash/remove';
 import {THREAD_CONTAINER_ID} from "@/config/constants";
 import {ACT} from "@/store/types";
 

@@ -18,7 +18,7 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import {set} from 'lodash';
+import set from 'lodash/set';
 
 const hlStartTag = '<b>';
 const hlEndTag = '</b>';

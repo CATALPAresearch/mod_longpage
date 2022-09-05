@@ -51,7 +51,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
   import {AnnotationType, AnnotationTypeIcon} from '@/config/constants';
-  import {isEmpty, pickBy, transform} from 'lodash';
+  import isEmpty from 'lodash/isEmpty';
+  import pickBy from 'lodash/pickBy';
+  import transform from 'lodash/transform';
   import {EventBus} from '@/lib/event-bus';
   import {toPx} from '@/util/style';
 

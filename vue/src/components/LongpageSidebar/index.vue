@@ -21,7 +21,7 @@
       />
     </div>
     <div
-      id="lonpage-sidebar-tab"
+      :id="LONGPAGE_SIDEBAR_TAB"
       class="col-auto border-left p-0 h-100 nav flex-column nav-pills"
       aria-orientation="vertical"
     >
@@ -80,13 +80,14 @@ import Bookmarks from "@/components/LongpageSidebar/Bookmarks";
 import { EventBus } from "@/lib/event-bus";
 import Highlights from "@/components/LongpageSidebar/Highlights";
 import Posts from "@/components/LongpageSidebar/Posts";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import TableOfContents from "@/components/LongpageSidebar/TableOfContents";
 import Search from "@/components/LongpageSidebar/Search";
 import CourseRecommendation from "@/components/Generic/CourseRecommendations";
 import Quiz from "@/components/LongpageSidebar/Quiz";
 
 const LONGPAGE_SIDEBAR_ID = "longpage-sidebar";
+const LONGPAGE_SIDEBAR_TAB = "longpage-sidebar-tab";
 const LONGPAGE_SIDEBAR_TAB_CONTENT = "longpage-sidebar-tab-content";
 
 const resizeData = {
@@ -223,6 +224,18 @@ export default {
 </script>
 
 <style scoped lang="scss">
+#longpage-sidebar .nav-link:hover {
+  z-index: 1;
+  color: #495057;
+  text-decoration: none;
+  background-color: #f8f9fa;
+}
+
+#longpage-sidebar .nav-link.active, #longpage-sidebar .nav-link:focus {
+  background-color: #0f6cbf;
+  color: #fff !important;
+}
+
 .max-w-80 {
   max-width: 80%;
 }
@@ -260,7 +273,7 @@ $handle-distance: 2px;
     right: 100%;
     height: $handle-size;
     width: $handle-distance;
-    margin-top: -$handle-size/2;
+    margin-top: calc(calc($handle-size) / -2);
     border-left-color: black;
     border-left-width: $handle-thickness;
     border-left-style: solid;
@@ -273,7 +286,7 @@ $handle-distance: 2px;
     left: 100%;
     height: $handle-size;
     width: $handle-distance;
-    margin-top: -$handle-size/2;
+    margin-top: calc(calc($handle-size) / -2);
     border-right-color: black;
     border-right-width: $handle-thickness;
     border-right-style: solid;
