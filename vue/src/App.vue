@@ -87,7 +87,7 @@ import CourseRecommendation from "@/components/Generic/CourseRecommendations";
 export default {
   name: "App",
   components: {
-    AnnotationToolbarController,
+    //AnnotationToolbarController, TODO: remove comment for interBranch
     AnnotationIndicatorSidebar,
     LongpageSidebar,
     ReadingProgress,

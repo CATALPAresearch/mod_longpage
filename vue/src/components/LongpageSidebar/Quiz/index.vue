@@ -89,6 +89,11 @@
   cursor: pointer;
 }
 
+#longpage-content .reading-progress
+{
+  display: none !important;
+}
+
 </style>
 <script>
 // This file is part of Moodle - http://moodle.org/
@@ -179,23 +184,20 @@ export default {
               var sum = 0;
               var len = 0;
 
-              $(".wrapper").each(function(index, paragraph)
+              $(".wrapper[data-reading-comprehension-count]").each(function(index, paragraph)
               {
-                if($(paragraph).attr("data-reading-comprehension-count"))
-                {
-                  var progress = $(paragraph).find(".reading-progress");
-                  var value = parseFloat($(paragraph).attr("data-reading-comprehension-sum"))/parseInt($(paragraph).attr("data-reading-comprehension-count"));
-                  sum += value;
-                  len += 1;
-                  $(progress)
-                    .attr(
-                      "title",
-                      $(progress).attr("title").substr(0, $(progress).attr("title").indexOf("gelesen")+7) + ".\nIhr geschätztes Leseverständnis beträgt " +
-                        (100*value).toFixed(2) +
-                        "%."
-                    ).css("opacity", value).addClass("reading-comprehension");
-                    $(paragraph).attr("data-reading-comprehension-count", "");
-                }
+                var progress = $(paragraph).find(".reading-progress");
+                var value = parseFloat($(paragraph).attr("data-reading-comprehension-sum"))/parseInt($(paragraph).attr("data-reading-comprehension-count"));
+                sum += value;
+                len += 1;
+                $(progress)
+                  .attr(
+                    "title",
+                    $(progress).attr("title").substr(0, $(progress).attr("title").indexOf("gelesen")+7) + ".\nIhr geschätztes Leseverständnis beträgt " +
+                      (100*value).toFixed(2) +
+                      "%."
+                  ).css("opacity", Math.max(0.1, value)).addClass("reading-comprehension");
+                  $(paragraph).attr("data-reading-comprehension-count", "");
               });
               
               var rc = 0;
@@ -235,25 +237,24 @@ export default {
       );
     } 
 
-    $(document).ready(function() 
-    {
-      if ($("body").hasClass("drawer-open-left"))
-      {
+    $(window).on("load", function () {
+      if ($("body").hasClass("drawer-open-left")) {
         $("button[data-action='toggle-drawer']").click();
       }
 
       $(".fa-dashboard").click();
 
-      var wrapper = $("#longpage-main .filter_embedquestion-iframe").parents(".wrapper");
-      $(wrapper).height("0px");
-      $(wrapper).css("padding", "0px");
+      $("#longpage-content .reading-progress").attr("style", "display: inline !important;");
+    });
 
+    $(document).ready(function() 
+    {
       var readfun = _.debounce(function()
       {
         get_reading_comprehension();
-      }, 5000);
+      }, 2000);
 
-      readfun();
+      get_reading_comprehension();
         
       var observer = new IntersectionObserver(function(entries) 
       {
