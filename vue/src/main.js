@@ -18,7 +18,7 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-//import './components/LongpageContent/Footnote';
+import './components/LongpageContent/Footnote';
 import './lib/hashchange-listening';
 import './lib/page-ready-listening';
 import './lib/scroll-snapping';
@@ -33,12 +33,13 @@ export const init = (courseId, longpageid, pageName, userId, content, scrollTop)
     try {
         const store = initStore({courseId: Number(courseId), longpageid: Number(longpageid), pageName, userId: Number(userId)});
         content = $('#longpage-tmp').html();
+        
         createApp(App, {content, scrollTop: Number(scrollTop)})
             .use(store)
             .use(i18n)
             .mount(toIdSelector(LONGPAGE_APP_CONTAINER_ID));
     } catch (e) {
         /* eslint-disable no-console */
-        console.error(e);
+        //console.error(e);
     }
 };
