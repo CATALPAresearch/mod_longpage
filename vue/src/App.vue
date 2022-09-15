@@ -87,11 +87,11 @@ import CourseRecommendation from "@/components/Generic/CourseRecommendations";
 export default {
   name: "App",
   components: {
-    //AnnotationToolbarController, TODO: remove comment for interBranch
+    //AnnotationToolbarController, //TODO: remove comment for interBranch
     AnnotationIndicatorSidebar,
     LongpageSidebar,
     ReadingProgress,
-    CourseRecommendation,
+    //CourseRecommendation, //TODO: remove comment for interBranch
     ReadingTime,
   },
   props: {
