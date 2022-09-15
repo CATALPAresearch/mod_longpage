@@ -141,6 +141,7 @@ export default {
   mounted() 
   {
     let _this = this;
+    const _ = require('lodash');
 
     function get_reading_comprehension()
     {

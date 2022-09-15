@@ -100,13 +100,22 @@ module.exports = (env, options) => {
             new VueLoaderPlugin(),
             new FileManagerPlugin({
                 events: {
-                  onEnd: {
+                    onEnd: {
                     copy: [
-                      {source: path.resolve(__dirname, '../amd/build'), destination: path.resolve(__dirname, '../amd/src')},
-                    ],
-                    move: [
-                        {source: path.resolve(__dirname, '../amd/src/app-lazy.min.js'), destination: path.resolve(__dirname, '../amd/src/app-lazy.js')},
-                      ],
+                          {
+                            source: path.resolve(__dirname, '../amd/build'), destination: path.resolve(__dirname, '../amd/src'),
+                            options: {
+                                overwrite: true
+                            }
+                            },
+                            {
+                                source: path.resolve(__dirname, '../amd/build/app-lazy.min.js'),
+                                destination: path.resolve(__dirname, '../amd/src/app-lazy.js'),
+                                options: {
+                                    overwrite: true
+                                }
+                            },
+                    ]
                   },
                 }
               }),
