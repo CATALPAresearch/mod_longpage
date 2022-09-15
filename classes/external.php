@@ -1139,13 +1139,8 @@ class mod_longpage_external extends external_api {
 
         try {
         $transaction = $DB->start_delegated_transaction();
-        self::update_or_create(
-            'longpage_reading_progress',
-            ['longpageid' => $pageid, 'userid' => $USER->id, 'sectionhash' => $sectionhash],
-            ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 'timemodified' => time(), 'course' => $courseId, 'section' => $section, 'sectionhash' => $sectionhash]
-        );
-        // $DB->update_record('longpage_reading_progress', ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 
-        // 'timemodified' => time(), 'course' => $courseId]);
+        $DB->insert_record('longpage_reading_progress', ['longpageid' => $pageid, 'scrolltop' => $scrolltop, 'userid' => $USER->id, 
+            'timemodified' => time(), 'course' => $courseId, 'section' => $section, 'sectionhash' => $sectionhash]);
         $transaction->allow_commit();
         error_log("updatescroll good" + "cid" + $courseId);
     } catch (Exception $e) {
@@ -1183,12 +1178,12 @@ class mod_longpage_external extends external_api {
         
         $query = '
             SELECT section, count(sectionhash) as count
-            FROM (SELECT * FROM '.$CFG->prefix.'longpage_reading_progress AS m WHERE course=? AND longpageid=?) as mm
+            FROM (SELECT * FROM '.$CFG->prefix.'longpage_reading_progress AS m WHERE course=? AND longpageid=? AND userid=?) as mm
             GROUP by section
             ';
             
         //$transaction = $DB->start_delegated_transaction();
-        $res = $DB->get_records_sql($query, array($courseid, $longpageid));
+        $res = $DB->get_records_sql($query, array($courseid, $longpageid, $USER->id));
         //$transaction->allow_commit();
 
         return array('response'=> json_encode($res));

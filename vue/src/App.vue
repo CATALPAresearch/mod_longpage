@@ -124,7 +124,7 @@ export default {
       this.pageReady = true;
       this.$nextTick(() => {
         this.$refs.mainRef.scrollTop =
-          this.scrollTop * this.$refs.mainRef.scrollHeight;
+          this.scrollTop; // * this.$refs.mainRef.scrollHeight;
         document.getElementById(LONGPAGE_MAIN_ID).addEventListener(
           "scroll",
           throttle(

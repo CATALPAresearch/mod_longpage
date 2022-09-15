@@ -19,7 +19,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+//const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 var path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); 
@@ -35,23 +35,41 @@ module.exports = (env, options) => {
             path: path.resolve(__dirname, '../amd/build'),
             publicPath: '/dist/',
             filename: 'app-lazy.min.js',
-            chunkFilename: '[id].app-lazy.min.js?v=[hash]',
+            chunkFilename: '[id].app-lazy.js?v=[hash]',
             libraryTarget: 'amd',
         },
+        target: 'web',
         module: {
             rules: [
                 {
                     test: /\.js?$/,
                     loader: 'babel-loader',
-                    exclude: /node_modules/
+                    exclude: /node_modules/,
+                    options: {
+                        babelrc: false,
+                        presets: [
+                            //["@vue/babel-preset-app"],
+                            ["@babel/preset-env", {
+                            "forceAllTransforms": true
+                            }],
+                          ],
+                        //["@babel/preset-es2015"],//
+                        plugins: [
+                            "@babel/plugin-proposal-class-properties",
+                            "@babel/plugin-syntax-dynamic-import",
+                            "@babel/plugin-transform-modules-amd",
+                            "@babel/plugin-proposal-async-generator-functions",
+                            "@babel/plugin-proposal-async-do-expressions",
+                            "@babel/plugin-proposal-export-default-from",
+                            //"babel-plugin-transform-remove-strict-mode"/**/
+                        ]
+                      }
                 },
                 {
                     test: /\.(sa|sc|c)ss$/,
                     use: [
                         'vue-style-loader',
                         // Creates `style` nodes from JS strings
-                        "css-loader",
-                        // Translates CSS into CommonJS
                         "css-loader",
                         // Compiles Sass to CSS
                         "sass-loader"
@@ -62,14 +80,15 @@ module.exports = (env, options) => {
                     loader: 'vue-loader',
                     options: {
                         loaders: {
-                            scss: 'vue-style-loader!css-loader!sass-loader'
+                            //scss: 'vue-style-loader!css-loader!sass-loader',
+                            //prettify: false
                         },
                     }
-                },
+                }/*,
                 {
                     test: /\.(eot|svg|ttf|woff|woff2)$/,
                     loader: 'url-loader'
-                }
+                }*/
             ]
         },
         resolve: {
@@ -100,22 +119,31 @@ module.exports = (env, options) => {
             new VueLoaderPlugin(),
             new FileManagerPlugin({
                 events: {
-                    onEnd: {
-                    copy: [
-                          {
-                            source: path.resolve(__dirname, '../amd/build'), destination: path.resolve(__dirname, '../amd/src'),
-                            options: {
-                                overwrite: true
-                            }
+                    onStart :{
+                        delete: [
+                            {
+                                source: path.resolve(__dirname, '../amd/src/app-lazy.js'),
+                                options: { force: true },
                             },
                             {
                                 source: path.resolve(__dirname, '../amd/build/app-lazy.min.js'),
-                                destination: path.resolve(__dirname, '../amd/src/app-lazy.js'),
-                                options: {
-                                    overwrite: true
-                                }
+                                options: { force: true },
                             },
-                    ]
+                        ],
+                    },
+                  onEnd: {
+                    copy: [
+                      {source: path.resolve(__dirname, '../amd/build'), destination: path.resolve(__dirname, '../amd/src')},
+                    ],
+                    move: [
+                        { source: path.resolve(__dirname, '../amd/src/app-lazy.min.js'), destination: path.resolve(__dirname, '../amd/src/app-lazy.js') },
+                    ],
+                    delete: [
+                        {
+                            source: path.resolve(__dirname, '../amd/src/app-lazy.min.js'),
+                            options: { force: true },
+                        },
+                    ],
                   },
                 }
               }),
@@ -149,15 +177,17 @@ module.exports = (env, options) => {
                 amd: 'core/notification'
             },
             'core/pubsub': {
-              amd: 'core/pubsub'
+                amd: 'core/pubsub'
             },
             jquery: {
                 amd: 'jquery'
             }
         }
     };
+    console.log('MODE:: ',options)
     if (options.mode === 'production') {
-        //exports.devtool = false;
+        console.log('MODE:: ',options.mode)
+        exports.devtool = false;
         // http://vue-loader.vuejs.org/en/workflow/production.html
         // exp
         exports.plugins = (exports.plugins || []).concat([
@@ -167,22 +197,30 @@ module.exports = (env, options) => {
                 }
             }),
             new webpack.LoaderOptionsPlugin({
-                minimize: true
+                minimize: false
             })
         ]);
         exports.optimization = {
+            minimize: false,
+            nodeEnv: 'production',
             minimizer: [
-                new UglifyJsPlugin({
+                /*new UglifyJsPlugin({
                     uglifyOptions: {
                       output: {
-                        comments: false
+                        comments: false,
+                        warnings: false,
+                        keep_fnames: true,
                       }
-                    }
-                }),
-                new TerserPlugin({
-                    cache: true,
-                    parallel: true,
+                    },
                     sourceMap: true,
+                    extractComments: true,
+                }),*/
+                new TerserPlugin({
+                    //cache: true,
+                    parallel: true,
+                    extractComments:'all',
+                    //sourceMap: true,
+                    //minify:false
                 }),
             ]
         };

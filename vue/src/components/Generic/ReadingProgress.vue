@@ -113,13 +113,7 @@ export default {
                   document.body.parentNode ||
                   document.body
                 ).scrollRight;
-              scrollYDistance =
-                window.pageYOffset ||
-                (
-                  document.documentElement ||
-                  document.body.parentNode ||
-                  document.body
-                ).scrollTop;
+              scrollYDistance = document.querySelector("#longpage-main").scrollTop;
 
               var logentry = {
                 utc: now.getTime(),
