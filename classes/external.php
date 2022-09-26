@@ -1438,12 +1438,13 @@ class mod_longpage_external extends external_api {
         if ($data['action'] == "scroll") {
             $d = json_decode($data['entry']);
             $s = new stdClass();
-            $s->section = (String)$d->targetID;
+            $s->section = (String)$d->section;
+            $s->sectionhash = (int) $d->sectionhash;
             //$s->sectionoffset = (int) $d->value->scrollYDistance;
             $s->userid = (int) $USER->id;
             $s->course = (int) $data['courseid'];
             $s->longpageid = (int) $d->longpageid;
-            $s->timemodified = (int) $d->utc;
+            $s->timemodified = (int) $data['utc'];
             $s->scrolltop = (int) $d->scrolltop;
 
             try {

@@ -48,6 +48,12 @@ export default {
   },
 
   methods: {
+    hashCode: function (s) {
+      return s.split("").reduce(function (a, b) {
+        a = (a << 5) - a + b.charCodeAt(0);
+        return a & a;
+      }, 0);
+    },
     enableScrollLogging: function () {
       let _this = this;
       if (
@@ -116,14 +122,13 @@ export default {
               scrollYDistance = document.querySelector("#longpage-main").scrollTop;
 
               var logentry = {
-                utc: now.getTime(),
                 longpageid: _this.context.longpageid,
-                courseid: _this.context.courseId,
                 relativeTime: entry.time, // ??
                 targetID: entry.target.id,
                 targetTag: entry.target.localName,
                 targetClasses: entry.target.className,
                 targetWordCount: word_count,
+                targetHeight: entry.target.scrollHeight,
                 scrollXDistance:
                   scrollXDistance === undefined ? 0 : scrollXDistance,
                 scrollYDistance:
@@ -134,6 +139,8 @@ export default {
                 containerHeight: containerHeight,
                 containerWidth: containerWidth,
                 behavior: null, // read, scroll, inactive
+                section: entry.target.id,
+                sectionhash: _this.hashCode(entry.target.id),
               };
 
               // reading detection
@@ -148,46 +155,19 @@ export default {
                 last_entry.behavior = "scrolling";
               }
 
-              // output
-              //console.log(last_entry.targetID + '\t', time_diff + '\t', last_entry.targetWordCount + '\t', ratio.toFixed(1) + '\t', last_entry.behavior, _this.percentageSeen(entry.target.id));
-              //_this.$emit("log", "scroll", last_entry);
-              // ajax.call([
-              //   {
-              //     methodname: "mod_longpage_log",
-              //     args: {
-              //       data: {
-              //         entry: JSON.stringify(logentry),
-              //         action: "scroll",
-              //         utc: Math.ceil(now.getTime() / 1000),
-              //         courseid: _this.context.courseId
-              //       },
-              //     },
-              //     done: function (reads) {
-              //       console.log(reads);
-              //     },
-              //     fail: function (e) {
-              //       console.error("fail", e);
-              //     },
-              //   },
-              // ]);
-              var hashCode = function (s) {
-                return s.split("").reduce(function (a, b) {
-                  a = (a << 5) - a + b.charCodeAt(0);
-                  return a & a;
-                }, 0);
-              };
               ajax.call([
                 {
-                  methodname: "mod_longpage_update_reading_progress",
+                  methodname: "mod_longpage_log",
                   args: {
-                    longpageid: _this.context.longpageid,
-                    courseid: _this.context.courseId,
-                    scrolltop:
-                      scrollYDistance === undefined ? 0 : scrollYDistance,
-                    section: entry.target.id,
-                    sectionhash: hashCode(entry.target.id),
+                    data: {
+                      entry: JSON.stringify(logentry),
+                      action: "scroll",
+                      utc: Math.ceil(now.getTime() / 1000),
+                      courseid: _this.context.courseId
+                    },
                   },
                   done: function (reads) {
+                    console.log(reads);
                   },
                   fail: function (e) {
                     console.error("fail", e);
