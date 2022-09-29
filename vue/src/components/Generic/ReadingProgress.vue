@@ -22,29 +22,7 @@ export default {
 
   mounted: function () {
     this.enableScrollLogging();
-
     this.visualizeReadingProgress();
-
-    // if (
-    //   "IntersectionObserver" in window &&
-    //   "IntersectionObserverEntry" in window &&
-    //   "intersectionRatio" in window.IntersectionObserverEntry.prototype
-    // ) {
-    //   var observer = new IntersectionObserver((entries) => {
-    //     if (entries[0].boundingClientRect.y < 0) {
-    //       document
-    //         .getElementById("longpage-navbar")
-    //         .classList.add("header-not-at-top");
-    //       //document.getElementById('table-of-content').classList.add("header-not-at-top");
-    //     } else {
-    //       document
-    //         .getElementById("longpage-navbar")
-    //         .classList.remove("header-not-at-top");
-    //       //document.getElementById('table-of-content').classList.remove("header-not-at-top");
-    //     }
-    //   });
-    //   observer.observe(document.querySelector("#top-of-site-pixel-anchor"));
-    // }
   },
 
   methods: {
@@ -187,15 +165,25 @@ export default {
           "#longpage-app h4",
         ];
         $(observedSelectors.join(", ")).each(function (i, val) {
-          let attr = $(this).attr("id");
+          var attr = $(this).attr("id");
           if (typeof attr === typeof undefined || attr === false) {
+            attr = "paragraph-" + pCounter;
             $(this)
-              .attr("id", "paragraph-" + pCounter)
+              .attr("id", attr)
               .addClass("longpage-paragraph");
             pCounter++;
           }
           sectionCount++;
-          observer.observe(document.querySelector("#" + $(this).attr("id")));
+          $("#" + attr).wrap("<div class='wrapper'></div>");
+          $("#" + attr).parent().append(
+                    $("<span></span>")
+                      .attr(
+                        "title",
+                        "Der Abschnitt wurde bislang 0 mal gelesen"
+                      )
+                      .addClass("reading-progress")
+          );
+          observer.observe(document.querySelector("#" + attr));
         });
       }
     },
@@ -286,39 +274,13 @@ export default {
               });
               let max = max_arr.reduce((a, b) => Math.max(a, b), -Infinity);
               for (var i = 0; i < data.length; i++) {
-                //console.log(...$("#" + data[i].section).contents());
                 if ($("#" + data[i].section)) {
-                  // let arr = new Array();
-
-                  // arr.push(...$("#" + data[i].section).contents());
-                  // let store = [...$("#"+data[i].section).contents()];
-                  // console.log(arr);
-
-                  $("#" + data[i].section).wrap("<div class='wrapper'></div>");
-                  // $(".wrapper").find("#" + data[i].section).append($("<span></span>")
-                  //     .attr(
-                  //       "title",
-                  //       "Der Abschnitt wurde bislang " +
-                  //         data[i].count +
-                  //         " mal gelesen"
-                  //     )
-                  //     .addClass(
-                  //       "reading-progress progress-" +
-                  //         Math.ceil((data[i].count / max) * 5)
-                  //     ))
-                  $("#" + data[i].section).parent().append(
-                    $("<span></span>")
-                      .attr(
-                        "title",
-                        "Der Abschnitt wurde bislang " +
-                          data[i].count +
-                          " mal gelesen"
-                      )
+                  $("#" + data[i].section).next(".reading-progress")                  
                       .addClass(
                         "reading-progress progress-" +
                           Math.ceil((data[i].count / max) * 5)
                       )
-                  );
+                  
                   if (_this.debug) {
                     $("#" + data[i].section).append(
                       $(
