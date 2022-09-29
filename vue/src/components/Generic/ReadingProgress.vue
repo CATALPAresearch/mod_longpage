@@ -63,10 +63,8 @@ export default {
         document.querySelector("#longpage-app")
       ) {
         var measuredElement = document.querySelector("#longpage-app");
-        var scrollHeight =
-          document.documentElement.scrollHeight - window.innerHeight;
-        var scrollWidth =
-          document.documentElement.scrollWidth - window.innerWidth;
+        var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        var scrollWidth = document.documentElement.scrollWidth - window.innerWidth;
         var yPadding, xPadding;
         if (window.getComputedStyle && measuredElement) {
           var computedStyle = window.getComputedStyle(measuredElement);
@@ -81,19 +79,13 @@ export default {
         var containerHeight = measuredElement.clientHeight - yPadding;
         var containerWidth = measuredElement.clientWidth - xPadding;
 
-        var scrollXDistance = 0;
-        var scrollYDistance = 0;
-        var topPadding = 0;
+        var longpageMain = document.querySelector("#longpage-main");
         let last_entry = {};
+        var sectionCount = 0;
+        var behavior;
 
         // See: https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
         var handleScrolling = function (entries) {
-          if (entries[0].boundingClientRect.y < topPadding) {
-            //document.getElementById('table-of-content').classList.add("scrollDown");//header-not-at-top
-          } else {
-            //document.getElementById('table-of-content').classList.remove("scrollDown");
-          }
-
           let time_diff = 0;
           // iterate over all entries that are within the viewport at the same time.
           for (var entry of entries) {
@@ -112,48 +104,37 @@ export default {
               // _this.get($('#' + entry.target.id).get(0)).visibility
 
               //
-              scrollXDistance =
-                window.pageXOffset ||
-                (
-                  document.documentElement ||
-                  document.body.parentNode ||
-                  document.body
-                ).scrollRight;
-              scrollYDistance = document.querySelector("#longpage-main").scrollTop;
-
-              var logentry = {
-                longpageid: _this.context.longpageid,
-                relativeTime: entry.time, // ??
-                targetID: entry.target.id,
-                targetTag: entry.target.localName,
-                targetClasses: entry.target.className,
-                targetWordCount: word_count,
-                targetHeight: entry.target.scrollHeight,
-                scrollXDistance:
-                  scrollXDistance === undefined ? 0 : scrollXDistance,
-                scrollYDistance:
-                  scrollYDistance === undefined ? 0 : scrollYDistance,
-                scrollHeight: scrollHeight,
-                scrollWidth: scrollWidth,
-                scrolltop: scrollYDistance === undefined ? 0 : scrollYDistance,
-                containerHeight: containerHeight,
-                containerWidth: containerWidth,
-                behavior: null, // read, scroll, inactive
-                section: entry.target.id,
-                sectionhash: _this.hashCode(entry.target.id),
-              };
 
               // reading detection
               time_diff = (now.getTime() - last_entry.utc) / 1000; // in seconds
               time_diff = time_diff === 0 ? 1 : time_diff;
               let ratio = last_entry.targetWordCount / time_diff;
               if (ratio < 0.1) {
-                last_entry.behavior = "idle";
+                behavior = "idle";
               } else if (ratio >= 0.1 && ratio <= 3.6) {
-                last_entry.behavior = "reading";
+                behavior = "reading";
               } else {
-                last_entry.behavior = "scrolling";
+                behavior = "scrolling";
               }
+
+              var logentry = {
+                longpageid: _this.context.longpageid,
+                relativeTime: entry.time,
+                targetID: entry.target.id,
+                targetTag: entry.target.localName,
+                targetClasses: entry.target.className,
+                targetWordCount: word_count,
+                targetHeight: entry.target.scrollHeight,
+                scrollLeft: longpageMain.scrollLeft,
+                scrollTop: longpageMain.scrollTop,
+                scrollHeight: scrollHeight,
+                scrollWidth: scrollWidth,
+                containerHeight: containerHeight,
+                containerWidth: containerWidth,
+                behavior: behavior,
+                sectionhash: _this.hashCode(entry.target.id),
+                sectionCount: sectionCount
+              };
 
               ajax.call([
                 {
@@ -167,7 +148,6 @@ export default {
                     },
                   },
                   done: function (reads) {
-                    console.log(reads);
                   },
                   fail: function (e) {
                     console.error("fail", e);
@@ -214,6 +194,7 @@ export default {
               .addClass("longpage-paragraph");
             pCounter++;
           }
+          sectionCount++;
           observer.observe(document.querySelector("#" + $(this).attr("id")));
         });
       }
@@ -361,41 +342,6 @@ export default {
         },
       ]);
     },
-    // visualizeReadingProgress: function () {
-    //     let _this = this;
-    //     ajax.call([{
-    //         methodname: 'mod_longpage_get_reading_progress',
-    //         args: { data: { courseid: this.context.courseid, pageid: this.context.pageid } },
-    //         done: function (reads) {
-    //             try {
-    //                 let data = Object.values(JSON.parse(reads.response));
-    //                 let max_arr = data.map(function (d) { return d.count; });
-    //                 let max = max_arr.reduce((a, b) => Math.max(a, b), -Infinity);
-
-    //                 for (var i = 0; i < data.length; i++) {
-    //                     if ($('#' + data[i].section)) {
-    //                         // console.log('section', data[i])
-    //                         $('#' + data[i].section).append(
-    //                             $('<span></span>')
-    //                                 .attr('title', 'Der Abschnitt wurde bislang ' + data[i].count + ' mal gelesen')
-    //                                 .addClass('reading-progress progress-' + Math.ceil(data[i].count / max * 5))
-    //                         );
-    //                         if (_this.debug) {
-    //                             $('#' + data[i].section).append(
-    //                                 $('<span style="position:absolute; right:-40px; font-size:8px; background-color:red; padding:1px 2px; color:#fff;">' + data[i].section.replace('longpage-paragraph-', '') + '</span>')
-    //                             );
-    //                         }
-
-    //                     } else {
-    //                         console.log('Section not found', data[i].section)
-    //                     }
-
-    //                 }
-    //             } catch (e) { console.log(e) }
-    //         },
-    //         fail: function (e) { console.error('fail', e); }
-    //     }]);
-    // },
   },
 };
 </script>
