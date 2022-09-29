@@ -1423,13 +1423,11 @@ class mod_longpage_external extends external_api {
         $r->userid = $USER->id;
         $r->courseid = (int) $data['courseid'];
 
-        //$r->relateduserid=NULL;
         $r->anonymous = 0;
         $r->other = $data['entry'];
         $r->timecreated = $data['utc'];
         $r->origin = 'web';
         $r->ip = $_SERVER['REMOTE_ADDR'];
-        //$r->realuserid=NULL;
 
         $transaction = $DB->start_delegated_transaction();
         $res = $DB->insert_record("logstore_standard_log", (array) $r);
@@ -1438,18 +1436,17 @@ class mod_longpage_external extends external_api {
         if ($data['action'] == "scroll") {
             $d = json_decode($data['entry']);
             $s = new stdClass();
-            $s->section = (String)$d->section;
+            $s->section = (String)$d->targetID;
             $s->sectionhash = (int) $d->sectionhash;
-            //$s->sectionoffset = (int) $d->value->scrollYDistance;
             $s->userid = (int) $USER->id;
             $s->course = (int) $data['courseid'];
             $s->longpageid = (int) $d->longpageid;
             $s->timemodified = (int) $data['utc'];
-            $s->scrolltop = (int) $d->scrolltop;
+            $s->scrolltop = (int) $d->scrollTop;
+            $s->scrollheight = (int) $d->scrollHeight;
+            $s->sectioncount = (int) $d->sectionCount;
 
             try {
-
-            
             $transaction = $DB->start_delegated_transaction();
             $res2 = $DB->insert_record("longpage_reading_progress", (array) $s);
             $transaction->allow_commit();

@@ -78,8 +78,28 @@ function xmldb_longpage_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field3)) {
             $dbman->add_field($table, $field3);
         }
-        upgrade_plugin_savepoint(true,  $newversion, 'mod', 'longpage');
+        upgrade_plugin_savepoint(true,  $newversion, 'longpage');
         
+    }
+
+    $newversion = 2022092901;
+    if ($oldversion < newversion) {
+
+        // Define field id to be added to longpage_reading_progress.
+        $table = new xmldb_table('longpage_reading_progress');
+        $field1 = new xmldb_field('scrollheight', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null, 'sectionhash');
+        $field2 = new xmldb_field('sectioncount', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'scrollheight');
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field1)) {
+            $dbman->add_field($table, $field1);
+        }
+        if (!$dbman->field_exists($table, $field2)) {
+            $dbman->add_field($table, $field2);
+        }
+
+        // Longpage savepoint reached.
+        upgrade_mod_savepoint(true, $newversion, 'longpage');
     }
     
 
