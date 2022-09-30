@@ -150,20 +150,29 @@ export default {
         var pCounter = 0;
         //
         const observedSelectors = [
-          "#longpage-app h2",
-          "#longpage-app h3",
-          "#longpage-app pre",
-          "#longpage-app img",
-          "div.longpage-image-block",
-          "div.longpage-assignment",
-          "#longpage-app p",
-          "#longpage-app .longpage-assignment",
-          "#longpage-app ol",
-          "#longpage-app ul",
-          "#longpage-app h2",
-          "#longpage-app h3",
-          "#longpage-app h4",
+          "#longpage-content > h2",
+          "#longpage-content > h3",
+          "#longpage-content > pre",
+          "#longpage-content > h4",
+          "#longpage-content > img",
+          "#longpage-content > .longpage-image-block",
+          "#longpage-content > p",
+          "#longpage-content > .longpage-assignment",
+          "#longpage-content > ol",
+          "#longpage-content > ul",
+
+          "#longpage-content > .filter_mathjaxloader_equation > h2",
+          "#longpage-content > .filter_mathjaxloader_equation > h3",
+          "#longpage-content > .filter_mathjaxloader_equation > pre",
+          "#longpage-content > .filter_mathjaxloader_equation > h4",
+          "#longpage-content > .filter_mathjaxloader_equation > img",
+          "#longpage-content > .filter_mathjaxloader_equation > .longpage-image-block",
+          "#longpage-content > .filter_mathjaxloader_equation > p",
+          "#longpage-content > .filter_mathjaxloader_equation > .longpage-assignment",
+          "#longpage-content > .filter_mathjaxloader_equation > ol",
+          "#longpage-content > .filter_mathjaxloader_equation > ul",
         ];
+
         $(observedSelectors.join(", ")).each(function (i, val) {
           var attr = $(this).attr("id");
           if (typeof attr === typeof undefined || attr === false) {

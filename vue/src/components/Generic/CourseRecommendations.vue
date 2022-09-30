@@ -429,6 +429,7 @@ export default {
           .append(courseRecommendationList);
         $(this.parantSelector + " h3:nth(" + j + ")")
           .css("position", "relative")
+          .parent(".wrapper")
           .next("span")
           .after("<br>")
           .after(wrapper)
