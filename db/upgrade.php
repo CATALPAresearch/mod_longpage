@@ -78,7 +78,8 @@ function xmldb_longpage_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field3)) {
             $dbman->add_field($table, $field3);
         }
-        upgrade_plugin_savepoint(true,  $newversion, 'longpage');
+        upgrade_plugin_savepoint(true,  $newversion, 'mod', 'longpage');
+        
         
     }
 
@@ -99,7 +100,7 @@ function xmldb_longpage_upgrade($oldversion) {
         }
 
         // Longpage savepoint reached.
-        upgrade_mod_savepoint(true, $newversion, 'longpage');
+        upgrade_plugin_savepoint(true,  $newversion, 'mod', 'longpage');
     }
     
 
