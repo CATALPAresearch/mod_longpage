@@ -149,29 +149,35 @@ export default {
         var observer = new IntersectionObserver(handleScrolling, options);
         var pCounter = 0;
         //
-        const observedSelectors = [
-          "#longpage-content > h2",
-          "#longpage-content > h3",
-          "#longpage-content > pre",
-          "#longpage-content > h4",
-          "#longpage-content > img",
-          "#longpage-content > .longpage-image-block",
-          "#longpage-content > p",
-          "#longpage-content > .longpage-assignment",
-          "#longpage-content > ol",
-          "#longpage-content > ul",
 
-          "#longpage-content > .filter_mathjaxloader_equation > h2",
-          "#longpage-content > .filter_mathjaxloader_equation > h3",
-          "#longpage-content > .filter_mathjaxloader_equation > pre",
-          "#longpage-content > .filter_mathjaxloader_equation > h4",
-          "#longpage-content > .filter_mathjaxloader_equation > img",
-          "#longpage-content > .filter_mathjaxloader_equation > .longpage-image-block",
-          "#longpage-content > .filter_mathjaxloader_equation > p",
-          "#longpage-content > .filter_mathjaxloader_equation > .longpage-assignment",
-          "#longpage-content > .filter_mathjaxloader_equation > ol",
-          "#longpage-content > .filter_mathjaxloader_equation > ul",
-        ];
+        //tie together text parts without wrapper to wrap them
+        var observedElements = ["h2", "h3", "h4", "pre", "img", "p", "ol", "ul"];
+        var container = "#longpage-content";
+
+        if ($(container + " > .filter_mathjaxloader_equation"))
+          container += " > .filter_mathjaxloader_equation";
+
+        $($(container)
+          .contents()
+          .toArray()
+          .reduce(function (prev, cur) {
+            if (cur.tagName && observedElements.includes(cur.tagName.toLowerCase()))
+              return prev;
+
+            if (prev.length == 0)
+              return [[cur]];
+
+            prev[prev.length - 1].push(cur);
+
+            if (cur.nextSibling && cur.nextSibling.tagName && observedElements.includes(cur.nextSibling.tagName.toLowerCase())) {
+              prev.push([]);
+            }
+            return prev;
+          }, [])).wrap("<p></p>");
+
+        var observedSelectors = observedElements.map(function (val) {
+          return container + " > " + val;
+        });
 
         $(observedSelectors.join(", ")).each(function (i, val) {
           var attr = $(this).attr("id");
