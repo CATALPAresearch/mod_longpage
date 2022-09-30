@@ -17,7 +17,7 @@
 /**
  * Page module capability definition
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @copyright  2009 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
