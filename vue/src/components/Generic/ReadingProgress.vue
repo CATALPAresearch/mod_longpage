@@ -290,7 +290,13 @@ export default {
               let max = max_arr.reduce((a, b) => Math.max(a, b), -Infinity);
               for (var i = 0; i < data.length; i++) {
                 if ($("#" + data[i].section)) {
-                  $("#" + data[i].section).next(".reading-progress")                  
+                  $("#" + data[i].section).next(".reading-progress") 
+                      .attr(
+                        "title",
+                        "Der Abschnitt wurde bislang " +
+                          data[i].count +
+                          " mal gelesen"
+                      )                 
                       .addClass(
                         "reading-progress progress-" +
                           Math.ceil((data[i].count / max) * 5)
