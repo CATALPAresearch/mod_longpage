@@ -245,6 +245,8 @@ export default {
 
       $(".fa-dashboard").click();
 
+      if (!_this.context.showreadingcomprehension) /* TODO: remove for interBranch */
+        return;
       $("#longpage-content .reading-progress").attr("style", "display: inline !important;");
     });
 
