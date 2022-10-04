@@ -76,7 +76,7 @@ function xmldb_longpage_upgrade($oldversion) {
             $dbman->add_field($table, $field3);
         }
         $table = new xmldb_table('longpage');
-         $field = new xmldb_field('showreadingcomprehension', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
+        $field = new xmldb_field('showreadingcomprehension', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
  
          // Conditionally launch add field id.
          if (!$dbman->field_exists($table, $field)) {
