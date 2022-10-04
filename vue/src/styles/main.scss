@@ -42,6 +42,11 @@ html {
   */
 }
 
+.popover{
+  width: auto;
+  max-width: 500px; /* Max Width of the popover (depending on the container!) */
+}
+
 .longpage-citation {
   color: #004C97 !important;
   margin: 0;
@@ -243,50 +248,50 @@ code {
 .wrapper {
   display: flex;
   justify-content: space-between;
+  padding: 0;
 }
 
 #longpage-content .reading-progress {
   z-index: 40;
   display: block;
   height: auto;
-  min-width: 1px;
+  min-width: 7px;
   background-color: #004C97;
-  //position: absolute;
+  position: relative;
   //top: 0;
   flex-shrink: 0;
   border-radius: 50px/50px;
   opacity: 0.3;
-  margin-left: 15px;
+  margin-left: 20px;
 }
 
 #longpage-content .progress-0 {
-  width: 1px;
-  right: -10px;
+  width: 6px;
 }
 
 #longpage-content .progress-1 {
-  width: 4px;
-  right: -12px;
+  width: 8px;
+  left: 1px;
 }
 
 #longpage-content .progress-2 {
-  width: 8px;
-  right: -14px;
+  width: 10px;
+  left: 2px;
 }
 
 #longpage-content .progress-3 {
   width: 12px;
-  right: -16px;
+  left: 3px;
 }
 
 #longpage-content .progress-4 {
   width: 16px;
-  right: -18px;
+  left: 5px;
 }
 
 #longpage-content .progress-5 {
   width: 20px;
-  right: -20px;
+  left: 6px;
 }
 
 /* */

@@ -40,6 +40,7 @@
     "lodash.without": "^4.4.0",
     "nodemon": "^2.0.13",
     "popper": "^1.0.1",
+    "popper.js": "^1.16.1",
     "scroll-into-view-if-needed": "2.2.26",
     "tagin": "1.2.0",
     "tiny-emitter": "2.1.0",

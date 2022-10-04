@@ -17,7 +17,7 @@
 /**
  * Cognitive depth indicator - page.
  *
- * @package   mod_page
+ * @package   mod_longpage
  * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,13 +26,6 @@ namespace mod_longpage\analytics\indicator;
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * Cognitive depth indicator - page.
- *
- * @package   mod_page
- * @copyright 2017 David Monllao {@link http://www.davidmonllao.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class cognitive_depth extends activity_base {
 
     /**

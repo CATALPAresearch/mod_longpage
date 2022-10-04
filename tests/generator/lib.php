@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Page module data generator class
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @category   test
  * @copyright  2012 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

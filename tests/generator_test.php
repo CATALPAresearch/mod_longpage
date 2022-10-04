@@ -17,7 +17,7 @@
 /**
  * PHPUnit data generator tests
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @category   phpunit
  * @copyright  2012 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * PHPUnit data generator testcase
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @category   phpunit
  * @copyright  2012 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

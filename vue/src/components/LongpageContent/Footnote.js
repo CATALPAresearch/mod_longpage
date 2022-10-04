@@ -14,19 +14,35 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    mod_page
+ * @package    mod_longpage
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import $ from 'jquery';
-
-$(() => {
-    $('.longpage-footnote button').popover({
-        html: true,
-        trigger: 'focus',
-        content() {
-            const content = $(this).attr("data-popover-content");
-            return $(content).children(".popover-body").html();
-        },
-    });
-});
+ import $ from 'jquery';
+ import * as bootstrap from 'bootstrap'
+ 
+ $(() => {
+ 
+     $('.longpage-footnote button').popover({
+         html: true,
+         trigger: 'focus',
+         sanitize: false
+     });
+ 
+     const popovers = document.querySelectorAll('.longpage-footnote button[data-toggle="popover"]');
+     for (let popover of popovers)
+     {
+         var html = $(popover).html();
+         var pos = html.indexOf("&gt;");
+         if (pos >= 0)
+         {
+             var footnote = html.substring(pos + 4);
+             html = html.substring(0, pos - 2).replaceAll("\"", "'");
+             var content = popover.getAttribute('data-content');
+             content += html;
+             popover.setAttribute('data-content', content);
+             $(popover).text(footnote);
+         }
+     }
+ });
+ 

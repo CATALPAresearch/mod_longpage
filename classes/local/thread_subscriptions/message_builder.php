@@ -17,7 +17,7 @@
 /**
  * Message Builder
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @copyright  2021 Adrian Stritzinger <adrian.stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

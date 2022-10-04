@@ -113,7 +113,7 @@ module.exports = (env, options) => {
         performance: {
             hints: false
         },
-        devtool: 'source-map',
+        //devtool: 'eval-source-map',
         plugins: [
             //new BundleAnalyzerPlugin(),
             new VueLoaderPlugin(),

@@ -17,7 +17,7 @@
 /**
  * The mod_longpage instance list viewed event.
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @copyright  2013 Ankit Agarwal
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The mod_longpage instance list viewed event class.
  *
- * @package    mod_page
+ * @package    mod_longpage
  * @since      Moodle 2.7
  * @copyright  2013 onwards Ankit Agarwal
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

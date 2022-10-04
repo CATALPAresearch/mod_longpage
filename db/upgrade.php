@@ -37,8 +37,8 @@
  * Please do not forget to use upgrade_set_timeout()
  * before any action that may take longer time to finish.
  *
- * @package mod_page
- * @copyright  2009 Petr Skoda (http://skodak.org)
+ * @package mod_longpage
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -53,7 +53,6 @@ function xmldb_longpage_upgrade($oldversion) {
     if ($oldversion < $newversion) {
         
         // longpage_posts
-        // add: <FIELD NAME="islocked" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         $table = new xmldb_table('longpage_posts');
         // $name, $type=null, $precision=null, $unsigned=null, $notnull=null, $sequence=null, $default=null, $previous=null
         $field = new xmldb_field('islocked', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0, null);
@@ -62,10 +61,8 @@ function xmldb_longpage_upgrade($oldversion) {
         }
 
         // longpage_reading_progress
-        // add field <FIELD NAME="section" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        // add field <FIELD NAME="sectionhash" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         $table = new xmldb_table('longpage_reading_progress');
-        //                          ($name, $type=null, $precision=null, $unsigned=null, $notnull=null, $sequence=null, $default=null, $previous=null)
+        // ($name, $type=null, $precision=null, $unsigned=null, $notnull=null, $sequence=null, $default=null, $previous=null)
         $field1 = new xmldb_field('section', XMLDB_TYPE_TEXT, '255', null, XMLDB_NOTNULL, null, 0, null, null);
         $field2 = new xmldb_field('sectionhash', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0, null, null);
         $field3 = new xmldb_field('course', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0, null, null);
@@ -86,9 +83,27 @@ function xmldb_longpage_upgrade($oldversion) {
              $dbman->add_field($table, $field);
 
         upgrade_plugin_savepoint(true,  $newversion, 'mod', 'longpage');
-        
     }
-    
+
+    $newversion = 2022092913;
+    if ($oldversion < $newversion) {
+
+        // Define field id to be added to longpage_reading_progress.
+        $table = new xmldb_table('longpage_reading_progress');
+        $field1 = new xmldb_field('scrollheight', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null, 'sectionhash');
+        $field2 = new xmldb_field('sectioncount', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'scrollheight');
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field1)) {
+            $dbman->add_field($table, $field1);
+        }
+        if (!$dbman->field_exists($table, $field2)) {
+            $dbman->add_field($table, $field2);
+        }
+
+        // Longpage savepoint reached.
+        upgrade_plugin_savepoint(true,  $newversion, 'mod', 'longpage');
+    }
 
     return true;
 }
