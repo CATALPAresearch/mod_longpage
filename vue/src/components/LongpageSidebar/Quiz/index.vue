@@ -89,6 +89,11 @@
   cursor: pointer;
 }
 
+#longpage-content .reading-progress /* TODO: remove for interBranch */
+{
+  display: none !important;
+}
+
 </style>
 <script>
 // This file is part of Moodle - http://moodle.org/
