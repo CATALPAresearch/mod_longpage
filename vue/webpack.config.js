@@ -197,11 +197,11 @@ module.exports = (env, options) => {
                 }
             }),
             new webpack.LoaderOptionsPlugin({
-                minimize: false
+                minimize: true
             })
         ]);
         exports.optimization = {
-            minimize: false,
+            minimize: true,
             nodeEnv: 'production',
             minimizer: [
                 /*new UglifyJsPlugin({
@@ -216,9 +216,9 @@ module.exports = (env, options) => {
                     extractComments: true,
                 }),*/
                 new TerserPlugin({
-                    //cache: true,
+                    cache: true,
                     parallel: true,
-                    extractComments:'all',
+                    extractComments: false
                     //sourceMap: true,
                     //minify:false
                 }),

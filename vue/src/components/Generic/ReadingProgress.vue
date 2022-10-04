@@ -296,6 +296,7 @@ export default {
               });
               let max = max_arr.reduce((a, b) => Math.max(a, b), -Infinity);
               for (var i = 0; i < data.length; i++) {
+                data[i].count = 5; //TODO: remove for interBranch
                 if ($("#" + data[i].section)) {
                   $("#" + data[i].section).next(".reading-progress") 
                       .attr(
