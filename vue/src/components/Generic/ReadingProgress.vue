@@ -154,7 +154,7 @@ export default {
         var observedElements = ["h2", "h3", "h4", "pre", "img", "p", "ol", "ul"];
         var container = "#longpage-content";
 
-        if ($(container + " > .filter_mathjaxloader_equation"))
+        if ($(container + " > .filter_mathjaxloader_equation").length == 1)
           container += " > .filter_mathjaxloader_equation";
 
         $($(container)
@@ -164,6 +164,9 @@ export default {
             if (cur.tagName && observedElements.includes(cur.tagName.toLowerCase()))
               return prev;
 
+            if (cur.nodeType === 3 && cur.data.trim() == "")
+              return prev;
+ 
             if (prev.length == 0)
               return [[cur]];
 

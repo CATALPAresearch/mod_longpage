@@ -89,11 +89,6 @@
   cursor: pointer;
 }
 
-#longpage-content .reading-progress
-{
-  display: none !important;
-}
-
 </style>
 <script>
 // This file is part of Moodle - http://moodle.org/
