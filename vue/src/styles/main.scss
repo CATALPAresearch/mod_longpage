@@ -9,6 +9,21 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+footer#page-footer, #page-content .activity-navigation  {
+  display: none;
+}
+
+#page-content #region-main
+{
+  padding-bottom: 0.5rem !important;
+}
+
+#page-content #region-main .mt-3
+{
+  margin-top: 0.5rem !important;
+  margin-bottom: 0 !important;
+}
+
 .longpage-assignment-link {
   display: none !important;
 }
@@ -400,6 +415,7 @@ code {
 }
 #page-header .page-context-header {
   padding: 0;
+  display: none;
 }
 
 #page-header .col-12.pt-3.pb-3 {
