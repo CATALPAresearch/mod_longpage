@@ -189,7 +189,7 @@ class post_preference_calculator {
         global $DB;
 
         $limitfrom = 0;
-        $fields = 'id, pageid, threadid, creatorid';
+        $fields = 'id, longpageid, threadid, creatorid';
         $conditions = ['longpageid' => $pageid, 'ispublic' => 1];
         while (true) {
             $posts = $DB->get_records('longpage_posts', $conditions, 'id ASC', $fields, $limitfrom, $batchsize);
