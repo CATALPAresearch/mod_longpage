@@ -27,6 +27,6 @@
 }
 
 .vh-100-wo-nav {
-  height: calc(100vh - #{$moodle-navbar-height});
+  height: calc(100vh - #{$moodle-navbar-height} - #{$moodle-footer-height});
   //height: 100%;
 }
