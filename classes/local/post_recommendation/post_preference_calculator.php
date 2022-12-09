@@ -238,9 +238,12 @@ class post_preference_calculator {
 
         $preference = self::get_absolute_preference($post, $userid, $pageid);
 
-        $transaction = $DB->start_delegated_transaction();
-        $DB->insert_record('longpage_abs_post_prefs', (array) $preference, false, true);
-        $transaction->allow_commit();
+        if($preference->value > 0)
+        {
+            $transaction = $DB->start_delegated_transaction();
+            $DB->insert_record('longpage_abs_post_prefs', (array) $preference, false, true);
+            $transaction->allow_commit();
+        }        
     }
 
     private static function get_absolute_preference($post, $userid, $pageid) {
