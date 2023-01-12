@@ -89,10 +89,6 @@
   cursor: pointer;
 }
 
-#longpage-content .reading-progress /* TODO: remove for interBranch */
-{
-  display: none !important;
-}
 
 </style>
 <script>

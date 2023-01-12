@@ -151,8 +151,7 @@ export default {
       LONGPAGE_SIDEBAR_TAB_CONTENT,
       SidebarEvents,
       tabs: [
-        //TODO: remove comment for interBranch
-        /*{
+        {
           key: SidebarTabKeys.SEARCH,
           id: "sidebar-tab-search",
           icon: ["fa", "fa-search", "fa-fw"],
@@ -176,7 +175,7 @@ export default {
           key: SidebarTabKeys.BOOKMARKS,
           id: "sidebar-tab-bookmarks",
           icon: ["fa", "fa-bookmark-o", "fa-fw"],
-        },*/
+        },
         {
           key: SidebarTabKeys.QUIZ,
           id: "sidebar-tab-quiz",
@@ -214,8 +213,8 @@ export default {
   methods: {
     toggleTab(tabKey) {
       //TODO: remove comment for interBranch
-      //if (tabKey === this.tabOpenedKey) this.setTabOpened(undefined);
-      //else 
+      if (tabKey === this.tabOpenedKey) this.setTabOpened(undefined);
+      else 
       this.setTabOpened(tabKey);
     },
     ...mapMutations({ setTabOpened: MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY }),
