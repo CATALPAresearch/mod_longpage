@@ -210,6 +210,8 @@ class post_preference_calculator {
 
     public static function calculate_and_save_absolute_preferences_for_post($post, $pageid, $batchsize = 100) {
         $limitfrom = 0;
+        return;
+        # FIXME This infinit loop causes database spam and unpredictable system behavior.
         while (true) {
             $userids = \get_page_users_ids($pageid, $limitfrom, $batchsize);
             if (!count($userids)) {
@@ -238,11 +240,11 @@ class post_preference_calculator {
 
         $preference = self::get_absolute_preference($post, $userid, $pageid);
 
-        if($preference->value > 0)
+        if((int) $preference->value == 1)
         {
-            $transaction = $DB->start_delegated_transaction();
-            $DB->insert_record('longpage_abs_post_prefs', (array) $preference, false, true);
-            $transaction->allow_commit();
+            //$transaction = $DB->start_delegated_transaction();
+            //$DB->insert_record('longpage_abs_post_prefs', (array) $preference, false, true);
+            //$transaction->allow_commit();
         }        
     }
 
