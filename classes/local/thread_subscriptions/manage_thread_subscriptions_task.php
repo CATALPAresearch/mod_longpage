@@ -34,6 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class manage_thread_subscriptions_task extends \core\task\adhoc_task {
     public function execute() {
+        return; // FIXME
         global $DB;
 
         $data = $this->get_custom_data();
@@ -55,6 +56,7 @@ class manage_thread_subscriptions_task extends \core\task\adhoc_task {
     public static function create_manage_thread_subscriptions_task(
         $cmid, $postid, $threadid, $actorid, $action = post_action::CREATE, $content='', $oldcontent=''
     ) {
+        return; // FIXME
         $managepostsubscriptionstask = new manage_thread_subscriptions_task();
         $managepostsubscriptionstask->set_custom_data([
             'cmid' => $cmid,
