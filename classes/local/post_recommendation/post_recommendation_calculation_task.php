@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class post_recommendation_calculation_task extends \core\task\adhoc_task {
     public function execute() {
-        return; // FIXME
+        //return; // FIXME
         $data = $this->get_custom_data();
         $pageid = $data->longpageid;
         mtrace('Started calculating recommendations for posts on page '.$pageid.'.');
@@ -98,7 +98,7 @@ class post_recommendation_calculation_task extends \core\task\adhoc_task {
     }
 
     public static function create_from_pageid_and_queue($pageid) {
-        return; // FIXME
+        //return; // FIXME
         $postrecommcalctask = new post_recommendation_calculation_task();
         $postrecommcalctask->set_custom_data(['longpageid' => $pageid]);
         $postrecommcalctask->set_next_run_time(self::get_next_task_run_time());

@@ -210,7 +210,7 @@ class post_preference_calculator {
 
     public static function calculate_and_save_absolute_preferences_for_post($post, $pageid, $batchsize = 100) {
         $limitfrom = 0;
-        return;
+        //return;
         # FIXME This infinit loop causes database spam and unpredictable system behavior.
         while (true) {
             $userids = \get_page_users_ids($pageid, $limitfrom, $batchsize);
