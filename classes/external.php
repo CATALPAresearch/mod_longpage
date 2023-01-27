@@ -1624,9 +1624,19 @@ class mod_longpage_external extends external_api {
             $page->revision,
             $options
         );
+
+        $customfieldhandler = qbank_customfields\customfield\question_handler::create();
+        $sql = "SELECT d.*
+                  FROM {customfield_field} f
+                  JOIN {customfield_data} d ON (f.id = d.fieldid AND d.instanceid {$sqlinstances})
+                 WHERE f.shortname = 'readingcomprehension'";
+        $fieldsdata = $DB->get_recordset_sql($sql);
+        $field = \core_customfield\field_controller::create($fieldsdata->current()->id);
+        $fieldsdata->close();
         
         $context = \context_course::instance($course->id);
         $result = array();
+        
 
         preg_match_all('/<iframe[\S\s]+class=\"filter_embedquestion-iframe\"[\S\s]+id=\"(?<catid>\w+)\/(?<qid>\w+)\"/iU', $page->content, $matches);
         for ($i=0; $i<count($matches[1]); $i++) {
@@ -1647,7 +1657,10 @@ class mod_longpage_external extends external_api {
                 $calc = new calculator([1 => $question]);
                 $stats = $calc->calculate(new qubaid_list($qubaids));
                 
-                $result[strval($embed)] = $stats->questionstats[1]->markaverage;
+                $field_data = $customfieldhandler->get_field_data($field, $question->id);
+                $level = $field_data->get_value();
+                
+                $result[strval($embed)] = array("value" => $stats->questionstats[1]->markaverage, "level" => $level);
             }
         }
         
