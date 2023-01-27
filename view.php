@@ -105,7 +105,7 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     echo '<div id="longpage-tmp" style="display:none;" lang="de" />';
     echo $content;
     echo '</div>';
-    echo '<div>TEST</div>';
+
 
 
     $PAGE->requires->js_call_amd(
