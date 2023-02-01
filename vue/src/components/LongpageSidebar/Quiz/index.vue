@@ -158,21 +158,23 @@ export default {
               $(wrapper).height("0px");
               $(wrapper).css("padding", "0px");
             
-              for (const [id, value] of Object.entries(data)) 
+              for (const [id, entry] of Object.entries(data)) 
               {
+                var value = entry["value"];
+                var level = entry["level"];
                 var idFixed = id.replace("/", "\\/");
                 var paragraph = $("#longpage-content #" + idFixed).parents(".wrapper").prev();
                 $(paragraph).each(function(index, p)
                 {
                   if(!$(p).attr("data-reading-comprehension-count"))
                   {
-                    $(p).attr("data-reading-comprehension-count", 1)
-                    $(p).attr("data-reading-comprehension-sum", value)
+                    $(p).attr("data-reading-comprehension-count", level)
+                    $(p).attr("data-reading-comprehension-sum", level*value)
                   }
                   else
                   {
-                    $(p).attr("data-reading-comprehension-count", parseInt($(p).attr("data-reading-comprehension-count"))+1);
-                    $(p).attr("data-reading-comprehension-sum", parseFloat($(p).attr("data-reading-comprehension-sum"))+value);
+                    $(p).attr("data-reading-comprehension-count", parseInt($(p).attr("data-reading-comprehension-count"))+level);
+                    $(p).attr("data-reading-comprehension-sum", parseFloat($(p).attr("data-reading-comprehension-sum"))+(level*value));
                   }
                 });
                 
