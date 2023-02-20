@@ -51,7 +51,7 @@ class post_similarity_calculator {
                     ' . $DB->sql_concat('pa.postid', "'_'", 'pb.postid')  . ' AS id,
                     pa.postid AS postaid, 
                     pb.postid AS postbid
-                FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
+                FROM {longpage_rel_post_prefs} pa JOIN {longpage_rel_post_prefs} pb
                 ON pa.userid = pb.userid AND pa.postid != pb.postid
                 WHERE pa.longpageid = ? AND pb.longpageid = ?
                 GROUP BY pa.postid, pb.postid
@@ -80,7 +80,7 @@ class post_similarity_calculator {
                     pa.userid AS id,
                     pa.value AS valuea, 
                     pb.value AS valueb
-                FROM {page_relative_post_prefs} pa JOIN {page_relative_post_prefs} pb
+                FROM {longpage_rel_post_prefs} pa JOIN {longpage_rel_post_prefs} pb
                 ON pa.userid = pb.userid
                 WHERE pa.postid = ? AND pb.postid = ?';
         foreach ($postpairs as $postpair) {
