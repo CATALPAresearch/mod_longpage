@@ -169,7 +169,7 @@ class post_recommendation_calculator {
         global $DB;
 
         list($insql, $inparams) = $DB->get_in_or_equal($idsofpostswithprefs);
-        $select = "NOT (id $insql) AND pageid = ? AND ispublic = ?";
+        $select = "NOT (id $insql) AND longpageid = ? AND ispublic = ?";
         $params = array_merge($inparams, [$pageid, 1]);
         return array($select, $params);
     }
