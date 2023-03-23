@@ -25,7 +25,7 @@
  
      $('.longpage-footnote button').popover({
          html: true,
-         trigger: 'focus',
+         //trigger: 'focus',
          sanitize: false
      });
  
