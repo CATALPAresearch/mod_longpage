@@ -89,6 +89,10 @@
   cursor: pointer;
 }
 
+.que .outcome, .que .info {
+  display: none !important;
+}
+
 
 </style>
 <script>

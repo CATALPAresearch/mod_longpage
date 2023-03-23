@@ -151,7 +151,7 @@ export default {
         //
 
         //tie together text parts without wrapper to wrap them
-        var observedElements = ["h2", "h3", "h4", "pre", "img", "p", "ol", "ul"];
+        var observedElements = ["h2", "h3", "h4", "h5", "pre", "img", "p", "ol", "ul"];
         var container = "#longpage-content";
 
         if ($(container + " > .filter_mathjaxloader_equation").length == 1)
