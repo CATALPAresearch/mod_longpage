@@ -127,6 +127,11 @@ footer#page-footer, #page-content .activity-navigation  {
   margin: 1em 0;
 }
 
+#longpage-content .longpage-image-block img[src*="svg"] 
+{
+  width: 100%;
+}
+
 #longpage-content .longpage-image-block table {
   margin: 1em 0;
   border-bottom: solid 1px #333;
