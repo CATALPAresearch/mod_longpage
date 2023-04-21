@@ -240,7 +240,8 @@ export default {
 }
 
 .w-xs-px {
-  width: 576px;
+  // width: 576px;
+  width: 800px;
 }
 
 .min-w-300-px {

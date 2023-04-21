@@ -89,11 +89,6 @@
   cursor: pointer;
 }
 
-.que .outcome, .que .info {
-  display: none !important;
-}
-
-
 </style>
 <script>
 // This file is part of Moodle - http://moodle.org/
@@ -222,6 +217,11 @@ export default {
       ]);
     }
 
+    //needed for drag & drop task types to resize placeholder correctly
+    $('#carousel').on('slide.bs.carousel', function (event) {
+      $(event.relatedTarget).find("iframe")[0].contentWindow.location.reload();
+    })
+
     function isElementInViewport(element, index, array)
     {
       // Special bonus for those using jQuery
@@ -274,7 +274,7 @@ export default {
             var idFixed = "#" + entry.target.id.replace("/", "\\/");
             entry.target.classList.add("last-visible");
             added[idFixed] = 1;
-                        
+
             var div = $(`<div class="carousel-item"><div class="carousel-caption sticky-top float-left"></div></div>`);            
             $($("#longpage-main " + idFixed)[0]).clone().appendTo(div);
             $(div).appendTo("#question");
@@ -322,6 +322,9 @@ export default {
           $("#carousel-indicators").children().remove();
           $(".carousel-control-prev, .carousel-control-next").hide();
 
+          //needed for drag & drop task types to resize placeholder correctly
+          $("#question iframe")[0].contentWindow.location.reload();
+          
           $(".carousel-caption").each(function (i, el) {
             $(el).text(`Frage ${i + 1}/${$("#question").children().length}`);
           });
@@ -334,7 +337,7 @@ export default {
               var div = `<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`;
               $(div).appendTo("#carousel-indicators");
             }
-          }  
+          }
         }
         else
         {
