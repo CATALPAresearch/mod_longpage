@@ -218,8 +218,11 @@ export default {
     }
 
     //needed for drag & drop task types to resize placeholder correctly
-    $('#carousel').on('slide.bs.carousel', function (event) {
-      $(event.relatedTarget).find("iframe")[0].contentWindow.location.reload();
+    $('#carousel').on('slid.bs.carousel', function (event) {
+      if ($("#question .active iframe").contents().find(".ddimageortext").length > 0)
+      {
+        $(event.relatedTarget).find("iframe")[0].contentWindow.location.reload();
+      } 
     })
 
     function isElementInViewport(element, index, array)
@@ -323,8 +326,9 @@ export default {
           $(".carousel-control-prev, .carousel-control-next").hide();
 
           //needed for drag & drop task types to resize placeholder correctly
-          $("#question iframe")[0].contentWindow.location.reload();
-          
+          if ($("#question .active iframe").contents().find(".ddimageortext").length > 0) {
+            $("#question iframe")[0].contentWindow.location.reload();
+          }
           $(".carousel-caption").each(function (i, el) {
             $(el).text(`Frage ${i + 1}/${$("#question").children().length}`);
           });
