@@ -75,14 +75,6 @@
   padding-right: 15px;
 }
 
-.carousel-caption
-{
-  color: black;
-  font-style: italic;
-  font-size: 12px;
-  left: 0;
-}
-
 .reading-comprehension
 {
   background-color: green !important;
@@ -219,11 +211,66 @@ export default {
 
     //needed for drag & drop task types to resize placeholder correctly
     $('#carousel').on('slid.bs.carousel', function (event) {
-      if ($("#question .active iframe").contents().find(".ddimageortext").length > 0)
-      {
-        $(event.relatedTarget).find("iframe")[0].contentWindow.location.reload();
-      } 
+      resizeAllDragsAndDrops();
     })
+
+    function getClassnameNumericSuffix(node, prefix)
+    {
+        var classes = node.attr('class');
+        if (classes !== '') {
+            var classesArr = classes.split(' ');
+            for (var index = 0; index < classesArr.length; index++) {
+                var patt1 = new RegExp('^' + prefix + '([0-9])+$');
+                if (patt1.test(classesArr[index])) {
+                    var patt2 = new RegExp('([0-9])+$');
+                    var match = patt2.exec(classesArr[index]);
+                    return Number(match[0]);
+                }
+            }
+        }
+        return null;
+    };
+
+    function resizeAllDragsAndDrops()
+    {
+      var root = $("#question .active iframe").contents().find(".ddimageortext");
+      root.find('.draghomes > div').each(function(i, node) {
+            resizeAllDragsAndDropsInGroup(
+                    getClassnameNumericSuffix($(node), 'dragitemgroup'), root);
+        });
+    };
+
+    //modified from ddimageortext / question.js
+    function resizeAllDragsAndDropsInGroup(group, root)
+    {
+      var dragHomes = root.find('.dragitemgroup' + group + ' .draghome'),
+          maxWidth = 0,
+        maxHeight = 0;
+           // Find the maximum size of any drag in this groups.
+        dragHomes.each(function(i, drag) {
+            maxWidth = Math.max(maxWidth, Math.ceil(drag.offsetWidth));
+            maxHeight = Math.max(maxHeight, Math.ceil(drag.offsetHeight));
+        });
+
+        // The size we will want to set is a bit bigger than this.
+        maxWidth += 10;
+        maxHeight += 10;
+
+        // Set each drag home to that size.
+        dragHomes.each(function(i, drag) {
+            var left = Math.round((maxWidth - drag.offsetWidth) / 2),
+                top = Math.floor((maxHeight - drag.offsetHeight) / 2);
+            // Set top and left padding so the item is centred.
+            $(drag).css({
+                'padding-left': left + 'px',
+                'padding-right': (maxWidth - drag.offsetWidth - left) + 'px',
+                'padding-top': top + 'px',
+                'padding-bottom': (maxHeight - drag.offsetHeight - top) + 'px'
+            });
+
+            root.find('.dropzone.place' + i).width(maxWidth - 12).height(maxHeight - 12);
+        });
+    }
 
     function isElementInViewport(element, index, array)
     {
@@ -278,12 +325,13 @@ export default {
             entry.target.classList.add("last-visible");
             added[idFixed] = 1;
 
-            var div = $(`<div class="carousel-item"><div class="carousel-caption sticky-top float-left"></div></div>`);            
+            var div = $(`<div class="carousel-item"></div>`);            
             $($("#longpage-main " + idFixed)[0]).clone().appendTo(div);
             $(div).appendTo("#question");
             
-            $("#question iframe").on("load", function () {
+            $("#question iframe" + idFixed).on("load", function () {
               readfun();
+              $(this).contents().find(".qtext").text(`Aufgabe ${$(this).index("#question iframe") + 1}/${$("#question").children().length}: ` + $(this).contents().find(".qtext").text()) 
             });
           }          
         }
@@ -325,13 +373,7 @@ export default {
           $("#carousel-indicators").children().remove();
           $(".carousel-control-prev, .carousel-control-next").hide();
 
-          //needed for drag & drop task types to resize placeholder correctly
-          if ($("#question .active iframe").contents().find(".ddimageortext").length > 0) {
-            $("#question iframe")[0].contentWindow.location.reload();
-          }
-          $(".carousel-caption").each(function (i, el) {
-            $(el).text(`Frage ${i + 1}/${$("#question").children().length}`);
-          });
+          resizeAllDragsAndDrops();
 
           if ($("#question").children().length > 1)
           {
