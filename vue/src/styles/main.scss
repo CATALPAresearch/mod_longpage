@@ -13,9 +13,15 @@ footer#page-footer, #page-content .activity-navigation  {
   display: none;
 }
 
+#page
+{
+  overflow: hidden;
+}
+
 #page-content #region-main
 {
   padding-bottom: 0.5rem !important;
+  padding-top: 0.5rem !important;
 }
 
 #page-content #region-main .mt-3
@@ -430,6 +436,7 @@ code {
 }
 
 #page-header .col-12.pt-3.pb-3 {
+  padding-top: 0!important;
   padding-bottom: 0!important;
 }
 
