@@ -71,6 +71,8 @@
 {
   width: 25px;
   filter: invert(100%);
+  align-items: normal;
+  top: 200px;
 }
 
 .carousel-control-prev:focus, .carousel-control-next:focus
