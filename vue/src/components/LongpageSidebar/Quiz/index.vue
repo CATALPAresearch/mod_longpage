@@ -53,20 +53,35 @@
   text-align: center;
 }
 
+.carousel-indicators
+{
+  top: -35px;
+  bottom: initial;
+}
+
 .carousel-indicators li
 {
   background-color: #ccc;
+  height: 20px;
+  text-align: center;
+  text-indent: initial;
 }
 
 .carousel-control-prev, .carousel-control-next 
 {
-  width: 18px;
+  width: 25px;
   filter: invert(100%);
 }
 
 .carousel-control-prev:focus, .carousel-control-next:focus
 {
   box-shadow: none;
+}
+
+.carousel-control-prev-icon, .carousel-control-next-icon
+{
+  width: 25px;
+  height: 25px;
 }
 
 .carousel-item
@@ -331,7 +346,6 @@ export default {
             
             $("#question iframe" + idFixed).on("load", function () {
               readfun();
-              $(this).contents().find(".qtext").text(`Aufgabe ${$(this).index("#question iframe") + 1}/${$("#question").children().length}: ` + $(this).contents().find(".qtext").text()) 
             });
           }          
         }
@@ -380,7 +394,7 @@ export default {
             $(".carousel-control-prev, .carousel-control-next").show();
             for (var i = 0; i < $("#question").children().length; i++)
             {
-              var div = `<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}"></li>`;
+              var div = `<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}">${i+1}</li>`;
               $(div).appendTo("#carousel-indicators");
             }
           }
