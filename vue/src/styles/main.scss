@@ -18,6 +18,11 @@ footer#page-footer, #page-content .activity-navigation  {
   overflow: hidden;
 }
 
+#page .secondary-navigation
+{
+  // display: none !important;
+}
+
 #page-content #region-main
 {
   padding-bottom: 0.5rem !important;

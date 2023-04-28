@@ -24,7 +24,8 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 var path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); 
 const TerserPlugin = require('terser-webpack-plugin');
-const {VueLoaderPlugin} = require('vue-loader');
+const { VueLoaderPlugin } = require('vue-loader');
+const WebpackShellPlugin = require('webpack-shell-plugin');
 var webpack = require('webpack');
 
 
@@ -146,7 +147,10 @@ module.exports = (env, options) => {
                     ],
                   },
                 }
-              }),
+            }),
+            new WebpackShellPlugin({
+                onBuildEnd: ['..\\..\\..\\..\\php\\php.exe ../../../admin/cli/purge_caches.php']
+              })
         ],
         watchOptions: {
             ignored: /node_modules/

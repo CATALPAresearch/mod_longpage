@@ -327,6 +327,10 @@ export default {
       }, 2000);
 
       get_reading_comprehension();
+
+      let previousY = 0;
+      let directionUp = true;
+      let currentY = 0;
         
       var observer = new IntersectionObserver(function(entries) 
       {
@@ -334,7 +338,14 @@ export default {
         for (var i = 0; i < entries.length; i++)
         {
           var entry = entries[i];
-                
+          currentY = entry.boundingClientRect.y
+          if (currentY < previousY) {
+            directionUp = false;
+          }
+          else {
+            directionUp = true;
+          }
+   
           if (entry.isIntersecting === true)
           {
             $("#longpage-main .filter_embedquestion-iframe").removeClass("last-visible");
@@ -343,15 +354,30 @@ export default {
             added[idFixed] = 1;
 
             var div = $(`<div class="carousel-item"></div>`);            
-            $($("#longpage-main " + idFixed)[0]).clone().appendTo(div);
-            $(div).appendTo("#question");
+            $($("#longpage-main " + idFixed)[0]).clone(true).appendTo(div);
+
+            if (directionUp)
+            {
+              $(div).prependTo("#question");
+            }
+            else
+            {
+              (div).appendTo("#question");
+            }
             
             $("#question iframe" + idFixed).on("load", function () {
               readfun();
             });
-          }          
+          }     
+          else
+          {
+            //TODO: hiermit arbeiten, nicht isElementInViewport
+            var idFixed = "#" + entry.target.id.replace("/", "\\/");
+            $("#question").find(idFixed).parents(".carousel-item").remove();
+          }  
+          
         }
-
+        previousY = currentY; 
         var found = false;
         var visible = {};
         $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
@@ -366,7 +392,7 @@ export default {
 
           if (!(idFixed in added) && !visible[idFixed])
           {
-            $("#question").find(idFixed).parents(".carousel-item").remove();
+            //$("#question").find(idFixed).parents(".carousel-item").remove();
           }
           else
           {
@@ -408,13 +434,21 @@ export default {
           $("#carousel-indicators").children().remove();
         }
     
-      }, { threshold: [0.1], root: document.querySelector('#longpage-main') });
+      }, { rootMargin: "-35% 0px 25% 0px", threshold: 1, root: document.querySelector('#longpage-main') });
 
 
       $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) 
       {   
-        $(el).data("paragraph", $(el).parent().prev().attr("id"));
+        $(el).data("paragraph", $(el).parents(".wrapper").prev().find("p").attr("id"));
         observer.observe(el);
+      });
+
+      $("#question").on("mouseover", "iframe", function () {
+        var el = $("#" + $(this).data("paragraph"));
+        $(el).css("background-color", "#eee");
+        setTimeout(function () {
+          $(el).css("background-color", "#fff");
+        }, 1000);
       });
 
       $("#nextQuestion").click(function()
