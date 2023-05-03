@@ -1625,14 +1625,14 @@ class mod_longpage_external extends external_api {
             $options
         );
 
-        $customfieldhandler = qbank_customfields\customfield\question_handler::create();
-        $sql = "SELECT d.*
-                  FROM {customfield_field} f
-                  JOIN {customfield_data} d ON (f.id = d.fieldid AND d.instanceid {$sqlinstances})
-                 WHERE f.shortname = 'readingcomprehension'";
-        $fieldsdata = $DB->get_recordset_sql($sql);
-        $field = \core_customfield\field_controller::create($fieldsdata->current()->id);
-        $fieldsdata->close();
+        // $customfieldhandler = qbank_customfields\customfield\question_handler::create();
+        // $sql = "SELECT d.*
+        //           FROM {customfield_field} f
+        //           JOIN {customfield_data} d ON (f.id = d.fieldid AND d.instanceid {$sqlinstances})
+        //          WHERE f.shortname = 'readingcomprehension'";
+        // $fieldsdata = $DB->get_recordset_sql($sql);
+        // $field = \core_customfield\field_controller::create($fieldsdata->current()->id);
+        // $fieldsdata->close();
         
         $context = \context_course::instance($course->id);
         $result = array();
@@ -1643,10 +1643,14 @@ class mod_longpage_external extends external_api {
             $embed = new embed_id($matches["catid"][$i], $matches["qid"][$i]);
             $category = utils::get_category_by_idnumber($context, $embed->categoryidnumber);
             $question = utils::get_question_by_idnumber(intval($category->id), $embed->questionidnumber);
+            $qtype = $question->qtype;
+            $question = question_bank::load_question($question->id);
+            $question->qtype->get_question_options($question);
+            $question->qtype = $qtype;
             $qubaids = $DB->get_fieldset_sql("SELECT DISTINCT questionusageid FROM {question_attempts} qa 
                                                 INNER JOIN {question_attempt_steps} qas 
                                                 ON qas.questionattemptid = qa.id 
-                                                WHERE qas.userid = ? AND qas.state <> 'todo' AND qas.state <> 'gaveup' AND qa.questionid = ? 
+                                                WHERE qas.userid = ? AND qas.fraction IS NOT NULL AND qa.questionid = ? 
                                                 AND FROM_UNIXTIME(qas.timecreated) > DATE_ADD(CURRENT_DATE(), INTERVAL -3 MONTH)
                                                 ORDER BY qas.timecreated DESC 
                                                 LIMIT 5", 
@@ -1657,9 +1661,9 @@ class mod_longpage_external extends external_api {
                 $calc = new calculator([1 => $question]);
                 $stats = $calc->calculate(new qubaid_list($qubaids));
                 
-                $field_data = $customfieldhandler->get_field_data($field, $question->id);
-                $level = $field_data->get_value();
-                
+                // $field_data = $customfieldhandler->get_field_data($field, $question->id);
+                // $level = $field_data->get_value();
+                $level = 1;
                 $result[strval($embed)] = array("value" => $stats->questionstats[1]->markaverage, "level" => $level);
             }
         }
