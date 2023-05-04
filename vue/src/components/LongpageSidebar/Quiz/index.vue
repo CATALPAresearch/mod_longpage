@@ -8,18 +8,21 @@
           {{$t('sidebar.tabs.quiz.heading')}}
         </h3>
       <div class="col-auto px-0">
+        <a href="javascript:void(0)" id="pinQuestion" title="Frage oben halten"><i class="fa fa-thumb-tack fa-fw fa-lg" /></a>
+      </div>
+      <div class="col-auto px-0">
         <p id="total-reading-comprehension" title="Ihr geschätztes Leseverständnis für die ganze Seite" style="display: inline;"></p>
       </div>
       <div class="col-auto px-0">
-        <a href="javascript:void(0)" id="nextQuestion" title="Nächste Frage"><i class="fa fa-arrow-down fa-fw fa-2x" /></a>
+        <a href="javascript:void(0)" id="nextQuestion" title="Nächste Frage"><i class="fa fa-arrow-down fa-fw fa-lg" /></a>
       </div>
       <div class="col-auto px-0">
-        <a href="javascript:void(0)" id="prevQuestion" title="Vorherige Frage"><i class="fa fa-arrow-up fa-fw fa-2x" /></a> 
+        <a href="javascript:void(0)" id="prevQuestion" title="Vorherige Frage"><i class="fa fa-arrow-up fa-fw fa-lg" /></a> 
       </div>
     </div> 
     <hr class="my-3">
     
-        <p id="quiz-placeholder" class="p-3">Zu diesem Abschnitt gibt es keine Fragen.</p>
+        <p id="quiz-placeholder" class="p-3">Zu diesem Abschnitt gibt es keine Aufgaben.</p>
         <div id="carousel" class="carousel slide" data-interval="false" style="display:none">
           <ol id="carousel-indicators" class="carousel-indicators">
           </ol>
@@ -92,34 +95,24 @@
   padding-right: 15px;
 }
 
+#pinQuestion.active {
+  color: #0f6cbf !important;
+}
+
 .reading-comprehension
 {
   background-color: green !important;
   cursor: pointer;
 }
 
+.reading-progress
+{
+  display: none;
+}
+
 </style>
 <script>
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package    mod_page
- * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 import { AnnotationType } from "@/config/constants";
 import { GET } from "@/store/types";
 import { mapGetters } from "vuex";
@@ -307,16 +300,24 @@ export default {
       );
     } 
 
-    $(window).on("load", function () {
-      if ($("body").hasClass("drawer-open-left")) {
-        $("button[data-action='toggle-drawer']").click();
+    this.$nextTick(function () {
+    // Code that will run only after the
+    // entire view has been rendered
+    if ($("body").hasClass("drawer-open-left")) {
+        $("button[data-action='toggle-drawer']").trigger("click");
       }
 
-      $(".fa-dashboard").click();
+      $(".fa-dashboard").trigger("click");
+      
 
       if (!_this.context.showreadingcomprehension) /* TODO: remove for interBranch */
         return;
+
       $("#longpage-content .reading-progress").attr("style", "display: inline !important;");
+    })
+
+    window.addEventListener("load", function () {
+      
     });
 
     $(document).ready(function() 
@@ -331,9 +332,14 @@ export default {
       let previousY = 0;
       let directionUp = true;
       let currentY = 0;
-        
-      var observer = new IntersectionObserver(function(entries) 
+
+      function observerCall(entries=[]) 
       {
+        if ($("#pinQuestion").hasClass("active"))
+        {
+          return;
+        }
+        
         var added = {};
         for (var i = 0; i < entries.length; i++)
         {
@@ -403,7 +409,6 @@ export default {
         if (!found)
         {
           $("#question").children().remove();  
-          $("#carousel-indicators").children().remove(); 
         }
 
         if($("#question").children().length > 0)
@@ -434,7 +439,9 @@ export default {
           $("#carousel-indicators").children().remove();
         }
     
-      }, { rootMargin: "-35% 0px 25% 0px", threshold: 1, root: document.querySelector('#longpage-main') });
+      }
+
+      var observer = new IntersectionObserver(observerCall, { rootMargin: "-35% 0px 25% 0px", threshold: 1, root: document.querySelector('#longpage-main') });
 
 
       $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) 
@@ -475,6 +482,15 @@ export default {
             return false;
           }
         })
+      });
+
+      $("#pinQuestion").on( "click", function() {
+        $(this).toggleClass("active");
+        if (!$(this).hasClass("active"))
+        {
+          $("#question").children().remove();
+          observerCall();  
+        }
       });
 
 
