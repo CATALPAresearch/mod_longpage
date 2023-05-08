@@ -498,6 +498,8 @@ export default {
         }
       });
 
+      $("#carousel").parent().removeClass("overflow-y-auto").css("overflow-y", "hidden");
+
 
       $(document).on("click", ".reading-comprehension", function()
       {

@@ -149,7 +149,7 @@ module.exports = (env, options) => {
                 }
             }),
             new WebpackShellPlugin({
-                onBuildEnd: ['..\\..\\..\\..\\php\\php.exe ../../../admin/cli/purge_caches.php']
+                onBuildEnd: ['..\\..\\..\\..\\php\\php.exe ../../../admin/cli/purge_caches.php --muc --theme --lang --js --filter --other']
               })
         ],
         watchOptions: {
