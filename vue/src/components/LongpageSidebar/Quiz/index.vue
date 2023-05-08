@@ -51,16 +51,16 @@
   height: 100%;
 }
 
-#question
+#question .filter_embedquestion-iframe
 {
-  min-height: 350px;
+  /* min-height: 350px; */
+  height: 100% !important;
   text-align: center;
-  height: 100%;
 }
 
-#question iframe
+#question
 {
-  height: 100% !important;
+  height: 100%;
 }
 
 .carousel-indicators
@@ -98,6 +98,7 @@
 
 .carousel-item
 {
+  position: absolute;
   padding-left: 15px;
   padding-right: 15px;
   height: 100%;
