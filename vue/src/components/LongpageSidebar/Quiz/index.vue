@@ -48,12 +48,19 @@
 #carousel
 {
   display: none;
+  height: 100%;
 }
 
 #question
 {
   min-height: 350px;
   text-align: center;
+  height: 100%;
+}
+
+#question iframe
+{
+  height: 100% !important;
 }
 
 .carousel-indicators
@@ -93,6 +100,7 @@
 {
   padding-left: 15px;
   padding-right: 15px;
+  height: 100%;
 }
 
 #pinQuestion.active {
@@ -315,10 +323,6 @@ export default {
 
       $("#longpage-content .reading-progress").attr("style", "display: inline !important;");
     })
-
-    window.addEventListener("load", function () {
-      
-    });
 
     $(document).ready(function() 
     {
