@@ -40,6 +40,11 @@
   </sidebar-tab>
 </template>
 <style>
+#page-content #region-main
+{
+  padding-right: 0 !important;
+}
+
 #longpage-main .filter_embedquestion-iframe
 {
   height: 0 !important;
@@ -99,8 +104,6 @@
 .carousel-item
 {
   position: absolute;
-  padding-left: 15px;
-  padding-right: 15px;
   height: 100%;
 }
 
