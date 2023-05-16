@@ -112,14 +112,6 @@ function longpage_add_instance($data, $mform = null) {
         $data->contentformat = $data->longpage['format'];
     }
 
-    if ($data->showreadingcomprehension == "1") {
-        $data->showreadingcomprehension = 1;
-    }
-    else
-    {
-        $data->showreadingcomprehension = 0;
-    }
-
     if(!$data->id = $DB->insert_record('longpage', $data)){
         print_error("er1");
     }
@@ -169,13 +161,13 @@ function longpage_update_instance($data, $mform) {
     $data->content       = $data->longpage['text'];
     $data->contentformat = $data->longpage['format'];
 
-    if ($data->showreadingcomprehension == "1") {
-        $data->showreadingcomprehension = 1;
-    }
-    else
-    {
-        $data->showreadingcomprehension = 0;
-    }
+    $data->showreadingprogress = !empty($data->showreadingprogress);
+    $data->showreadingcomprehension = !empty($data->showreadingcomprehension);
+    $data->showsearch = !empty($data->showsearch);
+    $data->showtableofcontents = !empty($data->showtableofcontents);
+    $data->showposts = !empty($data->showposts);
+    $data->showhighlights = !empty($data->showhighlights);
+    $data->showbookmarks = !empty($data->showbookmarks);
 
     $DB->update_record('longpage', $data);
 

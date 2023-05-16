@@ -146,47 +146,79 @@ export default {
     [SidebarTabKeys.QUIZ]: Quiz,
   },
   data() {
-    return {
-      LONGPAGE_SIDEBAR_ID,
-      LONGPAGE_SIDEBAR_TAB_CONTENT,
-      SidebarEvents,
-      tabs: [
-        {
-          key: SidebarTabKeys.SEARCH,
-          id: "sidebar-tab-search",
-          icon: ["fa", "fa-search", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.TOC,
-          id: "sidebar-tab-table-of-contents",
-          icon: ["fa", "fa-list", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.POSTS,
-          id: "sidebar-tab-posts",
-          icon: ["fa", "fa-comments-o", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.HIGHLIGHTS,
-          id: "sidebar-tab-highlights",
-          icon: ["fa", "fa-pencil", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.BOOKMARKS,
-          id: "sidebar-tab-bookmarks",
-          icon: ["fa", "fa-bookmark-o", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.QUIZ,
-          id: "sidebar-tab-quiz",
-          icon: ["fa", "fa-dashboard", "fa-fw"],
-        },
+    var tabs = [
         // {        // deactivated sidebar tab for now
         //   key: SidebarTabKeys.COURSE_RECOMMENDATIONS,
         //   id: "sidebar-tab-recomm",
         //   icon: ["fa", "fa-map", "fa-fw"],
         // },
-      ],
+    ];
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showreadingcomprehension)
+    {
+      tabs.push(
+        {
+          key: SidebarTabKeys.QUIZ,
+          id: "sidebar-tab-quiz",
+          icon: ["fa", "fa-dashboard", "fa-fw"],
+        });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showsearch)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.SEARCH,
+        id: "sidebar-tab-search",
+        icon: ["fa", "fa-search", "fa-fw"],
+       });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showtableofcontents)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.TOC,
+        id: "sidebar-tab-table-of-contents",
+        icon: ["fa", "fa-list", "fa-fw"],
+      });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showposts)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.POSTS,
+        id: "sidebar-tab-posts",
+        icon: ["fa", "fa-comments-o", "fa-fw"],
+      });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showhighlights)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.HIGHLIGHTS,
+        id: "sidebar-tab-highlights",
+        icon: ["fa", "fa-pencil", "fa-fw"],
+      });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showbookmarks)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.BOOKMARKS,
+        id: "sidebar-tab-bookmarks",
+        icon: ["fa", "fa-bookmark-o", "fa-fw"],
+      });
+    }
+
+    return {
+      LONGPAGE_SIDEBAR_ID,
+      LONGPAGE_SIDEBAR_TAB_CONTENT,
+      SidebarEvents,
+      tabs: tabs,
     };
   },
   computed: {

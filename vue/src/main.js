@@ -29,9 +29,13 @@ import {LONGPAGE_APP_CONTAINER_ID} from '@/config/constants';
 import {toIdSelector} from '@/util/style';
 import {i18n} from '@/config/i18n';
 
-export const init = (courseId, longpageid, pageName, userId, content, scrollTop, showreadingcomprehension) => {
+export const init = (courseId, longpageid, pageName, userId, content, scrollTop,
+    showreadingprogress, showreadingcomprehension, showsearch, showtableofcontents, showposts, showhighlights, showbookmarks) => {
     try {
-        const store = initStore({courseId: Number(courseId), longpageid: Number(longpageid), pageName, userId: Number(userId), showreadingcomprehension: showreadingcomprehension});
+        const store = initStore({
+            courseId: Number(courseId), longpageid: Number(longpageid), pageName, userId: Number(userId),
+            showreadingprogress, showreadingcomprehension, showsearch, showtableofcontents, showposts, showhighlights, showbookmarks
+        });
         content = $('#longpage-tmp').html();
         
         createApp(App, {content, scrollTop: Number(scrollTop)})

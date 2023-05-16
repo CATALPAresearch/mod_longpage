@@ -52,6 +52,18 @@ if ($ADMIN->fulltree) {
 
     //--- (de-)activate functionalities -----------------------------------------------------------------------------------
     $settings->add(new admin_setting_heading('longpage/activatefunctionalities', get_string('activatefunctionalities', 'longpage'), get_string('activatefunctionalitiesexplain', 'longpage')));
+    $settings->add(new admin_setting_configcheckbox('longpage/showreadingprogress',
+        get_string('showreadingprogress', 'longpage'), get_string('showreadingprogress', 'longpage'), 1));
     $settings->add(new admin_setting_configcheckbox('longpage/showreadingcomprehension',
-        get_string('showreadingcomprehension', 'longpage'), get_string('showreadingcomprehension', 'longpage'), 1));
+    get_string('showreadingcomprehension', 'longpage'), get_string('showreadingcomprehension', 'longpage'), 1));
+    $settings->add(new admin_setting_configcheckbox('longpage/showsearch',
+    get_string('showsearch', 'longpage'), get_string('showsearch', 'longpage'), 1));
+    $settings->add(new admin_setting_configcheckbox('longpage/showtableofcontents',
+    get_string('showtableofcontents', 'longpage'), get_string('showtableofcontents', 'longpage'), 1));
+    $settings->add(new admin_setting_configcheckbox('longpage/showposts',
+    get_string('showposts', 'longpage'), get_string('showposts', 'longpage'), 1));
+    $settings->add(new admin_setting_configcheckbox('longpage/showhighlights',
+    get_string('showhighlights', 'longpage'), get_string('showhighlights', 'longpage'), 1)); 
+    $settings->add(new admin_setting_configcheckbox('longpage/showbookmarks',
+    get_string('showbookmarks', 'longpage'), get_string('showbookmarks', 'longpage'), 1)); 
 }

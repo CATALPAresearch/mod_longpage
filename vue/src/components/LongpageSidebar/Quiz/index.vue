@@ -154,9 +154,6 @@ export default {
 
     function get_reading_comprehension()
     {
-      if (!_this.context.showreadingcomprehension)
-        return;
-
       ajax.call([
         {
           methodname: "mod_longpage_get_reading_comprehension",
@@ -205,7 +202,8 @@ export default {
                 $(progress)
                   .attr(
                     "title",
-                    $(progress).attr("title").substr(0, $(progress).attr("title").indexOf("gelesen")+7) + ".\nIhr geschätztes Leseverständnis beträgt " +
+                    (_this.context.showreadingprogress ? ($(progress).attr("title").substr(0, $(progress).attr("title").indexOf("gelesen") + 7) + ".\n") : "") +
+                    "Ihr geschätztes Leseverständnis beträgt " +
                       (100*value).toFixed(2) +
                       "%."
                   ).css("opacity", Math.max(0.1, value)).addClass("reading-comprehension");
@@ -321,10 +319,6 @@ export default {
 
       $(".fa-dashboard").trigger("click");
       
-
-      if (!_this.context.showreadingcomprehension) /* TODO: remove for interBranch */
-        return;
-
       $("#longpage-content .reading-progress").attr("style", "display: inline !important;");
     })
 

@@ -83,6 +83,7 @@ export default {
   },
   computed: {
     ...mapGetters([GET.NEW_ANNOTATION]),
+    ...mapGetters({ context: GET.LONGPAGE_CONTEXT }),
     annotationToolbarPopover() {
       return this.$refs.annotationToolbarPopover;
     },
@@ -108,7 +109,11 @@ export default {
         this.onClearSelection.bind(this)
       );
       this.anchoring = new Anchoring(this.targetRoot, this.$store);
-      setHighlightsVisible(document.getElementById(LONGPAGE_APP_ID), true);
+      if (this.context.showhighlights)
+      {
+        setHighlightsVisible(document.getElementById(LONGPAGE_APP_ID), true);
+      }
+      
       this.$store.dispatch(ACT.FETCH_ANNOTATIONS);
 
       // this part adds dynamic positioning to the AnnotationToolbar:

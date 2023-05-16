@@ -92,9 +92,34 @@ class mod_longpage_mod_form extends moodleform_mod {
         $mform->setDefault('printheading', $config->printheading);
         $mform->addElement('advcheckbox', 'printintro', get_string('printintro', 'longpage'));
         $mform->setDefault('printintro', $config->printintro);
+
+        $mform->addElement('advcheckbox', 'showreadingprogress', get_string('showreadingprogress', 'longpage'));
+        $mform->setType('showreadingprogress', PARAM_BOOL);
+        $mform->setDefault('showreadingprogress', $config->showreadingprogress);
+
         $mform->addElement('advcheckbox', 'showreadingcomprehension', get_string('showreadingcomprehension', 'longpage'));
-        $mform->setType('showreadingcomprehension', PARAM_INT);
+        $mform->setType('showreadingcomprehension', PARAM_BOOL);
         $mform->setDefault('showreadingcomprehension', $config->showreadingcomprehension);
+
+        $mform->addElement('advcheckbox', 'showsearch', get_string('showsearch', 'longpage'));
+        $mform->setType('showsearch', PARAM_BOOL);
+        $mform->setDefault('showsearch', $config->showsearch);
+
+        $mform->addElement('advcheckbox', 'showtableofcontents', get_string('showtableofcontents', 'longpage'));
+        $mform->setType('showtableofcontents', PARAM_BOOL);
+        $mform->setDefault('showtableofcontents', $config->showtableofcontents);
+
+        $mform->addElement('advcheckbox', 'showposts', get_string('showposts', 'longpage'));
+        $mform->setType('showposts', PARAM_BOOL);
+        $mform->setDefault('showposts', $config->showposts);
+        
+        $mform->addElement('advcheckbox', 'showhighlights', get_string('showhighlights', 'longpage'));
+        $mform->setType('showhighlights', PARAM_BOOL);
+        $mform->setDefault('showhighlights', $config->showhighlights);
+
+        $mform->addElement('advcheckbox', 'showbookmarks', get_string('showbookmarks', 'longpage'));
+        $mform->setType('showbookmarks', PARAM_BOOL);
+        $mform->setDefault('showbookmarks', $config->showbookmarks);
 
         // add legacy files flag only if used
         if (isset($this->current->legacyfiles) and $this->current->legacyfiles != RESOURCELIB_LEGACYFILES_NO) {

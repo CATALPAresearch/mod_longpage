@@ -20,7 +20,7 @@
         "
       >
         <!-- removed from longpage-pain: vh-100-wo-nav -->
-            <annotation-toolbar-controller />
+            <annotation-toolbar-controller v-if="context.showhighlights || context.showposts || context.showbookmarks"/>
 
         <div
           id="longpage-content"
@@ -30,7 +30,7 @@
           v-html="content"
         />
         <div class="col col-auto p-0 mx-1" style="width: 3em">
-          <annotation-indicator-sidebar />
+          <annotation-indicator-sidebar  v-if="context.showhighlights || context.showposts || context.showbookmarks" />
         </div>
       </div>
       <longpage-sidebar class="col-auto" />

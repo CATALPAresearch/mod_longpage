@@ -34,20 +34,36 @@
 import AnnotationIndicator from '@/components/LongpageContent/AnnotationIndicator';
 import emitter from 'tiny-emitter/instance';
 import {AnnotationType, LONGPAGE_CONTENT_ID} from '@/config/constants';
-import {ResizeObserver} from '@juggle/resize-observer';
+import { ResizeObserver } from '@juggle/resize-observer';
+import { mapGetters } from "vuex";
+import { GET } from "@/store/types";
 
 export default {
     name: 'AnnotationIndicatorSidebar',
     components: {
       AnnotationIndicator,
     },
-    data() {
+  data() {
+    var types = [];
+    if (this.$store.getters.LONGPAGE_CONTEXT.showposts)
+    {
+      types.push(AnnotationType.POST);
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showbookmarks)
+    {
+      types.push(AnnotationType.BOOKMARK);
+    }
+
       return {
         anchors: [],
-        annotationTypesIndicated: [AnnotationType.POST, AnnotationType.BOOKMARK],
+        annotationTypesIndicated: types,
         indicatorTopToAnnotationsMap: {},
         parentElement: null,
       };
+  },
+  computed: {
+      ...mapGetters({ context: GET.LONGPAGE_CONTEXT }),
     },
     mounted() {
       this.parentElement = this.$refs.postIndicators;

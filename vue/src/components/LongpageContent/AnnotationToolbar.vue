@@ -18,6 +18,7 @@
       }"
     >
       <div
+        v-if="context.showhighlights"
         v-for="(option, index) in highlightingOptions"
         :key="index"
         class="annotation-toolbar-item dot"
@@ -29,6 +30,7 @@
         A
       </div>
       <div
+        v-if="context.showbookmarks"
         class="annotation-toolbar-item dot"
       >
         <i
@@ -39,6 +41,7 @@
         />
       </div>
       <div
+        v-if="context.showposts"
         class="annotation-toolbar-item dot"
       >
         <i
@@ -79,7 +82,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
   import {ArrowDirection} from '../../config/constants';
-  import {toNumber, toPx} from '../../util/style';
+import { toNumber, toPx } from '../../util/style';
+import { mapGetters } from "vuex";
+import { GET } from "@/store/types";
 
   export default {
     name: 'AnnotationToolbar',
@@ -107,6 +112,7 @@
           zIndex: this.zIndex,
         };
       },
+      ...mapGetters({ context: GET.LONGPAGE_CONTEXT }),
     },
     methods: {
       arrowHeight() {

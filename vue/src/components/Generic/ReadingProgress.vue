@@ -22,7 +22,10 @@ export default {
 
   mounted: function () {
     this.enableScrollLogging();
-    this.visualizeReadingProgress();
+    if (this.context.showreadingprogress)
+    {
+      this.visualizeReadingProgress();
+    }
   },
 
   methods: {
@@ -193,14 +196,20 @@ export default {
           }
           sectionCount++;
           $("#" + attr).wrap("<div class='wrapper'></div>");
-          $("#" + attr).parent().append(
-                    $("<span></span>")
-                      .attr(
-                        "title",
-                        "Der Abschnitt wurde bislang 0 mal gelesen"
-                      )
-                      .addClass("reading-progress")
-          );
+          if (_this.context.showreadingprogress || _this.context.showreadingcomprehension)
+          {
+            var span = $("<span></span>")
+              .addClass("reading-progress");
+            if (_this.context.showreadingprogress)
+            {
+              $(span).attr(
+                "title",
+                "Der Abschnitt wurde bislang 0 mal gelesen"
+              );
+            }
+            $("#" + attr).parent().append(span);
+          }
+          
           observer.observe(document.querySelector("#" + attr));
         });
       }
@@ -277,9 +286,6 @@ export default {
 
     visualizeReadingProgress: function () {
       let _this = this;
-
-      if (!_this.context.showreadingcomprehension)
-        return;
         
       ajax.call([
         {
@@ -296,7 +302,6 @@ export default {
               });
               let max = max_arr.reduce((a, b) => Math.max(a, b), -Infinity);
               for (var i = 0; i < data.length; i++) {
-                data[i].count = 5; //TODO: remove for interBranch
                 if ($("#" + data[i].section)) {
                   $("#" + data[i].section).next(".reading-progress") 
                       .attr(

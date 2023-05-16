@@ -117,7 +117,13 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
             $USER->id,
             "",
             $scrolltop,
-            $page->showreadingcomprehension == 1
+            !empty($page->showreadingprogress),
+            !empty($page->showreadingcomprehension),
+            !empty($page->showsearch),
+            !empty($page->showtableofcontents),
+            !empty($page->showposts),
+            !empty($page->showhighlights),
+            !empty($page->showbookmarks),
         ]
     );
 } else {
