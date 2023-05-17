@@ -207,6 +207,10 @@ export default {
                 "Der Abschnitt wurde bislang 0 mal gelesen"
               );
             }
+            else
+            {
+              $(span).addClass("progress-3");
+            }
             $("#" + attr).parent().append(span);
           }
           
