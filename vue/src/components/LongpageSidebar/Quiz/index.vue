@@ -45,6 +45,18 @@
   padding-right: 0 !important;
 }
 
+#quiz-spinner
+{
+  position: absolute;
+  top: 100px;
+  width: 100%;
+}
+
+#quiz-spinner .spinner-border
+{
+  display: block;
+}
+
 #longpage-main .filter_embedquestion-iframe
 {
   height: 0 !important;
@@ -364,6 +376,16 @@ export default {
             var div = $(`<div class="carousel-item"></div>`);            
             $($("#longpage-main " + idFixed)[0]).clone(true).appendTo(div);
 
+            if ($("#quiz-spinner").length == 0 && (directionUp || $("#question").children().length == 1))
+            {
+              var spinner = `<div id="quiz-spinner" class="row no-gutters vh-50">
+                <div class="spinner-border m-auto" role="status">
+                  <span class="sr-only" />
+                </div>
+              </div>`;
+              $(spinner).appendTo("#sidebar-tab-quiz");
+            }
+          
             if (directionUp)
             {
               $(div).prependTo("#question");
@@ -375,6 +397,7 @@ export default {
             
             $("#question iframe" + idFixed).on("load", function () {
               readfun();
+              $("#quiz-spinner").remove();
             });
           }     
           else
@@ -437,6 +460,7 @@ export default {
         else
         {
           $("#carousel").hide();
+          $("#quiz-spinner").remove();
           $("#quiz-placeholder").show();
           $("#carousel-indicators").children().remove();
         }
