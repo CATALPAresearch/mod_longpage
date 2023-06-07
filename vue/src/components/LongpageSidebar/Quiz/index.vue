@@ -398,6 +398,34 @@ export default {
             $("#question iframe" + idFixed).on("load", function () {
               readfun();
               $("#quiz-spinner").remove();
+              $(this).contents().find("body").on('click', function (ev)
+              {
+                var logentry = {
+                        longpageid: _this.context.longpageid,
+                        pageX: ev.pageX,
+                        pageY: ev.pageY,
+                        questionid: entry.target.id 
+                      };
+                ajax.call([
+                  {
+                    methodname: "mod_longpage_log",
+                    args: {
+                      data: {
+                        entry: JSON.stringify(logentry),
+                        action: "clicked",
+                        utc: Math.ceil(new Date().getTime() / 1000),
+                        courseid: _this.context.courseId
+                      },
+                    },
+                    done: function (reads) {
+                    },
+                    fail: function (e) {
+                      console.error("fail", e);
+                      alert(e);
+                    },
+                  },
+                ]);                
+              });
             });
           }     
           else
