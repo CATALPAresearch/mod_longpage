@@ -255,6 +255,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+#longpage-sidebar {
+  width: 42%;
+}
+
 #longpage-sidebar .nav-link:hover {
   z-index: 1;
   color: #495057;
@@ -273,7 +278,6 @@ export default {
 
 .w-xs-px {
   // width: 576px;
-  width: 800px;
 }
 
 .min-w-300-px {
