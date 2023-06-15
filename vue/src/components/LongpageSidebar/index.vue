@@ -103,7 +103,7 @@ const resizeData = {
 $(document.body).on("mousedown", ".resize-handle--x", null, (event) => {
   if (event.button !== 0) return;
 
-  const targetElement = document.getElementById(LONGPAGE_SIDEBAR_TAB_CONTENT);
+  const targetElement = document.getElementById(LONGPAGE_SIDEBAR_ID);
   resizeData.startWidth = $(targetElement).outerWidth();
   resizeData.startCursorScreenX = event.screenX;
   resizeData.resizeTarget = targetElement;
