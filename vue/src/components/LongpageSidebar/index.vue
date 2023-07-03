@@ -24,6 +24,7 @@
       :id="LONGPAGE_SIDEBAR_TAB"
       class="col-auto border-left p-0 h-100 nav flex-column nav-pills"
       aria-orientation="vertical"
+      v-if="tabs.length > 1"
     >
       <a
         v-for="tab in tabs"
@@ -154,16 +155,6 @@ export default {
         // },
     ];
 
-    if (this.$store.getters.LONGPAGE_CONTEXT.showreadingcomprehension)
-    {
-      tabs.push(
-        {
-          key: SidebarTabKeys.QUIZ,
-          id: "sidebar-tab-quiz",
-          icon: ["fa", "fa-dashboard", "fa-fw"],
-        });
-    }
-
     if (this.$store.getters.LONGPAGE_CONTEXT.showsearch)
     {
       tabs.push(
@@ -214,6 +205,16 @@ export default {
       });
     }
 
+    if (this.$store.getters.LONGPAGE_CONTEXT.showreadingcomprehension)
+    {
+      tabs.push(
+        {
+          key: SidebarTabKeys.QUIZ,
+          id: "sidebar-tab-quiz",
+          icon: ["fa", "fa-dashboard", "fa-fw"],
+        });
+    }
+
     return {
       LONGPAGE_SIDEBAR_ID,
       LONGPAGE_SIDEBAR_TAB_CONTENT,
@@ -257,7 +258,7 @@ export default {
 <style scoped lang="scss">
 
 #longpage-sidebar {
-  width: 42%;
+  width: 50%;
 }
 
 #longpage-sidebar .nav-link:hover {

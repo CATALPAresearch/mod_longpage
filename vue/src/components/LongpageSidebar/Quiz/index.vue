@@ -137,9 +137,9 @@
 </style>
 <script>
 
-import { AnnotationType } from "@/config/constants";
-import { GET } from "@/store/types";
-import { mapGetters } from "vuex";
+import { AnnotationType, SidebarEvents, SidebarTabKeys } from "@/config/constants";
+import { GET, MUTATE } from "@/store/types";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import SidebarTab from "@/components/LongpageSidebar/SidebarTab";
 import ajax from "core/ajax";
 
@@ -157,7 +157,11 @@ export default {
     }
   },
   methods: {
-
+    ...mapMutations([MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY]),
+    toggleTab()
+    {
+      this[MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY](SidebarTabKeys.QUIZ);
+    }
   },
   mounted() 
   {
@@ -329,8 +333,7 @@ export default {
         $("button[data-action='toggle-drawer']").trigger("click");
       }
 
-      $(".fa-dashboard").trigger("click");
-      
+      _this.toggleTab();
       $("#longpage-content .reading-progress").attr("style", "display: inline !important;");
     })
 
@@ -552,7 +555,7 @@ export default {
 
       $(document).on("click", ".reading-comprehension", function()
       {
-        $(".fa-dashboard").trigger("click");
+        _this.toggleTab();
       });
     });
   }

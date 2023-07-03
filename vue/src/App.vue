@@ -29,8 +29,8 @@
           lang="de"
           v-html="content"
         />
-        <div class="col col-auto p-0 mx-1" style="width: 3em">
-          <annotation-indicator-sidebar  v-if="context.showhighlights || context.showposts || context.showbookmarks" />
+        <div class="col col-auto p-0 mx-1" style="width: 35px" v-if="context.showhighlights || context.showposts || context.showbookmarks">
+          <annotation-indicator-sidebar   />
         </div>
       </div>
       <longpage-sidebar class="col-auto" />
