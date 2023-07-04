@@ -337,108 +337,99 @@ export default {
       $("#longpage-content .reading-progress").attr("style", "display: inline !important;");
     })
 
-    $(document).ready(function() 
-    {
-      var readfun = _.debounce(function()
-      {
+    $(document).ready(function () {
+      var readfun = _.debounce(function () {
         get_reading_comprehension();
       }, 2000);
 
       get_reading_comprehension();
 
       let previousY = 0;
-      let directionUp = true;
+      let directionUp = false;
       let currentY = 0;
 
-      function observerCall(entries=[]) 
-      {
-        if ($("#pinQuestion").hasClass("active"))
-        {
+      function observerCall(entries = []) {
+        if ($("#pinQuestion").hasClass("active")) {
           return;
         }
-        
+
         var added = {};
-        for (var i = 0; i < entries.length; i++)
-        {
+        for (var i = 0; i < entries.length; i++) {
           var entry = entries[i];
           currentY = entry.boundingClientRect.y
-          if (currentY < previousY) {
-            directionUp = false;
-          }
-          else {
-            directionUp = true;
-          }
-   
-          if (entry.isIntersecting === true)
-          {
-            $("#longpage-main .filter_embedquestion-iframe").removeClass("last-visible");
-            var idFixed = "#" + entry.target.id.replace("/", "\\/");
-            entry.target.classList.add("last-visible");
-            added[idFixed] = 1;
+          // if (currentY < previousY) {
+          //   directionUp = false;
+          // }
+          // else {
+          //   directionUp = true;
+          // }
+          $(entry.target).next().find("iframe").each(function(idx, target) {
+            if (entry.isIntersecting === true) {
+              $("#longpage-main .filter_embedquestion-iframe").removeClass("last-visible");
+              var idFixed = "#" + target.id.replace("/", "\\/");
+              target.classList.add("last-visible");
+              added[idFixed] = 1;
 
-            var div = $(`<div class="carousel-item"></div>`);            
-            $($("#longpage-main " + idFixed)[0]).clone(true).appendTo(div);
+              var div = $(`<div class="carousel-item"></div>`);
+              $($("#longpage-main " + idFixed)[0]).clone(true).appendTo(div);
 
-            if ($("#quiz-spinner").length == 0 && (directionUp || $("#question").children().length == 1))
-            {
-              var spinner = `<div id="quiz-spinner" class="row no-gutters vh-50">
+              if ($("#quiz-spinner").length == 0 && (directionUp || $("#question").children().length == 0)) {
+                var spinner = `<div id="quiz-spinner" class="row no-gutters vh-50">
                 <div class="spinner-border m-auto" role="status">
                   <span class="sr-only" />
                 </div>
               </div>`;
-              $(spinner).appendTo("#sidebar-tab-quiz");
-            }
-          
-            if (directionUp)
-            {
-              $(div).prependTo("#question");
-            }
-            else
-            {
-              (div).appendTo("#question");
-            }
-            
-            $("#question iframe" + idFixed).on("load", function () {
-              readfun();
-              $("#quiz-spinner").remove();
-              $(this).contents().find("body").on('click', function (ev)
-              {
-                var logentry = {
-                        longpageid: _this.context.longpageid,
-                        pageX: ev.pageX,
-                        pageY: ev.pageY,
-                        questionid: entry.target.id 
-                      };
-                ajax.call([
-                  {
-                    methodname: "mod_longpage_log",
-                    args: {
-                      data: {
-                        entry: JSON.stringify(logentry),
-                        action: "clicked",
-                        utc: Math.ceil(new Date().getTime() / 1000),
-                        courseid: _this.context.courseId
+                $(spinner).appendTo("#sidebar-tab-quiz");
+              }
+
+              if (directionUp) {
+                $(div).prependTo("#question");
+              }
+              else {
+                (div).appendTo("#question");
+              }
+
+              $("#question iframe" + idFixed).on("load", function () {
+                readfun();
+                $("#quiz-spinner").remove();
+                $(this).contents().find("body").on('click', function (ev) {
+                  var logentry = {
+                    longpageid: _this.context.longpageid,
+                    pageX: ev.pageX,
+                    pageY: ev.pageY,
+                    questionid: target.id
+                  };
+                  ajax.call([
+                    {
+                      methodname: "mod_longpage_log",
+                      args: {
+                        data: {
+                          entry: JSON.stringify(logentry),
+                          action: "clicked",
+                          utc: Math.ceil(new Date().getTime() / 1000),
+                          courseid: _this.context.courseId
+                        },
+                      },
+                      done: function (reads) {
+                      },
+                      fail: function (e) {
+                        console.error("fail", e);
+                        alert(e);
                       },
                     },
-                    done: function (reads) {
-                    },
-                    fail: function (e) {
-                      console.error("fail", e);
-                      alert(e);
-                    },
-                  },
-                ]);                
+                  ]);
+                });
               });
-            });
-          }     
-          else
-          {
-            //TODO: hiermit arbeiten, nicht isElementInViewport
-            var idFixed = "#" + entry.target.id.replace("/", "\\/");
-            $("#question").find(idFixed).parents(".carousel-item").remove();
-          }  
-          
+            }
+            else {
+              //TODO: hiermit arbeiten, nicht isElementInViewport
+              var idFixed = "#" + target.id.replace("/", "\\/");
+              $("#question").find(idFixed).parents(".carousel-item").remove();
+            }
+
+          });
         }
+
         previousY = currentY; 
         var found = false;
         var visible = {};
@@ -498,13 +489,14 @@ export default {
     
       }
 
-      var observer = new IntersectionObserver(observerCall, { rootMargin: "-35% 0px 25% 0px", threshold: 1, root: document.querySelector('#longpage-main') });
+      var observer = new IntersectionObserver(observerCall, { rootMargin: "-100px 0px -100px 0px", threshold: 0, root: document.querySelector('#longpage-main') });
 
 
       $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) 
       {   
-        $(el).data("paragraph", $(el).parents(".wrapper").prev().find("p").attr("id"));
-        observer.observe(el);
+        var paragraph = $(el).parents(".wrapper").prev();
+        $(el).data("paragraph", $(paragraph).find("p").attr("id"));
+        observer.observe($(paragraph)[0]);
       });
 
       $("#question").on("mouseover", "iframe", function () {
@@ -520,9 +512,9 @@ export default {
         var t = $("#longpage-main").scrollTop();
         $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
         {
-          if ($(el).position().top > t+300)
+          if ($(el).offset().top > t+300)
           {
-            $("#longpage-main").animate({ scrollTop: $(el).position().top - 200 }, 'fast');
+            $("#longpage-main").animate({ scrollTop: $(el).offset().top - 200 }, 'fast');
             return false;
           }
         })
@@ -533,9 +525,9 @@ export default {
         var t = $("#longpage-main").scrollTop();
         $($("#longpage-main .filter_embedquestion-iframe").get().reverse()).each(function (i, el)
         {
-          if ($(el).position().top < t)
+          if ($(el).offset().top < t)
           {
-            $("#longpage-main").animate({ scrollTop: $(el).position().top - 200 }, 'fast');
+            $("#longpage-main").animate({ scrollTop: $(el).offset().top - 200 }, 'fast');
             return false;
           }
         })
