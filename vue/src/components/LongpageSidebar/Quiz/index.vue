@@ -8,10 +8,10 @@
           {{$t('sidebar.tabs.quiz.heading')}}
         </h3>
       <div class="col-auto px-0">
-        <a href="javascript:void(0)" id="pinQuestion" title="Frage oben halten"><i class="fa fa-thumb-tack fa-fw fa-lg" /></a>
+        <i id="total-reading-comprehension" class="fa fa-battery-0 fa-fw fa-lg" />
       </div>
       <div class="col-auto px-0">
-        <p id="total-reading-comprehension" title="Ihr geschätztes Leseverständnis für die ganze Seite" style="display: inline;"></p>
+        <a href="javascript:void(0)" id="pinQuestion" title="Frage oben halten"><i class="fa fa-thumb-tack fa-fw fa-lg" /></a>
       </div>
       <div class="col-auto px-0">
         <a href="javascript:void(0)" id="nextQuestion" title="Nächste Frage"><i class="fa fa-arrow-down fa-fw fa-lg" /></a>
@@ -232,7 +232,8 @@ export default {
                 rc = (100 * sum / len).toFixed(0);
               }
 
-              $("#sidebar-tab-quiz #total-reading-comprehension").text(rc + " %");
+              $("#sidebar-tab-quiz #total-reading-comprehension").attr("title", "Ihr geschätztes Leseverständnis für die ganze Seite beträgt: " + rc + " %");
+              $("#sidebar-tab-quiz #total-reading-comprehension").attr("class", "fa fa-fw fa-lg fa-battery-" + Math.floor(rc / 25));
    
             } catch (e) {
               console.log(e);
