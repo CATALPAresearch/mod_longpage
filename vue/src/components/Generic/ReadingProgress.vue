@@ -40,27 +40,8 @@ export default {
       if (
         "IntersectionObserver" in window &&
         "IntersectionObserverEntry" in window &&
-        "intersectionRatio" in window.IntersectionObserverEntry.prototype &&
-        document.querySelector("#longpage-app")
+        "intersectionRatio" in window.IntersectionObserverEntry.prototype
       ) {
-        var measuredElement = document.querySelector("#longpage-app");
-        var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-        var scrollWidth = document.documentElement.scrollWidth - window.innerWidth;
-        var yPadding, xPadding;
-        if (window.getComputedStyle && measuredElement) {
-          var computedStyle = window.getComputedStyle(measuredElement);
-          yPadding =
-            parseFloat(computedStyle.paddingTop) +
-            parseFloat(computedStyle.paddingBottom);
-          xPadding =
-            parseFloat(computedStyle.paddingLeft) +
-            parseFloat(computedStyle.paddingRight);
-        }
-        //offsetHeight includes border, padding and margin, but clinetHeight includes onle the padding
-        var containerHeight = measuredElement.clientHeight - yPadding;
-        var containerWidth = measuredElement.clientWidth - xPadding;
-
-        var longpageMain = document.querySelector("#longpage-main");
         let last_entry = {};
         var sectionCount = 0;
         var behavior;
@@ -98,24 +79,54 @@ export default {
                 behavior = "scrolling";
               }
 
-              var logentry = {
-                longpageid: _this.context.longpageid,
-                relativeTime: entry.time,
-                targetID: entry.target.id,
-                targetTag: entry.target.localName,
-                targetClasses: entry.target.className,
-                targetWordCount: word_count,
-                targetHeight: entry.target.scrollHeight,
-                scrollLeft: longpageMain.scrollLeft,
-                scrollTop: longpageMain.scrollTop,
-                scrollHeight: scrollHeight,
-                scrollWidth: scrollWidth,
-                containerHeight: containerHeight,
-                containerWidth: containerWidth,
-                behavior: behavior,
-                sectionhash: _this.hashCode(entry.target.id),
-                sectionCount: sectionCount
-              };
+              var measuredElement = document.querySelector("#longpage-app");
+              if (measuredElement) {
+                
+                var yPadding, xPadding;
+                if (window.getComputedStyle) {
+                  var computedStyle = window.getComputedStyle(measuredElement);
+                  yPadding =
+                    parseFloat(computedStyle.paddingTop) +
+                    parseFloat(computedStyle.paddingBottom);
+                  xPadding =
+                    parseFloat(computedStyle.paddingLeft) +
+                    parseFloat(computedStyle.paddingRight);
+                }
+                //offsetHeight includes border, padding and margin, but clinetHeight includes onle the padding
+                var containerHeight = measuredElement.clientHeight - yPadding;
+                var containerWidth = measuredElement.clientWidth - xPadding;
+
+                var longpageMain = document.querySelector("#longpage-main");
+  
+                var logentry = {
+                  longpageid: _this.context.longpageid,
+                  relativeTime: entry.time,
+                  targetID: entry.target.id,
+                  targetTag: entry.target.localName,
+                  targetClasses: entry.target.className,
+                  targetWordCount: word_count,
+                  targetHeight: entry.target.scrollHeight,
+                  scrollLeft: longpageMain.scrollLeft,
+                  scrollTop: longpageMain.scrollTop,
+                  scrollHeight: longpageMain.scrollHeight,
+                  scrollWidth: longpageMain.scrollWidth,
+                  containerHeight: containerHeight,
+                  containerWidth: containerWidth,
+                  behavior: behavior,
+                  sectionhash: _this.hashCode(entry.target.id),
+                  sectionCount: sectionCount,
+                  utc: now.getTime(),
+                  navigator: {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    oscpu: navigator.oscpu,
+                    language: navigator.language,
+                    cookieEnabled: navigator.cookieEnabled
+                  },
+                  screenWidth: window.screen.width,
+                  screnHeight: window.screen.height,
+                  devicePixelRatio: window.devicePixelRatio
+                };
 
               ajax.call([
                 {
@@ -136,7 +147,8 @@ export default {
                 },
               ]);
 
-              last_entry = logentry;
+                last_entry = logentry;
+              }
             }
           }
         };
