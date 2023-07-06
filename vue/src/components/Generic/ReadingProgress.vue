@@ -124,7 +124,7 @@ export default {
                     cookieEnabled: navigator.cookieEnabled
                   },
                   screenWidth: window.screen.width,
-                  screnHeight: window.screen.height,
+                  screenHeight: window.screen.height,
                   devicePixelRatio: window.devicePixelRatio
                 };
 
