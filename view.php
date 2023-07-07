@@ -132,7 +132,7 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     redirect($url);
 }
 
-echo '<p class="mt-3 text-center text-xs" lang="de">'.get_string('lastmodified').': '.userdate($page->timemodified).'</p>';
+// echo '<p class="mt-3 text-center text-xs" lang="de">'.get_string('lastmodified').': '.userdate($page->timemodified).'</p>';
 
 echo $OUTPUT->footer();
 

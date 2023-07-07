@@ -34,7 +34,7 @@ use mod_longpage\local\constants\selector as selector;
 use mod_longpage\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
 use mod_longpage\local\thread_subscriptions\manage_thread_subscriptions_task as manage_thread_subscriptions_task;
 use mod_longpage\local\thread_subscriptions\post_action as post_action;
-
+use mod_longpage\lib\longpage_update_grades as longpage_update_grades;
 
 
 require_once("$CFG->libdir/accesslib.php");
@@ -1639,7 +1639,9 @@ class mod_longpage_external extends external_api {
         
 
         preg_match_all('/<iframe[\S\s]+class=\"filter_embedquestion-iframe\"[\S\s]+id=\"(?<catid>\w+)\/(?<qid>\w+)\"/iU', $page->content, $matches);
-        for ($i=0; $i<count($matches[1]); $i++) {
+        $len = count($matches[1]);
+        $sum = 0;
+        for ($i=0; $i<$len; $i++) {
             $embed = new embed_id($matches["catid"][$i], $matches["qid"][$i]);
             $category = utils::get_category_by_idnumber($context, $embed->categoryidnumber);
             $question = utils::get_question_by_idnumber(intval($category->id), $embed->questionidnumber);
@@ -1658,14 +1660,18 @@ class mod_longpage_external extends external_api {
                                 LIMIT 5", 
                                 array($USER->id, $question->id));
 
-
+            $sum += $avgfraction;                        
             // $field_data = $customfieldhandler->get_field_data($field, $question->id);
             // $level = $field_data->get_value();
             $level = 1;
             $result[strval($embed)] = array("value" => $avgfraction, "level" => $level);
         
         }
-        
+
+        $grade = new stdClass();
+        $grade->userid   = $USER->id;
+        $grade->rawgrade = 100*$sum/$len;
+        longpage_update_grades($page, $grade);
 
         $return = array(
             'response' => json_encode($result)

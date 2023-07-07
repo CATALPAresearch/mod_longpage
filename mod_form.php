@@ -129,6 +129,9 @@ class mod_longpage_mod_form extends moodleform_mod {
             $mform->setAdvanced('legacyfiles', 1);
         }
 
+        // Grade settings.
+        $this->standard_grading_coursemodule_elements();
+
         //-------------------------------------------------------
         $this->standard_coursemodule_elements();
 

@@ -9,11 +9,25 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-footer#page-footer, #page-content .activity-navigation  {
+footer#page-footer {
   display: none;
 }
 
-#page
+#page-content .activity-navigation #jump-to-activity, #page-content .activity-navigation #prev-activity-link, .action-menu 
+{
+  display: none !important;
+}
+
+#page-content .activity-navigation
+{
+  margin-top: 10px !important;
+  position: absolute;
+  top: 0;
+  right: 10px;
+}
+
+
+#page 
 {
   overflow: hidden;
 }
@@ -44,6 +58,12 @@ footer#page-footer, #page-content .activity-navigation  {
 #page-content #region-main hr
 {
   display: none;
+}
+
+#longpage-main
+{
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 // .longpage-assignment-link {
@@ -429,6 +449,11 @@ code {
 #page-navbar .breadcrumb {
   display: none;
 }
+
+#page-header {
+  display: none;
+}
+
 #page-header .card {
   border:none;
 }
