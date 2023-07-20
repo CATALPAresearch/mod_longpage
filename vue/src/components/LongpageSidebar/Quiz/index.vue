@@ -271,6 +271,7 @@ export default {
     function resizeAllDragsAndDrops()
     {
       var root = $("#question .active iframe").contents().find(".ddimageortext");
+      root.find(".draghomes").prependTo(root.find(".ddarea")); 
       root.find('.draghomes > div').each(function(i, node) {
             resizeAllDragsAndDropsInGroup(
                     getClassnameNumericSuffix($(node), 'dragitemgroup'), root);
@@ -392,6 +393,11 @@ export default {
 
               $("#question iframe" + idFixed).on("load", function () {
                 readfun();
+                var cssLink = document.createElement("link");
+                cssLink.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/tasks.css"; 
+                cssLink.rel = "stylesheet"; 
+                cssLink.type = "text/css"; 
+                $(this).contents().find("head").append(cssLink);
                 $("#quiz-spinner").remove();
                 $(this).contents().find("body").on('click', function (ev) {
                   var logentry = {

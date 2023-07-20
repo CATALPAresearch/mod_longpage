@@ -9,7 +9,7 @@
     <div
       v-show="tabOpenedKey"
       :id="LONGPAGE_SIDEBAR_TAB_CONTENT"
-      class="col h-100 min-w-300-px w-xs-px"
+      class="col h-100"
     >
       <component
         :is="tab.key"
@@ -278,7 +278,7 @@ export default {
 }
 
 .w-xs-px {
-  // width: 576px;
+  width: 576px;
 }
 
 .min-w-300-px {

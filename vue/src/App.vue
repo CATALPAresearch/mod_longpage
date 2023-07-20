@@ -36,7 +36,7 @@
       <longpage-sidebar class="col-auto" />
     </div>
     <CourseRecommendation style="display: none;"></CourseRecommendation>
-    <ReadingTime></ReadingTime>
+    <ReadingTime v-if="context.showreadingprogress"></ReadingTime>
     <ReadingProgress :context="context"> </ReadingProgress>
   </div>
 </template>
