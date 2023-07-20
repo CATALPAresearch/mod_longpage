@@ -1640,6 +1640,7 @@ class mod_longpage_external extends external_api {
 
         preg_match_all('/<iframe[\S\s]+class=\"filter_embedquestion-iframe\"[\S\s]+id=\"(?<catid>\w+)\/(?<qid>\w+)\"/iU', $page->content, $matches);
         $len = count($matches[1]);
+        $cntSubmitted = 0;
         $sum = 0;
         for ($i=0; $i<$len; $i++) {
             $embed = new embed_id($matches["catid"][$i], $matches["qid"][$i]);
@@ -1660,6 +1661,7 @@ class mod_longpage_external extends external_api {
                                 LIMIT 5", 
                                 array($USER->id, $question->id));
 
+            $cntSubmitted += $avgfraction == null ? 0 : 1;
             $sum += $avgfraction;                        
             // $field_data = $customfieldhandler->get_field_data($field, $question->id);
             // $level = $field_data->get_value();
@@ -1668,11 +1670,14 @@ class mod_longpage_external extends external_api {
         
         }
 
-        $grade = new stdClass();
-        $grade->userid   = $USER->id;
-        $grade->rawgrade = 100*$sum/$len;
-        longpage_update_grades($page, $grade);
-
+        if($cntSubmitted == $len)
+        {
+            $grade = new stdClass();
+            $grade->userid   = $USER->id;
+            $grade->rawgrade = 100*$sum/$len;
+            longpage_update_grades($page, $grade);
+        }
+        
         $return = array(
             'response' => json_encode($result)
         );
