@@ -16,12 +16,10 @@ function getClassnameNumericSuffix(node, prefix)
 };
     
 function resizeAllDragsAndDrops() {
-  var root = $(".ddimageortext");
-  root.find(".draghomes").prependTo(root.find(".ddarea"));
-  root.find(".draghomes > div").each(function (i, node) {
+  $(".ddimageortext").find(".draghomes > div").each(function (i, node) {
     resizeAllDragsAndDropsInGroup(
       getClassnameNumericSuffix($(node), "dragitemgroup"),
-      root
+      $(".ddimageortext")
     );
   });
 }
@@ -61,13 +59,31 @@ function resizeAllDragsAndDropsInGroup(group, root) {
   });
 }
 
-var observer = new IntersectionObserver((entries, observer) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
+function resizeOnce()
+{
+  var observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
         resizeAllDragsAndDrops();
         observer.unobserve(document.documentElement);
-    }
+      }
+    });
   });
-});
+  
+  observer.observe(document.documentElement);
+}
 
-observer.observe(document.documentElement);
+function moveOnce()
+{
+  var observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        $(".ddimageortext").find(".draghomes").prependTo($(".ddimageortext").find(".ddarea"));
+        observer.unobserve(document.documentElement);
+      }
+    });
+  });
+  
+  observer.observe(document.documentElement);
+}
+

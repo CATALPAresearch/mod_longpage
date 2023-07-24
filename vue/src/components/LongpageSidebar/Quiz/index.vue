@@ -335,10 +335,27 @@ export default {
                 cssLink.type = "text/css"; 
                 $(this).contents().find("head").append(cssLink);
 
+                
                 var jsLink = document.createElement("script");
                 jsLink.src = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/tasks.js"; 
+                jsLink.type = "text/javascript";
                 $(this).contents().find("head").append(jsLink);
 
+                jsLink = document.createElement("script");
+                jsLink.type = "text/javascript";
+                $(jsLink).attr("language", "javascript");
+                jsLink.text = " moveOnce();";
+                $(this).contents().find("head").append(jsLink);
+                  
+                if (!$(this).parent().is(":first-child"))
+                {
+                  jsLink = document.createElement("script");
+                  jsLink.type = "text/javascript";
+                  $(jsLink).attr("language", "javascript");
+                  jsLink.text = " resizeOnce();";
+                  $(this).contents().find("head").append(jsLink);
+                }  
+    
                 $("#quiz-spinner").remove();
                 $(this).contents().find("body").on('click', function (ev) {
                   var logentry = {
