@@ -18,15 +18,13 @@ function getClassnameNumericSuffix(node, prefix)
 function resizeAllDragsAndDrops() {
   $(".ddimageortext").find(".draghomes > div").each(function (i, node) {
     resizeAllDragsAndDropsInGroup(
-      getClassnameNumericSuffix($(node), "dragitemgroup"),
-      $(".ddimageortext")
-    );
+      getClassnameNumericSuffix($(node), "dragitemgroup"), $(".ddimageortext"));
   });
 }
 
 //modified from ddimageortext / question.js
 function resizeAllDragsAndDropsInGroup(group, root) {
-  var dragHomes = root.find(".dragitemgroup" + group + " .draghome"),
+  var dragHomes = root.find(".group" + group + ".draghome:not(.dragplaceholder)"),
     maxWidth = 0,
     maxHeight = 0;
   // Find the maximum size of any drag in this groups.
