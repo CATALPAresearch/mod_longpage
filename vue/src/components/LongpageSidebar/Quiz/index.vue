@@ -340,13 +340,7 @@ export default {
                 jsLink.src = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/tasks.js"; 
                 jsLink.type = "text/javascript";
                 $(this).contents().find("head").append(jsLink);
-
-                jsLink = document.createElement("script");
-                jsLink.type = "text/javascript";
-                $(jsLink).attr("language", "javascript");
-                jsLink.text = " moveOnce();";
-                $(this).contents().find("head").append(jsLink);
-                  
+                 
                 if (!$(this).parent().is(":first-child"))
                 {
                   jsLink = document.createElement("script");

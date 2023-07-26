@@ -24,7 +24,7 @@ function resizeAllDragsAndDrops() {
 
 //modified from ddimageortext / question.js
 function resizeAllDragsAndDropsInGroup(group, root) {
-  var dragHomes = root.find(".group" + group + ".draghome:not(.dragplaceholder)"),
+  var dragHomes = root.find(".group" + group + ".draghome"),
     maxWidth = 0,
     maxHeight = 0;
   // Find the maximum size of any drag in this groups.
@@ -43,18 +43,25 @@ function resizeAllDragsAndDropsInGroup(group, root) {
       top = Math.floor((maxHeight - drag.offsetHeight) / 2);
     // Set top and left padding so the item is centred.
       
-     $(drag).css({
-      "padding-left": left + "px",
-      "padding-right": maxWidth - drag.offsetWidth - left + "px",
-      "padding-top": top + "px",
-      "padding-bottom": maxHeight - drag.offsetHeight - top + "px",
-     });
-
+    if (!$(drag).hasClass("dragplaceholder"))
+    {
+      $(drag).css({
+        "padding-left": left + "px",
+        "padding-right": maxWidth - drag.offsetWidth - left + "px",
+        "padding-top": top + "px",
+        "padding-bottom": maxHeight - drag.offsetHeight - top + "px",
+       });
+  
+    }
+   
+    dragHomes.each(function (i, drag) {
     root
       .find(".dropzone.place" + i + ".group" + group)
       .width(maxWidth - 12)
       .height(maxHeight - 12);
+    });
   });
+  
 }
 
 function resizeOnce()
@@ -71,17 +78,16 @@ function resizeOnce()
   observer.observe(document.documentElement);
 }
 
-function moveOnce()
-{
-  var observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        $(".ddimageortext").find(".draghomes").prependTo($(".ddimageortext").find(".ddarea"));
-        observer.unobserve(document.documentElement);
-      }
-    });
+
+var observer = new IntersectionObserver((entries, observer) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      document.querySelector(".ddimageortext .ddarea").prepend(document.querySelector(".ddimageortext .draghomes"));
+      observer.unobserve(document.documentElement);
+    }
   });
-  
-  observer.observe(document.documentElement);
-}
+});
+
+observer.observe(document.documentElement);
+
 
