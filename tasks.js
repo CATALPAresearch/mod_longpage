@@ -64,20 +64,6 @@ function resizeAllDragsAndDropsInGroup(group, root) {
   
 }
 
-function resizeOnce()
-{
-  var observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        resizeAllDragsAndDrops();
-        observer.unobserve(document.documentElement);
-      }
-    });
-  });
-  
-  observer.observe(document.documentElement);
-}
-
 
 
 

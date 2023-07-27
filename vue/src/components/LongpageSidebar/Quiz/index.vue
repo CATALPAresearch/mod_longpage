@@ -309,7 +309,9 @@ export default {
               added[idFixed] = 1;
 
               var div = $(`<div class="carousel-item"></div>`);
-              $($("#longpage-main " + idFixed)[0]).clone(true).appendTo(div);
+              var iframeCloned = $($("#longpage-main " + idFixed)[0]).clone(true);
+              $(iframeCloned).attr("loading", "lazy");
+              $(iframeCloned).appendTo(div);
 
               if ($("#quiz-spinner").length == 0 && (directionUp || $("#question").children().length == 0)) {
                 var spinner = `<div id="quiz-spinner" class="row no-gutters vh-50">
@@ -340,16 +342,7 @@ export default {
                 jsLink.src = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/tasks.js"; 
                 jsLink.type = "text/javascript";
                 $(this).contents().find("head").append(jsLink);
-                 
-                if (!$(this).parent().is(":first-child"))
-                {
-                  jsLink = document.createElement("script");
-                  jsLink.type = "text/javascript";
-                  $(jsLink).attr("language", "javascript");
-                  jsLink.text = " resizeOnce();";
-                  $(this).contents().find("head").append(jsLink);
-                }  
-    
+                     
                 $("#quiz-spinner").remove();
                 $(this).contents().find("body").on('click', function (ev) {
                   var logentry = {
