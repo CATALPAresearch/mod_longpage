@@ -79,15 +79,6 @@ function resizeOnce()
 }
 
 
-var observer = new IntersectionObserver((entries, observer) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      document.querySelector(".ddimageortext .ddarea").prepend(document.querySelector(".ddimageortext .draghomes"));
-      observer.unobserve(document.documentElement);
-    }
-  });
-});
 
-observer.observe(document.documentElement);
 
 

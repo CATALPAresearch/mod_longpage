@@ -8,3 +8,22 @@
 {
     display: none !important;
 }
+
+.que.ddimageortext div.ddarea
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 100%;
+    justify-content: center;
+}
+
+.que.ddimageortext div.ddarea .droparea
+{
+    order: 2;
+}
+
+.que.ddimageortext div.ddarea .dropareas
+{
+    order: 1;
+}
