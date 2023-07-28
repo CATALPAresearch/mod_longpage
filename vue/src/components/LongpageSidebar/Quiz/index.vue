@@ -48,7 +48,7 @@
 #quiz-spinner
 {
   position: absolute;
-  top: 100px;
+  top: 50px;
   width: 100%;
 }
 
@@ -310,18 +310,28 @@ export default {
 
               var div = $(`<div class="carousel-item"></div>`);
               var iframeCloned = $($("#longpage-main " + idFixed)[0]).clone(true);
-              $(iframeCloned).attr("loading", "lazy");
               $(iframeCloned).appendTo(div);
 
-              if ($("#quiz-spinner").length == 0 && (directionUp || $("#question").children().length == 0)) {
+              var obs = new IntersectionObserver((entries, o) => {
                 var spinner = `<div id="quiz-spinner" class="row no-gutters vh-50">
                 <div class="spinner-border m-auto" role="status">
                   <span class="sr-only" />
                 </div>
-              </div>`;
-                $(spinner).appendTo("#sidebar-tab-quiz");
-              }
+                </div>`;
+                
+                entries.forEach((entry) => {
+                  if (entry.isIntersecting) {
+                    o.unobserve(entry.target);
+                    $("#question").css("opacity", 0.2);
+                    $("#quiz-spinner").remove();
+                    $(spinner).appendTo("#sidebar-tab-quiz");
+                    entry.target.contentWindow.location.reload();
+                  }
+                });
+              });
 
+              obs.observe($(iframeCloned)[0]);
+              
               if (directionUp) {
                 $(div).prependTo("#question");
               }
@@ -342,8 +352,22 @@ export default {
                 jsLink.src = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/tasks.js"; 
                 jsLink.type = "text/javascript";
                 $(this).contents().find("head").append(jsLink);
-                     
-                $("#quiz-spinner").remove();
+
+                function waitPending()
+                {
+                  if (M.util.js_pending())
+                  {
+                    setTimeout(waitPending, 500);
+                  }
+                  else
+                  {
+                    $("#quiz-spinner").remove();
+                    $("#question").css("opacity", 1);
+                  }
+                }
+
+                waitPending();
+                
                 $(this).contents().find("body").on('click', function (ev) {
                   var logentry = {
                     longpageid: _this.context.longpageid,
