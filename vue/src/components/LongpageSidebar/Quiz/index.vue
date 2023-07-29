@@ -129,7 +129,7 @@
   cursor: pointer;
 }
 
-.reading-progress
+.reading-progress, #total-reading-comprehension
 {
   display: none;
 }
@@ -234,7 +234,8 @@ export default {
 
               $("#sidebar-tab-quiz #total-reading-comprehension").attr("title", "Ihr geschätztes Leseverständnis für die ganze Seite beträgt: " + rc + " %");
               $("#sidebar-tab-quiz #total-reading-comprehension").attr("class", "fa fa-fw fa-lg fa-battery-" + Math.floor(rc / 25));
-   
+              $("#sidebar-tab-quiz #total-reading-comprehension").show();
+              
             } catch (e) {
               console.log(e);
             }
