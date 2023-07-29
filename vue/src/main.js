@@ -36,7 +36,6 @@ export const init = (courseId, longpageid, pageName, userId, content, scrollTop,
             courseId: Number(courseId), longpageid: Number(longpageid), pageName, userId: Number(userId),
             showreadingprogress, showreadingcomprehension, showsearch, showtableofcontents, showposts, showhighlights, showbookmarks
         });
-        content = $('#longpage-tmp').html();
         
         createApp(App, {content, scrollTop: Number(scrollTop)})
             .use(store)
