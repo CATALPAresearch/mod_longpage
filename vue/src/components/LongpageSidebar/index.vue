@@ -1,5 +1,5 @@
 <template>
-  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80">
+  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : (tabs.length == 1 && $store.getters.LONGPAGE_CONTEXT.showreadingcomprehension ? '50%' : '30%') }">
     <div
       v-show="tabOpenedKey"
       :title="$t('sidebar.util.changeWidth')"
@@ -242,10 +242,14 @@ export default {
     EventBus.subscribe(SidebarEvents.TOGGLE_TABS, (type) => {
       this.toggleTab(type);
     });
+
+    if (this.tabs.length == 1)
+    {
+      this.toggleTab(this.tabs[0]["key"]);
+    }
   },
   methods: {
     toggleTab(tabKey) {
-      //TODO: remove comment for interBranch
       if (tabKey === this.tabOpenedKey) this.setTabOpened(undefined);
       else 
       this.setTabOpened(tabKey);
@@ -256,10 +260,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
-#longpage-sidebar {
-  width: 50%;
-}
 
 #longpage-sidebar .nav-link:hover {
   z-index: 1;
