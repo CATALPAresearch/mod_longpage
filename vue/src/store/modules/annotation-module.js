@@ -147,12 +147,13 @@ export default {
                 }
             }]);
         },
-        [ACT.FETCH_ANNOTATIONS]({commit, getters}) {
+        [ACT.FETCH_ANNOTATIONS]({commit, getters}, userid = null) {
             ajax.call([{
                 methodname: MoodleWSMethods.GET_ANNOTATIONS,
                 args: {
                     parameters: {
                         longpageid: getters[GET.LONGPAGE_CONTEXT].longpageid,
+                        userid : userid
                     },
                 },
                 done: (response) => {

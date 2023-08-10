@@ -740,7 +740,7 @@ class mod_longpage_external extends external_api {
         $annotations =
             isset($parameters['annotationid']) ?
                 self::get_annotations_by_annotation_id($parameters['annotationid']) :
-                self::get_annotations_by_page_id($parameters['longpageid']);
+                self::get_annotations_by_page_id($parameters['longpageid'], $parameters['userid']);
 
         foreach ($annotations as $annotation) {
             $annotation->target = self::get_annotation_target($annotation->id);
@@ -762,13 +762,20 @@ class mod_longpage_external extends external_api {
         );
     }
 
-    private static function get_annotations_by_page_id($pageid, $timemodified = 0) {
+    private static function get_annotations_by_page_id($pageid, $userid = 0) {
         global $DB, $USER;
+
+        $cm = get_coursemodule_by_pageid($pageid);
+        $context = context_module::instance($cm->id);
+        if($userid == 0 || !is_siteadmin())
+        {
+            $userid = $USER->id;
+        }
 
         return $DB->get_records_select(
             'longpage_annotations',
             'longpageid = ? AND (creatorid = ? OR ispublic = 1)',
-            ['longpageid' => $pageid, 'creatorid' => $USER->id]
+            ['longpageid' => $pageid, 'creatorid' => $userid]
         );
     }
 
@@ -782,7 +789,8 @@ class mod_longpage_external extends external_api {
         return new external_function_parameters([
             'parameters' => new external_single_structure([
                 'longpageid' => new external_value(PARAM_INT),
-                'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
+                'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                'userid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
             ]),
         ]);
     }
