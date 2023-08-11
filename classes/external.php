@@ -116,6 +116,15 @@ class mod_longpage_external extends external_api {
         }
         $transaction->allow_commit();
 
+        $annotationscount = $DB->count_records('longpage_annotations', ['longpageid' => $annotation['longpageid'], 'creatorid' => $USER->id]);
+
+        $grade = new stdClass();
+        $grade->userid = $USER->id;
+        $grade->rawgrade = min(100, $annotationscount*10);
+
+        $page = $DB->get_record('longpage', array('id' => $annotation['longpageid']), '*', MUST_EXIST);
+        longpage_update_grades($page, $grade);
+
         return [
             'annotation' => self::get_annotations(['longpageid' => $annotation['longpageid'], 'annotationid' => $id])['annotations'][0]
         ];
