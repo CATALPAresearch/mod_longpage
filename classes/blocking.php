@@ -24,20 +24,20 @@ class blocking
 {
     public static function tool_policy_accepted()
     {
-//        TODO: Policy check disabled for development - Enable after development
-//        global $DB, $USER;
-//        require_login();
-//        if (isset($_SESSION['policy_accepted']) && $_SESSION['policy_accepted'] === true) {
-//            //return true;
-//        }
-//        $version = 11;// local_niels: 11  aple: 3
-//        $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "status");
-//
-//        if (isset($res->status) && (int)$res->status == 1) {
-//            $_SESSION['policy_accepted'] = true;
-//            return true;
-//        }
-//        $_SESSION['policy_accepted'] = false;
+
+        global $DB, $USER;
+        require_login();
+        if (isset($_SESSION['policy_accepted']) && $_SESSION['policy_accepted'] === true) {
+            //return true;
+        }
+        $version = 6; // local_niels: 11  aple: 6
+        $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id), "status");
+
+        if (isset($res->status) && (int)$res->status == 1) {
+            $_SESSION['policy_accepted'] = true;
+            return true;
+        }
+        $_SESSION['policy_accepted'] = false;
         return true;
     }
 }

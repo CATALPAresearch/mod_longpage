@@ -104,6 +104,7 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     echo '</div></div>';
 
 
+
     $PAGE->requires->js_call_amd(
         'mod_longpage/app-lazy',
         'init',

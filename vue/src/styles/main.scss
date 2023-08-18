@@ -13,7 +13,7 @@ footer#page-footer {
   display: none;
 }
 
-#page-content .activity-navigation #jump-to-activity, #page-content .activity-navigation #prev-activity-link, .action-menu 
+#page-content .activity-navigation #jump-to-activity, #page-content .activity-navigation #prev-activity-link, .action-menu, .longpage-assignment-link
 {
   display: none !important;
 }
@@ -166,6 +166,11 @@ footer#page-footer {
 
 #longpage-content .longpage-image-block, #longpage-content .longpage-table-block {
   margin: 1em 0;
+}
+
+#longpage-content .longpage-image-block img[src*="svg"] 
+{
+  width: 40em;
 }
 
 #longpage-content .longpage-image-block table {

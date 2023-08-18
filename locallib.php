@@ -38,7 +38,7 @@ function get_coursemodule_by_pageid($pageid) {
 function get_page_users_ids($pageid, $limitfrom = 0, $limitnum = 100) {
     $cm = get_coursemodule_by_pageid($pageid);
     $context = \context_module::instance($cm->id);
-    $users = get_enrolled_users($context, '', 0, 'u.id', 'timecreated ASC', null, $limitfrom, $limitnum);
+    $users = get_enrolled_users($context, '', 0, 'u.id', 'timecreated ASC', $limitfrom, $limitnum);
     return array_map(function ($user) { return (int) $user->id; }, $users);
 }
 

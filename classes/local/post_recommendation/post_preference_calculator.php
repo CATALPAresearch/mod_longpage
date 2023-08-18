@@ -91,7 +91,7 @@ class post_preference_calculator {
     public static function calculate_and_save_avg_preference($pageid) {
         global $DB;
 
-        $sql = 'SELECT IFNULL(AVG(avg), 0.5) AS avg
+        $sql = 'SELECT COALESCE(AVG(avg), 0.5) AS avg
                 FROM {longpage_post_pref_profiles} 
                 WHERE longpageid = ?';
         $avgpostpreference = $DB->get_field_sql($sql, ['longpageid' => $pageid]);
@@ -238,10 +238,10 @@ class post_preference_calculator {
 
         $preference = self::get_absolute_preference($post, $userid, $pageid);
 
-        if($preference->value > 0)
+        if((int) $preference->value == 1)
         {
             $transaction = $DB->start_delegated_transaction();
-            $DB->insert_record('longpage_abs_post_prefs', (array) $preference, false, true);
+            $DB->insert_record('longpage_abs_post_prefs', (array) $preference);
             $transaction->allow_commit();
         }        
     }
