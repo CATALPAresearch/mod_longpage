@@ -179,10 +179,6 @@ export default {
           done: function (reads) {
             try {
               let data = JSON.parse(reads.response);
-
-              var wrapper = $("#longpage-main .filter_embedquestion-iframe").parents(".wrapper");
-              $(wrapper).height("0px");
-              $(wrapper).css("padding", "0px");
             
               for (const [id, entry] of Object.entries(data)) 
               {

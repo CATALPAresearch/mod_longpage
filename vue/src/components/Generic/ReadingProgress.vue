@@ -166,7 +166,7 @@ export default {
         //
 
         //tie together text parts without wrapper to wrap them
-        var observedElements = ["h2", "h3", "h4", "h5", "pre", "img", "p", "ol", "ul"];
+        var observedElements = ["h2", "h3", "h4", "h5", "pre", "img", "p", "ol", "ul", "div"];
         var container = "#longpage-content";
 
         if ($(container + " > .filter_mathjaxloader_equation").length == 1)
@@ -208,23 +208,27 @@ export default {
           }
           sectionCount++;
           $("#" + attr).wrap("<div class='wrapper'></div>");
-          if (_this.context.showreadingprogress || _this.context.showreadingcomprehension)
-          {
+          var wrapper = $("#" + attr).parent();
+          if (_this.context.showreadingprogress || _this.context.showreadingcomprehension) {
             var span = $("<span></span>")
-              .addClass("reading-progress");
-            if (_this.context.showreadingprogress)
-            {
+              .addClass("reading-progress")
+              .attr("data-html2canvas-ignore", "");
+            if (_this.context.showreadingprogress) {
               $(span).attr(
                 "title",
                 "Der Abschnitt wurde bislang 0 mal gelesen"
               );
             }
-            else
-            {
+            else {
               $(span).addClass("progress-3");
             }
-            $("#" + attr).parent().append(span);
+            $(wrapper).append(span);
           }
+            if ($(wrapper).find(".filter_embedquestion-iframe").length > 0)
+            {
+              $(wrapper).height("0px");
+              $(wrapper).css("padding", "0px");
+            }
           
           observer.observe(document.querySelector("#" + attr));
         });
