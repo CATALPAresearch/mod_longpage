@@ -372,6 +372,15 @@ class mod_longpage_external extends external_api
         $postparameters['threadid'] = $id;
         self::create_post($postparameters);
         self::create_thread_subscription($id);
+
+        $page = $DB->get_record('longpage', array('id' => $pageid), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
+        $context = \context_course::instance($course->id);
+        $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+        $teachers = get_role_users($role->id, $context);
+        foreach ($teachers as $teacher) {
+            self::create_thread_subscription($id, $teacher->id);
+        }
     }
 
     public static function create_thread_parameters()
@@ -392,7 +401,7 @@ class mod_longpage_external extends external_api
     {
     }
 
-    public static function create_thread_subscription($threadid)
+    public static function create_thread_subscription($threadid, $userid=null)
     {
         global $DB, $USER;
 
@@ -400,8 +409,13 @@ class mod_longpage_external extends external_api
         $annotation = self::get_annotation_by_thread($threadid);
         self::validate_cm_context($annotation->longpageid);
 
+        if($userid == null)
+        {
+            $userid = $USER->id;
+        }
+
         $table = 'longpage_thread_subs';
-        $keyconditions = ['threadid' => $threadid, 'userid' => $USER->id];
+        $keyconditions = ['threadid' => $threadid, 'userid' => $userid];
         $transaction = $DB->start_delegated_transaction();
         if (!$DB->record_exists($table, $keyconditions)) {
             $DB->insert_record($table, array_merge($keyconditions, ['timecreated' => time()]));
