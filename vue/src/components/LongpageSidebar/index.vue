@@ -1,5 +1,5 @@
 <template>
-  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : (tabs.length == 1 && $store.getters.LONGPAGE_CONTEXT.showreadingcomprehension ? '50%' : '30%') }">
+  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : '',  'min-width': (tabs.length == 1 && $store.getters.LONGPAGE_CONTEXT.showreadingcomprehension ? '50%' : (tabOpenedKey != undefined ? '30%' : '')) }">
     <div
       v-show="tabOpenedKey"
       :title="$t('sidebar.util.changeWidth')"
