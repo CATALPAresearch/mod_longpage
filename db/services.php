@@ -239,5 +239,13 @@ $functions = array(
         'type'          => 'read',
         'capabilities'  => 'mod/longpage:view',
         'ajax'          => true
-    )
+    ),
+    'mod_longpage_autosave' => array(
+        'classname'     => 'mod_longpage_external',
+        'methodname'    => 'autosave',
+        'description'   => 'Autosaves reading comprehension tasks',
+        'type'          => 'write',
+        'capabilities'  => 'mod/longpage:view',
+        'ajax'        => true
+    ),
 );

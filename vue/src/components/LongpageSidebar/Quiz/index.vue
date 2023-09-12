@@ -364,8 +364,8 @@ export default {
                 }
 
                 waitPending();
-                
-                $(this).contents().find("body").on('click', function (ev) {
+
+                                $(this).contents().find("body").on('click', function (ev) {
                   var logentry = {
                     longpageid: _this.context.longpageid,
                     pageX: ev.pageX,
@@ -381,6 +381,23 @@ export default {
                           action: "clicked",
                           utc: Math.ceil(new Date().getTime() / 1000),
                           courseid: _this.context.courseId
+                        },
+                      },
+                      done: function (reads) {
+                      },
+                      fail: function (e) {
+                        console.error("fail", e);
+                        alert(e);
+                      },
+                    },
+                  ]);
+                  ajax.call([
+                    {
+                      methodname: "mod_longpage_autosave",
+                      args: {
+                        data: {
+                          qubaid: new URLSearchParams($(this).contents().find("form").attr("action")).get("qubaid"),
+                          form: JSON.stringify(Object.fromEntries(new FormData($(this).contents().find("form")[0])))
                         },
                       },
                       done: function (reads) {

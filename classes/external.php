@@ -1853,4 +1853,36 @@ class mod_longpage_external extends external_api
                 "response" =>  new external_value(PARAM_RAW)));
     }
 
+    public static function autosave($data)
+    {
+        global $CFG, $DB, $USER, $PAGE;
+        
+        $form = json_decode($data['form'], true);
+        $quba = question_engine::load_questions_usage_by_activity($data["qubaid"]);
+        $quba->process_all_autosaves(null, $form);
+        question_engine::save_questions_usage_by_activity($quba);
+        return array('response' => json_encode("success"));
+    }
+
+    public static function autosave_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'data' =>
+                new external_single_structure(
+                    array(
+                        'qubaid' => new external_value(PARAM_INT, 'qubaid'),
+                        'form' => new external_value(PARAM_RAW, 'form data')
+                    )
+                )
+            )
+        );
+    }
+
+    public static function autosave_returns()
+    {
+        return new external_single_structure(
+            array('response' => new external_value(PARAM_RAW, 'Server response to autosave'))
+        );
+    }
 }
