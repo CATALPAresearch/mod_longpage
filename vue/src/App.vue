@@ -29,6 +29,9 @@
           lang="de"
           v-html="content"
         />
+        <div style="position: absolute; right: 0">
+          <DownloadPDF />
+        </div>
         <div class="col col-auto p-0 mx-1" style="width: 35px" v-if="context.showhighlights || context.showposts || context.showbookmarks">
           <annotation-indicator-sidebar   />
         </div>
@@ -83,6 +86,7 @@ import Utils from "./util/utils";
 import ReadingProgress from "@/components/Generic/ReadingProgress";
 import ReadingTime from "@/components/Generic/ReadingTime";
 import CourseRecommendation from "@/components/Generic/CourseRecommendations";
+import DownloadPDF from "@/components/LongpageContent/DownloadPDF";
 
 export default {
   name: "App",
@@ -93,6 +97,7 @@ export default {
     ReadingProgress,
     CourseRecommendation,
     ReadingTime,
+    DownloadPDF
   },
   props: {
     content: { type: String, required: true },
@@ -122,7 +127,7 @@ export default {
   mounted() {
     EventBus.subscribe("page-ready", () => {
       this.pageReady = true;
-      this.$nextTick(() => {
+            this.$nextTick(() => {
         this.$refs.mainRef.scrollTop =
           this.scrollTop; // * this.$refs.mainRef.scrollHeight;
         document.getElementById(LONGPAGE_MAIN_ID).addEventListener(

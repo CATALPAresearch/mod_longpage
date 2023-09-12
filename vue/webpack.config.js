@@ -39,6 +39,9 @@ module.exports = (env, options) => {
             chunkFilename: '[id].app-lazy.js?v=[hash]',
             libraryTarget: 'amd',
         },
+        node: {
+            fs: "empty"
+        },
         target: 'web',
         module: {
             rules: [
