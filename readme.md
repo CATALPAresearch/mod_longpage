@@ -43,6 +43,13 @@ php admin/cli/upgrade.php
 
 You use the *Longpage* plugin exacly like as you would use the regular *Page* plugin since *Longapge* is simply the *Page* plugin with some functionality added on top. If you don't yet know how to use the *Page* plugin, have a look into the [official Moodle documentation](https://docs.moodle.org/310/en/Page_resource).
 
+### Embedding Reading Comprehension Questions
+In order to use embedded reading comprehension questions, you will need to install the ["Embed questions filter"](https://moodle.org/plugins/filter_embedquestion), ["Embed question atto button"](https://moodle.org/plugins/atto_embedquestion) and ["Embedded questions progress"](https://moodle.org/plugins/report_embedquestion) Moodle plugins. Documentation on how to embed questions with the plugin can be found [here](https://github.com/moodleou/moodle-filter_embedquestion/blob/main/internaldoc/functionality.txt).
+
+Basically, with these plugins, you have to add a cryptic code for each question at the location in the text in the longpage content where the question should appear in the sidebar when scrolling over the text.
+
+You will also need to enable the reading comprehension feature in the settings.
+
 ## Troubleshooting
 
 * remove, install or reinstall node_modules (npm install)
