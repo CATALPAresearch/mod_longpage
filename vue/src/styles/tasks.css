@@ -1,0 +1,29 @@
+.draghome
+{
+    box-shadow: 0 0 2px 2px rgb(255, 255, 150);
+    margin-bottom: 10px !important;
+}
+
+.que.ddimageortext .draghomes.readonly .draghome.active
+{
+    display: none !important;
+}
+
+.que.ddimageortext div.ddarea
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 100%;
+    justify-content: center;
+}
+
+.que.ddimageortext div.ddarea .droparea
+{
+    order: 2;
+}
+
+.que.ddimageortext div.ddarea .dropareas
+{
+    order: 1;
+}

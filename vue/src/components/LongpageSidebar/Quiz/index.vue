@@ -341,14 +341,14 @@ export default {
               $("#question iframe" + idFixed).on("load", function () {
                 readfun();
                 var cssLink = document.createElement("link");
-                cssLink.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/tasks.css"; 
+                cssLink.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/vue/src/styles/tasks.css"; 
                 cssLink.rel = "stylesheet"; 
                 cssLink.type = "text/css"; 
                 $(this).contents().find("head").append(cssLink);
 
                 
                 var jsLink = document.createElement("script");
-                jsLink.src = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/tasks.js"; 
+                jsLink.src = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/vue/src/components/LongpageSidebar/Quiz/tasks.js"; 
                 jsLink.type = "text/javascript";
                 $(this).contents().find("head").append(jsLink);
 
