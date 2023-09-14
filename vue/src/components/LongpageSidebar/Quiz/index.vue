@@ -307,6 +307,8 @@ export default {
 
               var div = $(`<div class="carousel-item"></div>`);
               var iframeCloned = $($("#longpage-main " + idFixed)[0]).clone(true);
+              var src = $(iframeCloned).attr("src");
+              $(iframeCloned).attr("src", "");
               $(iframeCloned).appendTo(div);
 
               var obs = new IntersectionObserver((entries, o) => {
@@ -322,7 +324,7 @@ export default {
                     $("#question").css("opacity", 0.2);
                     $("#quiz-spinner").remove();
                     $(spinner).appendTo("#sidebar-tab-quiz");
-                    entry.target.contentWindow.location.reload();
+                    $(entry.target).attr("src", src);
                   }
                 });
               });
@@ -365,7 +367,7 @@ export default {
 
                 waitPending();
 
-                                $(this).contents().find("body").on('click', function (ev) {
+                $(this).contents().find("body").on('click', function (ev) {
                   var logentry = {
                     longpageid: _this.context.longpageid,
                     pageX: ev.pageX,
