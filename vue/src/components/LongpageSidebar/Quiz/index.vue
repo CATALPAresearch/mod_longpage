@@ -418,6 +418,9 @@ export default {
                       },
                     },
                   ]);
+                });
+
+                var autosavefun = _.debounce(function () {
                   ajax.call([
                     {
                       methodname: "mod_longpage_autosave",
@@ -435,7 +438,9 @@ export default {
                       },
                     },
                   ]);
-                });
+                }, 2000);
+
+                $(this).contents().find("body").on('click keyup', autosavefun);
 
                 $(this).contents().find("body").on('dblclick', function () {
                   var el = $("#" + $("#question iframe" + idFixed).data("paragraph"));

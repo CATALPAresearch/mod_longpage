@@ -30,7 +30,7 @@
           v-html="content"
         />
         <div style="position: absolute; right: 0">
-          <DownloadPDF />
+          <!-- <DownloadPDF /> -->
         </div>
         <div class="col col-auto p-0 mx-1" style="width: 35px" v-if="context.showhighlights || context.showposts || context.showbookmarks">
           <annotation-indicator-sidebar   />
