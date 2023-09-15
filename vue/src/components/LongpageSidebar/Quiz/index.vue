@@ -8,7 +8,7 @@
           {{$t('sidebar.tabs.quiz.heading')}}
         </h3>
       <div class="col-auto px-0">
-        <i id="total-reading-comprehension" class="fa fa-battery-0 fa-fw fa-lg" />
+        <a href="javascript:void(0)" id="total-reading-comprehension" title="Frage oben halten"><i class="fa fa-battery-0 fa-fw fa-lg" /></a>
       </div>
       <div class="col-auto px-0">
         <a href="javascript:void(0)" id="pinQuestion" title="Frage oben halten"><i class="fa fa-thumb-tack fa-fw fa-lg" /></a>
@@ -20,22 +20,21 @@
         <a href="javascript:void(0)" id="nextQuestion" title="Nächste Frage"><i class="fa fa-arrow-down fa-fw fa-lg" /></a>
       </div>
     </div> 
-    <hr class="my-3">
-    
-        <p id="quiz-placeholder" class="p-3">Zu diesem Abschnitt gibt es keine Aufgaben.</p>
-        <div id="carousel" class="carousel slide" data-interval="false" style="display:none">
-          <ol id="carousel-indicators" class="carousel-indicators">
-          </ol>
-          <div id="question" class="carousel-inner"></div>     
-          <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">&lt;-</span>
-          </a>
-          <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">-&gt;</span>
-          </a>
-        </div>
+    <hr class="my-3">    
+    <p id="quiz-placeholder" class="p-3">Zu diesem Abschnitt gibt es keine Aufgaben.</p>
+    <div id="carousel" class="carousel slide" data-interval="false" style="display:none">
+      <ol id="carousel-indicators" class="carousel-indicators">
+      </ol>
+      <div id="question" class="carousel-inner"></div>     
+      <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">&lt;-</span>
+      </a>
+      <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">-&gt;</span>
+      </a>
+    </div>
     </template>
   </sidebar-tab>
 </template>
@@ -119,8 +118,16 @@
   height: 100%;
 }
 
+#pinQuestion {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: bottom center;
+  display: block;
+}
+
 #pinQuestion.active {
   color: #0f6cbf !important;
+  -webkit-transform: scale3d(1.3, 1.3, 1);
+  transform: scale3d(1.3);
 }
 
 .reading-comprehension
@@ -229,8 +236,8 @@ export default {
                 rc = (100 * sum / len).toFixed(0);
               }
 
-              $("#sidebar-tab-quiz #total-reading-comprehension").attr("title", "Ihr geschätztes Leseverständnis für die ganze Seite beträgt: " + rc + " %");
-              $("#sidebar-tab-quiz #total-reading-comprehension").attr("class", "fa fa-fw fa-lg fa-battery-" + Math.floor(rc / 25));
+              $("#sidebar-tab-quiz #total-reading-comprehension").attr("title", "Ihr geschätztes Leseverständnis für die ganze Seite beträgt: " + rc + " %.\nKlicken Sie für eine Übersicht der Fragen.");
+              $("#sidebar-tab-quiz #total-reading-comprehension i").attr("class", "fa fa-fw fa-lg fa-battery-" + Math.floor(rc / 25));
               $("#sidebar-tab-quiz #total-reading-comprehension").show();
               
             } catch (e) {
@@ -379,7 +386,8 @@ export default {
 
                 waitPending();
 
-                $(this).contents().find("body").on('click', function (ev) {
+                $(this).contents().find("body").on('click', function (ev)
+                {
                   if (!$("#pinQuestion").hasClass("active"))
                   {
                     $("#pinQuestion").addClass("autopin");
@@ -427,6 +435,11 @@ export default {
                       },
                     },
                   ]);
+                });
+
+                $(this).contents().find("body").on('dblclick', function () {
+                  var el = $("#" + $("#question iframe" + idFixed).data("paragraph"));
+                  $(el)[0].scrollIntoView({"behavior":"smooth", "block":"start"});
                 });
               });
             }
@@ -493,7 +506,6 @@ export default {
           $("#quiz-placeholder").show();
           $("#carousel-indicators").children().remove();
         }
-    
       }
 
       var observer = new IntersectionObserver(observerCall, { rootMargin: "-100px 0px -100px 0px", threshold: 0, root: document.querySelector('#longpage-main') });
@@ -557,6 +569,10 @@ export default {
       {
         _this.toggleTab();
         $("#carousel").carousel($("#carousel").find("#" + $(this).attr("data-questionid")).parent(".carousel-item").index()) 
+      });
+
+      $("#total-reading-comprehension").on("click", function () {
+        window.open(window.location.href.replace("mod/longpage/view.php", "report/embedquestion/activity.php").replace("id", "cmid"), '_blank');
       });
     });
   }
