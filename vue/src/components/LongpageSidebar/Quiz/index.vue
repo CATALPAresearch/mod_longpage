@@ -270,15 +270,32 @@ export default {
     } 
 
     this.$nextTick(function () {
-    // Code that will run only after the
-    // entire view has been rendered
-    if ($("body").hasClass("drawer-open-left")) {
+      // Code that will run only after the
+      // entire view has been rendered
+      if ($("body").hasClass("drawer-open-left")) //Moodle < V4
+      {
         $("button[data-action='toggle-drawer']").trigger("click");
       }
-
-      _this.toggleTab();
+      // _this.toggleTab();
       $("#longpage-content .reading-progress").attr("style", "display: inline !important;");
-    })
+    });
+
+    function waitLoading()
+    {
+      if (M.util.js_pending())
+      {
+        setTimeout(waitLoading, 500);
+      }
+      else
+      {
+        if ($(".drawer").hasClass("show")) // Moode > V4
+        {
+          $("button.drawertoggle").trigger("click");
+        }
+      }
+    }
+
+    waitLoading();
 
     $(document).ready(function () {
       var readfun = _.debounce(function () {
@@ -414,7 +431,6 @@ export default {
                       },
                       fail: function (e) {
                         console.error("fail", e);
-                        alert(e);
                       },
                     },
                   ]);
