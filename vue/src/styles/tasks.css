@@ -1,3 +1,8 @@
+body 
+{
+    font-size: 1rem;
+}
+
 .draghome
 {
     box-shadow: 0 0 2px 2px rgb(255, 255, 150);
@@ -26,4 +31,19 @@
 .que.ddimageortext div.ddarea .dropareas
 {
     order: 1;
+}
+
+.que .info, .activity-header
+{
+    display: none !important;
+}
+
+.que .content
+{
+    margin: 0 !important;
+}
+
+.que .outcome
+{
+    background-color:  transparent !important;
 }

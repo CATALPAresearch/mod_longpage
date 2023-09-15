@@ -14,10 +14,10 @@
         <a href="javascript:void(0)" id="pinQuestion" title="Frage oben halten"><i class="fa fa-thumb-tack fa-fw fa-lg" /></a>
       </div>
       <div class="col-auto px-0">
-        <a href="javascript:void(0)" id="nextQuestion" title="Nächste Frage"><i class="fa fa-arrow-down fa-fw fa-lg" /></a>
+        <a href="javascript:void(0)" id="prevQuestion" title="Vorherige Frage"><i class="fa fa-arrow-up fa-fw fa-lg" /></a> 
       </div>
       <div class="col-auto px-0">
-        <a href="javascript:void(0)" id="prevQuestion" title="Vorherige Frage"><i class="fa fa-arrow-up fa-fw fa-lg" /></a> 
+        <a href="javascript:void(0)" id="nextQuestion" title="Nächste Frage"><i class="fa fa-arrow-down fa-fw fa-lg" /></a>
       </div>
     </div> 
     <hr class="my-3">
@@ -199,7 +199,8 @@ export default {
                     $(p).attr("data-reading-comprehension-sum", parseFloat($(p).attr("data-reading-comprehension-sum"))+(level*value));
                   }
                 });
-                
+
+                $(paragraph).find(".reading-progress").attr("data-questionid", idFixed);                
               }
 
               var sum = 0;
@@ -279,19 +280,25 @@ export default {
 
       get_reading_comprehension();
 
-      let previousY = 0;
+      //let previousY = 0;
       let directionUp = false;
-      let currentY = 0;
+      //let currentY = 0;
+
+      var observerStates = {};
 
       function observerCall(entries = []) {
         if ($("#pinQuestion").hasClass("active")) {
+          for (var i = 0; i < entries.length; i++) {
+            var entry = entries[i];
+            observerStates["#" +  $(entry.target).find(".reading-comprehension").attr("data-questionid")] = entry;
+          }
           return;
         }
 
         var added = {};
         for (var i = 0; i < entries.length; i++) {
           var entry = entries[i];
-          currentY = entry.boundingClientRect.y
+          //currentY = entry.boundingClientRect.y
           // if (currentY < previousY) {
           //   directionUp = false;
           // }
@@ -337,20 +344,25 @@ export default {
               else {
                 (div).appendTo("#question");
               }
-
-              $("#question iframe" + idFixed).on("load", function () {
-                readfun();
+       
+              $("#question iframe" + idFixed).on("load", function ()
+              {          
+                if ($("#pinQuestion").hasClass("autopin"))
+                {
+                  $("#pinQuestion").click();
+                }
                 var cssLink = document.createElement("link");
-                cssLink.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/vue/src/styles/tasks.css"; 
+                cssLink.href = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + "/vue/src/styles/tasks.css"; 
                 cssLink.rel = "stylesheet"; 
                 cssLink.type = "text/css"; 
-                $(this).contents().find("head").append(cssLink);
-
+                $("#question iframe" + idFixed).contents().find("head").append(cssLink);
                 
                 var jsLink = document.createElement("script");
-                jsLink.src = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/vue/src/components/LongpageSidebar/Quiz/tasks.js"; 
+                jsLink.src = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + "/vue/src/components/LongpageSidebar/Quiz/tasks.js"; 
                 jsLink.type = "text/javascript";
-                $(this).contents().find("head").append(jsLink);
+                $("#question iframe" + idFixed).contents().find("head").append(jsLink);
+                        
+                readfun();
 
                 function waitPending()
                 {
@@ -368,6 +380,11 @@ export default {
                 waitPending();
 
                 $(this).contents().find("body").on('click', function (ev) {
+                  if (!$("#pinQuestion").hasClass("active"))
+                  {
+                    $("#pinQuestion").addClass("autopin");
+                    $("#pinQuestion").click();
+                  }
                   var logentry = {
                     longpageid: _this.context.longpageid,
                     pageX: ev.pageX,
@@ -422,7 +439,7 @@ export default {
           });
         }
 
-        previousY = currentY; 
+        //previousY = currentY; 
         var found = false;
         var visible = {};
         $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
@@ -527,9 +544,10 @@ export default {
         $(this).toggleClass("active");
         if (!$(this).hasClass("active"))
         {
-          $("#question").children().remove();
-          observerCall();  
+          $("#pinQuestion").removeClass("autopin");
+          observerCall(Object.values(observerStates)); 
         }
+        observerStates = {};
       });
 
       $("#carousel").parent().removeClass("overflow-y-auto").css("overflow-y", "hidden");
@@ -538,6 +556,7 @@ export default {
       $(document).on("click", ".reading-comprehension", function()
       {
         _this.toggleTab();
+        $("#carousel").carousel($("#carousel").find("#" + $(this).attr("data-questionid")).parent(".carousel-item").index()) 
       });
     });
   }
