@@ -31,11 +31,11 @@ defined('MOODLE_INTERNAL') || die;
 function longpage_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_ARCHETYPE:           return MOD_ARCHETYPE_RESOURCE;
-        case FEATURE_GROUPS:                  return false;
-        case FEATURE_GROUPINGS:               return false;
+        case FEATURE_GROUPS:                  return true;
+        case FEATURE_GROUPINGS:               return true;
         case FEATURE_MOD_INTRO:               return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
-        case FEATURE_GRADE_HAS_GRADE:         return false;
+        case FEATURE_GRADE_HAS_GRADE:         return true;
         case FEATURE_GRADE_OUTCOMES:          return false;
         case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_SHOW_DESCRIPTION:        return true;
@@ -129,6 +129,8 @@ function longpage_add_instance($data, $mform = null) {
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
     \core_completion\api::update_completion_date_event($cmid, 'longpage', $data->id, $completiontimeexpected);
 
+    longpage_grade_item_update($data);
+
     return $data->id;
 }
 
@@ -161,6 +163,14 @@ function longpage_update_instance($data, $mform) {
     $data->content       = $data->longpage['text'];
     $data->contentformat = $data->longpage['format'];
 
+    $data->showreadingprogress = !empty($data->showreadingprogress);
+    $data->showreadingcomprehension = !empty($data->showreadingcomprehension);
+    $data->showsearch = !empty($data->showsearch);
+    $data->showtableofcontents = !empty($data->showtableofcontents);
+    $data->showposts = !empty($data->showposts);
+    $data->showhighlights = !empty($data->showhighlights);
+    $data->showbookmarks = !empty($data->showbookmarks);
+
     $DB->update_record('longpage', $data);
 
     $context = context_module::instance($cmid);
@@ -171,6 +181,8 @@ function longpage_update_instance($data, $mform) {
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
     \core_completion\api::update_completion_date_event($cmid, 'longpage', $data->id, $completiontimeexpected);
+
+    longpage_grade_item_update($data);
 
     return true;
 }
@@ -191,6 +203,8 @@ function longpage_delete_instance($id) {
     \core_completion\api::update_completion_date_event($cm->id, 'longpage', $id, null);
 
     // note: all context files are deleted automatically
+
+    grade_update('mod/longpage', $page, 'mod', 'longpage', $page->id, 0, null, array('deleted'=>1));
 
     $DB->delete_records('longpage', array('id'=>$page->id));
 
@@ -569,4 +583,39 @@ function mod_longpage_core_calendar_provide_event_action(calendar_event $event,
         1,
         true
     );
+}
+
+function longpage_grade_item_update($longpage, $grades=NULL) {
+    global $CFG;
+    if (!function_exists('grade_update')) { //workaround for buggy PHP versions
+        require_once($CFG->libdir.'/gradelib.php');
+    }
+
+    $params = array('itemname'=>$longpage->name, 'idnumber'=>$longpage->cmidnumber);
+
+    if($grades == NULL)
+    {
+        $params['gradetype'] = GRADE_TYPE_VALUE;
+        $params['grademax']  = $longpage->grade;
+        $params['gradepass']  = $longpage->gradepass;
+    }
+    
+    if ($grades  === 'reset') {
+        $params['reset'] = true;
+        $grades = NULL;
+    }
+
+    return grade_update('mod/longpage', $longpage->course, 'mod', 'longpage', $longpage->id, 0, $grades, $params);
+}
+
+/**
+ * Update activity grades.
+ *
+ * @param object $longpage
+ */
+function longpage_update_grades($longpage, $grades = []): void {
+    global $CFG, $DB;
+    require_once($CFG->libdir.'/gradelib.php');
+
+    longpage_grade_item_update($longpage, $grades);
 }

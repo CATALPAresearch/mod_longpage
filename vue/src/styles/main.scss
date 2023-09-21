@@ -9,13 +9,38 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-footer#page-footer, #page-content .activity-navigation  {
+footer#page-footer {
   display: none;
+}
+
+#page-content .activity-navigation #jump-to-activity, #page-content .activity-navigation #prev-activity-link, .action-menu, .longpage-assignment-link, .activity-header
+{
+  display: none !important;
+}
+
+#page-content .activity-navigation
+{
+  margin-top: 10px !important;
+  position: absolute;
+  top: 0;
+  right: 10px;
+}
+
+
+#page 
+{
+  overflow: hidden;
+}
+
+#page .secondary-navigation
+{
+  // display: none !important;
 }
 
 #page-content #region-main
 {
   padding-bottom: 0.5rem !important;
+  padding-top: 0.5rem !important;
 }
 
 #page-content #region-main .mt-3
@@ -24,10 +49,26 @@ footer#page-footer, #page-content .activity-navigation  {
   margin-bottom: 0 !important;
 }
 
+#page.drawers .main-inner //for Moodle 4.x
+{
+  margin-top: 0px !important;
+  padding-top: 0.5rem !important;
+}
+
 #page-content #region-main hr
 {
   display: none;
 }
+
+#longpage-main
+{
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+// .longpage-assignment-link {
+//   display: none !important;
+// }
 
 .justify-text {
   padding-left: 0 !important;
@@ -413,6 +454,11 @@ code {
 #page-navbar .breadcrumb {
   display: none;
 }
+
+#page-header {
+  display: none;
+}
+
 #page-header .card {
   border:none;
 }
@@ -425,6 +471,7 @@ code {
 }
 
 #page-header .col-12.pt-3.pb-3 {
+  padding-top: 0!important;
   padding-bottom: 0!important;
 }
 

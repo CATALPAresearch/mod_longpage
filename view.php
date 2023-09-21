@@ -102,9 +102,6 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     echo '<div class="row no-gutters vh-50">';
     echo '<div class="spinner-border m-auto " role="status"><span class="sr-only">'.get_string('loading').'</span></div>';
     echo '</div></div>';
-    echo '<div id="longpage-tmp" style="display:none;" lang="de" />';
-    echo $content;
-    echo '</div>';
 
 
 
@@ -116,8 +113,15 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
             $page->id,
             format_string($page->name),
             $USER->id,
-            "",
-            $scrolltop
+            $content,
+            $scrolltop,
+            !empty($page->showreadingprogress),
+            !empty($page->showreadingcomprehension),
+            !empty($page->showsearch),
+            !empty($page->showtableofcontents),
+            !empty($page->showposts),
+            !empty($page->showhighlights),
+            !empty($page->showbookmarks),
         ]
     );
 } else {
@@ -126,7 +130,7 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     redirect($url);
 }
 
-echo '<p class="mt-3 text-center text-xs" lang="de">'.get_string('lastmodified').': '.userdate($page->timemodified).'</p>';
+// echo '<p class="mt-3 text-center text-xs" lang="de">'.get_string('lastmodified').': '.userdate($page->timemodified).'</p>';
 
 echo $OUTPUT->footer();
 

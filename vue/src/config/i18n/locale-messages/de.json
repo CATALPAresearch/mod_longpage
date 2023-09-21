@@ -42,7 +42,9 @@
       "rmLike": "Markierung mit „Gefällt mir“ zurücknehmen",
       "rmMarkWithStar": "Markierung mit Stern entfernen",
       "subscribe": "Thread abonnieren",
-      "unsubscribe": "Threadabonnement beenden"
+      "unsubscribe": "Threadabonnement beenden",
+      "copyLink": "Link zu Thread kopieren",
+      "copyLinkMessage": "Der Link zum Thread wurde in die Zwischenablage kopiert."
     },
     "form": {
       "bodyTextareaPlaceholder": "Erstellen Sie eine Anmerkung",
@@ -87,7 +89,8 @@
         "highlights": "Markierungen ein-/ausblenden",
         "posts": "Anmerkungen ein-/ausblenden",
         "toc": "Inhaltsverzeichnis ein-/ausblenden",
-        "search": "Suche ein-/ausblenden"
+        "search": "Suche ein-/ausblenden",
+        "quiz": "Leseverständnis ein-/ausblenden"
       }
     },
     "tabs": {
@@ -139,6 +142,13 @@
       },
       "tableOfContents": {
         "heading": "Inhaltsverzeichnis"
+      },
+      "quiz": {
+        "heading": "Leseverständnis",
+        "message": {
+          "noneCreated": "Es wurden noch keine Fragen erstellt.",
+          "showAll": "Alle zeigen"
+        }
       }
     },
     "util": {

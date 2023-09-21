@@ -223,5 +223,29 @@ $functions = array(
         'capabilities'  => 'mod/longpage:view',
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
         'ajax'          => true
-    )
+    ),
+    'mod_longpage_get_questions_by_page_id' => array(
+        'classname'     => 'mod_longpage_external',
+        'methodname'    => 'get_questions_by_page_id',
+        'description'   => 'Get questions for page',
+        'type'          => 'read',
+        'capabilities'  => 'mod/longpage:view',
+        'ajax'          => true
+    ),
+    'mod_longpage_get_reading_comprehension' => array(
+        'classname'     => 'mod_longpage_external',
+        'methodname'    => 'get_reading_comprehension',
+        'description'   => 'Get reading comprehension data for page',
+        'type'          => 'read',
+        'capabilities'  => 'mod/longpage:view',
+        'ajax'          => true
+    ),
+    'mod_longpage_autosave' => array(
+        'classname'     => 'mod_longpage_external',
+        'methodname'    => 'autosave',
+        'description'   => 'Autosaves reading comprehension tasks',
+        'type'          => 'write',
+        'capabilities'  => 'mod/longpage:view',
+        'ajax'        => true
+    ),
 );

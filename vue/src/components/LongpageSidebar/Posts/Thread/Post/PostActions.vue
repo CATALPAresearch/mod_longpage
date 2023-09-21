@@ -179,7 +179,7 @@ export default {
   },
   emits: ["edit-clicked", "toggle-replies"],
   computed: {
-    ...mapGetters([GET.USER]),
+    ...mapGetters([GET.USER, GET.LONGPAGE_CONTEXT]),
     dropdownMenuItems() {
       const items = [];
       // items.push({           //diagnostic: prints post to console
@@ -265,6 +265,12 @@ export default {
         });
       }
 
+      items.push({
+            iconClasses: ["fa", "fa-link", "fa-fw"],
+            handler: this.copyLink,
+            text: this.$i18n.t("post.action.copyLink"),
+          });
+
       return items;
     },
     postIntern() {
@@ -348,6 +354,10 @@ export default {
     toggleThreadSubscription() {
       this[ACT.TOGGLE_THREAD_SUBSCRIPTION](this.post.threadId);
     },
+    copyLink() {
+      navigator.clipboard.writeText(window.location.origin + window.location.pathname + window.location.search + "#post-" + this.post.id);
+      alert(this.$i18n.t("post.action.copyLinkMessage"));
+    }
   },
 };
 </script>

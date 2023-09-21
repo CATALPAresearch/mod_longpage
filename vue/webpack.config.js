@@ -24,7 +24,8 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 var path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); 
 const TerserPlugin = require('terser-webpack-plugin');
-const {VueLoaderPlugin} = require('vue-loader');
+const { VueLoaderPlugin } = require('vue-loader');
+const WebpackShellPlugin = require('webpack-shell-plugin');
 var webpack = require('webpack');
 
 
@@ -37,6 +38,9 @@ module.exports = (env, options) => {
             filename: 'app-lazy.min.js',
             chunkFilename: '[id].app-lazy.js?v=[hash]',
             libraryTarget: 'amd',
+        },
+        node: {
+            fs: "empty"
         },
         target: 'web',
         module: {
@@ -146,7 +150,10 @@ module.exports = (env, options) => {
                     ],
                   },
                 }
-              }),
+            }),
+            new WebpackShellPlugin({
+                onBuildEnd: ['..\\..\\..\\..\\php\\php.exe ../../../admin/cli/purge_caches.php --muc --theme --lang --js --filter --other']
+              })
         ],
         watchOptions: {
             ignored: /node_modules/
@@ -197,11 +204,11 @@ module.exports = (env, options) => {
                 }
             }),
             new webpack.LoaderOptionsPlugin({
-                minimize: false
+                minimize: true
             })
         ]);
         exports.optimization = {
-            minimize: false,
+            minimize: true,
             nodeEnv: 'production',
             minimizer: [
                 /*new UglifyJsPlugin({
@@ -216,9 +223,9 @@ module.exports = (env, options) => {
                     extractComments: true,
                 }),*/
                 new TerserPlugin({
-                    //cache: true,
+                    cache: true,
                     parallel: true,
-                    extractComments:'all',
+                    extractComments: false
                     //sourceMap: true,
                     //minify:false
                 }),

@@ -49,7 +49,7 @@ function xmldb_longpage_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
     
-    $newversion = 2022091914;
+    $newversion = 2023091204;
     if ($oldversion < $newversion) {
         
         // longpage_posts
@@ -75,7 +75,13 @@ function xmldb_longpage_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field3)) {
             $dbman->add_field($table, $field3);
         }
-
+        $table = new xmldb_table('longpage');
+        $field = new xmldb_field('showreadingcomprehension', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
+ 
+         // Conditionally launch add field id.
+         if (!$dbman->field_exists($table, $field)) {
+             $dbman->add_field($table, $field);
+         }
         upgrade_plugin_savepoint(true,  $newversion, 'mod', 'longpage');
     }
 
@@ -93,6 +99,46 @@ function xmldb_longpage_upgrade($oldversion) {
         }
         if (!$dbman->field_exists($table, $field2)) {
             $dbman->add_field($table, $field2);
+        }
+
+        // Longpage savepoint reached.
+        upgrade_plugin_savepoint(true,  $newversion, 'mod', 'longpage');
+    }
+
+    $newversion = 2023051601;
+    if ($oldversion < $newversion) {
+
+        // Define field id to be added to longpage_reading_progress.
+        $table = new xmldb_table('longpage');
+        $field1 = new xmldb_field('showreadingprogress', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
+        $field2 = new xmldb_field('showsearch', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
+        $field3 = new xmldb_field('showtableofcontents', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
+        $field4 = new xmldb_field('showposts', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
+        $field5 = new xmldb_field('showhighlights', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
+        $field6 = new xmldb_field('showbookmarks', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1, null);
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field1)) {
+            $dbman->add_field($table, $field1);
+        }
+        if (!$dbman->field_exists($table, $field2)) {
+            $dbman->add_field($table, $field2);
+        }
+
+        if (!$dbman->field_exists($table, $field3)) {
+            $dbman->add_field($table, $field3);
+        }
+
+        if (!$dbman->field_exists($table, $field4)) {
+            $dbman->add_field($table, $field4);
+        }
+
+        if (!$dbman->field_exists($table, $field5)) {
+            $dbman->add_field($table, $field5);
+        }
+
+        if (!$dbman->field_exists($table, $field6)) {
+            $dbman->add_field($table, $field6);
         }
 
         // Longpage savepoint reached.

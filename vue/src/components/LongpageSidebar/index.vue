@@ -1,5 +1,5 @@
 <template>
-  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80">
+  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : '',  'min-width': (tabs.length == 1 && $store.getters.LONGPAGE_CONTEXT.showreadingcomprehension ? '50%' : (tabOpenedKey != undefined ? '40%' : '')) }">
     <div
       v-show="tabOpenedKey"
       :title="$t('sidebar.util.changeWidth')"
@@ -9,7 +9,7 @@
     <div
       v-show="tabOpenedKey"
       :id="LONGPAGE_SIDEBAR_TAB_CONTENT"
-      class="col h-100 min-w-300-px w-xs-px"
+      class="col h-100"
     >
       <component
         :is="tab.key"
@@ -24,6 +24,7 @@
       :id="LONGPAGE_SIDEBAR_TAB"
       class="col-auto border-left p-0 h-100 nav flex-column nav-pills"
       aria-orientation="vertical"
+      v-if="tabs.length > 1"
     >
       <a
         v-for="tab in tabs"
@@ -83,6 +84,8 @@ import Posts from "@/components/LongpageSidebar/Posts";
 import debounce from "lodash/debounce";
 import TableOfContents from "@/components/LongpageSidebar/TableOfContents";
 import Search from "@/components/LongpageSidebar/Search";
+import CourseRecommendation from "@/components/Generic/CourseRecommendations";
+import Quiz from "@/components/LongpageSidebar/Quiz";
 
 const LONGPAGE_SIDEBAR_ID = "longpage-sidebar";
 const LONGPAGE_SIDEBAR_TAB = "longpage-sidebar-tab";
@@ -101,7 +104,7 @@ const resizeData = {
 $(document.body).on("mousedown", ".resize-handle--x", null, (event) => {
   if (event.button !== 0) return;
 
-  const targetElement = document.getElementById(LONGPAGE_SIDEBAR_TAB_CONTENT);
+  const targetElement = document.getElementById(LONGPAGE_SIDEBAR_ID);
   resizeData.startWidth = $(targetElement).outerWidth();
   resizeData.startCursorScreenX = event.screenX;
   resizeData.resizeTarget = targetElement;
@@ -140,44 +143,83 @@ export default {
     [SidebarTabKeys.POSTS]: Posts,
     [SidebarTabKeys.TOC]: TableOfContents,
     [SidebarTabKeys.SEARCH]: Search,
+    [SidebarTabKeys.COURSE_RECOMMENDATIONS]: CourseRecommendation,
+    [SidebarTabKeys.QUIZ]: Quiz,
   },
   data() {
-    return {
-      LONGPAGE_SIDEBAR_ID,
-      LONGPAGE_SIDEBAR_TAB_CONTENT,
-      SidebarEvents,
-      tabs: [
-        {
-          key: SidebarTabKeys.SEARCH,
-          id: "sidebar-tab-search",
-          icon: ["fa", "fa-search", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.TOC,
-          id: "sidebar-tab-table-of-contents",
-          icon: ["fa", "fa-list", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.POSTS,
-          id: "sidebar-tab-posts",
-          icon: ["fa", "fa-comments-o", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.HIGHLIGHTS,
-          id: "sidebar-tab-highlights",
-          icon: ["fa", "fa-pencil", "fa-fw"],
-        },
-        {
-          key: SidebarTabKeys.BOOKMARKS,
-          id: "sidebar-tab-bookmarks",
-          icon: ["fa", "fa-bookmark-o", "fa-fw"],
-        },
+    var tabs = [
         // {        // deactivated sidebar tab for now
         //   key: SidebarTabKeys.COURSE_RECOMMENDATIONS,
         //   id: "sidebar-tab-recomm",
         //   icon: ["fa", "fa-map", "fa-fw"],
         // },
-      ],
+    ];
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showsearch)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.SEARCH,
+        id: "sidebar-tab-search",
+        icon: ["fa", "fa-search", "fa-fw"],
+       });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showtableofcontents)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.TOC,
+        id: "sidebar-tab-table-of-contents",
+        icon: ["fa", "fa-list", "fa-fw"],
+      });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showposts)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.POSTS,
+        id: "sidebar-tab-posts",
+        icon: ["fa", "fa-comments-o", "fa-fw"],
+      });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showhighlights)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.HIGHLIGHTS,
+        id: "sidebar-tab-highlights",
+        icon: ["fa", "fa-pencil", "fa-fw"],
+      });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showbookmarks)
+    {
+      tabs.push(
+        {
+        key: SidebarTabKeys.BOOKMARKS,
+        id: "sidebar-tab-bookmarks",
+        icon: ["fa", "fa-bookmark-o", "fa-fw"],
+      });
+    }
+
+    if (this.$store.getters.LONGPAGE_CONTEXT.showreadingcomprehension)
+    {
+      tabs.push(
+        {
+          key: SidebarTabKeys.QUIZ,
+          id: "sidebar-tab-quiz",
+          icon: ["fa", "fa-dashboard", "fa-fw"],
+        });
+    }
+
+    return {
+      LONGPAGE_SIDEBAR_ID,
+      LONGPAGE_SIDEBAR_TAB_CONTENT,
+      SidebarEvents,
+      tabs: tabs,
     };
   },
   computed: {
@@ -200,11 +242,17 @@ export default {
     EventBus.subscribe(SidebarEvents.TOGGLE_TABS, (type) => {
       this.toggleTab(type);
     });
+
+    if (this.tabs.length == 1)
+    {
+      this.toggleTab(this.tabs[0]["key"]);
+    }
   },
   methods: {
     toggleTab(tabKey) {
       if (tabKey === this.tabOpenedKey) this.setTabOpened(undefined);
-      else this.setTabOpened(tabKey);
+      else 
+      this.setTabOpened(tabKey);
     },
     ...mapMutations({ setTabOpened: MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY }),
   },
@@ -212,6 +260,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
 #longpage-sidebar .nav-link:hover {
   z-index: 1;
   color: #495057;

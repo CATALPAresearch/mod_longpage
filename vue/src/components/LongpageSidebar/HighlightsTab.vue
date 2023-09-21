@@ -16,6 +16,7 @@
           {{ $t(`sidebar.tabs.${areHighlights ? 'highlights' : 'bookmarks'}.message.showAll`) }}
         </a>
       </div>
+      <div v-show="this.$store.state.UserModule.userCanMod">Nutzer-ID: <input id="userid" type="text" v-model="userid" size="5" style="margin: 5px;"/><input type="submit" value="Anzeigen" @click="fetchAnnotations()"/></div>
     </template>
     <template #body>
       <div
@@ -121,6 +122,7 @@ export default {
   data() {
     return {
       selectedHighlights: [],
+      userid: null
     };
   },
   computed: {
@@ -147,6 +149,10 @@ export default {
     scrollTextElementIntoView(id) {
       scrollTextElementIntoView(getHighlightByAnnotationId(id));
     },
+    fetchAnnotations()
+    {
+      this.$store.dispatch(ACT.FETCH_ANNOTATIONS, this.userid);
+    }
   },
   mounted() {
     EventBus.subscribe('annotations-selected', ({type, selection}) => {

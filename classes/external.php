@@ -26,17 +26,23 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_question\statistics\questions\calculator;
+use filter_embedquestion\embed_id;
+use filter_embedquestion\utils;
 use mod_longpage\local\constants\annotation_type as annotation_type;
 use mod_longpage\local\constants\selector as selector;
 use mod_longpage\local\post_recommendation\post_recommendation_calculation_task as post_recommendation_calculation_task;
 use mod_longpage\local\thread_subscriptions\manage_thread_subscriptions_task as manage_thread_subscriptions_task;
 use mod_longpage\local\thread_subscriptions\post_action as post_action;
+use mod_longpage\lib\longpage_update_grades as longpage_update_grades;
+
 
 require_once("$CFG->libdir/accesslib.php");
 require_once("$CFG->libdir/externallib.php");
 require_once("$CFG->dirroot/course/externallib.php");
 require_once("$CFG->dirroot/user/externallib.php");
 require_once("$CFG->dirroot/mod/longpage/locallib.php");
+require_once("$CFG->dirroot/question/engine/lib.php");
 
 /**
  * Page external functions
@@ -116,6 +122,15 @@ class mod_longpage_external extends external_api
             self::create_thread($annotation['body'], $id, $annotation['longpageid']);
         }
         $transaction->allow_commit();
+
+        $annotationscount = $DB->count_records('longpage_annotations', ['longpageid' => $annotation['longpageid'], 'creatorid' => $USER->id]);
+
+        $grade = new stdClass();
+        $grade->userid = $USER->id;
+        $grade->rawgrade = min(100, $annotationscount*10);
+
+        $page = $DB->get_record('longpage', array('id' => $annotation['longpageid']), '*', MUST_EXIST);
+        longpage_update_grades($page, $grade);
 
         return [
             'annotation' => self::get_annotations(['longpageid' => $annotation['longpageid'], 'annotationid' => $id])['annotations'][0]
@@ -357,6 +372,15 @@ class mod_longpage_external extends external_api
         $postparameters['threadid'] = $id;
         self::create_post($postparameters);
         self::create_thread_subscription($id);
+
+        $page = $DB->get_record('longpage', array('id' => $pageid), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
+        $context = \context_course::instance($course->id);
+        $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+        $teachers = get_role_users($role->id, $context);
+        foreach ($teachers as $teacher) {
+            self::create_thread_subscription($id, $teacher->id);
+        }
     }
 
     public static function create_thread_parameters()
@@ -377,7 +401,7 @@ class mod_longpage_external extends external_api
     {
     }
 
-    public static function create_thread_subscription($threadid)
+    public static function create_thread_subscription($threadid, $userid=null)
     {
         global $DB, $USER;
 
@@ -385,8 +409,13 @@ class mod_longpage_external extends external_api
         $annotation = self::get_annotation_by_thread($threadid);
         self::validate_cm_context($annotation->longpageid);
 
+        if($userid == null)
+        {
+            $userid = $USER->id;
+        }
+
         $table = 'longpage_thread_subs';
-        $keyconditions = ['threadid' => $threadid, 'userid' => $USER->id];
+        $keyconditions = ['threadid' => $threadid, 'userid' => $userid];
         $transaction = $DB->start_delegated_transaction();
         if (!$DB->record_exists($table, $keyconditions)) {
             $DB->insert_record($table, array_merge($keyconditions, ['timecreated' => time()]));
@@ -811,8 +840,8 @@ class mod_longpage_external extends external_api
 
         $annotations =
             isset($parameters['annotationid']) ?
-            self::get_annotations_by_annotation_id($parameters['annotationid']) :
-            self::get_annotations_by_page_id($parameters['longpageid']);
+                self::get_annotations_by_annotation_id($parameters['annotationid']) :
+                self::get_annotations_by_page_id($parameters['longpageid'], $parameters['userid']);
 
         foreach ($annotations as $annotation) {
             $annotation->target = self::get_annotation_target($annotation->id);
@@ -835,14 +864,20 @@ class mod_longpage_external extends external_api
         );
     }
 
-    private static function get_annotations_by_page_id($pageid, $timemodified = 0)
-    {
+    private static function get_annotations_by_page_id($pageid, $userid = 0) {
         global $DB, $USER;
+
+        $cm = get_coursemodule_by_pageid($pageid);
+        $context = context_module::instance($cm->id);
+        if($userid == 0 || !is_siteadmin())
+        {
+            $userid = $USER->id;
+        }
 
         return $DB->get_records_select(
             'longpage_annotations',
             'longpageid = ? AND (creatorid = ? OR ispublic = 1)',
-            ['longpageid' => $pageid, 'creatorid' => $USER->id]
+            ['longpageid' => $pageid, 'creatorid' => $userid]
         );
     }
 
@@ -857,7 +892,8 @@ class mod_longpage_external extends external_api
         return new external_function_parameters([
             'parameters' => new external_single_structure([
                 'longpageid' => new external_value(PARAM_INT),
-                'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
+                'annotationid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                'userid' => new external_value(PARAM_INT, '', VALUE_OPTIONAL)
             ]),
         ]);
     }
@@ -1644,6 +1680,209 @@ class mod_longpage_external extends external_api
     {
         return new external_single_structure(
             array('canmodannotations' => new external_value(PARAM_BOOL))
+        );
+    }
+
+    public static function get_questions_by_page_id($longpageid){
+        global $DB;
+
+        $params = self::validate_parameters(
+            self::get_questions_by_page_id_parameters(),
+            array(
+                'longpageid' => $longpageid
+            )
+        );
+
+        // Request and permission validation.
+        $page = $DB->get_record('longpage', array('id' => $params['longpageid']), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
+
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+
+        $query = "SELECT it.id, t.name as tagname
+                    FROM {question} it INNER JOIN {tag_instance} tt ON it.id = tt.itemid INNER JOIN {tag} t on tt.tagid = t.id
+                   WHERE tt.itemtype=? AND t.name LIKE ? AND tt.component=? ORDER BY it.id";
+
+        $questions = $DB->get_records_sql($query, array('question', 'q:'.$cm->id.':%', 'core_question'));
+
+        $quba = question_engine::make_questions_usage_by_activity("core_question", $context);
+        $options = new question_display_options();
+        $quba->set_preferred_behaviour("manualgraded");
+
+        $res = array();
+        $i = 1;
+        foreach($questions as $id => $question)
+        {
+            $q = question_bank::load_question($question->id);
+            $entry = array();
+            $quba->add_question($q);
+            $quba->start_question($i);
+            $html = $quba->render_question($i, $options);
+            $entry["tagname"] = str_replace('q:'.$cm->id.':', "", $question->tagname);
+            $entry["html"] = $html;
+            $i++;
+            $res[] = $entry;
+        }
+
+        $return = array(
+            'questions' => $res
+        );
+        return $return;
+    }
+
+    public static function get_questions_by_page_id_parameters(){
+        return new external_function_parameters(
+            array(
+                'longpageid' => new external_value(PARAM_INT, 'page instance id')
+            )
+        );
+    }
+
+    public static function get_questions_by_page_id_returns(){
+        return new external_single_structure(
+            array(
+                "questions" =>  new external_multiple_structure(
+                    new external_single_structure(
+                    array(
+                        'tagname' => new external_value(PARAM_RAW),
+                        'html' => new external_value(PARAM_RAW),
+        )))));
+    }
+
+
+    public static function get_reading_comprehension($longpageid){
+        global $DB, $USER, $CFG;
+
+        $params = self::validate_parameters(
+            self::get_questions_by_page_id_parameters(),
+            array(
+                'longpageid' => $longpageid
+            )
+        );
+
+        // Request and permission validation.
+        $page = $DB->get_record('longpage', array('id' => $params['longpageid']), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
+
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+
+        $options = array('noclean' => true);
+        list($page->content, $page->contentformat) = external_format_text(
+            $page->content,
+            $page->contentformat,
+            $context->id,
+            'mod_longpage',
+            'content',
+            $page->revision,
+            $options
+        );
+
+        // $customfieldhandler = qbank_customfields\customfield\question_handler::create();
+        // $sql = "SELECT d.*
+        //           FROM {customfield_field} f
+        //           JOIN {customfield_data} d ON (f.id = d.fieldid AND d.instanceid {$sqlinstances})
+        //          WHERE f.shortname = 'readingcomprehension'";
+        // $fieldsdata = $DB->get_recordset_sql($sql);
+        // $field = \core_customfield\field_controller::create($fieldsdata->current()->id);
+        // $fieldsdata->close();
+        
+        $context = \context_course::instance($course->id);
+        $result = array();
+        
+
+        preg_match_all('/<iframe[\S\s]+class=\"filter_embedquestion-iframe\"[\S\s]+id=\"(?<catid>\w+)\/(?<qid>\w+)\"/iU', $page->content, $matches);
+        $len = count($matches[1]);
+        $cntSubmitted = 0;
+        $sum = 0;
+        for ($i=0; $i<$len; $i++) {
+            $embed = new embed_id($matches["catid"][$i], $matches["qid"][$i]);
+            $category = utils::get_category_by_idnumber($context, $embed->categoryidnumber);
+            $question = utils::get_question_by_idnumber(intval($category->id), $embed->questionidnumber);
+
+            $avgfraction = $DB->get_field_sql("SELECT AVG(fraction) as avgfraction FROM (SELECT qas.fraction FROM ". $CFG->prefix."question_attempts qa 
+                                INNER JOIN ". $CFG->prefix."question_attempt_steps qas 
+                                ON qas.questionattemptid = qa.id 
+                                WHERE qas.userid = ? AND qas.fraction IS NOT NULL AND qa.questionid = ? 
+                                AND qas.sequencenumber = (
+                                                SELECT MAX(sequencenumber)
+                                                FROM ". $CFG->prefix."question_attempt_steps
+                                                WHERE questionattemptid = qa.id
+                                            )
+                                AND qas.timecreated > ?
+                                ORDER BY qas.timecreated DESC 
+                                LIMIT 5) alias", 
+                                array($USER->id, $question->id, date_format(date_sub(date_create(), DateInterval::createFromDateString('3 months')), "U")));
+
+            $cntSubmitted += $avgfraction == null ? 0 : 1;
+            $sum += $avgfraction;                        
+            // $field_data = $customfieldhandler->get_field_data($field, $question->id);
+            // $level = $field_data->get_value();
+            $level = 1;
+            $result[strval($embed)] = array("value" => $avgfraction, "level" => $level);
+        
+        }
+
+        if($cntSubmitted == $len)
+        {
+            $grade = new stdClass();
+            $grade->userid   = $USER->id;
+            $grade->rawgrade = 100*$sum/$len;
+            longpage_update_grades($page, $grade);
+        }
+        
+        $return = array(
+            'response' => json_encode($result)
+        );
+        return $return;
+
+    }
+
+    public static function get_reading_comprehension_parameters(){
+        return new external_function_parameters(
+            array(
+                'longpageid' => new external_value(PARAM_INT, 'page instance id')
+            )
+        );
+    }
+
+    public static function get_reading_comprehension_returns(){
+        return new external_single_structure(
+            array(
+                "response" =>  new external_value(PARAM_RAW)));
+    }
+
+    public static function autosave($data)
+    {
+        global $CFG, $DB, $USER, $PAGE;
+        
+        $form = json_decode($data['form'], true);
+        $quba = question_engine::load_questions_usage_by_activity($data["qubaid"]);
+        $quba->process_all_autosaves(null, $form);
+        question_engine::save_questions_usage_by_activity($quba);
+        return array('response' => json_encode("success"));
+    }
+
+    public static function autosave_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'data' =>
+                new external_single_structure(
+                    array(
+                        'qubaid' => new external_value(PARAM_INT, 'qubaid'),
+                        'form' => new external_value(PARAM_RAW, 'form data')
+                    )
+                )
+            )
+        );
+    }
+
+    public static function autosave_returns()
+    {
+        return new external_single_structure(
+            array('response' => new external_value(PARAM_RAW, 'Server response to autosave'))
         );
     }
 }

@@ -22,7 +22,10 @@ export default {
 
   mounted: function () {
     this.enableScrollLogging();
-    this.visualizeReadingProgress();
+    if (this.context.showreadingprogress)
+    {
+      this.visualizeReadingProgress();
+    }
   },
 
   methods: {
@@ -37,27 +40,8 @@ export default {
       if (
         "IntersectionObserver" in window &&
         "IntersectionObserverEntry" in window &&
-        "intersectionRatio" in window.IntersectionObserverEntry.prototype &&
-        document.querySelector("#longpage-app")
+        "intersectionRatio" in window.IntersectionObserverEntry.prototype
       ) {
-        var measuredElement = document.querySelector("#longpage-app");
-        var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-        var scrollWidth = document.documentElement.scrollWidth - window.innerWidth;
-        var yPadding, xPadding;
-        if (window.getComputedStyle && measuredElement) {
-          var computedStyle = window.getComputedStyle(measuredElement);
-          yPadding =
-            parseFloat(computedStyle.paddingTop) +
-            parseFloat(computedStyle.paddingBottom);
-          xPadding =
-            parseFloat(computedStyle.paddingLeft) +
-            parseFloat(computedStyle.paddingRight);
-        }
-        //offsetHeight includes border, padding and margin, but clinetHeight includes onle the padding
-        var containerHeight = measuredElement.clientHeight - yPadding;
-        var containerWidth = measuredElement.clientWidth - xPadding;
-
-        var longpageMain = document.querySelector("#longpage-main");
         let last_entry = {};
         var sectionCount = 0;
         var behavior;
@@ -95,24 +79,54 @@ export default {
                 behavior = "scrolling";
               }
 
-              var logentry = {
-                longpageid: _this.context.longpageid,
-                relativeTime: entry.time,
-                targetID: entry.target.id,
-                targetTag: entry.target.localName,
-                targetClasses: entry.target.className,
-                targetWordCount: word_count,
-                targetHeight: entry.target.scrollHeight,
-                scrollLeft: longpageMain.scrollLeft,
-                scrollTop: longpageMain.scrollTop,
-                scrollHeight: scrollHeight,
-                scrollWidth: scrollWidth,
-                containerHeight: containerHeight,
-                containerWidth: containerWidth,
-                behavior: behavior,
-                sectionhash: _this.hashCode(entry.target.id),
-                sectionCount: sectionCount
-              };
+              var measuredElement = document.querySelector("#longpage-app");
+              if (measuredElement) {
+                
+                var yPadding, xPadding;
+                if (window.getComputedStyle) {
+                  var computedStyle = window.getComputedStyle(measuredElement);
+                  yPadding =
+                    parseFloat(computedStyle.paddingTop) +
+                    parseFloat(computedStyle.paddingBottom);
+                  xPadding =
+                    parseFloat(computedStyle.paddingLeft) +
+                    parseFloat(computedStyle.paddingRight);
+                }
+                //offsetHeight includes border, padding and margin, but clinetHeight includes onle the padding
+                var containerHeight = measuredElement.clientHeight - yPadding;
+                var containerWidth = measuredElement.clientWidth - xPadding;
+
+                var longpageMain = document.querySelector("#longpage-main");
+  
+                var logentry = {
+                  longpageid: _this.context.longpageid,
+                  relativeTime: entry.time,
+                  targetID: entry.target.id,
+                  targetTag: entry.target.localName,
+                  targetClasses: entry.target.className,
+                  targetWordCount: word_count,
+                  targetHeight: entry.target.scrollHeight,
+                  scrollLeft: longpageMain.scrollLeft,
+                  scrollTop: longpageMain.scrollTop,
+                  scrollHeight: longpageMain.scrollHeight,
+                  scrollWidth: longpageMain.scrollWidth,
+                  containerHeight: containerHeight,
+                  containerWidth: containerWidth,
+                  behavior: behavior,
+                  sectionhash: _this.hashCode(entry.target.id),
+                  sectionCount: sectionCount,
+                  utc: now.getTime(),
+                  navigator: {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    oscpu: navigator.oscpu,
+                    language: navigator.language,
+                    cookieEnabled: navigator.cookieEnabled
+                  },
+                  screenWidth: window.screen.width,
+                  screenHeight: window.screen.height,
+                  devicePixelRatio: window.devicePixelRatio
+                };
 
               ajax.call([
                 {
@@ -133,7 +147,8 @@ export default {
                 },
               ]);
 
-              last_entry = logentry;
+                last_entry = logentry;
+              }
             }
           }
         };
@@ -151,10 +166,10 @@ export default {
         //
 
         //tie together text parts without wrapper to wrap them
-        var observedElements = ["h2", "h3", "h4", "pre", "img", "p", "ol", "ul"];
+        var observedElements = ["h2", "h3", "h4", "h5", "pre", "img", "p", "ol", "ul", "div"];
         var container = "#longpage-content";
 
-        if ($(container + " > .filter_mathjaxloader_equation"))
+        if ($(container + " > .filter_mathjaxloader_equation").length == 1)
           container += " > .filter_mathjaxloader_equation";
 
         $($(container)
@@ -164,6 +179,9 @@ export default {
             if (cur.tagName && observedElements.includes(cur.tagName.toLowerCase()))
               return prev;
 
+            if (cur.nodeType === 3 && cur.data.trim() == "")
+              return prev;
+ 
             if (prev.length == 0)
               return [[cur]];
 
@@ -190,14 +208,28 @@ export default {
           }
           sectionCount++;
           $("#" + attr).wrap("<div class='wrapper'></div>");
-          $("#" + attr).parent().append(
-                    $("<span></span>")
-                      .attr(
-                        "title",
-                        "Der Abschnitt wurde bislang 0 mal gelesen"
-                      )
-                      .addClass("reading-progress")
-          );
+          var wrapper = $("#" + attr).parent();
+          if (_this.context.showreadingprogress || _this.context.showreadingcomprehension) {
+            var span = $("<span></span>")
+              .addClass("reading-progress")
+              .attr("data-html2canvas-ignore", "");
+            if (_this.context.showreadingprogress) {
+              $(span).attr(
+                "title",
+                "Der Abschnitt wurde bislang 0 mal gelesen"
+              );
+            }
+            else {
+              $(span).addClass("progress-3");
+            }
+            $(wrapper).append(span);
+          }
+            if ($(wrapper).find(".filter_embedquestion-iframe").length > 0)
+            {
+              $(wrapper).height("0px");
+              $(wrapper).css("padding", "0px");
+            }
+          
           observer.observe(document.querySelector("#" + attr));
         });
       }
@@ -274,6 +306,7 @@ export default {
 
     visualizeReadingProgress: function () {
       let _this = this;
+        
       ajax.call([
         {
           methodname: "mod_longpage_get_reading_progress",
