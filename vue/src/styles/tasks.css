@@ -1,6 +1,12 @@
+html
+{
+    overflow-y: visible !important;
+}
+
 body 
 {
     font-size: 1rem;
+    overflow-y: scroll !important;
 }
 
 .draghome

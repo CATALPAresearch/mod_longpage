@@ -1752,7 +1752,7 @@ class mod_longpage_external extends external_api
 
 
     public static function get_reading_comprehension($longpageid){
-        global $DB, $USER;
+        global $DB, $USER, $CFG;
 
         $params = self::validate_parameters(
             self::get_questions_by_page_id_parameters(),
@@ -1801,19 +1801,19 @@ class mod_longpage_external extends external_api
             $category = utils::get_category_by_idnumber($context, $embed->categoryidnumber);
             $question = utils::get_question_by_idnumber(intval($category->id), $embed->questionidnumber);
 
-            $avgfraction = $DB->get_field_sql("SELECT AVG(qas.fraction) as avgfraction FROM mdl_question_attempts qa 
-                                INNER JOIN mdl_question_attempt_steps qas 
+            $avgfraction = $DB->get_field_sql("SELECT AVG(fraction) as avgfraction FROM (SELECT qas.fraction FROM ". $CFG->prefix."question_attempts qa 
+                                INNER JOIN ". $CFG->prefix."question_attempt_steps qas 
                                 ON qas.questionattemptid = qa.id 
                                 WHERE qas.userid = ? AND qas.fraction IS NOT NULL AND qa.questionid = ? 
                                 AND qas.sequencenumber = (
                                                 SELECT MAX(sequencenumber)
-                                                FROM mdl_question_attempt_steps
+                                                FROM ". $CFG->prefix."question_attempt_steps
                                                 WHERE questionattemptid = qa.id
                                             )
-                                AND FROM_UNIXTIME(qas.timecreated) > DATE_ADD(CURRENT_DATE(), INTERVAL -3 MONTH)
+                                AND qas.timecreated > ?
                                 ORDER BY qas.timecreated DESC 
-                                LIMIT 5", 
-                                array($USER->id, $question->id));
+                                LIMIT 5) alias", 
+                                array($USER->id, $question->id, date_format(date_sub(date_create(), DateInterval::createFromDateString('3 months')), "U")));
 
             $cntSubmitted += $avgfraction == null ? 0 : 1;
             $sum += $avgfraction;                        

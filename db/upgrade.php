@@ -49,7 +49,7 @@ function xmldb_longpage_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
     
-    $newversion = 2022091914;
+    $newversion = 2023091204;
     if ($oldversion < $newversion) {
         
         // longpage_posts
