@@ -223,33 +223,12 @@ export default {
         });
     }
 
-    var width;
-    if(localStorage)
-    {
-      var w = localStorage.getItem("sidebar-width");
-      if(w)
-      {
-        width = w;
-      }
-    }
-    if(!width)
-    {
-      if(tabs.length == 1 && $store.getters.LONGPAGE_CONTEXT.showreadingcomprehension)
-      {
-        width = '50%';
-      }
-      else if (tabOpenedKey != undefined)
-      {
-        width = '40%';
-      }
-    }
-
     return {
       LONGPAGE_SIDEBAR_ID,
       LONGPAGE_SIDEBAR_TAB_CONTENT,
       SidebarEvents,
       tabs: tabs,
-      sidebarWidth: width
+      sidebarWidth: ""
     };
   },
   computed: {
@@ -273,15 +252,16 @@ export default {
       this.toggleTab(type);
     });
 
+    var tab = undefined;
     if(localStorage)
     {
       var tab = localStorage.getItem("sidebar-tab");
       if(tab === "undefined")
       {
         tab = undefined;
-      }
-      this.toggleTab(tab);
+      } 
     }
+    this.toggleTab(tab);
   },
   methods: {
     toggleTab(tabKey) {
@@ -290,16 +270,29 @@ export default {
         tabKey = undefined;
         this.sidebarWidth = "";
       }
-      else
+      else if(tabKey != undefined)
       {
+        var width;
         if(localStorage)
         {
           var w = localStorage.getItem("sidebar-width");
           if(w)
           {
-            this.sidebarWidth = w;
+            width = w;
           }
         }
+        if(!width)
+        {
+          if(this.tabs.length == 1 && $store.getters.LONGPAGE_CONTEXT.showreadingcomprehension)
+          {
+            width = '50%';
+          }
+          else 
+          {
+            width = '40%';
+          }
+        }
+        this.sidebarWidth = width;
       }
 
       this.setTabOpened(tabKey);
