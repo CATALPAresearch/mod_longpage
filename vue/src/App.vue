@@ -38,7 +38,7 @@
       </div>
       <longpage-sidebar class="col-auto" />
     </div>
-    <CourseRecommendation style="display: none;"></CourseRecommendation>
+    <!-- <CourseRecommendation></CourseRecommendation> -->
     <ReadingTime v-if="context.showreadingprogress"></ReadingTime>
     <ReadingProgress :context="context"> </ReadingProgress>
   </div>
@@ -144,6 +144,34 @@ export default {
         );
       });
     });
+
+    var _this = this;
+
+    this.$nextTick(function () {
+      // Code that will run only after the
+      // entire view has been rendered
+      if ($("body").hasClass("drawer-open-left")) //Moodle < V4
+      {
+        $("button[data-action='toggle-drawer']").trigger("click");
+      }
+    });
+
+    function waitLoading()
+    {
+      if (M.util.js_pending())
+      {
+        setTimeout(waitLoading, 500);
+      }
+      else
+      {
+        if ($(".drawer").hasClass("show")) // Moode > V4
+        {
+          $("button.drawertoggle").trigger("click");
+        }
+      }
+    }
+    waitLoading();
+
     EventBus.subscribe("searchresult-selected", (logdata) => {
       _this.logger.add("searchresult_selected", logdata);
     });
@@ -159,13 +187,13 @@ export default {
         selection: highlightsAtClickCoords,
       });
     });
-    // Y.use('mathjax', () => {
-    //   MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
-    // });
+    Y.use('mathjax', () => {
+      MathJax.Hub.Queue(['Typeset', MathJax.Hub, this.$refs.contentRef]);
+    });
     this[ACT.FETCH_USER_ROLES]();
     this[ACT.FETCH_ENROLLED_USERS]();
     this[ACT.USER_CAN_MOD_ANNOTATION]();
-    var _this = this;
+
     // Log bootstrap interactions
     $(".longpage-citation").click(function () {
       _this.log("citation_view", { citation: $(this).data("content") });
