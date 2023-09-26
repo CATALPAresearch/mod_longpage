@@ -172,26 +172,26 @@ export default {
         if ($(container + " > .filter_mathjaxloader_equation").length == 1)
           container += " > .filter_mathjaxloader_equation";
 
-        $($(container)
-          .contents()
-          .toArray()
-          .reduce(function (prev, cur) {
-            if (cur.tagName && observedElements.includes(cur.tagName.toLowerCase()))
-              return prev;
+        // $($(container)
+        //   .contents()
+        //   .toArray()
+        //   .reduce(function (prev, cur) {
+        //     if (cur.tagName && observedElements.includes(cur.tagName.toLowerCase()))
+        //       return prev;
 
-            if (cur.nodeType === 3 && cur.data.trim() == "")
-              return prev;
+        //     if (cur.nodeType === 3 && cur.data.trim() == "")
+        //       return prev;
  
-            if (prev.length == 0)
-              return [[cur]];
+        //     if (prev.length == 0)
+        //       return [[cur]];
 
-            prev[prev.length - 1].push(cur);
+        //     prev[prev.length - 1].push(cur);
 
-            if (cur.nextSibling && cur.nextSibling.tagName && observedElements.includes(cur.nextSibling.tagName.toLowerCase())) {
-              prev.push([]);
-            }
-            return prev;
-          }, [])).wrap("<p></p>");
+        //     if (cur.nextSibling && cur.nextSibling.tagName && observedElements.includes(cur.nextSibling.tagName.toLowerCase())) {
+        //       prev.push([]);
+        //     }
+        //     return prev;
+        //   }, [])).wrap("<p></p>");
 
         var observedSelectors = observedElements.map(function (val) {
           return container + " > " + val;

@@ -197,8 +197,8 @@ export default {
                 {
                   if(!$(p).attr("data-reading-comprehension-count"))
                   {
-                    $(p).attr("data-reading-comprehension-count", level)
-                    $(p).attr("data-reading-comprehension-sum", level*value)
+                    $(p).attr("data-reading-comprehension-count", level);
+                    $(p).attr("data-reading-comprehension-sum", level*value);
                   }
                   else
                   {
@@ -268,34 +268,6 @@ export default {
           rectEl.right <= rectApp.right
       );
     } 
-
-    this.$nextTick(function () {
-      // Code that will run only after the
-      // entire view has been rendered
-      if ($("body").hasClass("drawer-open-left")) //Moodle < V4
-      {
-        $("button[data-action='toggle-drawer']").trigger("click");
-      }
-      // _this.toggleTab();
-      $("#longpage-content .reading-progress").attr("style", "display: inline !important;");
-    });
-
-    function waitLoading()
-    {
-      if (M.util.js_pending())
-      {
-        setTimeout(waitLoading, 500);
-      }
-      else
-      {
-        if ($(".drawer").hasClass("show")) // Moode > V4
-        {
-          $("button.drawertoggle").trigger("click");
-        }
-      }
-    }
-
-    waitLoading();
 
     $(document).ready(function () {
       var readfun = _.debounce(function () {
@@ -535,7 +507,7 @@ export default {
       $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) 
       {   
         var paragraph = $(el).parents(".wrapper").prev();
-        $(el).data("paragraph", $(paragraph).find("p").attr("id"));
+        $(el).data("paragraph", $(paragraph).children().first().attr("id"));
         observer.observe($(paragraph)[0]);
       });
 
@@ -552,9 +524,9 @@ export default {
         var t = $("#longpage-main").scrollTop();
         $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
         {
-          if ($(el).offset().top > t+300)
+          if (el.offsetTop > t+500)
           {
-            $("#longpage-main").animate({ scrollTop: $(el).offset().top - 200 }, 'fast');
+            $("#longpage-main").animate({ scrollTop: el.offsetTop - 500 }, 'fast');
             return false;
           }
         })
@@ -565,15 +537,15 @@ export default {
         var t = $("#longpage-main").scrollTop();
         $($("#longpage-main .filter_embedquestion-iframe").get().reverse()).each(function (i, el)
         {
-          if ($(el).offset().top < t)
+          if (el.offsetTop < t)
           {
-            $("#longpage-main").animate({ scrollTop: $(el).offset().top - 200 }, 'fast');
+            $("#longpage-main").animate({ scrollTop: el.offsetTop - 500 }, 'fast');
             return false;
           }
         })
       });
 
-      $("#pinQuestion").on( "click", function() {
+      $("#pinQuestion").on("click", function() {
         $(this).toggleClass("active");
         if (!$(this).hasClass("active"))
         {

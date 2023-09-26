@@ -687,7 +687,7 @@ class mod_longpage_external extends external_api
      *
      * @return string
      */
-    public function get_profile_link($userid, $courseid)
+    public static function get_profile_link($userid, $courseid)
     {
         $queryparams = ['id' => $userid, 'course' => $courseid];
         $link = new \moodle_url('/user/view.php', $queryparams);
@@ -1792,7 +1792,7 @@ class mod_longpage_external extends external_api
         $result = array();
         
 
-        preg_match_all('/<iframe[\S\s]+class=\"filter_embedquestion-iframe\"[\S\s]+id=\"(?<catid>\w+)\/(?<qid>\w+)\"/iU', $page->content, $matches);
+        preg_match_all('/<iframe[\S\s]+class=\"filter_embedquestion-iframe[\S\s]+id=\"(?<catid>\S+)\/(?<qid>\S+)\"/iU', $page->content, $matches);
         $len = count($matches[1]);
         $cntSubmitted = 0;
         $sum = 0;
@@ -1824,7 +1824,7 @@ class mod_longpage_external extends external_api
         
         }
 
-        if($cntSubmitted == $len)
+        if($len > 0 && $cntSubmitted == $len)
         {
             $grade = new stdClass();
             $grade->userid   = $USER->id;
