@@ -1,5 +1,5 @@
 <template>
-  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : '',  'min-width': (tabs.length == 1 && $store.getters.LONGPAGE_CONTEXT.showreadingcomprehension ? '50%' : (tabOpenedKey != undefined ? '40%' : '')) }">
+  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : sidebarWidth }">
     <div
       v-show="tabOpenedKey"
       :title="$t('sidebar.util.changeWidth')"
@@ -133,6 +133,14 @@ $(window).on(
 
 $(window).on("mouseup", null, null, () => {
   if (resizeData.tracking) resizeData.tracking = false;
+  if(localStorage)
+  {
+    var w = $(resizeData.resizeTarget).outerWidth();
+    if(w)
+    {
+      localStorage.setItem("sidebar-width",  w + "px");
+    }
+  }
 });
 
 export default {
@@ -215,11 +223,33 @@ export default {
         });
     }
 
+    var width;
+    if(localStorage)
+    {
+      var w = localStorage.getItem("sidebar-width");
+      if(w)
+      {
+        width = w;
+      }
+    }
+    if(!width)
+    {
+      if(tabs.length == 1 && $store.getters.LONGPAGE_CONTEXT.showreadingcomprehension)
+      {
+        width = '50%';
+      }
+      else if (tabOpenedKey != undefined)
+      {
+        width = '40%';
+      }
+    }
+
     return {
       LONGPAGE_SIDEBAR_ID,
       LONGPAGE_SIDEBAR_TAB_CONTENT,
       SidebarEvents,
       tabs: tabs,
+      sidebarWidth: width
     };
   },
   computed: {
@@ -243,16 +273,40 @@ export default {
       this.toggleTab(type);
     });
 
-    if (this.tabs.length == 1)
+    if(localStorage)
     {
-      this.toggleTab(this.tabs[0]["key"]);
+      var tab = localStorage.getItem("sidebar-tab");
+      if(tab === "undefined")
+      {
+        tab = undefined;
+      }
+      this.toggleTab(tab);
     }
   },
   methods: {
     toggleTab(tabKey) {
-      if (tabKey === this.tabOpenedKey) this.setTabOpened(undefined);
-      else 
+      if (tabKey === this.tabOpenedKey)
+      {
+        tabKey = undefined;
+        this.sidebarWidth = "";
+      }
+      else
+      {
+        if(localStorage)
+        {
+          var w = localStorage.getItem("sidebar-width");
+          if(w)
+          {
+            this.sidebarWidth = w;
+          }
+        }
+      }
+
       this.setTabOpened(tabKey);
+      if(localStorage)
+      {
+        localStorage.setItem("sidebar-tab", tabKey);
+      }
     },
     ...mapMutations({ setTabOpened: MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY }),
   },
