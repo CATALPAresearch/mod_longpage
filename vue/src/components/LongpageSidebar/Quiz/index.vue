@@ -26,13 +26,13 @@
       <ol id="carousel-indicators" class="carousel-indicators">
       </ol>
       <div id="question" class="carousel-inner"></div>     
-      <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">&lt;-</span>
-      </a>
       <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">-&gt;</span>
+      </a>
+      <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">&lt;-</span>
       </a>
     </div>
     </template>
@@ -149,6 +149,7 @@ import { GET, MUTATE } from "@/store/types";
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import SidebarTab from "@/components/LongpageSidebar/SidebarTab";
 import ajax from "core/ajax";
+import { EventBus } from "@/lib/event-bus";
 
 export default {
   name: "Quiz",
@@ -163,11 +164,12 @@ export default {
       return AnnotationType.QUIZ;
     }
   },
+  emits: [SidebarEvents.TOGGLE_TABS],
   methods: {
     ...mapMutations([MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY]),
     toggleTab()
     {
-      this[MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY](SidebarTabKeys.QUIZ);
+      EventBus.publish(SidebarEvents.TOGGLE_TABS, SidebarTabKeys.QUIZ);
     }
   },
   mounted() 
