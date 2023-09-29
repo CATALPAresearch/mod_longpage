@@ -1,5 +1,5 @@
 <template>
-  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : sidebarWidth }">
+  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : sidebarWidth, 'min-width': tabOpenedKey !== undefined ? '400px' : '' }">
     <div
       v-show="tabOpenedKey"
       :title="$t('sidebar.util.changeWidth')"
@@ -133,14 +133,6 @@ $(window).on(
 
 $(window).on("mouseup", null, null, () => {
   if (resizeData.tracking) resizeData.tracking = false;
-  if(localStorage)
-  {
-    var w = $(resizeData.resizeTarget).outerWidth();
-    if(w)
-    {
-      localStorage.setItem("sidebar-width",  w + "px");
-    }
-  }
 });
 
 export default {
@@ -238,13 +230,13 @@ export default {
     EventBus.subscribe("annotations-selected", ({ type }) => {
       switch (type) {
         case AnnotationType.HIGHLIGHT:
-          this.setTabOpened(SidebarTabKeys.HIGHLIGHTS);
+          this.toggleTab(SidebarTabKeys.HIGHLIGHTS);
           break;
         case AnnotationType.BOOKMARK:
-          this.setTabOpened(SidebarTabKeys.BOOKMARKS);
+          this.toggleTab(SidebarTabKeys.BOOKMARKS);
           break;
         case AnnotationType.POST:
-          this.setTabOpened(SidebarTabKeys.POSTS);
+          this.toggleTab(SidebarTabKeys.POSTS);
           break;
       }
     });
@@ -262,6 +254,19 @@ export default {
       } 
     }
     this.toggleTab(tab);
+
+    this.$nextTick(function () {
+      const observer = new MutationObserver(() => 
+      {
+        var w = $(resizeData.resizeTarget).outerWidth();
+        if(w && parseFloat(w) >= 400)
+        {
+          localStorage.setItem("sidebar-width",  w + "px");
+        }
+      });
+
+      observer.observe($("#longpage-sidebar")[0], { attributes: true});
+  });
   },
   methods: {
     toggleTab(tabKey) {

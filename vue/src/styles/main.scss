@@ -126,9 +126,7 @@ footer#page-footer {
 
 #longpage-content .wrapper > p, #longpage-content .wrapper > div {
   margin: 0px 0px 10px 0px;
-  padding: 0 10px;
   line-height: 1.6em;
-  font-size: 1em;
 }
 
 #longpage-content h2 {
@@ -429,7 +427,7 @@ code {
 
 .longpage-tabbing {
   display: inline-block;
-  white-space: pre-line;
+  white-space: pre-wrap;
   background-color: #ddd;
   padding: 6px 10px;
   font-size: 0.9em;
@@ -444,7 +442,7 @@ code {
 .longpage-indent {
   font-size: 0.9em;
   margin-left: 20px;
-  white-space: pre-line;
+  white-space: pre-wrap;
   margin-bottom: 10px;
 }
 
