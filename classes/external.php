@@ -373,14 +373,17 @@ class mod_longpage_external extends external_api
         self::create_post($postparameters);
         self::create_thread_subscription($id);
 
-        $page = $DB->get_record('longpage', array('id' => $pageid), '*', MUST_EXIST);
-        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
-        $context = \context_course::instance($course->id);
-        $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
-        $teachers = get_role_users($role->id, $context);
-        foreach ($teachers as $teacher) {
-            self::create_thread_subscription($id, $teacher->id);
-        }
+        if(isset($threadparameters['ispublic']) && $threadparameters['ispublic'])
+        {
+            $page = $DB->get_record('longpage', array('id' => $pageid), '*', MUST_EXIST);
+            list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
+            $context = \context_course::instance($course->id);
+            $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+            $teachers = get_role_users($role->id, $context);
+            foreach ($teachers as $teacher) {
+                self::create_thread_subscription($id, $teacher->id);
+            }
+        }        
     }
 
     public static function create_thread_parameters()
