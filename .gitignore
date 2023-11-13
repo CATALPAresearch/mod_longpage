@@ -1,0 +1,10 @@
+git-ftp.sh
+x.html
+
+# Node modules
+node_modules
+
+# IDE
+.idea
+webpack.config.idea.js
+.DS_Store

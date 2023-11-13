@@ -1,0 +1,5 @@
+{
+    "php.validate.executablePath": "/opt/homebrew/opt/php@8.0/bin/php",
+    "php.suggest.basic": true,
+    "intelephense.environment.phpVersion": "8.0.9"
+}

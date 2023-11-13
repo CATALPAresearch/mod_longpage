@@ -1,0 +1,632 @@
+{
+    "1018": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/psmms.shtml?sg=bamath",
+        "module": 61674,
+        "name": "Proseminar über Mathematische Modelle in der Spieltheorie"
+    },
+    "1026": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/semstm.shtml?sg=mscma",
+        "module": 61677,
+        "name": "Seminar über Stochastik"
+    },
+    "1028": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/szanaly.shtml?sg=bamath",
+        "module": 61282,
+        "name": "Seminar zur Analysis"
+    },
+    "1046": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/psaw.shtml?sg=bamath",
+        "module": 61576,
+        "name": "Proseminar zur angewandten Mathematik"
+    },
+    "1056": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/sana.shtml?sg=bamath",
+        "module": 61275,
+        "name": "Seminar Funktionalanalysis und Differentialgleichungen"
+    },
+    "1067": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pssmp.shtml?sg=bamath",
+        "module": 61672,
+        "name": "Proseminar zur Stochastik / Mathematischen Physik"
+    },
+    "1072": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/sopt.shtml?sg=bamath",
+        "module": 61480,
+        "name": "Seminar zur Optimierung"
+    },
+    "1073": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/sft.shtml?sg=bamath",
+        "module": 61278,
+        "name": "Seminar zur Funktionentheorie"
+    },
+    "1074": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pknmm.shtml?sg=bamath",
+        "module": 61581,
+        "name": "Praktikum Numerische Mathematik"
+    },
+    "1076": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ssmp.shtml?sg=bamath",
+        "module": 61678,
+        "name": "Seminar über Stochastische Physik"
+    },
+    "1077": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/sdm.shtml?sg=bamath",
+        "module": 61478,
+        "name": "Seminar zur Diskreten Mathematik"
+    },
+    "1080": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/sas.shtml?sg=bamath",
+        "module": 61373,
+        "name": "Seminar über Mathematik und Politik"
+    },
+    "1084": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pkmsm.shtml?sg=bamath",
+        "module": 61381,
+        "name": "Praktikum Mathematische Statistik"
+    },
+    "1088": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/snm.shtml?sg=bamath",
+        "module": 61574,
+        "name": "Seminar zur Numerischen Mathematik"
+    },
+    "1092": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/psmuk.shtml?sg=bamath",
+        "module": 61280,
+        "name": "Proseminar Mathematik und Kunst"
+    },
+    "1094": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/psnm.shtml?sg=bamath",
+        "module": 61573,
+        "name": "Proseminar zur Numerischen Mathematik"
+    },
+    "1096": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/psla.shtml?sg=bamath",
+        "module": 61473,
+        "name": "Proseminar zur Linearen Algebra"
+    },
+    "1097": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/psas.shtml?sg=bamath",
+        "module": 61372,
+        "name": "Proseminar Angewandte Stochastik"
+    },
+    "1106": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pral.shtml?sg=bamath",
+        "module": 61182,
+        "name": "Praktikum zur Algebra und Zahlentheorie"
+    },
+    "1107": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/szt.shtml?sg=bamath",
+        "module": 61175,
+        "name": "Seminar Zahlentheorie"
+    },
+    "1141": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/mathematische_grundlagen.shtml?sg=bamath",
+        "module": 61111,
+        "name": "Mathematische Grundlagen"
+    },
+    "1142": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/alg_math.shtml?sg=bainf",
+        "module": 61411,
+        "name": "Algorithmische Mathematik"
+    },
+    "1143": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/lin_alg.shtml?sg=bainf",
+        "module": 61112,
+        "name": "Lineare Algebra"
+    },
+    "1144": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ana.shtml?sg=bainf",
+        "module": 61211,
+        "name": "Analysis"
+    },
+    "1145": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/k_mint.shtml?sg=bscmatse",
+        "module": 61611,
+        "name": "Maß- und Integrationstheorie"
+    },
+    "1146": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/stocha.shtml?sg=bainf",
+        "module": 61311,
+        "name": "Einführung in die Stochastik"
+    },
+    "1202": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/maple.shtml?sg=bamath",
+        "module": 61113,
+        "name": "Elementare Zahlentheorie mit MAPLE"
+    },
+    "1212": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/lin_opt.shtml?sg=bamath",
+        "module": 61412,
+        "name": "Lineare Optimierung"
+    },
+    "1215": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/smdm.shtml?sg=mscma",
+        "module": 61413,
+        "name": "Diskrete Mathematik"
+    },
+    "1216": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/effi_graph.shtml?sg=mscma",
+        "module": 61414,
+        "name": "Effiziente Graphenalgorithmen"
+    },
+    "1221": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wpnl.shtml?sg=bamath",
+        "module": 61415,
+        "name": "Nichtlineare Optimierung"
+    },
+    "1245": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wpfa.shtml?sg=bamath",
+        "module": 61213,
+        "name": "Funktionalanalysis"
+    },
+    "1263": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wpwt.shtml?sg=bamath",
+        "module": 61612,
+        "name": "Wahrscheinlichkeitstheorie"
+    },
+    "1270": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/nummath.shtml?sg=bainf",
+        "module": 61511,
+        "name": "Numerische Mathematik I"
+    },
+    "1276": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wpmgm.shtml?sg=bamath",
+        "module": 61515,
+        "name": "Mathematische Grundlagen von Multimedia"
+    },
+    "1306": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wpgt.shtml?sg=bamath",
+        "module": 61417,
+        "name": "Graphentheorie"
+    },
+    "1312": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/algeb.shtml?sg=bamath",
+        "module": 61116,
+        "name": "Algebra"
+    },
+    "1321": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/krypto.shtml?sg=bamath",
+        "module": 61115,
+        "name": "Mathematische Grundlagen der Kryptografie"
+    },
+    "1331": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wpdg.shtml?sg=mscma",
+        "module": 61215,
+        "name": "Differentialgeometrie"
+    },
+    "1334": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/gewdiff.shtml?sg=bamath",
+        "module": 61212,
+        "name": "Gewöhnliche Differentialgleichungen"
+    },
+    "1340": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wpft.shtml?sg=bamath",
+        "module": 61216,
+        "name": "Funktionentheorie"
+    },
+    "1347": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/smloh.shtml?sg=mscma",
+        "module": 61312,
+        "name": "Lineare Operatoren im Hilbertraum"
+    },
+    "1354": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/smtr.shtml?sg=bamath",
+        "module": 61217,
+        "name": "Topologische Räume"
+    },
+    "1358": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/smst.shtml?sg=mscma",
+        "module": 61313,
+        "name": "Schätztheorie"
+    },
+    "1359": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/smtt.shtml?sg=mscma",
+        "module": 61613,
+        "name": "Testtheorie"
+    },
+    "1361": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/angstat.shtml?sg=bamath",
+        "module": 61315,
+        "name": "Angewandte Mathematische Statistik"
+    },
+    "1363": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/past.shtml?sg=bamath",
+        "module": 61316,
+        "name": "Parametrische Statistik"
+    },
+    "1364": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/smstp.shtml?sg=mscma",
+        "module": 61314,
+        "name": "Stochastische Prozesse"
+    },
+    "1370": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wpmsys.shtml?sg=mscma",
+        "module": 61516,
+        "name": "Mathematische Systemtheorie"
+    },
+    "1372": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wpn2.shtml?sg=bamath",
+        "module": 61512,
+        "name": "Numerische Mathematik II"
+    },
+    "1374": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/smngdg.shtml?sg=mscma",
+        "module": 61513,
+        "name": "Numerische Behandlung gewöhnlicher Differentialgleichungen"
+    },
+    "1375": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/smnlg.shtml?sg=mscma",
+        "module": 61514,
+        "name": "Numerische Lösung von Gleichungssystemen"
+    },
+    "1380": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wppdg.shtml?sg=bamath",
+        "module": 61218,
+        "name": "Partielle Differentialgleichungen"
+    },
+    "1512": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_ti.shtml?sg=bainf",
+        "module": 63981,
+        "name": "Fachpraktikum Theoretische Informatik"
+    },
+    "1513": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_mci.shtml?sg=bainf",
+        "module": 63381,
+        "name": "Fachpraktikum Mensch-Computer-Interaktion"
+    },
+    "1514": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_es.shtml?sg=bainf",
+        "module": 63781,
+        "name": "Fachpraktikum Eingebettete Systeme"
+    },
+    "1515": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_fpga.shtml?sg=bainf",
+        "module": 63783,
+        "name": "Fachpraktikum Field Programmable Gate Arrays"
+    },
+    "1516": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/fspp.shtml?sg=bainf",
+        "module": 63784,
+        "name": "Fachpraktikum Scientific Programming in Python"
+    },
+    "1527": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_bscis.shtml?sg=bainf",
+        "module": 63085,
+        "name": "Fachpraktikum Internetsicherheit"
+    },
+    "1584": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/grund_prog.shtml?sg=bainf",
+        "module": 63081,
+        "name": "Grundpraktikum Programmierung"
+    },
+    "1592": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_cscw.shtml?sg=bainf",
+        "module": 63281,
+        "name": "Fachpraktikum CSCW"
+    },
+    "1593": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_pmw.shtml?sg=bainf",
+        "module": 63881,
+        "name": "Fachpraktikum Softwareentwicklungswerkzeuge"
+    },
+    "1594": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_mmia.shtml?sg=bainf",
+        "module": 63483,
+        "name": "Fachpraktikum Multimedia- und Internetanwendungen"
+    },
+    "1595": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_ps.shtml?sg=bainf",
+        "module": 63681,
+        "name": "Fachpraktikum Programmiersysteme"
+    },
+    "1596": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_simu.shtml?sg=bainf",
+        "module": 64181,
+        "name": "Fachpraktikum Simulation von diskreten Produktionssystemen"
+    },
+    "1597": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_pp.shtml?sg=bainf",
+        "module": 63782,
+        "name": "Fachpraktikum Parallel Programming"
+    },
+    "1598": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_vkma.shtml?sg=bainf",
+        "module": 63482,
+        "name": "Fachpraktikum für sichere kollaborative Anwendungen"
+    },
+    "1599": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/f_its.shtml?sg=mscinf",
+        "module": 63581,
+        "name": "Fachpraktikum IT-Sicherheit"
+    },
+    "1608": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/comp_sys.shtml?sg=bainf",
+        "module": 63013,
+        "name": "Computersysteme"
+    },
+    "1609": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/comp_sys.shtml?sg=bainf",
+        "module": 63013,
+        "name": "Computersysteme"
+    },
+    "1613": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ein_prog.shtml?sg=bainf",
+        "module": 63811,
+        "name": "Einführung in die imperative Programmierung"
+    },
+    "1618": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ein_oop.shtml?sg=bainf",
+        "module": 63611,
+        "name": "Einführung in die objektorientierte Programmierung"
+    },
+    "1622": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/oopwi.shtml?sg=bawiinf",
+        "module": 63016,
+        "name": "Einführung in die objektorientierte Programmierung"
+    },
+    "1646": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/tutgr.shtml?sg=bscmatse",
+        "module": 63511,
+        "name": "Einführung in die technischen und theoretischen Grundlagen der Informatik"
+    },
+    "1647": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/tutgr.shtml?sg=bscmatse",
+        "module": 63511,
+        "name": "Einführung in die technischen und theoretischen Grundlagen der Informatik"
+    },
+    "1659": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/theo_inf.shtml?sg=bainf",
+        "module": 63912,
+        "name": "Grundlagen der Theoretischen Informatik"
+    },
+    "1660": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/dami.shtml?sg=bscmatse",
+        "module": 63117,
+        "name": "Data Mining"
+    },
+    "1663": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/das.shtml?sg=bainf",
+        "module": 63113,
+        "name": "Datenstrukturen und Algorithmen"
+    },
+    "1671": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/soft_sys.shtml?sg=bainf",
+        "module": 63012,
+        "name": "Softwaresysteme"
+    },
+    "1678": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/vert_sys.shtml?sg=bscmatse",
+        "module": 63211,
+        "name": "Verteilte Systeme"
+    },
+    "1686": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/kom_theo.shtml?sg=mscma",
+        "module": 63914,
+        "name": "Komplexitätstheorie"
+    },
+    "1690": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/kn_und_rn.shtml?sg=mscinf",
+        "module": 64311,
+        "name": "Kommunikations- und Rechnernetze"
+    },
+    "1695": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ded_inf_sys.shtml?sg=mscinf",
+        "module": 64212,
+        "name": "Deduktions- und Inferenzsysteme"
+    },
+    "1696": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wiss_bas_sys.shtml?sg=bscmatse",
+        "module": 64211,
+        "name": "Wissensbasierte Systeme"
+    },
+    "1697": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/mci.shtml?sg=bscmatse",
+        "module": 63311,
+        "name": "Einführung in Mensch-Computer-Interaktion"
+    },
+    "1698": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/int_sys.shtml?sg=bscmatse",
+        "module": 63312,
+        "name": "Interaktive Systeme"
+    },
+    "1699": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/int_sys.shtml?sg=bscmatse",
+        "module": 63312,
+        "name": "Interaktive Systeme"
+    },
+    "1706": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/anw_mp.shtml?sg=bscmatse",
+        "module": 63711,
+        "name": "Anwendungsorientierte Mikroprozessoren"
+    },
+    "1711": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/safe_sec.shtml?sg=mscinf",
+        "module": 64312,
+        "name": "Sicherheit - Safety & Security"
+    },
+    "1727": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/par_prog.shtml?sg=bscmatse",
+        "module": 63712,
+        "name": "Parallel Programming"
+    },
+    "1728": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/virt_masch.shtml?sg=mscinf",
+        "module": 63713,
+        "name": "Virtuelle Maschinen"
+    },
+    "1729": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ad_par_co.shtml?sg=mscinf",
+        "module": 63714,
+        "name": "Advanced Parallel Computing"
+    },
+    "1744": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pc_tech.shtml?sg=mscinf",
+        "module": 63715,
+        "name": "PC-Technologie"
+    },
+    "1770": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/b_infosys.shtml?sg=bscmatse",
+        "module": 64111,
+        "name": "Betriebliche Informationssysteme"
+    },
+    "1771": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/unt_soft_sys.shtml?sg=bscmatse",
+        "module": 64112,
+        "name": "Entscheidungsmethoden in unternehmensweiten Softwaresystemen"
+    },
+    "1772": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ebm.shtml?sg=mawiinf",
+        "module": 64113,
+        "name": "E-Business Management"
+    },
+    "1773": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pud.shtml?sg=mawiinf",
+        "module": 64114,
+        "name": "Planungs- und Dispositionssysteme"
+    },
+    "1793": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/se_eins.shtml?sg=bainf",
+        "module": 63812,
+        "name": "Software Engineering"
+    },
+    "1796": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wp_sa.shtml?sg=mscinf",
+        "module": 63020,
+        "name": "Software-Architektur und Web-Programmierung"
+    },
+    "1798": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wp_sa.shtml?sg=mscinf",
+        "module": 63020,
+        "name": "Software-Architektur und Web-Programmierung"
+    },
+    "1801": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/soft_sys.shtml?sg=bainf",
+        "module": 63012,
+        "name": "Softwaresysteme"
+    },
+    "1802": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/b_sys.shtml?sg=mscinf",
+        "module": 63212,
+        "name": "Betriebssysteme"
+    },
+    "1810": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ueb_bau.shtml?sg=bscmatse",
+        "module": 63112,
+        "name": "Übersetzerbau"
+    },
+    "1814": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/oop.shtml?sg=mscinf",
+        "module": 63612,
+        "name": "Objektorientierte Programmierung"
+    },
+    "1816": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/log_funk_prog.shtml?sg=mscinf",
+        "module": 64213,
+        "name": "Logisches und funktionales Programmieren"
+    },
+    "1840": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/alg_geo.shtml?sg=mscinf",
+        "module": 63213,
+        "name": "Algorithmische Geometrie"
+    },
+    "1845": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/wiss_repr.shtml?sg=mscinf",
+        "module": 64214,
+        "name": "Methoden der Wissensrepräsentation und -verarbeitung"
+    },
+    "1853": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/mod_progtech.shtml?sg=mscprinf",
+        "module": 63613,
+        "name": "Moderne Programmiertechniken und -methoden"
+    },
+    "1864": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/mos.shtml?sg=bscmatse",
+        "module": 64313,
+        "name": "Mobile Security"
+    },
+    "1866": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/si_int.shtml?sg=bainf",
+        "module": 63512,
+        "name": "Sicherheit im Internet"
+    },
+    "1867": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/safe_sec.shtml?sg=mscinf",
+        "module": 64312,
+        "name": "Sicherheit - Safety & Security"
+    },
+    "1868": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/si_int.shtml?sg=bainf",
+        "module": 63512,
+        "name": "Sicherheit im Internet"
+    },
+    "1870": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ivis_int.shtml?sg=mscinf",
+        "module": 63412,
+        "name": "Informationsvisualisierung im Internet"
+    },
+    "1875": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/mm_infosys.shtml?sg=mscinf",
+        "module": 63414,
+        "name": "Multimediainformationssysteme"
+    },
+    "1876": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/mm_infosys.shtml?sg=mscinf",
+        "module": 63414,
+        "name": "Multimediainformationssysteme"
+    },
+    "1877": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/doku_wiss.shtml?sg=mscinf",
+        "module": 63413,
+        "name": "Dokumenten- und Wissensmanagement im Internet"
+    },
+    "1879": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/infre.shtml?sg=mscinf",
+        "module": 63415,
+        "name": "Information Retrieval"
+    },
+    "1880": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/cscw_l.shtml?sg=mscinf",
+        "module": 63214,
+        "name": "Computerunterstütztes kooperatives Arbeiten und Lernen"
+    },
+    "1884": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/koop_sys.shtml?sg=mscinf",
+        "module": 63215,
+        "name": "Gestaltung Kooperativer Systeme"
+    },
+    "40500": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ein_wiwiss.shtml?sg=bainf",
+        "module": 31001,
+        "name": "Einführung in die Wirtschaftswissenschaft"
+    },
+    "40501": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/ein_wiwiss.shtml?sg=bainf",
+        "module": 31001,
+        "name": "Einführung in die Wirtschaftswissenschaft"
+    },
+    "40560": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pwr.shtml?sg=bainf",
+        "module": 31061,
+        "name": "Grundlagen des Privat- und Wirtschaftsrechts"
+    },
+    "40561": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pwr.shtml?sg=bainf",
+        "module": 31061,
+        "name": "Grundlagen des Privat- und Wirtschaftsrechts"
+    },
+    "40562": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pwr.shtml?sg=bainf",
+        "module": 31061,
+        "name": "Grundlagen des Privat- und Wirtschaftsrechts"
+    },
+    "40563": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/pwr.shtml?sg=bainf",
+        "module": 31061,
+        "name": "Grundlagen des Privat- und Wirtschaftsrechts"
+    },
+    "41621": {
+        "url": "https://www.fernuni-hagen.de/mi/studium/module/marketing.shtml?sg=bainf",
+        "module": 31621,
+        "name": "Grundlagen des Marketing"
+    }
+}

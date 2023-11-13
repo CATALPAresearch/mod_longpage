@@ -1,0 +1,42 @@
+{
+  "de": {
+    "date": {
+      "month": "numeric",
+      "day": "numeric",
+      "year": "numeric"
+    },
+    "dateTime": {
+      "hour": "numeric",
+      "minute": "numeric",
+      "month": "short",
+      "day": "numeric",
+      "year": "numeric"
+    },
+    "dateTimeWithoutCentury": {
+      "hour": "numeric",
+      "minute": "numeric",
+      "month": "short",
+      "day": "numeric",
+      "year": "2-digit"
+    },
+    "dateTimeWithoutYear": {
+      "hour": "numeric",
+      "minute": "numeric",
+      "month": "short",
+      "day": "numeric"
+    },
+    "dateWithoutCentury": {
+      "month": "short",
+      "day": "numeric",
+      "year": "2-digit"
+    },
+    "dateWithoutYear": {
+      "month": "numeric",
+      "day": "numeric"
+    },
+    "time": {
+      "hour": "numeric",
+      "minute": "numeric"
+    }
+  }
+}
