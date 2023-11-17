@@ -83,7 +83,7 @@ class post_recommendation_calculator {
             $idsofpostswithoutprefs = array_map(function ($post) { return (int) $post->id; }, $posts);
             foreach ($idsofpostswithoutprefs as $postid) {
                 self::calculate_and_save_recommendation_for_user_for_post(
-                    $userid, $postid, $preferences, $idsofpostswithprefs, $prefprofile->avg, $pageid
+                    $userid, $postid, $preferences, $idsofpostswithprefs, is_nan($prefprofile->avg) ? 0.5 : $prefprofile->avg, $pageid
                 );
             }
 
