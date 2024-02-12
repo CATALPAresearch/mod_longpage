@@ -219,6 +219,7 @@ export default {
                 var value = parseFloat($(paragraph).attr("data-reading-comprehension-sum"))/parseInt($(paragraph).attr("data-reading-comprehension-count"));
                 sum += value;
                 len += 1;
+                $(progress).attr("title", $(progress).attr("data-original-title"));
                 $(progress)
                   .attr(
                     "title",
@@ -226,7 +227,7 @@ export default {
                     "Ihr geschätztes Leseverständnis beträgt " +
                       (100*value).toFixed(2) +
                       "%."
-                  ).css("opacity", Math.max(0.1, value)).addClass("reading-comprehension");
+                  ).css("opacity", Math.max(0.1, value)).addClass("reading-comprehension").tooltip("dispose").tooltip();
                   $(paragraph).attr("data-reading-comprehension-count", "");
               });
               

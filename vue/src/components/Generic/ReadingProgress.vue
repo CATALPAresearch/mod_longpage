@@ -217,7 +217,7 @@ export default {
               $(span).attr(
                 "title",
                 "Der Abschnitt wurde bislang 0 mal gelesen"
-              );
+              ).tooltip();
             }
             else {
               $(span).addClass("progress-3");
