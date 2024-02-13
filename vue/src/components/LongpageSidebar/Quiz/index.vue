@@ -223,11 +223,11 @@ export default {
                 $(progress)
                   .attr(
                     "title",
-                    (_this.context.showreadingprogress ? ($(progress).attr("title").substr(0, $(progress).attr("title").indexOf("gelesen") + 7) + ".\n") : "") +
+                    (_this.context.showreadingprogress ? ($(progress).attr("title").substr(0, $(progress).attr("title").indexOf("gelesen.") + 8) + "<br>") : "") +
                     "Ihr geschätztes Leseverständnis beträgt " +
                       (100*value).toFixed(2) +
                       "%."
-                  ).css("opacity", Math.max(0.1, value)).addClass("reading-comprehension").tooltip("dispose").tooltip();
+                  ).css("opacity", Math.max(0.1, value)).addClass("reading-comprehension").tooltip("dispose").tooltip({"placement":"auto", "html":true});
                   $(paragraph).attr("data-reading-comprehension-count", "");
               });
               
@@ -237,7 +237,7 @@ export default {
                 rc = (100 * sum / len).toFixed(0);
               }
 
-              $("#sidebar-tab-quiz #total-reading-comprehension").attr("title", "Ihr geschätztes Leseverständnis für die ganze Seite beträgt: " + rc + " %.\nKlicken Sie für eine Übersicht der Fragen.");
+              $("#sidebar-tab-quiz #total-reading-comprehension").attr("title", "Ihr geschätztes Leseverständnis für die ganze Seite <br>beträgt: " + rc + " %.<br>Klicken Sie für eine Übersicht der Fragen.").tooltip({"placement":"auto", "html":true, "title":""}).attr("title", "");
               $("#sidebar-tab-quiz #total-reading-comprehension i").attr("class", "fa fa-fw fa-lg fa-battery-" + Math.floor(rc / 25));
               $("#sidebar-tab-quiz #total-reading-comprehension").show();
               

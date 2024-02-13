@@ -216,8 +216,8 @@ export default {
             if (_this.context.showreadingprogress) {
               $(span).attr(
                 "title",
-                "Der Abschnitt wurde bislang 0 mal gelesen"
-              ).tooltip();
+                "Der Abschnitt wurde <br>bislang 0 mal gelesen."
+              ).tooltip({ "placement": "auto", "html":true});
             }
             else {
               $(span).addClass("progress-3");
@@ -326,14 +326,14 @@ export default {
                   $("#" + data[i].section).next(".reading-progress") 
                       .attr(
                         "title",
-                        "Der Abschnitt wurde bislang " +
+                        "Der Abschnitt wurde <br>bislang " +
                           data[i].count +
-                          " mal gelesen"
+                          " mal gelesen."
                       )                 
                       .addClass(
                         "reading-progress progress-" +
                           Math.ceil((data[i].count / max) * 5)
-                      )
+                      ).tooltip("dispose").tooltip({"placement":"auto", "html":true})
                   
                   if (_this.debug) {
                     $("#" + data[i].section).append(
