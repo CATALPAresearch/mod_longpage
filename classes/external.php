@@ -1820,7 +1820,7 @@ class mod_longpage_external extends external_api
             // $field_data = $customfieldhandler->get_field_data($field, $question->id);
             // $level = $field_data->get_value();
             $level = 1;
-            $result[strval($embed)] = array("value" => $avgfraction, "level" => $level);
+            $result[strval($embed)] = array("value" => $avgfraction, "level" => $level, "id" => $question->id);
         
         }
 

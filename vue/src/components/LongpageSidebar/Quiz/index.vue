@@ -7,7 +7,18 @@
         >
           {{$t('sidebar.tabs.quiz.heading')}}
         </h3>
-      <div class="col-auto px-0">
+      <div class="btn-group">
+        <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-cog fa-fw fa-lg" /> 
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" id="addQuestion" href="javascript:void(0)"><i class="fa fa-plus-square fa-fw fa-lg" /> Neue Frage hinzufügen</a>
+          <a class="dropdown-item" id="editQuestion" href="javascript:void(0)"><i class="fa fa-pencil fa-fw fa-lg" /> Frage editieren</a>
+          <a class="dropdown-item" id="changeQuestion" href="javascript:void(0)#"><i class="fa fa-cog fa-fw fa-lg" /> Einbettung editieren</a>
+          <a class="dropdown-item" id="removeQuestion" href="javascript:void(0)"><i class="fa fa-minus-square fa-fw fa-lg" />Frage entfernen</a>
+        </div>
+      </div>
+      <div class="col-auto px-0 offset-md-1">
         <a href="javascript:void(0)" id="total-reading-comprehension" title="Frage oben halten"><i class="fa fa-battery-0 fa-fw fa-lg" /></a>
       </div>
       <div class="col-auto px-0">
@@ -207,10 +218,11 @@ export default {
                   }
                 });
 
-                $(paragraph).find(".reading-progress").attr("data-questionid", idFixed);                
+                $(paragraph).find(".reading-progress").attr("data-embedid", idFixed);
+                $(paragraph).find(".reading-progress").attr("data-questionid", entry["id"]);                
               }
 
-              var sum = 0;
+              var sum = 0; 
               var len = 0;
 
               $(".wrapper[data-reading-comprehension-count]").each(function(index, paragraph)
@@ -287,14 +299,13 @@ export default {
         if ($("#pinQuestion").hasClass("active")) {
           for (var i = 0; i < entries.length; i++) {
             var entry = entries[i];
-            observerStates["#" +  $(entry.target).find(".reading-comprehension").attr("data-questionid")] = entry;
+            observerStates["#" +  $(entry.target).find(".reading-comprehension").attr("data-embedid")] = entry;
           }
           return;
         }
 
         var added = {};
-        for (var i = 0; i < entries.length; i++) {
-          var entry = entries[i];
+        for (const entry of entries) {
           //currentY = entry.boundingClientRect.y
           // if (currentY < previousY) {
           //   directionUp = false;
@@ -314,6 +325,9 @@ export default {
               var src = $(iframeCloned).attr("src");
               $(iframeCloned).attr("src", "");
               $(iframeCloned).appendTo(div);
+
+              let questionid = $(entry.target).find(".reading-comprehension").attr("data-questionid");
+              $(iframeCloned).attr("data-questionid", questionid);
 
               var obs = new IntersectionObserver((entries, o) => {
                 var spinner = `<div id="quiz-spinner" class="row no-gutters vh-50">
@@ -387,7 +401,8 @@ export default {
                     longpageid: _this.context.longpageid,
                     pageX: ev.pageX,
                     pageY: ev.pageY,
-                    questionid: target.id
+                    embedid: target.id,
+                    questionid: questionid
                   };
                   ajax.call([
                     {
@@ -556,13 +571,20 @@ export default {
         observerStates = {};
       });
 
+      $("#editQuestion").on("click", function () {
+        let questionid = $("#question .carousel-item.active iframe").attr("data-questionid");
+        window.open(window.location.href.replace("mod/longpage/view.php", "question/bank/editquestion/question.php").replace("id", "cmid") + "&id=" + questionid, '_blank');
+        
+        //http://localhost/question/bank/editquestion/question.php?returnurl=%2Fquestion%2Fedit.php%3Fcourseid%3D2%26cat%3D15%252C14%26qpage%3D0%26recurse%3D0%26showhidden%3D0%26qbshowtext%3D0&courseid=2&id=199
+      });
+
       $("#carousel").parent().removeClass("overflow-y-auto").css("overflow-y", "hidden");
 
 
       $(document).on("click", ".reading-comprehension", function()
       {
         _this.toggleTab();
-        $("#carousel").carousel($("#carousel").find("#" + $(this).attr("data-questionid")).parent(".carousel-item").index()) 
+        $("#carousel").carousel($("#carousel").find("#" + $(this).attr("data-embedid")).parent(".carousel-item").index()) 
       });
 
       $("#total-reading-comprehension").on("click", function () {
