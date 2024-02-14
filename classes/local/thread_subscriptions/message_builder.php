@@ -100,7 +100,8 @@ class message_builder {
             'lastname' => $actor->lastname,
             'content' => $data->content,
             'oldcontent' => $data->oldcontent,
-            'shortcontent' => $shortcontent
+            'shortcontent' => $shortcontent,
+            'contexturl' => (new \moodle_url('/mod/longpage/view.php', ['id' => $data->cmid], "post-{$data->postid}"))->out(false),
         ];
         return $substitutions;
     }

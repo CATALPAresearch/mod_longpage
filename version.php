@@ -28,3 +28,4 @@ $plugin->version   = 2024021201;       // The current module version (Date: YYYY
 $plugin->requires  = 2018050800;       // Requires this Moodle version
 $plugin->component = 'mod_longpage';       // Full name of the plugin (used for diagnostics)
 $plugin->cron      = 0;
+$plugin->dependencies = ['filter_embedquestion' => 2022032900, 'atto_embedquestion' => 2022032900, 'report_embedquestion' => 2022032900];

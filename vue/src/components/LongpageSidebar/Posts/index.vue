@@ -63,13 +63,13 @@
             <p class="mb-1">
               {{ $t('sidebar.tabs.posts.message.onlySelectedShown') }}
             </p>
-            <a
+            <button
               role="button"
               class="btn btn-sm btn-secondary"
               @click.stop="resetSelection"
             >
               {{ $t('sidebar.tabs.posts.message.showAllFiltered') }}
-            </a>
+            </button>
           </div>
         </div>
         <div
@@ -80,13 +80,13 @@
             <p class="mb-1">
               {{ $t('sidebar.tabs.posts.message.filtered') }}
             </p>
-            <a
+            <button
               role="button"
               class="btn btn-sm btn-secondary"
               @click.stop="resetFilter"
             >
               {{ $t('sidebar.tabs.posts.message.showAll') }}
-            </a>
+            </button>
           </div>
         </div>
       </div>
