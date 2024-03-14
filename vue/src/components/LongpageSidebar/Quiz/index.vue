@@ -7,17 +7,18 @@
         >
           {{$t('sidebar.tabs.quiz.heading')}}
         </h3>
-      <div class="btn-group">
+      
         <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fa fa-cog fa-fw fa-lg" /> 
         </button>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" id="addQuestion" href="javascript:void(0)"><i class="fa fa-plus-square fa-fw fa-lg" /> Neue Frage hinzufügen</a>
-          <a class="dropdown-item" id="editQuestion" href="javascript:void(0)"><i class="fa fa-pencil fa-fw fa-lg" /> Frage editieren</a>
-          <a class="dropdown-item" id="changeQuestion" href="javascript:void(0)#"><i class="fa fa-cog fa-fw fa-lg" /> Einbettung editieren</a>
-          <a class="dropdown-item" id="removeQuestion" href="javascript:void(0)"><i class="fa fa-minus-square fa-fw fa-lg" />Frage entfernen</a>
+        <div class="dropdown-menu dropdown-menu-right" style="min-width: 15rem;">
+          <a class="dropdown-item" id="createQuestion" href="javascript:void(0)"><i class="fa fa-plus-square fa-fw" /> Neue Frage einbetten</a>
+          <a class="dropdown-item" id="addQuestion" href="javascript:void(0)"><i class="fa fa-plus fa-fw" /> Vorhandene Frage einbetten</a>
+          <a class="dropdown-item" id="editQuestion" href="javascript:void(0)"><i class="fa fa-pencil fa-fw" /> Frage editieren</a>
+          <a class="dropdown-item" id="changeQuestion" href="javascript:void(0)"><i class="fa fa-cog fa-fw" /> Einbettung editieren</a>
+          <a class="dropdown-item" id="removeQuestion" href="javascript:void(0)"><i class="fa fa-minus-square fa-fw" />Einbettung entfernen</a>
         </div>
-      </div>
+      
       <div class="col-auto px-0 offset-md-1">
         <a href="javascript:void(0)" id="total-reading-comprehension" title="Frage oben halten"><i class="fa fa-battery-0 fa-fw fa-lg" /></a>
       </div>
@@ -94,6 +95,8 @@
 {
   top: -35px;
   bottom: initial;
+  margin-left: 40%;
+  margin-right: 40%;
 }
 
 .carousel-indicators li
@@ -160,7 +163,8 @@ import { GET, MUTATE } from "@/store/types";
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import SidebarTab from "@/components/LongpageSidebar/SidebarTab";
 import ajax from "core/ajax";
-import { EventBus } from "@/lib/event-bus";
+import Fragment from "core/fragment";
+import { EventBus } from "@/lib/event-bus"; 
 
 export default {
   name: "Quiz",
@@ -241,9 +245,11 @@ export default {
                     "Ihr geschätztes Leseverständnis beträgt " +
                       (100*value).toFixed(2) +
                       "%."
-                  ).css("opacity", Math.max(0.1, value)).addClass("reading-comprehension").tooltip("dispose").tooltip({"placement":"auto", "html":true});
+                  ).css("opacity", Math.max(0.1, value)).addClass("reading-comprehension");
                   $(paragraph).attr("data-reading-comprehension-count", "");
               });
+
+              $(".reading-progress").tooltip("dispose").tooltip({ "placement": "auto", "html": true });
               
               var rc = 0;
               if (len > 0)
@@ -278,6 +284,24 @@ export default {
  
       return (
           rectEl.top >= rectApp.top &&
+          rectEl.left >= rectApp.left &&
+          rectEl.bottom <= rectApp.bottom &&
+          rectEl.right <= rectApp.right
+      );
+    } 
+
+    function isElementBottomInViewport(element)
+    {
+      // Special bonus for those using jQuery
+      if (typeof jQuery === "function" && element instanceof jQuery) {
+          element = element[0];
+      }
+
+      var rectEl = element.getBoundingClientRect();
+      var rectApp = document.querySelector('#longpage-app').getBoundingClientRect();
+ 
+      return (
+        rectEl.bottom >= rectApp.top &&
           rectEl.left >= rectApp.left &&
           rectEl.bottom <= rectApp.bottom &&
           rectEl.right <= rectApp.right
@@ -573,11 +597,46 @@ export default {
         observerStates = {};
       });
 
+      $("#addQuestion").on("click", function () {
+        Fragment.loadFragment('atto_embedquestion', 'questionselector', 16,
+                {contextId: 16, embedCode: ""}
+                ).done(function(html, js) {
+                  var last = $("#longpage-content .wrapper").filter(function (i, el)
+                  {
+                    return isElementBottomInViewport(el);
+                  }).last().children().first();
+
+                  var tag = $(last).prop("tagName").toLowerCase();
+
+                  var jsLink = document.createElement("script");
+                  jsLink.type = "text/javascript";
+
+                  const blob = new Blob([html], { type: 'text/html' });
+                  let iframe = document.createElement('iframe');
+                  iframe.src = window.URL.createObjectURL(blob);
+                  $(iframe).attr("id", "add/question").addClass('filter_embedquestion-iframe');
+                  $(iframe).contents().find("head").append(jsLink);
+                  $(iframe).insertAfter(last.parent(".wrapper"));
+                  $(iframe).wrap("<div class='wrapper'/>")
+                  $(iframe).wrap("<div/>");
+
+                  observer.observe(last.parent(".wrapper")[0]);
+
+                }).fail(Notification.exception);
+      });
+
+      $("#editQuestion").on("click", function () {
+        Fragment.loadFragment('atto_embedquestion', 'questionselector', "contextid",
+                {contextId: "contextid", embedCode: "existingCode"}
+                ).done(function(html, js) {
+                  console.log(html, js);
+                }
+                ).fail(Notification.exception);
+      });
+
       $("#editQuestion").on("click", function () {
         let questionid = $("#question .carousel-item.active iframe").attr("data-questionid");
         window.open(window.location.href.replace("mod/longpage/view.php", "question/bank/editquestion/question.php").replace("id", "cmid") + "&id=" + questionid, '_blank');
-        
-        //http://localhost/question/bank/editquestion/question.php?returnurl=%2Fquestion%2Fedit.php%3Fcourseid%3D2%26cat%3D15%252C14%26qpage%3D0%26recurse%3D0%26showhidden%3D0%26qbshowtext%3D0&courseid=2&id=199
       });
 
       $("#carousel").parent().removeClass("overflow-y-auto").css("overflow-y", "hidden");

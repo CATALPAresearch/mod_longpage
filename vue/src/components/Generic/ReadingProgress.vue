@@ -217,7 +217,7 @@ export default {
               $(span).attr(
                 "title",
                 "Der Abschnitt wurde <br>bislang 0 mal gelesen."
-              ).tooltip({ "placement": "auto", "html":true});
+              )
             }
             else {
               $(span).addClass("progress-3");
@@ -323,17 +323,17 @@ export default {
               let max = max_arr.reduce((a, b) => Math.max(a, b), -Infinity);
               for (var i = 0; i < data.length; i++) {
                 if ($("#" + data[i].section)) {
-                  $("#" + data[i].section).next(".reading-progress") 
-                      .attr(
-                        "title",
-                        "Der Abschnitt wurde <br>bislang " +
-                          data[i].count +
-                          " mal gelesen."
-                      )                 
-                      .addClass(
-                        "reading-progress progress-" +
-                          Math.ceil((data[i].count / max) * 5)
-                      ).tooltip("dispose").tooltip({"placement":"auto", "html":true})
+                  $("#" + data[i].section).next(".reading-progress")
+                    .attr(
+                      "title",
+                      "Der Abschnitt wurde <br>bislang " +
+                      data[i].count +
+                      " mal gelesen."
+                    )
+                    .addClass(
+                      "reading-progress progress-" +
+                      Math.ceil((data[i].count / max) * 5)
+                    );
                   
                   if (_this.debug) {
                     $("#" + data[i].section).append(

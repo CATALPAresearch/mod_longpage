@@ -102,6 +102,9 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     echo '<div class="row no-gutters vh-50">';
     echo '<div class="spinner-border m-auto " role="status"><span class="sr-only">'.get_string('loading').'</span></div>';
     echo '</div></div>';
+    echo '<div id="longpage-tmp" style="display:none;" lang="de">';
+    echo $page->content;
+    echo '</div>';
 
 
 

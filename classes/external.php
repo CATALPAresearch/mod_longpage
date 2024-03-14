@@ -1758,7 +1758,7 @@ class mod_longpage_external extends external_api
         global $DB, $USER, $CFG;
 
         $params = self::validate_parameters(
-            self::get_questions_by_page_id_parameters(),
+            self::get_reading_comprehension_parameters(),
             array(
                 'longpageid' => $longpageid
             )
@@ -1854,6 +1854,83 @@ class mod_longpage_external extends external_api
         return new external_single_structure(
             array(
                 "response" =>  new external_value(PARAM_RAW)));
+    }
+
+    public static function update_reading_comprehension($longpageid, $action, $questionid, $tag, $index)
+    {
+        global $DB, $USER;
+
+        $params = self::validate_parameters(
+            self::update_reading_comprehension_parameters(),
+            array(
+                'longpageid' => $longpageid,
+                'action' => $action,
+                'questionid' => $questionid,
+                'tag' => $tag,
+                'index' => $index
+            )
+        );
+
+        // Request and permission validation.
+        $page = $DB->get_record('longpage', array('id' => $longpageid), '*', MUST_EXIST);
+        list($course, $cm) = get_course_and_cm_from_instance($page, 'longpage');
+
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+
+        $options = array('noclean' => true);
+        list($page->content, $page->contentformat) = external_format_text(
+            $page->content,
+            $page->contentformat,
+            $context->id,
+            'mod_longpage',
+            'content',
+            $page->revision,
+            $options
+        );
+
+        if($action == 'embedquestion')
+        {
+            if(!in_array($tag, ['div', 'p']))
+            {
+                return array('response' => json_encode("error: tag must be div or p"));
+            }
+
+            //load question
+
+            //get embed code for question from embedquestion_filter
+            $embedcode = "";
+
+            //find position of index-th tag
+            preg_match_all('/\/' + $tag + '>/', $page->content, $matches, PREG_OFFSET_CAPTURE);
+            $pos = $matches[0][$index][1];
+            $newcontent = substr_replace($page->content, "<" + $tag + ">" + $embedcode + "</" + $tag + ">", $pos+1, 0);
+
+            //save newcontent to page
+            $DB->update_record('longpage', ['id' => $longpageid, 'content' => $newcontent, 'timemodified' => time()]);
+        }
+
+        return array('response' => json_encode("success"));
+    }
+
+    public static function update_reading_comprehension_parameters()
+    {
+        return new external_function_parameters(
+            array(
+                'longpageid' => new external_value(PARAM_INT, 'page instance id'),
+                'action' => new external_value(PARAM_RAW, 'action to perform'),
+                'questionid' => new external_value(PARAM_INT, 'question to perform action on'),
+                'tag' => new external_value(PARAM_RAW, 'tag of html element before embedded question'),
+                'index' => new external_value(PARAM_INT, 'index of html element before embedded question')
+            )
+        );
+    }
+
+    public static function update_reading_comprehension_returns()
+    {
+        return new external_single_structure(
+            array('response' => new external_value(PARAM_RAW, 'Server response to autosave'))
+        );
     }
 
     public static function autosave($data)
