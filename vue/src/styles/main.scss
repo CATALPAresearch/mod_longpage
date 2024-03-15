@@ -39,7 +39,7 @@ footer#page-footer {
 
 #page-content #region-main
 {
-  padding-bottom: 0.5rem !important;
+  padding-bottom: 0 !important;
   padding-top: 0.5rem !important;
 }
 
@@ -47,6 +47,11 @@ footer#page-footer {
 {
   margin-top: 0.5rem !important;
   margin-bottom: 0 !important;
+}
+
+#page-content
+{
+  padding-bottom: 0 !important;
 }
 
 #page.drawers .main-inner //for Moodle 4.x

@@ -27,6 +27,7 @@ require('../../config.php');
 require_once($CFG->dirroot.'/mod/longpage/lib.php');
 require_once($CFG->dirroot.'/mod/longpage/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
+require_once($CFG->dirroot.'/mod/longpage/classes/external.php');
 //header("Access-Control-Allow-Origin: *");
 
 $id      = optional_param('id', 0, PARAM_INT); // Course Module ID
@@ -93,17 +94,33 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     $content = get_formatted_page_content($page, $context);
 
     if (!isset($options['printheading']) || !empty($options['printheading'])) {
-        echo $OUTPUT->heading(format_string($page->name));
+        echo '<h2 style="display:inline;">'.format_string($page->name).'</h2>';
     }
     if (!isset($options['printintro']) || !empty($options['printintro'])) {
         echo $OUTPUT->box(format_module_intro('longpage', $page, $cm->id), 'generalbox', 'intro');
     }
+    echo '<div class="dropdown" style="display: inline;">
+            <button class="btn btm-sm dropdown-toggle" type="button" id="dropdownPages" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 0; background: none;"></button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownPages" style="width: 300px;">';
+    $pages = get_all_instances_in_courses("longpage", array($course->id => $course));
+    foreach ($pages as $p) {
+        $pcm = get_coursemodule_from_instance('longpage', $p->id, $course->id);
+        $cxt = context_module::instance($cm->id);
+        if (!has_capability('mod/longpage:view', $cxt)) {
+            continue;
+        }
+        if ($pcm->id != $cm->id)
+        {
+            echo '<a class="dropdown-item" href="/mod/longpage/view.php?id='.$pcm->id.'" target="_blank">'.$p->name.'</a>';
+        }
+    }    
+            
+    echo    '</div>
+        </div>';
     echo '<div id="longpage-app-container" class="border-top border-bottom">';
     echo '<div class="row no-gutters vh-50">';
     echo '<div class="spinner-border m-auto " role="status"><span class="sr-only">'.get_string('loading').'</span></div>';
     echo '</div></div>';
-
-
 
     $PAGE->requires->js_call_amd(
         'mod_longpage/app-lazy',
@@ -129,8 +146,6 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     $url = new moodle_url('/mod/longpage/blocking-redirect.php');
     redirect($url);
 }
-
-echo '<p class="mt-3 text-center text-xs" lang="de">'.get_string('lastmodified').': '.userdate($page->timemodified).'</p>';
 
 echo $OUTPUT->footer();
 
