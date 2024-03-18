@@ -152,7 +152,7 @@ module.exports = (env, options) => {
                 }
             }),
             new WebpackShellPlugin({
-                onBuildEnd: [path.resolve(__dirname, '../../../../../php/php.exe') + ' ' + path.resolve(__dirname, '../../../admin/cli/purge_caches.php') + ' --muc --theme --lang --js --filter --other']
+                onBuildEnd: [path.resolve(__dirname, '../../../../php/php.exe') + ' ' + path.resolve(__dirname, '../../../admin/cli/purge_caches.php') + ' --muc --theme --lang --js --filter --other']
               })
         ],
         watchOptions: {

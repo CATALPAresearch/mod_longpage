@@ -1,5 +1,5 @@
 <template>
-  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : sidebarWidth, 'min-width': tabOpenedKey !== undefined ? '400px' : '' }">
+  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : sidebarWidth, 'min-width': tabOpenedKey != undefined ? '400px' : '' }">
     <div
       v-show="tabOpenedKey"
       :title="$t('sidebar.util.changeWidth')"
@@ -43,6 +43,7 @@
           :aria-label="$t(`sidebar.tabMenu.titles.${tab.key}`)"
           :class="tab.icon"
         />
+        <span style="right: 5px;position: absolute;" :title="tab.badgesTitle" class="badge badge-pill badge-warning" v-if="tab.badgesCount > 0">{{tab.badgesCount}}</span>
       </a>
     </div>
   </div>
@@ -243,12 +244,24 @@ export default {
     EventBus.subscribe(SidebarEvents.TOGGLE_TABS, (type) => {
       this.toggleTab(type);
     });
+    EventBus.subscribe(SidebarEvents.CHANGE_BADGES, (params) => {
+      try
+      {
+        var tab = this.tabs.find(obj => { return obj.key == params["type"] });
+        tab.badgesCount = params["count"]; 
+        tab.badgesTitle = params["title"];
+      }
+      catch
+      {
+        
+      }
+    });
 
     var tab = undefined;
     if(localStorage)
     {
       var tab = localStorage.getItem("sidebar-tab");
-      if(tab === "undefined")
+      if(tab === "undefined" || tab == null)
       {
         tab = undefined;
       } 
@@ -275,7 +288,7 @@ export default {
         tabKey = undefined;
         this.sidebarWidth = "";
       }
-      else if(tabKey != undefined)
+      else if(tabKey != undefined && tabKey != null)
       {
         var width;
         if(localStorage)
@@ -305,6 +318,8 @@ export default {
       {
         localStorage.setItem("sidebar-tab", tabKey);
       }
+
+      EventBus.publish(SidebarEvents.CHANGE_BADGES, { type: tabKey, count: 0 });
     },
     ...mapMutations({ setTabOpened: MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY }),
   },
