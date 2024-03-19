@@ -507,6 +507,15 @@ code {
   }
 }
 
+@media (max-width: 767.98px) {
+  #longpage-sidebar {
+    position: absolute;
+    z-index: 40;
+    right: 0px;
+    background-color: white;
+  }
+}
+
 /* XS Extra small devices (portrait phones, less than 576px) */
 
 @media (max-width: 575.98px) {
