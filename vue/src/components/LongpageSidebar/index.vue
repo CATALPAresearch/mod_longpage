@@ -1,5 +1,6 @@
 <template>
   <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : sidebarWidth, 'min-width': tabOpenedKey != undefined ? '400px' : '' }">
+  <div :id="LONGPAGE_SIDEBAR_ID" class="row no-gutters vh-100-wo-nav max-w-80" :style="{ width: tabs.length == 0 ? '0px' : sidebarWidth, 'min-width': tabOpenedKey != undefined ? '400px' : '' }">
     <div
       v-show="tabOpenedKey"
       :title="$t('sidebar.util.changeWidth')"
