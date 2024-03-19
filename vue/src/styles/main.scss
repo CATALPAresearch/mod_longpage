@@ -510,7 +510,7 @@ code {
 /* XS Extra small devices (portrait phones, less than 576px) */
 
 @media (max-width: 575.98px) {
-  #page-navbar .breadcrumb {
+  #page-navbar .breadcrumb, #region-main-settings-menu {
     display: none;
   }
   #longpage-content {
