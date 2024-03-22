@@ -27,6 +27,7 @@ require('../../config.php');
 require_once($CFG->dirroot.'/mod/longpage/lib.php');
 require_once($CFG->dirroot.'/mod/longpage/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
+require_once("$CFG->libdir/formslib.php");
 //header("Access-Control-Allow-Origin: *");
 
 $id      = optional_param('id', 0, PARAM_INT); // Course Module ID
@@ -134,6 +135,11 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
 }
 
 // echo '<p class="mt-3 text-center text-xs" lang="de">'.get_string('lastmodified').': '.userdate($page->timemodified).'</p>';
+
+//hidden form needed for embedding questions
+$embedform = new MoodleQuickForm("embedform", 'POST', "", "", array("style" => "width: 0; height: 0; overflow: hidden"));
+$embedform->addElement('editor', 'embedform', "embedform", null, longpage_get_editor_options($context));
+$embedform->display();
 
 echo $OUTPUT->footer();
 

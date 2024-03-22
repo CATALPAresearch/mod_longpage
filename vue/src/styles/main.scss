@@ -169,12 +169,13 @@ footer#page-footer {
 
 #longpage-content .longpage-image-block, #longpage-content .longpage-table-block {
   margin: 1em 0;
+  width: 100%;
 }
 
-#longpage-content .longpage-image-block img[src*="svg"] 
-{
-  width: 40em;
-}
+// #longpage-content .longpage-image-block img[src*="svg"] 
+// {
+//   width: 40em;
+// }
 
 #longpage-content .longpage-image-block table {
   margin: 1em 0;
@@ -218,6 +219,7 @@ footer#page-footer {
 #longpage-content .longpage-image-block img {
   max-height: 80vh;
   align-content: center;
+  display: flex;
 }
 
 #longpage-content .longpage-image-caption, #longpage-content .longpage-table-caption {

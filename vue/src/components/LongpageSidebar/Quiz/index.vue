@@ -325,7 +325,7 @@ export default {
         if ($("#pinQuestion").hasClass("active")) {
           for (var i = 0; i < entries.length; i++) {
             var entry = entries[i];
-            observerStates["#" +  $(entry.target).find(".reading-comprehension").attr("data-embedid")] = entry;
+            observerStates["#" + $(entry.target).find(".reading-comprehension").attr("data-embedid")] = entry;
           }
           return;
         }
@@ -339,7 +339,7 @@ export default {
           // else {
           //   directionUp = true;
           // }
-          $(entry.target).next().find("iframe").each(function(idx, target) {
+          $(entry.target).next().find("iframe").each(function (idx, target) {
             if (entry.isIntersecting === true) {
               $("#longpage-main .filter_embedquestion-iframe").removeClass("last-visible");
               var idFixed = "#" + target.id.replace("/", "\\/");
@@ -361,7 +361,7 @@ export default {
                   <span class="sr-only" />
                 </div>
                 </div>`;
-                
+
                 entries.forEach((entry) => {
                   if (entry.isIntersecting) {
                     o.unobserve(entry.target);
@@ -374,41 +374,36 @@ export default {
               });
 
               obs.observe($(iframeCloned)[0]);
-              
+
               if (directionUp) {
                 $(div).prependTo("#question");
               }
               else {
                 (div).appendTo("#question");
               }
-       
-              $("#question iframe" + idFixed).on("load", function ()
-              {          
-                if ($("#pinQuestion").hasClass("autopin"))
-                {
+
+              $("#question iframe" + idFixed).on("load", function () {
+                if ($("#pinQuestion").hasClass("autopin")) {
                   $("#pinQuestion").click();
                 }
                 var cssLink = document.createElement("link");
-                cssLink.href = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + "/vue/src/styles/tasks.css"; 
-                cssLink.rel = "stylesheet"; 
-                cssLink.type = "text/css"; 
+                cssLink.href = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + "/vue/src/styles/tasks.css";
+                cssLink.rel = "stylesheet";
+                cssLink.type = "text/css";
                 $("#question iframe" + idFixed).contents().find("head").append(cssLink);
-                
+
                 var jsLink = document.createElement("script");
-                jsLink.src = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + "/vue/src/components/LongpageSidebar/Quiz/tasks.js"; 
+                jsLink.src = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + "/vue/src/components/LongpageSidebar/Quiz/tasks.js";
                 jsLink.type = "text/javascript";
                 $("#question iframe" + idFixed).contents().find("head").append(jsLink);
-                        
+
                 readfun();
 
-                function waitPending()
-                {
-                  if (M.util.js_pending())
-                  {
+                function waitPending() {
+                  if (M.util.js_pending()) {
                     setTimeout(waitPending, 500);
                   }
-                  else
-                  {
+                  else {
                     $("#quiz-spinner").remove();
                     $("#question").css("opacity", 1);
                   }
@@ -416,10 +411,8 @@ export default {
 
                 waitPending();
 
-                $(this).contents().find("body").on('click', function (ev)
-                {
-                  if (!$("#pinQuestion").hasClass("active"))
-                  {
+                $(this).contents().find("body").on('click', function (ev) {
+                  if (!$("#pinQuestion").hasClass("active")) {
                     $("#pinQuestion").addClass("autopin");
                     $("#pinQuestion").click();
                   }
@@ -474,7 +467,7 @@ export default {
 
                 $(this).contents().find("body").on('dblclick', function () {
                   var el = $("#" + $("#question iframe" + idFixed).data("paragraph"));
-                  $(el)[0].scrollIntoView({"behavior":"smooth", "block":"start"});
+                  $(el)[0].scrollIntoView({ "behavior": "smooth", "block": "start" });
                 });
               });
             }
@@ -490,33 +483,27 @@ export default {
         //previousY = currentY; 
         var found = false;
         var visible = {};
-        $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
-        {
+        $("#longpage-main .filter_embedquestion-iframe").each(function (i, el) {
           var idFixed = "#" + el.id.replace("/", "\\/");
           visible[idFixed] = (idFixed in visible && visible[idFixed]) || isElementInViewport(el);
         });
-         
-        $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
-        {
+
+        $("#longpage-main .filter_embedquestion-iframe").each(function (i, el) {
           var idFixed = "#" + el.id.replace("/", "\\/");
 
-          if (!(idFixed in added) && !visible[idFixed])
-          {
+          if (!(idFixed in added) && !visible[idFixed]) {
             //$("#question").find(idFixed).parents(".carousel-item").remove();
           }
-          else
-          {
+          else {
             found = true;
           }
         });
 
-        if (!found)
-        {
-          $("#question").children().remove();  
+        if (!found) {
+          $("#question").children().remove();
         }
 
-        if($("#question").children().length > 0)
-        {
+        if ($("#question").children().length > 0) {
           $("#quiz-placeholder").hide();
           $("#carousel").show();
           $("#question .carousel-item").removeClass("active");
@@ -524,18 +511,15 @@ export default {
           $("#carousel-indicators").children().remove();
           $(".carousel-control-prev, .carousel-control-next").hide();
 
-          if ($("#question").children().length > 1)
-          {
+          if ($("#question").children().length > 1) {
             $(".carousel-control-prev, .carousel-control-next").show();
-            for (var i = 0; i < $("#question").children().length; i++)
-            {
-              var div = `<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}">${i+1}</li>`;
+            for (var i = 0; i < $("#question").children().length; i++) {
+              var div = `<li data-target="#carousel" data-slide-to="${i}" class="${i == 0 ? "active" : ""}">${i + 1}</li>`;
               $(div).appendTo("#carousel-indicators");
             }
           }
         }
-        else
-        {
+        else {
           $("#carousel").hide();
           $("#quiz-spinner").remove();
           $("#quiz-placeholder").show();
@@ -546,8 +530,7 @@ export default {
       var observer = new IntersectionObserver(observerCall, { rootMargin: "-100px 0px -100px 0px", threshold: 0, root: document.querySelector('#longpage-main') });
 
 
-      $("#longpage-main .filter_embedquestion-iframe").each(function(i,el) 
-      {   
+      $("#longpage-main .filter_embedquestion-iframe").each(function (i, el) {
         var paragraph = $(el).parents(".wrapper").prev();
         $(el).data("paragraph", $(paragraph).children().first().attr("id"));
         observer.observe($(paragraph)[0]);
@@ -561,71 +544,79 @@ export default {
         }, 1000);
       });
 
-      $("#nextQuestion").click(function()
-      {
+      $("#nextQuestion").click(function () {
         var t = $("#longpage-main").scrollTop();
-        $("#longpage-main .filter_embedquestion-iframe").each(function (i, el)
-        {
-          if (el.offsetTop > t+500)
-          {
+        $("#longpage-main .filter_embedquestion-iframe").each(function (i, el) {
+          if (el.offsetTop > t + 500) {
             $("#longpage-main").animate({ scrollTop: el.offsetTop - 500 }, 'fast');
             return false;
           }
         })
       });
 
-      $("#prevQuestion").click(function()
-      {
+      $("#prevQuestion").click(function () {
         var t = $("#longpage-main").scrollTop();
-        $($("#longpage-main .filter_embedquestion-iframe").get().reverse()).each(function (i, el)
-        {
-          if (el.offsetTop < t)
-          {
+        $($("#longpage-main .filter_embedquestion-iframe").get().reverse()).each(function (i, el) {
+          if (el.offsetTop < t) {
             $("#longpage-main").animate({ scrollTop: el.offsetTop - 500 }, 'fast');
             return false;
           }
         })
       });
 
-      $("#pinQuestion").on("click", function() {
+      $("#pinQuestion").on("click", function () {
         $(this).toggleClass("active");
-        if (!$(this).hasClass("active"))
-        {
+        if (!$(this).hasClass("active")) {
           $("#pinQuestion").removeClass("autopin");
-          observerCall(Object.values(observerStates)); 
+          observerCall(Object.values(observerStates));
         }
         observerStates = {};
       });
 
+      $("#id_embedform").on("change", function () {
+        alert($("#id_embedformeditable").text());
+      }); 
+
       $("#addQuestion").on("click", function () {
-        Fragment.loadFragment('atto_embedquestion', 'questionselector', 16,
-                {contextId: 16, embedCode: ""}
-                ).done(function(html, js) {
-                  var last = $("#longpage-content .wrapper").filter(function (i, el)
-                  {
-                    return isElementBottomInViewport(el);
-                  }).last().children().first();
+        $("#id_embedform").val("");
+        $("#id_embedformeditable").text("");
+        $(".atto_embedquestion_button").click();
+        
+        // Fragment.loadFragment('atto_embedquestion', 'questionselector', 16,
+        //         {contextId: 16, embedCode: ""}
+        //         ).done(function(html, js) {
+        //           var last = $("#longpage-content .wrapper").filter(function (i, el)
+        //           {
+        //             return isElementBottomInViewport(el);
+        //           }).last().children().first();
 
-                  var tag = $(last).prop("tagName").toLowerCase();
+        //           var tag = $(last).prop("tagName").toLowerCase();
 
-                  var jsLink = document.createElement("script");
-                  jsLink.type = "text/javascript";
+                 
+  
+        //           const blob = new Blob([html], { type: 'text/html' });
+        //           let iframe = document.createElement('iframe');
+        //           $(iframe).on("load", function () {
+        //             var jsLink = $('<script>').attr('type', 'text/javascript').html(js);
+        //             $(this).contents().find("head").append(jsLink);
+        //           });
+        //           iframe.src = window.URL.createObjectURL(blob);
+        //           $(iframe).attr("id", "add/question").addClass('filter_embedquestion-iframe');
+        //           //Templates.replaceNodeContents(iframe, html, js);
 
-                  const blob = new Blob([html], { type: 'text/html' });
-                  let iframe = document.createElement('iframe');
-                  iframe.src = window.URL.createObjectURL(blob);
-                  $(iframe).attr("id", "add/question").addClass('filter_embedquestion-iframe');
-                  $(iframe).contents().find("head").append(jsLink);
-                  $(iframe).insertAfter(last.parent(".wrapper"));
-                  $(iframe).wrap("<div class='wrapper'/>")
-                  $(iframe).wrap("<div/>");
+                  
+        //           $(iframe).wrap("<div class='carousel-item'/>").prependTo($("#question"));
+                 
+        //           // $(iframe).insertAfter(last.parent(".wrapper"));
+        //           // $(iframe).wrap("<div class='wrapper'/>")
+        //           // $(iframe).wrap("<div/>");
 
-                  observer.observe(last.parent(".wrapper")[0]);
+        //           // observer.observe(last.parent(".wrapper")[0]);
 
-                }).fail(Notification.exception);
+        //         }).fail(Notification.exception);
       });
 
-      $("#editQuestion").on("click", function () {
+      $("#changeQuestion").on("click", function () {
         Fragment.loadFragment('atto_embedquestion', 'questionselector', "contextid",
                 {contextId: "contextid", embedCode: "existingCode"}
                 ).done(function(html, js) {
