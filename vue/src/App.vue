@@ -12,6 +12,7 @@
         class="
           col
           overflow-y-auto
+          overflow-x-hidden
           row
           no-gutters
           justify-content-center

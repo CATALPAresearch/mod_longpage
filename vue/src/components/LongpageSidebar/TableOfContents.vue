@@ -22,7 +22,7 @@
             :href="`#${entry.hId}`"
             data-toggle="pill"
             :style="`margin-left: ${entry.hLvl*2}rem`"
-            @click="scrollTextElementIntoView(entry.hEl)"
+            @click="clickTOCEntry(entry.hEl)"
           >{{ entry.text }}</a>
         </nav>
       </div>
@@ -51,10 +51,11 @@
  * @copyright  2021 Adrian Stritzinger <Adrian.Stritzinger@studium.fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import {LONGPAGE_CONTENT_ID, LONGPAGE_MAIN_ID} from '@/config/constants';
+import {LONGPAGE_CONTENT_ID, LONGPAGE_MAIN_ID, SidebarEvents, SidebarTabKeys } from '@/config/constants';
 import findLast from 'lodash/findLast';
 import {toIdSelector} from '@/util/style';
-import {scrollTextElementIntoView} from '@/util/misc';
+import { scrollTextElementIntoView } from '@/util/misc';
+import { EventBus } from "@/lib/event-bus";
 
 export default {
     name: 'TableOfContents',
@@ -113,6 +114,12 @@ export default {
             });
         },
         scrollTextElementIntoView,
+        clickTOCEntry(el) {
+          scrollTextElementIntoView(el);
+          if (screen.width <= 760) {
+            EventBus.publish(SidebarEvents.TOGGLE_TABS, SidebarTabKeys.TOC);
+          }
+        }
     },
 };
 </script>

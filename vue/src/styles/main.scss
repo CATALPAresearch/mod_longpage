@@ -39,7 +39,7 @@ footer#page-footer {
 
 #page-content #region-main
 {
-  padding-bottom: 0.5rem !important;
+  padding-bottom: 0 !important;
   padding-top: 0.5rem !important;
 }
 
@@ -47,6 +47,11 @@ footer#page-footer {
 {
   margin-top: 0.5rem !important;
   margin-bottom: 0 !important;
+}
+
+#page-content
+{
+  padding-bottom: 0 !important;
 }
 
 #page.drawers .main-inner //for Moodle 4.x
@@ -504,10 +509,19 @@ code {
   }
 }
 
+@media (max-width: 767.98px) {
+  #longpage-sidebar {
+    position: absolute;
+    z-index: 40;
+    right: 0px;
+    background-color: white;
+  }
+}
+
 /* XS Extra small devices (portrait phones, less than 576px) */
 
 @media (max-width: 575.98px) {
-  #page-navbar .breadcrumb {
+  #page-navbar .breadcrumb, #region-main-settings-menu {
     display: none;
   }
   #longpage-content {

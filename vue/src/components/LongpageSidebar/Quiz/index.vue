@@ -179,7 +179,7 @@ export default {
       return AnnotationType.QUIZ;
     }
   },
-  emits: [SidebarEvents.TOGGLE_TABS],
+  emits: [SidebarEvents.TOGGLE_TABS, SidebarEvents.CHANGE_BADGES],
   methods: {
     ...mapMutations([MUTATE.RESET_SIDEBAR_TAB_OPENED_KEY]),
     toggleTab()
@@ -230,11 +230,12 @@ export default {
 
               var sum = 0; 
               var len = 0;
+              var repeat = 0;
 
-              $(".wrapper[data-reading-comprehension-count]").each(function(index, paragraph)
-              {
+              $(".wrapper[data-reading-comprehension-count]").each(function (index, paragraph) {
                 var progress = $(paragraph).find(".reading-progress");
-                var value = parseFloat($(paragraph).attr("data-reading-comprehension-sum"))/parseInt($(paragraph).attr("data-reading-comprehension-count"));
+                var value = parseFloat($(paragraph).attr("data-reading-comprehension-sum")) / parseInt($(paragraph).attr("data-reading-comprehension-count"));
+                repeat += (value < 0.5 ? 1 : 0);
                 sum += value;
                 len += 1;
                 $(progress).attr("title", $(progress).attr("data-original-title"));
@@ -256,6 +257,24 @@ export default {
               {
                 rc = (100 * sum / len).toFixed(0);
               }
+
+              if(rc <= 50)
+              {
+                EventBus.publish(SidebarEvents.CHANGE_BADGES, { type: SidebarTabKeys.QUIZ, count: repeat, title: "Ihr geschätztes Leseverständnis für die ganze Seite \nund " + repeat + " Fragen beträgt weniger als 50%." });
+              }
+              
+
+              if(rc <= 50)
+              {
+                EventBus.publish(SidebarEvents.CHANGE_BADGES, { type: SidebarTabKeys.QUIZ, count: repeat, title: "Ihr geschätztes Leseverständnis für die ganze Seite \nund " + repeat + " Fragen beträgt weniger als 50%." });
+              }
+              
+
+              if(rc <= 50)
+              {
+                EventBus.publish(SidebarEvents.CHANGE_BADGES, { type: SidebarTabKeys.QUIZ, count: repeat, title: "Ihr geschätztes Leseverständnis für die ganze Seite \nund " + repeat + " Fragen beträgt weniger als 50%." });
+              }
+              
 
               $("#sidebar-tab-quiz #total-reading-comprehension").attr("title", "Ihr geschätztes Leseverständnis für die ganze Seite <br>beträgt: " + rc + " %.<br>Klicken Sie für eine Übersicht der Fragen.").tooltip({"placement":"auto", "html":true, "title":""}).attr("title", "");
               $("#sidebar-tab-quiz #total-reading-comprehension i").attr("class", "fa fa-fw fa-lg fa-battery-" + Math.floor(rc / 25));

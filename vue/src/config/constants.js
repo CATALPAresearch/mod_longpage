@@ -91,6 +91,7 @@ export const SidebarTabKeys = Object.freeze({
 
 export const SidebarEvents = Object.freeze({
     TOGGLE_TABS: 'toggle_tabs',
+    CHANGE_BADGES: 'change_badges'
 });
 
 export const SCROLL_INTO_VIEW_OPTIONS = {
