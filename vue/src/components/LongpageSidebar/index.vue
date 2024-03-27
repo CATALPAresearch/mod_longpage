@@ -250,6 +250,7 @@ export default {
         var tab = this.tabs.find(obj => { return obj.key == params["type"] });
         tab.badgesCount = params["count"]; 
         tab.badgesTitle = params["title"];
+        $(".badge.badge-pill.badge-warning").tooltip("dispose").tooltip({ "placement": "auto", "html": true });
       }
       catch
       {

@@ -117,6 +117,10 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
             
     echo    '</div>
         </div>';
+    //hidden form needed for embedding questions
+    $embedform = new MoodleQuickForm("embedform", 'POST', "", "", array("style" => "width: 0; height: 0; overflow: hidden"));
+    $embedform->addElement('editor', 'embedform', "embedform", null, longpage_get_editor_options($context));
+    $embedform->display();
     echo '<div id="longpage-app-container" class="border-top border-bottom">';
     echo '<div class="row no-gutters vh-50">';
     echo '<div class="spinner-border m-auto " role="status"><span class="sr-only">'.get_string('loading').'</span></div>';
@@ -124,8 +128,6 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
     echo '<div id="longpage-tmp" style="display:none;" lang="de">';
     echo $page->content;
     echo '</div>';
-
-
 
     $PAGE->requires->js_call_amd(
         'mod_longpage/app-lazy',
@@ -153,11 +155,6 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
 }
 
 // echo '<p class="mt-3 text-center text-xs" lang="de">'.get_string('lastmodified').': '.userdate($page->timemodified).'</p>';
-
-//hidden form needed for embedding questions
-$embedform = new MoodleQuickForm("embedform", 'POST', "", "", array("style" => "width: 0; height: 0; overflow: hidden"));
-$embedform->addElement('editor', 'embedform', "embedform", null, longpage_get_editor_options($context));
-$embedform->display();
 
 echo $OUTPUT->footer();
 

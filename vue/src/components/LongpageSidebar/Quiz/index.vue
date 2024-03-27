@@ -155,6 +155,11 @@
   display: none;
 }
 
+.embedQuestion
+{
+  margin-left: 20px;
+}
+
 </style>
 <script>
 
@@ -261,20 +266,7 @@ export default {
               if(rc <= 50)
               {
                 EventBus.publish(SidebarEvents.CHANGE_BADGES, { type: SidebarTabKeys.QUIZ, count: repeat, title: "Ihr geschätztes Leseverständnis für die ganze Seite \nund " + repeat + " Fragen beträgt weniger als 50%." });
-              }
-              
-
-              if(rc <= 50)
-              {
-                EventBus.publish(SidebarEvents.CHANGE_BADGES, { type: SidebarTabKeys.QUIZ, count: repeat, title: "Ihr geschätztes Leseverständnis für die ganze Seite \nund " + repeat + " Fragen beträgt weniger als 50%." });
-              }
-              
-
-              if(rc <= 50)
-              {
-                EventBus.publish(SidebarEvents.CHANGE_BADGES, { type: SidebarTabKeys.QUIZ, count: repeat, title: "Ihr geschätztes Leseverständnis für die ganze Seite \nund " + repeat + " Fragen beträgt weniger als 50%." });
-              }
-              
+              }             
 
               $("#sidebar-tab-quiz #total-reading-comprehension").attr("title", "Ihr geschätztes Leseverständnis für die ganze Seite <br>beträgt: " + rc + " %.<br>Klicken Sie für eine Übersicht der Fragen.").tooltip({"placement":"auto", "html":true, "title":""}).attr("title", "");
               $("#sidebar-tab-quiz #total-reading-comprehension i").attr("class", "fa fa-fw fa-lg fa-battery-" + Math.floor(rc / 25));
@@ -333,6 +325,8 @@ export default {
       }, 2000);
 
       get_reading_comprehension();
+
+      $(".reading-progress").not($(".filter_embedquestion-iframe ").parent().next()).append('<a href="javascript:void(0)" class="embedQuestion" title="Vorhandene Frage einbetten"><i class="fa fa-plus fa-fw" /></a>');
 
       //let previousY = 0;
       let directionUp = false;
@@ -593,10 +587,11 @@ export default {
       });
 
       $("#id_embedform").on("change", function () {
-        alert($("#id_embedformeditable").text());
+        //alert($("#id_embedformeditable").text());
       }); 
 
-      $("#addQuestion").on("click", function () {
+      $(".embedQuestion").on("click", function () {
+        alert($(this).index(".embedQuestion"));
         $("#id_embedform").val("");
         $("#id_embedformeditable").text("");
         $(".atto_embedquestion_button").click();
