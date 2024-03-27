@@ -177,10 +177,15 @@ footer#page-footer {
   width: 100%;
 }
 
-// #longpage-content .longpage-image-block img[src*="svg"] 
-// {
-//   width: 40em;
-// }
+@media (min-width: 768px)
+{
+  #longpage-content .longpage-image-block img[src*="svg"] 
+  {
+    transform: scale(1.15);
+    margin: 8%;
+  }
+}
+
 
 #longpage-content .longpage-image-block table {
   margin: 1em 0;
