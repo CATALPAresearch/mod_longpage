@@ -140,7 +140,7 @@ if (mod_longpage\blocking::tool_policy_accepted() == true) {
             $content,
             $scrolltop,
             !empty($page->showreadingprogress),
-            true,#!empty($page->showreadingcomprehension), //$USER->id % 2 == 1 || has_capability('mod/longpage:addinstance', $context), //hardcoded for WS2023 //!empty($page->showreadingcomprehension),
+            !empty($page->showreadingcomprehension), //$USER->id % 2 == 1 || has_capability('mod/longpage:addinstance', $context), //hardcoded for WS2023
             !empty($page->showsearch),
             !empty($page->showtableofcontents),
             !empty($page->showposts),

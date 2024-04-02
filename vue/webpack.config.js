@@ -21,11 +21,10 @@
 
 //const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
-var path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); 
+var path = require('path'); 
 const TerserPlugin = require('terser-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
-const WebpackShellPlugin = require('webpack-shell-plugin');
+const WebpackShellPlugin = require('webpack-shell-plugin-next');
 var webpack = require('webpack');
 
 
@@ -38,9 +37,6 @@ module.exports = (env, options) => {
             filename: 'app-lazy.min.js',
             chunkFilename: '[id].app-lazy.js?v=[hash]',
             libraryTarget: 'amd',
-        },
-        node: {
-            fs: "empty"
         },
         target: 'web',
         module: {
@@ -205,7 +201,8 @@ module.exports = (env, options) => {
             }),
             new webpack.LoaderOptionsPlugin({
                 minimize: true
-            })
+            }),
+            new webpack.optimize.ModuleConcatenationPlugin()
         ]);
         exports.optimization = {
             minimize: true,

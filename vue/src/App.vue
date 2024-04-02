@@ -87,7 +87,6 @@ import Utils from "./util/utils";
 import ReadingProgress from "@/components/Generic/ReadingProgress";
 import ReadingTime from "@/components/Generic/ReadingTime";
 import CourseRecommendation from "@/components/Generic/CourseRecommendations";
-import DownloadPDF from "@/components/LongpageContent/DownloadPDF";
 
 export default {
   name: "App",
@@ -97,8 +96,7 @@ export default {
     LongpageSidebar,
     ReadingProgress,
     CourseRecommendation,
-    ReadingTime,
-    DownloadPDF
+    ReadingTime
   },
   props: {
     content: { type: String, required: true },
