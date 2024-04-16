@@ -217,8 +217,6 @@ This software uses the following open source packages:
 
 ## Citation
 
-**Cite this software:**
-
 Seidel, N., Stritzinger, A., Menze, D., & Friedrich, K. (2024). Longpage - A Moodle activity plugin designed to assist learners with reading extended texts. https://doi.org/10.17605/OSF.IO/VBCTW
 
 > @misc{Seidel2024-MoodleLongpage,
