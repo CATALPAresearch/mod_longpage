@@ -11,7 +11,7 @@
 <br>
 <div align="center">
 
-![](pix/promotion/longpage.gif)
+<img src="pix/promotion/longpage.gif" width="500" />
 
 </div>
 
@@ -217,9 +217,10 @@ This software uses the following open source packages:
 
 ## Citation
 
-Seidel, N., Stritzinger, A., Menze, D., & Friedrich, K. (2024). Longpage - A Moodle activity plugin designed to assist learners with reading extended texts. https://doi.org/10.17605/OSF.IO/VBCTW
+> Seidel, N., Stritzinger, A., Menze, D., & Friedrich, K. (2024). Longpage - A Moodle activity plugin designed to assist learners with reading extended texts. https://doi.org/10.17605/OSF.IO/VBCTW
 
-> @misc{Seidel2024-MoodleLongpage,
+````
+@misc{Seidel2024-MoodleLongpage,
 author = {Seidel, Niels and Stritzinger, Adrian and Menze, Dennis and Friedrich, Konstantin},
 doi = {10.17605/OSF.IO/VBCTW},
 keywords = {P-APLE-II,open data,software},
@@ -227,7 +228,7 @@ title = {{Longpage - A Moodle activity plugin designed to assist learners with r
 url = {https://github.com/CATALPAresearch/mod{\_}longpage},
 year = {2024}
 }
-
+```
 
 **Research articles and datasets about Longpage:**
 
